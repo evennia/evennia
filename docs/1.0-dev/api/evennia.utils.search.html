@@ -193,36 +193,6 @@ case sensitive) match.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.utils.search.search_tag">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find object based on tag or category.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The tag key to search for.</p></li>
-<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of tag
-to search for. If not set, uncategorized
-tags will be searched.</p></li>
-<li><p><strong>tagtype</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘type’ of Tag, by default
-this is either <strong>None</strong> (a normal Tag), <strong>alias</strong> or
-<strong>permission</strong>. This always apply to all queried tags.</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em>) – Other optional parameter that may be supported
-by the manager method.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>matches (list)</em> –</p>
-<dl class="simple">
-<dt>List of Objects with tags matching</dt><dd><p>the search criteria, or an empty list if no
-matches were found.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="evennia.utils.search.search_script_tag">
 <code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_script_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_script_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_script_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find script based on tag or category.</p>

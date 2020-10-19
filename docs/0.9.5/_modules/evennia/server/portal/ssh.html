@@ -84,9 +84,10 @@
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">components</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="k">import</span> <span class="n">session</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">to_str</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_SCREENREADER_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -114,8 +115,6 @@
     <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_PUBLIC_KEY_FILE</span>
 <span class="p">)</span>
 
-<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
-
 
 <span class="c1"># not used atm</span>
 <div class="viewcode-block" id="SSHServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHServerFactory">[docs]</a><span class="k">class</span> <span class="nc">SSHServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
@@ -126,7 +125,7 @@
         <span class="k">return</span> <span class="s2">&quot;SSH&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="SshProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol">[docs]</a><span class="k">class</span> <span class="nc">SshProtocol</span><span class="p">(</span><span class="n">Manhole</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SshProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol">[docs]</a><span class="k">class</span> <span class="nc">SshProtocol</span><span class="p">(</span><span class="n">Manhole</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Each account connecting over ssh gets this protocol assigned to</span>
 <span class="sd">    them.  All communication between game and account goes through</span>
@@ -319,18 +318,18 @@
 <span class="sd">            text (str): The first argument is always the text string to send. No other arguments</span>
 <span class="sd">                are considered.</span>
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            options (dict): Send-option flags (booleans)</span>
+<span class="sd">            options (dict): Send-option flags:</span>
 
-<span class="sd">                - mxp: enforce mxp link support.</span>
-<span class="sd">                - ansi: enforce no ansi colors.</span>
-<span class="sd">                - xterm256: enforce xterm256 colors, regardless of ttype setting.</span>
-<span class="sd">                - nocolor: strip all colors.</span>
-<span class="sd">                - raw: pass string through without any ansi processing</span>
-<span class="sd">                  (i.e. include evennia ansi markers but do not</span>
+<span class="sd">                - mxp: Enforce MXP link support.</span>
+<span class="sd">                - ansi: Enforce no ANSI colors.</span>
+<span class="sd">                - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.</span>
+<span class="sd">                - nocolor: Strip all colors.</span>
+<span class="sd">                - raw: Pass string through without any ansi processing</span>
+<span class="sd">                  (i.e. include Evennia ansi markers but do not</span>
 <span class="sd">                  convert them into ansi tokens)</span>
-<span class="sd">                - echo: turn on/off line echo on the client. turn</span>
+<span class="sd">                - echo: Turn on/off line echo on the client. Turn</span>
 <span class="sd">                  off line echo for client, for example for password.</span>
-<span class="sd">                  note that it must be actively turned back on again!</span>
+<span class="sd">                  Note that it must be actively turned back on again!</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print &quot;telnet.send_text&quot;, args,kwargs  # DEBUG</span>

@@ -54,34 +54,32 @@
 <span class="sd">object when displaying the form.</span>
 
 <span class="sd">Example of input file `testform.py`:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">FORMCHAR = &quot;x&quot;</span>
-<span class="sd">TABLECHAR = &quot;c&quot;</span>
+<span class="sd">    FORMCHAR = &quot;x&quot;</span>
+<span class="sd">    TABLECHAR = &quot;c&quot;</span>
 
-<span class="sd">FORM = &#39;&#39;&#39;</span>
-<span class="sd">.------------------------------------------------.</span>
-<span class="sd">|                                                |</span>
-<span class="sd">|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |</span>
-<span class="sd">|        xxxxxxxxxxx                             |</span>
-<span class="sd">|                                                |</span>
-<span class="sd"> &gt;----------------------------------------------&lt;</span>
-<span class="sd">|                                                |</span>
-<span class="sd">| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |</span>
-<span class="sd">|        xxxxx3xxxxx    INT: x6x    STA: x7x     |</span>
-<span class="sd">|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |</span>
-<span class="sd">|                                                |</span>
-<span class="sd"> &gt;----------------------------------------------&lt;</span>
-<span class="sd">|          |                                     |</span>
-<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
-<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
-<span class="sd">| cccAcccc | ccccccccccccccccccccccccccccccccccc |</span>
-<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
-<span class="sd">| cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
-<span class="sd">|          |                                     |</span>
-<span class="sd">-------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">```</span>
+<span class="sd">    FORM = &#39;&#39;&#39;</span>
+<span class="sd">    .------------------------------------------------.</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">    |  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |</span>
+<span class="sd">    |        xxxxxxxxxxx                             |</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">     &gt;----------------------------------------------&lt;</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">    | Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |</span>
+<span class="sd">    |        xxxxx3xxxxx    INT: x6x    STA: x7x     |</span>
+<span class="sd">    |        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">     &gt;----------------------------------------------&lt;</span>
+<span class="sd">    |          |                                     |</span>
+<span class="sd">    | cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">    | cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">    | cccAcccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">    | cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">    | cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
+<span class="sd">    |          |                                     |</span>
+<span class="sd">    -------------------------------------------------</span>
 
 <span class="sd">The first line of the `FORM` string is ignored. The forms and table</span>
 <span class="sd">markers must mark out complete, unbroken rectangles, each containing</span>
@@ -95,8 +93,8 @@
 
 
 <span class="sd">Use as follows:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
 <span class="sd">    from evennia import EvForm, EvTable</span>
 
 <span class="sd">    # create a new form from the template</span>
@@ -128,10 +126,9 @@
 <span class="sd">                     &quot;B&quot;: tableB})</span>
 
 <span class="sd">    print(form)</span>
-<span class="sd">```</span>
+
 
 <span class="sd">This produces the following result:</span>
-
 <span class="sd">::</span>
 
 <span class="sd">    .------------------------------------------------.</span>
@@ -154,6 +151,7 @@
 <span class="sd">    |   |* |   | Smithing   |9          |205/900     |</span>
 <span class="sd">    |          |                                     |</span>
 <span class="sd">     ------------------------------------------------</span>
+
 
 <span class="sd">The marked forms have been replaced with EvCells of text and with</span>
 <span class="sd">EvTables. The form can be updated by simply re-applying `form.map()`</span>
@@ -229,16 +227,15 @@
 
 <div class="viewcode-block" id="EvForm.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initiate the form</span>
+<span class="sd">        Initiate the form.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            filename (str): Path to template file.</span>
-<span class="sd">            cells (dict): A dictionary mapping  `{id: text}`</span>
-<span class="sd">            tables (dict): A dictionary mapping  `{id: EvTable}`.</span>
-<span class="sd">            form (dict): A dictionary</span>
-<span class="sd">                `{&quot;FORMCHAR&quot;:char, &quot;TABLECHAR&quot;:char, &quot;FORM&quot;:templatestring}`.</span>
-<span class="sd">                If this is given, filename is not read.</span>
-
+<span class="sd">            cells (dict): A dictionary mapping of `{id:text}`.</span>
+<span class="sd">            tables (dict): A dictionary mapping of `{id:EvTable}`.</span>
+<span class="sd">            form (dict): A dictionary of</span>
+<span class="sd">              `{&quot;FORMCHAR&quot;:char, &quot;TABLECHAR&quot;:char, &quot;FORM&quot;:templatestring}`.</span>
+<span class="sd">              if this is given, filename is not read.</span>
 <span class="sd">        Notes:</span>
 <span class="sd">            Other kwargs are fed as options to the EvCells and EvTables</span>
 <span class="sd">            (see `evtable.EvCell` and `evtable.EvTable` for more info).</span>

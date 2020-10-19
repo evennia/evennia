@@ -40,25 +40,21 @@
             
   <h1>Source code for evennia.utils.evtable</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This is an advanced ASCII table creator. It was inspired by Prettytable</span>
-<span class="sd">(https://code.google.com/p/prettytable/) but shares no code and is considerably</span>
-<span class="sd">more advanced, supporting auto-balancing of incomplete tables and ANSI colors among</span>
-<span class="sd">other things.</span>
+<span class="sd">This is an advanced ASCII table creator. It was inspired by</span>
+<span class="sd">[prettytable](https://code.google.com/p/prettytable/) but shares no code.</span>
 
 <span class="sd">Example usage:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">  from evennia.utils import evtable</span>
+<span class="sd">    from evennia.utils import evtable</span>
 
-<span class="sd">  table = evtable.EvTable(&quot;Heading1&quot;, &quot;Heading2&quot;,</span>
+<span class="sd">    table = evtable.EvTable(&quot;Heading1&quot;, &quot;Heading2&quot;,</span>
 <span class="sd">                  table=[[1,2,3],[4,5,6],[7,8,9]], border=&quot;cells&quot;)</span>
-<span class="sd">  table.add_column(&quot;This is long data&quot;, &quot;This is even longer data&quot;)</span>
-<span class="sd">  table.add_row(&quot;This is a single row&quot;)</span>
-<span class="sd">  print table</span>
-<span class="sd">```</span>
+<span class="sd">    table.add_column(&quot;This is long data&quot;, &quot;This is even longer data&quot;)</span>
+<span class="sd">    table.add_row(&quot;This is a single row&quot;)</span>
+<span class="sd">    print table</span>
 
 <span class="sd">Result:</span>
-
 <span class="sd">::</span>
 
 <span class="sd">    +----------------------+----------+---+--------------------------+</span>
@@ -75,15 +71,13 @@
 
 <span class="sd">As seen, the table will automatically expand with empty cells to make</span>
 <span class="sd">the table symmetric. Tables can be restricted to a given width:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">  table.reformat(width=50, align=&quot;l&quot;)</span>
-<span class="sd">```</span>
+<span class="sd">    table.reformat(width=50, align=&quot;l&quot;)</span>
 
 <span class="sd">(We could just have added these keywords to the table creation call)</span>
 
 <span class="sd">This yields the following result:</span>
-
 <span class="sd">::</span>
 
 <span class="sd">    +-----------+------------+-----------+-----------+</span>
@@ -104,21 +98,16 @@
 <span class="sd">    | row       |            |           |           |</span>
 <span class="sd">    +-----------+------------+-----------+-----------+</span>
 
-
 <span class="sd">Table-columns can be individually formatted. Note that if an</span>
 <span class="sd">individual column is set with a specific width, table auto-balancing</span>
 <span class="sd">will not affect this column (this may lead to the full table being too</span>
 <span class="sd">wide, so be careful mixing fixed-width columns with auto- balancing).</span>
 <span class="sd">Here we change the width and alignment of the column at index 3</span>
 <span class="sd">(Python starts from 0):</span>
-
-<span class="sd">```python</span>
-
-<span class="sd">table.reformat_column(3, width=30, align=&quot;r&quot;)</span>
-<span class="sd">print table</span>
-<span class="sd">```</span>
-
 <span class="sd">::</span>
+
+<span class="sd">    table.reformat_column(3, width=30, align=&quot;r&quot;)</span>
+<span class="sd">    print table</span>
 
 <span class="sd">    +-----------+-------+-----+-----------------------------+---------+</span>
 <span class="sd">    | Heading1  | Headi |     |                             |         |</span>
@@ -142,14 +131,15 @@
 <span class="sd">vertically. This will lead to text contents being cropped. Each cell</span>
 <span class="sd">can only shrink to a minimum width and height of 1.</span>
 
-<span class="sd">`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured</span>
-<span class="sd">string types.</span>
+<span class="sd">`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)</span>
+<span class="sd">for supporting ANSI-coloured string types.</span>
 
-<span class="sd">When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be</span>
-<span class="sd">put at the end of each wrapped line. This means that the colour of a wrapped</span>
-<span class="sd">cell will not &quot;bleed&quot;, but it also means that eventual colour outside the table</span>
-<span class="sd">will not transfer &quot;across&quot; a table, you need to re-set the color to have it</span>
-<span class="sd">appear on both sides of the table string.</span>
+<span class="sd">When a cell is auto-wrapped across multiple lines, ANSI-reset</span>
+<span class="sd">sequences will be put at the end of each wrapped line. This means that</span>
+<span class="sd">the colour of a wrapped cell will not &quot;bleed&quot;, but it also means that</span>
+<span class="sd">eventual colour outside the table will not transfer &quot;across&quot; a table,</span>
+<span class="sd">you need to re-set the color to have it appear on both sides of the</span>
+<span class="sd">table string.</span>
 
 <span class="sd">----</span>
 

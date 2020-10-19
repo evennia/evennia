@@ -110,7 +110,7 @@
 <span class="sd">            stationary (idling) until attacked.</span>
 <span class="sd">        aggressive: if set, will attack Characters in</span>
 <span class="sd">            the same room using whatever Weapon it</span>
-<span class="sd">            carries (see tutorial_world.objects.TutorialWeapon).</span>
+<span class="sd">            carries (see tutorial_world.objects.Weapon).</span>
 <span class="sd">            if unset, the mob will never engage in combat</span>
 <span class="sd">            no matter what.</span>
 <span class="sd">        hunting: if set, the mob will pursue enemies trying</span>
@@ -209,9 +209,9 @@
 <span class="sd">        be &quot;ticked&quot;.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            interval (int or None): The number of seconds</span>
+<span class="sd">            interval (int): The number of seconds</span>
 <span class="sd">                between ticks</span>
-<span class="sd">            hook_key (str or None): The name of the method</span>
+<span class="sd">            hook_key (str): The name of the method</span>
 <span class="sd">                (on this mob) to call every interval</span>
 <span class="sd">                seconds.</span>
 <span class="sd">            stop (bool, optional): Just stop the</span>
@@ -413,10 +413,15 @@
             <span class="k">return</span>
 
         <span class="c1"># we use the same attack commands as defined in</span>
-        <span class="c1"># tutorial_world.objects.TutorialWeapon, assuming that</span>
+        <span class="c1"># tutorial_world.objects.Weapon, assuming that</span>
         <span class="c1"># the mob is given a Weapon to attack with.</span>
         <span class="n">attack_cmd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">((</span><span class="s2">&quot;thrust&quot;</span><span class="p">,</span> <span class="s2">&quot;pierce&quot;</span><span class="p">,</span> <span class="s2">&quot;stab&quot;</span><span class="p">,</span> <span class="s2">&quot;slash&quot;</span><span class="p">,</span> <span class="s2">&quot;chop&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attack_cmd</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># This is not an attackable target</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> found </span><span class="si">{target}</span><span class="s2"> had an `health` attribute of `None`.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># analyze the current state</span>
         <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>

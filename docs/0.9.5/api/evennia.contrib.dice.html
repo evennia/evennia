@@ -172,11 +172,6 @@ everyone but the person rolling.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.dice.CmdDice.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'roll &#64;dice', 'category': 'general', 'key': 'dice', 'tags': '', 'text': &quot;\n    roll dice\n\n    Usage:\n      dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]\n\n    Switch:\n      hidden - tell the room the roll is being done, but don't show the result\n      secret - don't inform the room about neither roll nor result\n\n    Examples:\n      dice 3d6 + 4\n      dice 1d100 - 2 &lt; 50\n\n    This will roll the given number of dice with given sides and modifiers.\n    So e.g. 2d6 + 3 means to 'roll a 6-sided die 2 times and add the result,\n    then add 3 to the total'.\n    Accepted modifiers are +, -, * and /.\n    A success condition is given as normal Python conditionals\n    (&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed\n    only if the final result is above 8. If a success condition is given, the\n    outcome (pass/fail) will be echoed along with how much it succeeded/failed\n    with. The hidden/secret switches will hide all or parts of the roll from\n    everyone but the person rolling.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">

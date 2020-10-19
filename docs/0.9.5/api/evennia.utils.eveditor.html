@@ -39,39 +39,47 @@
   <div class="section" id="module-evennia.utils.eveditor">
 <span id="evennia-utils-eveditor"></span><h1>evennia.utils.eveditor<a class="headerlink" href="#module-evennia.utils.eveditor" title="Permalink to this headline">¶</a></h1>
 <p>EvEditor (Evennia Line Editor)</p>
-<p>This implements an advanced line editor for editing longer texts in-game. The
-editor mimics the command mechanisms of the “VI” editor (a famous line-by-line
-editor) as far as reasonable.</p>
+<p>This implements an advanced line editor for editing longer texts
+in-game. The editor mimics the command mechanisms of the “VI” editor
+(a famous line-by-line editor) as far as reasonable.</p>
 <p>Features of the editor:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>undo/redo.</p></li>
 <li><p>edit/replace on any line of the buffer.</p></li>
 <li><p>search&amp;replace text anywhere in buffer.</p></li>
 <li><p>formatting of buffer, or selection, to certain width + indentations.</p></li>
 <li><p>allow to echo the input or not, depending on your client.</p></li>
-<li><p>in-built help</p></li>
 </ul>
-<p>To use the editor, just import EvEditor from this module and initialize it:</p>
+</div></blockquote>
+<p>To use the editor, just import EvEditor from this module
+and initialize it:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
-
-<span class="c1"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
-<span class="k">def</span> <span class="nf">_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-
-<span class="k">def</span> <span class="nf">_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">return</span> <span class="kc">True</span>
-
-<span class="k">def</span> <span class="nf">_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Custom quit message&quot;</span><span class="p">)</span>
-
-<span class="c1"># start the editor</span>
-<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-         <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The editor can also be used to format Python code and be made to
-survive a reload. See the <strong>EvEditor</strong> class for more details.</p>
+<ul class="simple">
+<li><p><strong>caller</strong> is the user of the editor, the one to see all feedback.</p></li>
+<li><p><strong>loadfunc(caller)</strong> is called when the editor is first launched; the
+return from this function is loaded as the starting buffer in the
+editor.</p></li>
+<li><p><strong>safefunc(caller, buffer)</strong> is called with the current buffer when
+saving in the editor. The function should return True/False depending
+on if the saving was successful or not.</p></li>
+<li><p><strong>quitfunc(caller)</strong> is called when the editor exits. If this is given,
+no automatic quit messages will be given.</p></li>
+<li><p><strong>key</strong> is an optional identifier for the editing session, to be
+displayed in the editor.</p></li>
+<li><p><strong>persistent</strong> means the editor state will be saved to the database making it
+survive a server reload. Note that using this mode, the load- save-
+and quit-funcs must all be possible to pickle - notable unusable
+callables are class methods and functions defined inside other
+functions. With persistent=False, no such restriction exists.</p></li>
+<li><p><strong>code</strong> set to True activates features on the EvEditor to enter Python code.</p></li>
+</ul>
+<p>In addition, the EvEditor can be used to enter Python source code,
+and offers basic handling of indentation.</p>
+<hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.utils.eveditor.CmdSaveYesNo">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.eveditor.</code><code class="sig-name descname">CmdSaveYesNo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdSaveYesNo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo" title="Permalink to this definition">¶</a></dt>
@@ -113,11 +121,6 @@ command was given specifically as “no” or “n”.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdSaveYesNo.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.eveditor.CmdSaveYesNo.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    Save the editor state on quit. This catches\n    nomatches (defaults to Yes), and avoid saves only if\n    command was given specifically as &quot;no&quot; or &quot;n&quot;.\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -178,19 +181,17 @@ command was given specifically as “no” or “n”.</p>
 <dl class="py method">
 <dt id="evennia.utils.eveditor.CmdEditorBase.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorBase.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles pre-parsing. Editor commands are on the form</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">cmd</span> <span class="p">[</span><span class="n">li</span><span class="p">]</span> <span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="p">[</span><span class="n">txt</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>Where all arguments are optional.</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>li</strong>  - line number (int), starting from 1. This could also</dt><dd><p>be a range given as &lt;l&gt;:&lt;l&gt;.</p>
+<dd><p>Handles pre-parsing</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>:cmd [li] [w] [txt]</p>
 </dd>
 </dl>
-</li>
-<li><p><strong>w</strong>  - word(s) (string), could be encased in quotes.</p></li>
-<li><p><strong>txt</strong> - extra text (string), could be encased in quotes.</p></li>
+<p>Where all arguments are optional.</p>
+<ul class="simple">
+<li><p>li - line number (int), starting from 1. This could also
+be a range given as &lt;l&gt;:&lt;l&gt;.</p></li>
+<li><p>w - word(s) (string), could be encased in quotes.</p></li>
+<li><p>txt - extra text (string), could be encased in quotes.</p></li>
 </ul>
 </dd></dl>
 
@@ -212,11 +213,6 @@ command was given specifically as “no” or “n”.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorBase.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.eveditor.CmdEditorBase.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    Base parent for editor commands\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -254,11 +250,6 @@ indentation.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.utils.eveditor.CmdLineInput.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    No command match - Inputs line of text into buffer.\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -273,7 +264,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':j', ':dd', ':A', ':&gt;', ':i', ':q!', ':::', ':x', ':s', ':=', ':UU', ':fi', ':p', ':q', ':w', ':', ':fd', ':h', ':DD', ':y', ':u', ':r', ':wq', ':!', ':echo', ':dw', ':f', ':I', ':S', ':uu', ':&lt;', '::']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':p', ':', ':r', ':w', ':UU', ':uu', ':&lt;', ':f', ':y', ':dw', ':dd', ':&gt;', ':q', ':!', ':S', '::', ':echo', ':j', ':::', ':s', ':u', ':=', ':q!', ':DD', ':x', ':fi', ':fd', ':A', ':i', ':wq', ':I', ':h']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -297,11 +288,6 @@ efficient presentation.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':j :dd :A :&gt; :i :q! ::: :x :s := :UU :fi :p :q :w : :fd :h :DD :y :u :r :wq :! :echo :dw :f :I :S :uu :&lt; ::', 'category': 'general', 'key': ':editor_command_group', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

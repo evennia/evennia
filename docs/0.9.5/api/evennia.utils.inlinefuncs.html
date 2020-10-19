@@ -43,15 +43,14 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$funcname(arg, arg, ...)
 </pre></div>
 </div>
-<p>embedded in any text where any arg can be another <strong>**$funcname()**</strong> call.
+<p>embedded in any text where any arg can be another <strong>$funcname{}</strong> call.
 This functionality is turned off by default - to activate,
 <strong>settings.INLINEFUNC_ENABLED</strong> must be set to <strong>True</strong>.</p>
-<p>Each token starts with <strong>$funcname(</strong> where there must be no space
-between the <strong>$funcname</strong> and <strong>“(“</strong>. The inlinefunc ends with a matched ending parentesis.
-<strong>“)”</strong>.</p>
-<p>Inside the inlinefunc definition, one can use <strong>** to escape. This is
+<p>Each token starts with <strong>$funcname(</strong> where there must be no space between the
+$funcname and “(“. It ends with a matched ending parentesis “)”.</p>
+<p>Inside the inlinefunc definition, one can use \ to escape. This is
 mainly needed for escaping commas in flowing text (which would
-otherwise be interpreted as an argument separator), or to escape **)</strong>
+otherwise be interpreted as an argument separator), or to escape <strong>}</strong>
 when not intended to close the function block. Enclosing text in
 matched <strong>“””</strong> (triple quotes) or <strong>‘’’</strong> (triple single-quotes) will
 also escape <em>everything</em> within without needing to escape individual
@@ -61,7 +60,7 @@ modules defined by <strong>settings.INLINEFUNC_MODULES</strong>. They are identi
 by their function name (and ignored if this name starts with <strong>_</strong>). They
 should be on the following form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">funcname</span> <span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="c1"># ...</span>
+<span class="c1"># ...</span>
 </pre></div>
 </div>
 <p>Here, the arguments given to <strong>$funcname(arg1,arg2)</strong> will appear as the
@@ -85,9 +84,8 @@ When this happens, the original parsed string is returned and the result of
 the <strong>stackfull</strong> inlinefunc is appended to the end. By default this is an
 error message.</p></li>
 </ul>
-<p>Syntax errors, notably failing to completely closing all inlinefunc
-blocks, will lead to the entire string remaining unparsed. Inlineparsing should
-never traceback.</p>
+<p>Syntax errors, notably not completely closing all inlinefunc blocks, will lead
+to the entire string remaining unparsed.</p>
 <hr class="docutils" />
 <dl class="py function">
 <dt id="evennia.utils.inlinefuncs.random">
@@ -111,9 +109,11 @@ never traceback.</p>
 value will be returned. Otherwise it will be an integer value in the
 given range.</p>
 <p class="rubric">Example</p>
-<p><strong>$random()</strong>
-<strong>$random(5)</strong>
-<strong>$random(5, 10)</strong></p>
+<ul class="simple">
+<li><p><strong>$random()</strong></p></li>
+<li><p><strong>$random(5)</strong></p></li>
+<li><p><strong>$random(5, 10)</strong></p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
@@ -296,19 +296,17 @@ it. It is passed to the inlinefunc.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_template</strong> (<em>str</em>) – The template to be used for nick recognition.</p></li>
 <li><p><strong>out_template</strong> (<em>str</em>) – The template to be used to replace the string
-matched by the in_template.</p></li>
+matched by the <strong>in_template</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>regex  (regex)</em> – Regex to match against strings
-template (str): Template with markers {arg1}, {arg2}, etc for
-replacement using the standard .format method.</p>
+<dd class="field-even"><p><em>regex, template (regex, str)</em> – Regex to match against strings and a
+template with markers <strong>{arg1}</strong>, <strong>{arg2}</strong>, etc for replacement using the
+standard <strong>.format</strong> method.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#evennia.utils.inlinefuncs.NickTemplateInvalid" title="evennia.utils.inlinefuncs.NickTemplateInvalid"><strong>evennia.utils.inlinefuncs.NickTemplateInvalid</strong></a> – If the in/out template</p></li>
-<li><p><strong>does not have a matching number of $args.</strong> – </p></li>
-</ul>
+<dd class="field-odd"><p><a class="reference internal" href="#evennia.utils.inlinefuncs.NickTemplateInvalid" title="evennia.utils.inlinefuncs.NickTemplateInvalid"><strong>inlinefuncs.NickTemplateInvalid</strong></a> – If the in/out template does not have a matching
+number of $args.</p>
 </dd>
 </dl>
 </dd></dl>
