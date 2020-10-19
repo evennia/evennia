@@ -1,5 +1,3 @@
-[prev lesson](./Starting-Part2) | [next lesson](./Game-Planning)
-
 # Where do I begin? 
 
 The good news is that following this Starting tutorial is a great way to begin making an Evennia game. 
@@ -145,5 +143,3 @@ works best for you.
 In the next lesson we'll go through some of the technical questions you need to consider. This should 
 hopefully help you figure out more about the game you want to make. In the lesson following that we'll 
 then try to answer those questions for the sake of creating our little tutorial game.
-
-[prev lesson](./Starting-Part2) | [next lesson](./Game-Planning)

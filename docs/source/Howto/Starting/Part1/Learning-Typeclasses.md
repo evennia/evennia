@@ -1,7 +1,5 @@
 # Persistent objects and typeclasses
 
-[prev lesson](./Evennia-Library-Overview) | [next lesson](./Creating-Things)
-
 Now that we have learned a little about how to find things in the Evennia library, let's use it. 
 
 In the [Python classes and objects](./Python-classes-and-objects) lesson we created the dragons Fluffy, Cuddly 
@@ -621,4 +619,3 @@ Typeclasses are a fundamental part of Evennia and we will see a lot of more uses
 this tutorial. But that's enough of them for now. It's time to take some action. Let's learn about _Commands_. 
 
 
-[prev lesson](./Evennia-Library-Overview) | [next lesson](./Creating-Things)

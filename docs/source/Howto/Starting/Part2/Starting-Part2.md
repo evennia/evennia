@@ -27,3 +27,14 @@ programming.
 
 In the process we'll go through the common questions of "where to start"
 and "what to think about" when creating a multiplayer online text game.
+
+
+```toctree::
+    :hidden:
+
+    Planning-Where-Do-I-Begin
+    Game-Planning
+    Planning-Some-Useful-Contribs 
+    ../Part3/Starting-Part3  
+
+```

@@ -1,7 +1,5 @@
 # Python Classes and objects
 
-[prev lesson](./Gamedir-Overview) | [next lesson](./Evennia-Library-Overview)
-
 We have now learned how to run some simple Python code from inside (and outside) your game server.
 We have also taken a look at what our game dir looks and what is where. Now we'll start to use it.
 
@@ -412,4 +410,3 @@ with one in the child class. We also used `super()` to good effect.
 We have used pretty much raw Python so far. In the coming lessons we'll start to look at the extra bits that Evennia 
 provides. But first we need to learn just where to find everything.
 
-[prev lesson](./Gamedir-Overview) | [next lesson](./Evennia-Library-Overview)

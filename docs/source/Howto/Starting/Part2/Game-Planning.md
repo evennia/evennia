@@ -1,5 +1,3 @@
-[prev lesson](./Planning-Where-Do-I-Begin) | [next lesson](./Planning-The-Tutorial-Game)
-
 # On Planning a Game
 
 Last lesson we asked ourselves some questions about our motivation. In this one we'll present 
@@ -209,4 +207,3 @@ have made their dream game a reality!
 
 In the next lesson we'll make use of these general points and try to plan out our tutorial game. 
 
-[prev lesson](./Planning-Where-Do-I-Begin) | [next lesson](./Planning-The-Tutorial-Game)
