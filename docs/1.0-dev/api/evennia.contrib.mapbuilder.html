@@ -232,11 +232,6 @@ how many times the map is iterated over.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.mapbuilder.CmdMapBuilder.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;buildmap', 'category': 'building', 'key': '&#64;mapbuilder', 'tags': '', 'text': '\n    Build a map from a 2D ASCII map.\n\n    Usage:\n        &#64;mapbuilder[/switch] &lt;path.to.file.MAPNAME&gt; &lt;path.to.file.MAP_LEGEND&gt;\n\n    Switches:\n      one - execute build instructions once without automatic exit creation\n      two - execute build instructions twice without automatic exit creation\n\n    Example:\n        &#64;mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND\n        &#64;mapbuilder evennia.contrib.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND\n        &#64;mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND\n                (Legend path defaults to map path)\n\n    This is a command which takes two inputs:\n    A string of ASCII characters representing a map and a dictionary of\n    functions containing build instructions. The characters of the map are\n    iterated over and compared to a list of trigger characters. When a match\n    is found the corresponding function is executed generating the rooms,\n    exits and objects as defined by the users build instructions. If a\n    character is not a match to a provided trigger character (including spaces)\n    it is simply skipped and the process continues. By default exits are\n    automatically generated but is turned off by switches which also determines\n    how many times the map is iterated over.\n    '}</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>

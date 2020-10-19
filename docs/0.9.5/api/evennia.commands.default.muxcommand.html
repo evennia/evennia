@@ -183,11 +183,6 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.muxcommand.MuxCommand.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': &quot;\n    This sets up the basis for a MUX command. The idea\n    is that most other Mux-related commands should just\n    inherit from this and don't have to implement much\n    parsing of their own unless they do something particularly\n    advanced.\n\n    Note that the class's __doc__ string (this text) is\n    used by Evennia to create the automatic help entry for\n    the command, so make sure to document consistently here.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -226,11 +221,6 @@ character is actually attached to this Account and Session.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.muxcommand.MuxAccountCommand.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    This is an on-Account version of the MuxCommand. Since these commands sit\n    on Accounts rather than on Characters/Objects, we need to check\n    this in the parser.\n\n    Account commands are available also when puppeting a Character, it\'s\n    just that they are applied with a lower priority and are always\n    available, also when disconnected from a character (i.e. &quot;ooc&quot;).\n\n    This class makes sure that caller is always an Account object, while\n    creating a new property &quot;character&quot; that is set only if a\n    character is actually attached to this Account and Session.\n    '}</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

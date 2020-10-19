@@ -358,11 +358,6 @@ provide will be displayed after the clothing’s name.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdWear.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdWear.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'clothing', 'key': 'wear', 'tags': '', 'text': &quot;\n    Puts on an item of clothing you are holding.\n\n    Usage:\n      wear &lt;obj&gt; [wear style]\n\n    Examples:\n      wear shirt\n      wear scarf wrapped loosely about the shoulders\n\n    All the clothes you are wearing are appended to your description.\n    If you provide a 'wear style' after the command, the message you\n    provide will be displayed after the clothing's name.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdWear.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -401,11 +396,6 @@ off the covering item first.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.clothing.CmdRemove.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdRemove.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdRemove.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'clothing', 'key': 'remove', 'tags': '', 'text': &quot;\n    Takes off an item of clothing.\n\n    Usage:\n       remove &lt;obj&gt;\n\n    Removes an item of clothing you are wearing. You can't remove\n    clothes that are covered up by something else - you must take\n    off the covering item first.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdRemove.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -448,11 +438,6 @@ You can’t remove an item of clothing if it’s covered.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdCover.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdCover.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'clothing', 'key': 'cover', 'tags': '', 'text': &quot;\n    Covers a worn item of clothing with another you're holding or wearing.\n\n    Usage:\n        cover &lt;obj&gt; [with] &lt;obj&gt;\n\n    When you cover a clothing item, it is hidden and no longer appears in\n    your description until it's uncovered or the item covering it is removed.\n    You can't remove an item of clothing if it's covered.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdCover.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -492,11 +477,6 @@ it is also covered by something else.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.clothing.CmdUncover.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdUncover.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdUncover.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'clothing', 'key': 'uncover', 'tags': '', 'text': &quot;\n    Reveals a worn item of clothing that's currently covered up.\n\n    Usage:\n        uncover &lt;obj&gt;\n\n    When you uncover an item of clothing, you allow it to appear in your\n    description without having to take off the garment that's currently\n    covering it. You can't uncover an item of clothing if the item covering\n    it is also covered by something else.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdUncover.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -548,11 +528,6 @@ location you are currently in.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdDrop.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdDrop.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'drop', 'tags': '', 'text': '\n    drop something\n\n    Usage:\n      drop &lt;obj&gt;\n\n    Lets you drop an object from your inventory into the\n    location you are currently in.\n    '}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdDrop.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -602,11 +577,6 @@ placing it in their inventory.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdGive.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdGive.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'give', 'tags': '', 'text': '\n    give away something to someone\n\n    Usage:\n      give &lt;inventory obj&gt; = &lt;target&gt;\n\n    Gives an items from your inventory to another character,\n    placing it in their inventory.\n    '}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdGive.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -654,11 +624,6 @@ inv</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.clothing.CmdInventory.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.clothing.CmdInventory.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.clothing.CmdInventory.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'inv i', 'category': 'general', 'key': 'inventory', 'tags': '', 'text': '\n    view inventory\n\n    Usage:\n      inventory\n      inv\n\n    Shows your inventory.\n    '}</em><a class="headerlink" href="#evennia.contrib.clothing.CmdInventory.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

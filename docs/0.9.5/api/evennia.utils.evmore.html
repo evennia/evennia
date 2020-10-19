@@ -39,8 +39,9 @@
   <div class="section" id="module-evennia.utils.evmore">
 <span id="evennia-utils-evmore"></span><h1>evennia.utils.evmore<a class="headerlink" href="#module-evennia.utils.evmore" title="Permalink to this headline">¶</a></h1>
 <p>EvMore - pager mechanism</p>
-<p>This is a pager for displaying long texts and allows stepping up and down in
-the text (the name comes from the traditional ‘more’ unix command).</p>
+<p>This is a pager for displaying long texts and allows stepping up and
+down in the text (the name comes from the traditional ‘more’ unix
+command).</p>
 <p>To use, simply pass the text through the EvMore object:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
 
@@ -48,17 +49,16 @@ the text (the name comes from the traditional ‘more’ unix command).</p>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>One can also use the convenience function <strong>msg</strong> from this module to avoid
-having to set up the <strong>EvMenu</strong> object manually:</p>
+<p>One can also use the convenience function msg from this module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">evmore</span>
 
 <span class="n">text</span> <span class="o">=</span> <span class="n">some_long_text_output</span><span class="p">()</span>
 <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <strong>always_page</strong> argument  decides if the pager is used also if the text is not long
-enough to need to scroll, <strong>session</strong> is used to determine which session to relay
-to and <strong>justify_kwargs</strong> are kwargs to pass to utils.utils.justify in order to
+<p>Where always_page decides if the pager is used also if the text is not long
+enough to need to scroll, session is used to determine which session to relay
+to and <strong>justify_kwargs</strong> are kwargs to pass to <strong>utils.utils.justify</strong> in order to
 change the formatting of the text. The remaining <strong>**kwargs</strong> will be passed on to
 the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 <hr class="docutils" />
@@ -74,7 +74,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['back', 'quit', 'top', 'b', 'n', 'end', 'e', 't', 'abort', 'next', 'a', 'q']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['t', 'a', 'quit', 'back', 'abort', 'n', 'next', 'e', 'b', 'end', 'top', 'q']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -96,11 +96,6 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'back quit top b n end e t abort next a q', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -139,11 +134,6 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMoreLook.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    Override look to display window and prevent OOCLook from firing\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -187,93 +177,90 @@ self.add().</p>
 <dt id="evennia.utils.evmore.EvMore">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">EvMore</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">inp</em>, <em class="sig-param">always_page=False</em>, <em class="sig-param">session=None</em>, <em class="sig-param">justify=False</em>, <em class="sig-param">justify_kwargs=None</em>, <em class="sig-param">exit_on_lastpage=False</em>, <em class="sig-param">exit_cmd=None</em>, <em class="sig-param">page_formatter=&lt;class 'str'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The main pager object</p>
+<p>The main pager object.</p>
 <dl class="py method">
 <dt id="evennia.utils.evmore.EvMore.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">inp</em>, <em class="sig-param">always_page=False</em>, <em class="sig-param">session=None</em>, <em class="sig-param">justify=False</em>, <em class="sig-param">justify_kwargs=None</em>, <em class="sig-param">exit_on_lastpage=False</em>, <em class="sig-param">exit_cmd=None</em>, <em class="sig-param">page_formatter=&lt;class 'str'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Initialization of the EvMore pager</p>
-<dl>
-<dt>Args:</dt><dd><p>caller (Object or Account): Entity reading the text.
-inp (str, EvTable, Paginator or iterator): The text or data to put under paging.</p>
-<blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt>If a string, paginage normally. If this text contains</dt><dd><p>one or more **</p>
-</dd>
-</dl>
-</li>
+<dd><p>Initialization of the Evmore input handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity reading the text.</p></li>
+<li><p><strong>inp</strong> (<em>str</em><em>, </em><a class="reference internal" href="evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><em>EvTable</em></a><em>, </em><em>Paginator</em><em> or </em><em>iterator</em>) – <p>The text or data to put under paging.</p>
+<ul>
+<li><p>If a string, paginage normally. If this text contains
+one or more \f (backslash + f) format symbols, automatic
+pagination and justification are force-disabled and
+page-breaks will only happen after each \f.</p></li>
+<li><p>If <strong>EvTable</strong>, the EvTable will be paginated with the same
+setting on each page if it is too long. The table
+decorations will be considered in the size of the page.</p></li>
+<li><p>Otherwise <strong>inp</strong> is converted to an iterator, where each step is
+expected to be a line in the final display. Each line
+will be run through <strong>iter_callable</strong>.</p></li>
 </ul>
-</div></blockquote>
-</dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>** format symbol, automatic pagination and justification</dt><dd><p>are force-disabled and page-breaks will only happen after each **</p>
-</dd>
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>.</dt><dd><blockquote>
-<div><blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt>If <strong>EvTable</strong>, the EvTable will be paginated with the same</dt><dd><p>setting on each page if it is too long. The table
-decorations will be considered in the size of the page.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Otherwise <strong>inp</strong> is converted to an iterator, where each step is</dt><dd><p>expected to be a line in the final display. Each line
-will be run through <strong>iter_callable</strong>.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-<dl class="simple">
-<dt>always_page (bool, optional): If <strong>False</strong>, the</dt><dd><p>pager will only kick in if <strong>inp</strong> is too big
-to fit the screen.</p>
-</dd>
-<dt>session (Session, optional): If given, this session will be used</dt><dd><p>to determine the screen width and will receive all output.</p>
-</dd>
-<dt>justify (bool, optional): If set, auto-justify long lines. This must be turned</dt><dd><p>off for fixed-width or formatted output, like tables. It’s force-disabled
-if <strong>inp</strong> is an EvTable.</p>
-</dd>
-<dt>justify_kwargs (dict, optional): Keywords for the justifiy function. Used only</dt><dd><p>if <strong>justify</strong> is True. If this is not set, default arguments will be used.</p>
-</dd>
-<dt>exit_on_lastpage (bool, optional): If reaching the last page without the</dt><dd><p>page being completely filled, exit pager immediately. If unset,
+</p></li>
+<li><p><strong>always_page</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <strong>False</strong>, the pager will only kick
+in if <strong>inp</strong> is too big to fit the screen.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – If given, this session will be used
+to determine the screen width and will receive all output.</p></li>
+<li><p><strong>justify</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, auto-justify long lines. This must be turned
+off for fixed-width or formatted output, like tables. It’s force-disabled
+if <strong>inp</strong> is an EvTable.</p></li>
+<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keywords for the justifiy function. Used only
+if <strong>justify</strong> is True. If this is not set, default arguments will be used.</p></li>
+<li><p><strong>exit_on_lastpage</strong> (<em>bool</em><em>, </em><em>optional</em>) – If reaching the last page without the
+page being completely filled, exit pager immediately. If unset,
 another move forward is required to exit. If set, the pager
-exit message will not be shown.</p>
-</dd>
-<dt>exit_cmd (str, optional): If given, this command-string will be executed on</dt><dd><p>the caller when the more page exits. Note that this will be using whatever
+exit message will not be shown.</p></li>
+<li><p><strong>exit_cmd</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, this command-string will be executed on
+the caller when the more page exits. Note that this will be using whatever
 cmdset the user had <em>before</em> the evmore pager was activated (so none of
-the evmore commands will be available when this is run).</p>
+the evmore commands will be available when this is run).</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>any</em>) – These will be passed on to the <strong>caller.msg</strong> method.</p></li>
+</ul>
 </dd>
 </dl>
-<p>kwargs (any, optional): These will be passed on to the <strong>caller.msg</strong> method.</p>
-</div></blockquote>
-<p>Examples:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">super_long_text</span> <span class="o">=</span> <span class="s2">&quot; ... &quot;</span>
+<p class="rubric">Examples</p>
+<p>Basic use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">super_long_text</span> <span class="o">=</span> <span class="s2">&quot; ... &quot;</span>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">super_long_text</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Paginator</p>
+<p>Paginated query data - this is an optimization to avoid fetching
+database data until it’s actually paged to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
+
 <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="n">pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 10 objs per page</span>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Every page an EvTable</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvTable</span>
-<span class="k">def</span> <span class="nf">_to_evtable</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># convert page to a table</span>
-    <span class="k">return</span> <span class="n">EvTable</span><span class="p">(</span><span class="o">*</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">page_formatter</span><span class="o">=</span><span class="n">_to_evtable</span><span class="p">)</span>
+<p>Automatic split EvTable over multiple EvMore pages</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">EvMore</span><span class="p">(</span><span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">tabledata</span><span class="p">)</span>
+<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
 </pre></div>
 </div>
-</div></blockquote>
-</dd>
-</dl>
+<p>Every page a separate EvTable (optimization for very large data sets)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvMore</span>
+
+<span class="k">class</span> <span class="nc">TableEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="c1"># depends on data type</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_pages</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="c1"># split raw line into columns</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="o">*</span><span class="n">cols</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">TableEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -365,14 +352,9 @@ querysets); to avoid fetching all objects at the same time.</p>
 <dl class="py method">
 <dt id="evennia.utils.evmore.EvMore.init_f_str">
 <code class="sig-name descname">init_f_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_f_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_f_str" title="Permalink to this definition">¶</a></dt>
-<dd><p>The input contains <strong>f</strong> markers. We use <strong>f</strong> to indicate the user wants to
-enforce their line breaks on their own. If so, we do no automatic
-line-breaking/justification at all.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The string to format with f-markers.</p>
-</dd>
-</dl>
+<dd><p>The input contains \f (backslash + f) markers. We use \f to indicate
+the user wants to enforce their line breaks on their own. If so, we do
+no automatic line-breaking/justification at all.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -393,21 +375,18 @@ strings, querysets, django.Paginator, EvTables and any iterables with strings.</
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If overridden, this method must perform the following  actions:
-- read and re-store <strong>self._data</strong> (the incoming data set) if needed for pagination to work.
-- set <strong>self._npages</strong> to the total number of pages. Default is 1.
-- set <strong>self._paginator</strong> to a callable that will take a page number 1…N and return</p>
-<blockquote>
-<div><p>the data to display on that page (not any decorations or next/prev buttons). If only
-wanting to change the paginator, override <strong>self.paginator</strong> instead.</p>
-</div></blockquote>
+<p>If overridden, this method must perform the following  actions:</p>
 <ul class="simple">
-<li><dl class="simple">
-<dt>set <strong>self._page_formatter</strong> to a callable that will receive the page from <strong>self._paginator</strong></dt><dd><p>and format it with one element per line. Default is <strong>str</strong>. Or override <strong>self.page_formatter</strong>
-directly instead.</p>
-</dd>
-</dl>
-</li>
+<li><p>read and re-store <strong>self._data</strong> (the incoming data set) if needed
+for pagination to work.</p></li>
+<li><p>set <strong>self._npages</strong> to the total number of pages. Default is 1.</p></li>
+<li><p>set <strong>self._paginator</strong> to a callable that will take a page number 1…N and return
+the data to display on that page (not any decorations or next/prev buttons). If only
+wanting to change the paginator, override <strong>self.paginator</strong> instead.</p></li>
+<li><p>set <strong>self._page_formatter</strong> to a callable that will receive the
+page from <strong>self._paginator</strong> and format it with one element per
+line. Default is <strong>str</strong>. Or override <strong>self.page_formatter</strong>
+directly instead.</p></li>
 </ul>
 <p>By default, helper methods are called that perform these actions
 depending on supported inputs.</p>
@@ -459,85 +438,46 @@ EvTable across many pages and feed it into EvMore all at once).</p>
 <dl class="py function">
 <dt id="evennia.utils.evmore.msg">
 <code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">always_page</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">justify</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">justify_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exit_on_lastpage</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.msg" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>EvMore-supported version of msg, mimicking the normal msg method.</p>
-</div></blockquote>
-<p>Initialization of the EvMore pager</p>
+<dd><p>EvMore-supported version of msg, mimicking the normal msg method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity reading the text.</p></li>
-<li><p><strong>inp</strong> (<em>str</em><em>, </em><a class="reference internal" href="evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><em>EvTable</em></a><em>, </em><em>Paginator</em><em> or </em><em>iterator</em>) – <p>The text or data to put under paging.
-- If a string, paginage normally. If this text contains</p>
-<blockquote>
-<div><p>one or more **</p>
-</div></blockquote>
+<li><p><strong>text</strong> (<em>str</em><em>, </em><a class="reference internal" href="evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><em>EvTable</em></a><em> or </em><em>iterator</em>) – <p>The text or data to put under paging.</p>
+<ul>
+<li><p>If a string, paginage normally. If this text contains
+one or more \f (backslash + f) format symbol, automatic pagination is disabled
+and page-breaks will only happen after each \f.</p></li>
+<li><p>If <strong>EvTable</strong>, the EvTable will be paginated with the same
+setting on each page if it is too long. The table
+decorations will be considered in the size of the page.</p></li>
+<li><p>Otherwise <strong>text</strong> is converted to an iterator, where each step is
+is expected to be a line in the final display, and each line
+will be run through repr().</p></li>
+</ul>
 </p></li>
+<li><p><strong>always_page</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <strong>False</strong>, the
+pager will only kick in if <strong>text</strong> is too big
+to fit the screen.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – If given, this session will be used
+to determine the screen width and will receive all output.</p></li>
+<li><p><strong>justify</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, justify long lines in output. Disable for
+fixed-format output, like tables.</p></li>
+<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If given, this should
+be valid keyword arguments to the utils.justify() function. If False,
+no justification will be done.</p></li>
+<li><p><strong>exit_on_lastpage</strong> (<em>bool</em><em>, </em><em>optional</em>) – Immediately exit pager when reaching the last page.</p></li>
+<li><p><strong>use_evtable</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, each page will be rendered as an
+EvTable. For this to work, <strong>text</strong> must be an iterable, where each element
+is the table (list of list) to render on that page.</p></li>
+<li><p><strong>evtable_args</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The args to use for EvTable on each page.</p></li>
+<li><p><strong>evtable_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – The kwargs to use for EvTable on each
+page (except <strong>table</strong>, which is supplied by EvMore per-page).</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These will be passed on
+to the <strong>caller.msg</strong> method.</p></li>
 </ul>
 </dd>
 </dl>
-<dl>
-<dt>** format symbol, automatic pagination and justification</dt><dd><p>are force-disabled and page-breaks will only happen after each **</p>
-</dd>
-<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>.</dt><dd><blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt>If <strong>EvTable</strong>, the EvTable will be paginated with the same</dt><dd><p>setting on each page if it is too long. The table
-decorations will be considered in the size of the page.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Otherwise <strong>inp</strong> is converted to an iterator, where each step is</dt><dd><p>expected to be a line in the final display. Each line
-will be run through <strong>iter_callable</strong>.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-<dl class="simple">
-<dt>always_page (bool, optional): If <strong>False</strong>, the</dt><dd><p>pager will only kick in if <strong>inp</strong> is too big
-to fit the screen.</p>
-</dd>
-<dt>session (Session, optional): If given, this session will be used</dt><dd><p>to determine the screen width and will receive all output.</p>
-</dd>
-<dt>justify (bool, optional): If set, auto-justify long lines. This must be turned</dt><dd><p>off for fixed-width or formatted output, like tables. It’s force-disabled
-if <strong>inp</strong> is an EvTable.</p>
-</dd>
-<dt>justify_kwargs (dict, optional): Keywords for the justifiy function. Used only</dt><dd><p>if <strong>justify</strong> is True. If this is not set, default arguments will be used.</p>
-</dd>
-<dt>exit_on_lastpage (bool, optional): If reaching the last page without the</dt><dd><p>page being completely filled, exit pager immediately. If unset,
-another move forward is required to exit. If set, the pager
-exit message will not be shown.</p>
-</dd>
-<dt>exit_cmd (str, optional): If given, this command-string will be executed on</dt><dd><p>the caller when the more page exits. Note that this will be using whatever
-cmdset the user had <em>before</em> the evmore pager was activated (so none of
-the evmore commands will be available when this is run).</p>
-</dd>
-</dl>
-<p>kwargs (any, optional): These will be passed on to the <strong>caller.msg</strong> method.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">super_long_text</span> <span class="o">=</span> <span class="s2">&quot; ... &quot;</span>
-<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">super_long_text</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Paginator</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
-<span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="n">pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 10 objs per page</span>
-<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Every page an EvTable</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvTable</span>
-<span class="k">def</span> <span class="nf">_to_evtable</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># convert page to a table</span>
-    <span class="k">return</span> <span class="n">EvTable</span><span class="p">(</span><span class="o">*</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">page_formatter</span><span class="o">=</span><span class="n">_to_evtable</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

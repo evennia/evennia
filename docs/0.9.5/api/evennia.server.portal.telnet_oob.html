@@ -46,15 +46,19 @@ commands, by contrast, can have many forms and it is up to the client
 how and if they are handled.  Examples of OOB instructions could be to
 instruct the client to play sounds or to update a graphical health
 bar.</p>
-<p>Note that in Evennia’s Web client, all send commands are “OOB
-commands”, (including the “text” one), there is no equivalence to
-MSDP/GMCP for the webclient since it doesn’t need it.</p>
+<p>&gt; Note that in Evennia’s Web client, all send commands are “OOB commands”,
+(including the “text” one), there is no equivalence to MSDP/GMCP for the
+webclient since it doesn’t need it.</p>
 <p>This implements the following telnet OOB communication protocols:</p>
 <ul class="simple">
-<li><p>MSDP (Mud Server Data Protocol), as per <a class="reference external" href="http://tintin.sourceforge.net/msdp/">http://tintin.sourceforge.net/msdp/</a></p></li>
+<li><p>MSDP (Mud Server Data Protocol), as per
+<a class="reference external" href="http://tintin.sourceforge.net/msdp/">http://tintin.sourceforge.net/msdp/</a></p></li>
 <li><p>GMCP (Generic Mud Communication Protocol) as per
 <a class="reference external" href="http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29">http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29</a></p></li>
 </ul>
+<p>Following the lead of KaVir’s protocol snippet, we first check if client
+supports MSDP and if not, we fallback to GMCP with a MSDP header where
+applicable.</p>
 <hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.server.portal.telnet_oob.TelnetOOB">
@@ -134,17 +138,17 @@ supported.</p>
 <p class="rubric">Notes</p>
 <p>The output of this encoding will be
 MSDP structures on these forms:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{}]</span>           <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="s2">&quot;&quot;</span>
-<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span><span class="p">],</span> <span class="p">{}]</span>        <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">arg</span>
-<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">],{}]</span>        <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">ARRAYOPEN</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="o">...</span> <span class="n">ARRAYCLOSE</span>
-<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>     <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">TABLEOPEN</span> <span class="n">VAR</span> <span class="n">key</span> <span class="n">VAL</span> <span class="n">val</span> <span class="o">...</span> <span class="n">TABLECLOSE</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{}]</span>          <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="s2">&quot;&quot;</span>
+<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span><span class="p">],</span> <span class="p">{}]</span>       <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">arg</span>
+<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">],{}]</span>       <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">ARRAYOPEN</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="o">...</span> <span class="n">ARRAYCLOSE</span>
+<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>    <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">TABLEOPEN</span> <span class="n">VAR</span> <span class="n">key</span> <span class="n">VAL</span> <span class="n">val</span> <span class="o">...</span> <span class="n">TABLECLOSE</span>
 <span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span> <span class="o">-&gt;</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">ARRAYOPEN</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="o">...</span> <span class="n">ARRAYCLOSE</span>
                                <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">TABLEOPEN</span> <span class="n">VAR</span> <span class="n">key</span> <span class="n">VAL</span> <span class="n">val</span> <span class="o">...</span> <span class="n">TABLECLOSE</span>
 </pre></div>
 </div>
-<p>Further nesting is not supported, so if an array argument
-consists of an array (for example), that array will be
-json-converted to a string.</p>
+<p>Further nesting is not supported, so if an array argument consists
+of an array (for example), that array will be json-converted to a
+string.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -171,11 +175,12 @@ be stripped on the Evennia side.</p>
 <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span><span class="p">],</span> <span class="p">{}]</span>       <span class="o">-&gt;</span> <span class="n">Cmd</span><span class="o">.</span><span class="n">Name</span> <span class="n">arg</span>
 <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">],{}]</span>       <span class="o">-&gt;</span> <span class="n">Cmd</span><span class="o">.</span><span class="n">Name</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span>
 <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>    <span class="o">-&gt;</span> <span class="n">Cmd</span><span class="o">.</span><span class="n">Name</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}</span>
-<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">,</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>  <span class="o">-&gt;</span> <span class="n">Core</span><span class="o">.</span><span class="n">Cmdname</span> <span class="p">[[</span><span class="n">args</span><span class="p">],{</span><span class="n">kwargs</span><span class="p">}]</span>
+<span class="p">[</span><span class="n">cmdname</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">,</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span> <span class="o">-&gt;</span> <span class="n">Core</span><span class="o">.</span><span class="n">Cmdname</span> <span class="p">[[</span><span class="n">args</span><span class="p">],{</span><span class="n">kwargs</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
-<p>There are also a few default mappings between evennia outputcmds and GMCP:</p>
+<p>There are also a few default mappings between evennia outputcmds and
+GMCP:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client_options</span> <span class="o">-&gt;</span> <span class="n">Core</span><span class="o">.</span><span class="n">Supports</span><span class="o">.</span><span class="n">Get</span>
 <span class="n">get_inputfuncs</span> <span class="o">-&gt;</span> <span class="n">Core</span><span class="o">.</span><span class="n">Commands</span><span class="o">.</span><span class="n">Get</span>
 <span class="n">get_value</span>      <span class="o">-&gt;</span> <span class="n">Char</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">Get</span>

@@ -401,17 +401,17 @@
 <span class="sd">            values with double quotes.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: The list represented as a string.</span>
+<span class="sd">        liststr (str): The list represented as a string.</span>
 
 <span class="sd">    Examples:</span>
 
 <span class="sd">        ```python</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;&#39;)</span>
-<span class="sd">        &#39;1, 2, 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], ensdep=&#39;and&#39;)</span>
-<span class="sd">        &#39;1, 2 and 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;and&#39;, addquote=True)</span>
-<span class="sd">        &#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
+<span class="sd">         # no endsep:</span>
+<span class="sd">            [1,2,3] -&gt; &#39;1, 2, 3&#39;</span>
+<span class="sd">         # with endsep==&#39;and&#39;:</span>
+<span class="sd">            [1,2,3] -&gt; &#39;1, 2 and 3&#39;</span>
+<span class="sd">         # with addquote and endsep</span>
+<span class="sd">            [1,2,3] -&gt; &#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
 <span class="sd">        ```</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -891,7 +891,7 @@
 <span class="sd">            the text with &quot;?&quot; in place of problematic characters.  If the specified encoding cannot</span>
 <span class="sd">            be found, the protocol flag is reset to utf-8.  In any case, returns bytes.</span>
 
-<span class="sd">    Notes:</span>
+<span class="sd">    Note:</span>
 <span class="sd">        If `text` is already bytes, return it as is.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -931,7 +931,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        decoded_text (str): The decoded text.</span>
 
-<span class="sd">    Notes:</span>
+<span class="sd">    Note:</span>
 <span class="sd">        If `text` is already str, return it as is.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -985,17 +985,18 @@
 <span class="sd">    distance from parent.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        obj (any): Object to analyze. This may be either an instance or</span>
-<span class="sd">            a class.</span>
-<span class="sd">        parent (any): Can be either an instance, a class or the python</span>
-<span class="sd">            path to the class.</span>
+<span class="sd">        obj (any): Object to analyze. This may be either an instance</span>
+<span class="sd">            or a class.</span>
+<span class="sd">        parent (any): Can be either instance, class or python path to class.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        inherits_from (bool): If `parent` is a parent to `obj` or not.</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        What differentiates this function from Python&#39;s `isinstance()` is the</span>
-<span class="sd">        flexibility in the types allowed for the object and parent being compared.</span>
+<span class="sd">        What differs this function from e.g.  `isinstance()` is that `obj`</span>
+<span class="sd">        may be both an instance and a class, and parent may be an</span>
+<span class="sd">        instance, a class, or the python path to a class (counting from</span>
+<span class="sd">        the evennia root directory).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1043,7 +1044,8 @@
 <span class="sd">    shortcut to having to use the full backend name.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name (str): One of &#39;sqlite3&#39;, &#39;mysql&#39;, &#39;postgresql&#39; or &#39;oracle&#39;.</span>
+<span class="sd">        name (str): One of &#39;sqlite3&#39;, &#39;mysql&#39;, &#39;postgresql&#39;</span>
+<span class="sd">        or &#39;oracle&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        uses (bool): If the given database is used or not.</span>
@@ -1067,19 +1069,20 @@
 <span class="sd">        timedelay (int or float): The delay in seconds</span>
 <span class="sd">        callback (callable): Will be called as `callback(*args, **kwargs)`</span>
 <span class="sd">            after `timedelay` seconds.</span>
-<span class="sd">        *args: Will be used as arguments to callback</span>
+<span class="sd">        args (any, optional): Will be used as arguments to callback</span>
 <span class="sd">    Keyword Args:</span>
-<span class="sd">        persistent (bool): Make the delay persistent over a reboot or reload.</span>
-<span class="sd">        any: Any other keywords will be use as keyword arguments to callback.</span>
+<span class="sd">        persistent (bool, optional): should make the delay persistent</span>
+<span class="sd">            over a reboot or reload</span>
+<span class="sd">        any (any): Will be used as keyword arguments to callback.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        deferred: Will fire with callback after `timedelay` seconds. Note that</span>
-<span class="sd">        if `timedelay()` is used in the</span>
-<span class="sd">        commandhandler callback chain, the callback chain can be</span>
-<span class="sd">        defined directly in the command body and don&#39;t need to be</span>
-<span class="sd">        specified here.</span>
+<span class="sd">        deferred (deferred): Will fire with callback after</span>
+<span class="sd">            `timedelay` seconds. Note that if `timedelay()` is used in the</span>
+<span class="sd">            commandhandler callback chain, the callback chain can be</span>
+<span class="sd">            defined directly in the command body and don&#39;t need to be</span>
+<span class="sd">            specified here.</span>
 
-<span class="sd">    Notes:</span>
+<span class="sd">    Note:</span>
 <span class="sd">        The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will</span>
 <span class="sd">        be called for persistent or non-persistent tasks.</span>
 <span class="sd">        If persistent is set to True, the callback, its arguments</span>
@@ -1110,16 +1113,17 @@
 <span class="sd">            executed with `*args` and non-reserved `**kwargs` as arguments.</span>
 <span class="sd">            The callable will be executed using ProcPool, or in a thread</span>
 <span class="sd">            if ProcPool is not available.</span>
+
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        at_return (callable): Should point to a callable with one</span>
-<span class="sd">          argument.  It will be called with the return value from</span>
-<span class="sd">          to_execute.</span>
+<span class="sd">            argument.  It will be called with the return value from</span>
+<span class="sd">            to_execute.</span>
 <span class="sd">        at_return_kwargs (dict): This dictionary will be used as</span>
-<span class="sd">          keyword arguments to the at_return callback.</span>
+<span class="sd">            keyword arguments to the at_return callback.</span>
 <span class="sd">        at_err (callable): This will be called with a Failure instance</span>
-<span class="sd">          if there is an error in to_execute.</span>
+<span class="sd">            if there is an error in to_execute.</span>
 <span class="sd">        at_err_kwargs (dict): This dictionary will be used as keyword</span>
-<span class="sd">          arguments to the at_err errback.</span>
+<span class="sd">            arguments to the at_err errback.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        All other `*args` and `**kwargs` will be passed on to</span>
@@ -1205,7 +1209,7 @@
 
 <div class="viewcode-block" id="has_parent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.has_parent">[docs]</a><span class="k">def</span> <span class="nf">has_parent</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks if `basepath` is somewhere in obj&#39;s parent tree.</span>
+<span class="sd">    Checks if `basepath` is somewhere in `obj`&#39;s parent tree.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        basepath (str): Python dotpath to compare against obj path.</span>
@@ -1573,8 +1577,8 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        suggestions (list): Suggestions from `vocabulary` with a</span>
-<span class="sd">        similarity-rating that higher than or equal to `cutoff`.</span>
-<span class="sd">        Could be empty if there are no matches.</span>
+<span class="sd">            similarity-rating that higher than or equal to `cutoff`.</span>
+<span class="sd">            Could be empty if there are no matches.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
@@ -1642,9 +1646,11 @@
 
 <div class="viewcode-block" id="format_table"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.format_table">[docs]</a><span class="k">def</span> <span class="nf">format_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">extra_space</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Format a 2D array of strings into a multi-column table.</span>
+<span class="sd">    Note: `evennia.utils.evtable` is more powerful than this, but this function</span>
+<span class="sd">    can be useful when the number of columns and rows are unknown and must be</span>
+<span class="sd">    calculated on the fly.</span>
 
-<span class="sd">    Args:</span>
+<span class="sd">    Args.</span>
 <span class="sd">        table (list): A list of lists to represent columns in the</span>
 <span class="sd">            table: `[[val,val,val,...], [val,val,val,...], ...]`, where</span>
 <span class="sd">            each val will be placed on a separate row in the</span>
@@ -1654,30 +1660,26 @@
 <span class="sd">            padding (in characters) should  be left between columns.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        list: A list of lists representing the rows to print out one by one.</span>
+<span class="sd">        table (list): A list of lists representing the rows to print</span>
+<span class="sd">            out one by one.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        The function formats the columns to be as wide as the widest member</span>
 <span class="sd">        of each column.</span>
 
-<span class="sd">        `evennia.utils.evtable` is more powerful than this, but this</span>
-<span class="sd">        function can be useful when the number of columns and rows are</span>
-<span class="sd">        unknown and must be calculated on the fly.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        ::</span>
 
-<span class="sd">    Examples: ::</span>
-
-<span class="sd">        ftable = format_table([[1,2,3], [4,5,6]])</span>
-<span class="sd">        string = &quot;&quot;</span>
-<span class="sd">        for ir, row in enumarate(ftable):</span>
-<span class="sd">            if ir == 0:</span>
-<span class="sd">                # make first row white</span>
-<span class="sd">                string += &quot;\\n|w&quot; + &quot;&quot;.join(row) + &quot;|n&quot;</span>
-<span class="sd">            else:</span>
-<span class="sd">                string += &quot;\\n&quot; + &quot;&quot;.join(row)</span>
-<span class="sd">        print(string)</span>
+<span class="sd">            ftable = format_table([[...], [...], ...])</span>
+<span class="sd">            for ir, row in enumarate(ftable):</span>
+<span class="sd">                if ir == 0:</span>
+<span class="sd">                    # make first row white</span>
+<span class="sd">                    string += &quot;\\\\n|w&quot; + &quot;&quot;join(row) + &quot;|n&quot;</span>
+<span class="sd">                else:</span>
+<span class="sd">                    string += &quot;\\\\n&quot; + &quot;&quot;.join(row)</span>
+<span class="sd">            print(string)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="n">table</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[[]]</span>
 
@@ -1693,191 +1695,6 @@
     <span class="k">return</span> <span class="n">ftable</span></div>
 
 
-<div class="viewcode-block" id="percent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.percent">[docs]</a><span class="k">def</span> <span class="nf">percent</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{:3.1f}</span><span class="s2">%&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get a value in an interval as a percentage of its position</span>
-<span class="sd">    in that interval. This also understands negative numbers.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        value (number): This should be a value minval&lt;=value&lt;=maxval.</span>
-<span class="sd">        minval (number or None): Smallest value in interval. This could be None</span>
-<span class="sd">            for an open interval (then return will always be 100%)</span>
-<span class="sd">        maxval (number or None): Biggest value in interval. This could be None</span>
-<span class="sd">            for an open interval (then return will always be 100%)</span>
-<span class="sd">        formatted (str, optional): This is a string that should</span>
-<span class="sd">            accept one formatting tag. This will receive the</span>
-<span class="sd">            current value as a percentage. If None, the</span>
-<span class="sd">            raw float will be returned instead.</span>
-<span class="sd">    Returns:</span>
-<span class="sd">        str or float: The formatted value or the raw percentage as a float.</span>
-<span class="sd">    Notes:</span>
-<span class="sd">        We try to handle a weird interval gracefully.</span>
-
-<span class="sd">        - If either maxval or minval is None (open interval), we (aribtrarily) assume 100%.</span>
-<span class="sd">        - If minval &gt; maxval, we return 0%.</span>
-<span class="sd">        - If minval == maxval == value we are looking at a single value match and return 100%.</span>
-<span class="sd">        - If minval == maxval != value we return 0%.</span>
-<span class="sd">        - If value not in [minval..maxval], we set value to the  closest</span>
-<span class="sd">          boundary, so the result will be 0% or 100%, respectively.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">):</span>
-        <span class="c1"># we have no boundaries, percent calculation makes no sense,</span>
-        <span class="c1"># we set this to 100% since it</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mf">100.0</span>
-    <span class="k">elif</span> <span class="n">minval</span> <span class="o">&gt;</span> <span class="n">maxval</span><span class="p">:</span>
-        <span class="c1"># interval has no width so we cannot</span>
-        <span class="c1"># occupy any position within it.</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="k">elif</span> <span class="n">minval</span> <span class="o">==</span> <span class="n">maxval</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
-        <span class="c1"># this is a single value that we match</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mf">100.0</span>
-    <span class="k">elif</span> <span class="n">minval</span> <span class="o">==</span> <span class="n">maxval</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
-        <span class="c1"># interval has no width so we cannot be in it.</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># constrain value to interval</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="n">maxval</span><span class="p">)</span>
-
-        <span class="c1"># these should both be &gt;0</span>
-        <span class="n">dpart</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">minval</span>
-        <span class="n">dfull</span> <span class="o">=</span> <span class="n">maxval</span> <span class="o">-</span> <span class="n">minval</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">dpart</span> <span class="o">/</span> <span class="n">dfull</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">formatting</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<span class="kn">import</span> <span class="nn">functools</span>  <span class="c1"># noqa</span>
-
-
-<div class="viewcode-block" id="percentile"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.percentile">[docs]</a><span class="k">def</span> <span class="nf">percentile</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find the percentile of a list of values.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        iterable (iterable): A list of values. Note N MUST BE already sorted.</span>
-<span class="sd">        percent (float): A value from 0.0 to 1.0.</span>
-<span class="sd">        key (callable, optional). Function to compute value from each element of N.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        float: The percentile of the values</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">percent</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="n">c</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">key</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)])</span>
-    <span class="n">d0</span> <span class="o">=</span> <span class="n">key</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="p">)])</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">key</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)])</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span></div>
-
-
-<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This helper function makes a &#39;grid&#39; output, where it distributes the given</span>
-<span class="sd">    string-elements as evenly as possible to fill out the given width.</span>
-<span class="sd">    will not work well if the variation of length is very big!</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        elements (iterable): A 1D list of string elements to put in the grid.</span>
-<span class="sd">        width (int, optional): The width of the grid area to fill.</span>
-<span class="sd">        sep (str, optional): The extra separator to put between words. If</span>
-<span class="sd">            set to the empty string, words may run into each other.</span>
-<span class="sd">        verbatim_elements (list, optional): This is a list of indices pointing to</span>
-<span class="sd">            specific items in the `elements` list. An element at this index will</span>
-<span class="sd">            not be included in the calculation of the slot sizes. It will still</span>
-<span class="sd">            be inserted into the grid at the correct position and may be surrounded</span>
-<span class="sd">            by padding unless filling the entire line. This is useful for embedding</span>
-<span class="sd">            decorations in the grid, such as horizontal bars.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        gridstr: The grid as a list of ready-formatted rows. We return it</span>
-<span class="sd">        like this to make it easier to insert decorations between rows, such</span>
-<span class="sd">        as horizontal bars.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">verbatim_elements</span><span class="p">:</span>
-        <span class="n">verbatim_elements</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="n">nelements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
-    <span class="c1"># add sep to all but the very last element</span>
-    <span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">elements</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span> <span class="o">+</span> <span class="n">sep</span> <span class="k">for</span> <span class="n">ie</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nelements</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">elements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">wls</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
-    <span class="n">wls_percentile</span> <span class="o">=</span> <span class="p">[</span><span class="n">wl</span> <span class="k">for</span> <span class="n">iw</span><span class="p">,</span> <span class="n">wl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wls</span><span class="p">)</span> <span class="k">if</span> <span class="n">iw</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">verbatim_elements</span><span class="p">]</span>
-    <span class="c1"># from pudb import debugger</span>
-    <span class="c1"># debugger.Debugger().set_trace()</span>
-
-    <span class="c1"># get the nth percentile as a good representation of average width</span>
-    <span class="n">averlen</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">percentile</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">wls_percentile</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">))</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># include extra space</span>
-    <span class="n">aver_per_row</span> <span class="o">=</span> <span class="n">width</span> <span class="o">//</span> <span class="n">averlen</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="n">aver_per_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># one line per row, output directly since this is trivial</span>
-        <span class="c1"># we use rstrip here to remove extra spaces added by sep</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()))</span>
-            <span class="k">for</span> <span class="n">iel</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
-        <span class="p">]</span>
-
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">averlen</span> <span class="o">*</span> <span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
-
-    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">row</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">ie</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
-
-        <span class="n">wl</span> <span class="o">=</span> <span class="n">wls</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span>
-        <span class="n">lrow</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-        <span class="n">debug</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">lrow</span> <span class="o">+</span> <span class="n">wl</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
-            <span class="c1"># this slot extends outside grid, move to next line</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">wl</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
-                <span class="c1"># remove sep if this fills the entire line</span>
-                <span class="n">element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-            <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">ic</span> <span class="o">&gt;=</span> <span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># no more slots available on this line</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">))</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-            <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">while</span> <span class="n">lrow</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]):</span>
-                    <span class="c1"># slot too wide, extend into adjacent slot</span>
-                    <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="c1"># we extended past edge of grid, crop or move to next line</span>
-                <span class="k">if</span> <span class="n">ic</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-                <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># add a new slot</span>
-                <span class="n">row</span> <span class="o">+=</span> <span class="n">element</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">averlen</span> <span class="o">-</span> <span class="n">wl</span><span class="p">)</span>
-                <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="k">if</span> <span class="n">ie</span> <span class="o">&gt;=</span> <span class="n">nelements</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># last element, make sure to store</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">rows</span></div>
-
-
 <div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the currently valid PIDs (Process IDs) of the Portal and</span>
@@ -1889,13 +1706,13 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        This can be used to determine if we are in a subprocess by</span>
+<span class="sd">        something like:</span>
 
 <span class="sd">        ```python</span>
 <span class="sd">        self_pid = os.getpid()</span>
 <span class="sd">        server_pid, portal_pid = get_evennia_pids()</span>
 <span class="sd">        is_subprocess = self_pid not in (server_pid, portal_pid)</span>
 <span class="sd">        ```</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">server_pidfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server.pid&quot;</span><span class="p">)</span>
     <span class="n">portal_pidfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;portal.pid&quot;</span><span class="p">)</span>
@@ -2111,15 +1928,16 @@
 <span class="sd">        query (str, optional): The search query used to produce `matches`.</span>
 <span class="sd">        quiet (bool, optional): If `True`, no messages will be echoed to caller</span>
 <span class="sd">            on errors.</span>
+
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        nofound_string (str): Replacement string to echo on a notfound error.</span>
 <span class="sd">        multimatch_string (str): Replacement string to echo on a multimatch error.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        processed_result (Object or None): This is always a single result</span>
-<span class="sd">        or `None`. If `None`, any error reporting/handling should</span>
-<span class="sd">        already have happened. The returned object is of the type we are</span>
-<span class="sd">        checking multimatches for (e.g. Objects or Commands)</span>
+<span class="sd">            or `None`. If `None`, any error reporting/handling should</span>
+<span class="sd">            already have happened. The returned object is of the type we are</span>
+<span class="sd">            checking multimatches for (e.g. Objects or Commands)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2178,10 +1996,10 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            size_limit (int): Use this to limit the number of elements</span>
-<span class="sd">              alloweds to be in this list. By default the overshooting elements</span>
-<span class="sd">              will be removed in FIFO order.</span>
+<span class="sd">                alloweds to be in this list. By default the overshooting elements</span>
+<span class="sd">                will be removed in FIFO order.</span>
 <span class="sd">            fifo (bool, optional): Defaults to `True`. Remove overshooting elements</span>
-<span class="sd">              in FIFO order. If `False`, remove in FILO order.</span>
+<span class="sd">                in FIFO order. If `False`, remove in FILO order.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -2248,10 +2066,10 @@
 <span class="sd">            from this parent.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: On the form `{&quot;typeclass.path&quot;: typeclass, ...}`</span>
+<span class="sd">        typeclasses (dict): On the form {&quot;typeclass.path&quot;: typeclass, ...}</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        This will dynamically retrieve all abstract django models inheriting at any distance</span>
+<span class="sd">        This will dynamicall retrieve all abstract django models inheriting at any distance</span>
 <span class="sd">        from the TypedObject base (aka a Typeclass) so it will work fine with any custom</span>
 <span class="sd">        classes being added.</span>
 
@@ -2274,19 +2092,14 @@
 
 <div class="viewcode-block" id="interactive"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.interactive">[docs]</a><span class="k">def</span> <span class="nf">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Decorator to make a method pausable with `yield(seconds)`</span>
-<span class="sd">    and able to ask for user-input with `response=yield(question)`.</span>
-<span class="sd">    For the question-asking to work, one of the args or kwargs to the</span>
-<span class="sd">    decorated function must be named &#39;caller&#39;.</span>
+<span class="sd">    Decorator to make a method pausable with yield(seconds) and able to ask for</span>
+<span class="sd">    user-input with `response=yield(question)`.  For the question-asking to</span>
+<span class="sd">    work, &#39;caller&#39; must the name of an argument or kwarg to the decorated</span>
+<span class="sd">    function.</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If asking an interactive question but the decorated</span>
-<span class="sd">            function has no arg or kwarg named &#39;caller&#39;.</span>
-<span class="sd">        ValueError: If passing non int/float to yield using for pausing.</span>
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
 
-<span class="sd">    Examples:</span>
-
-<span class="sd">        ```python</span>
 <span class="sd">        @interactive</span>
 <span class="sd">        def myfunc(caller):</span>
 <span class="sd">            caller.msg(&quot;This is a test&quot;)</span>
@@ -2298,10 +2111,9 @@
 <span class="sd">                yield(5)</span>
 <span class="sd">            else:</span>
 <span class="sd">                # ...</span>
-<span class="sd">        ```</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">       This turns the decorated function or method into a generator.</span>
+<span class="sd">        This turns the method into a generator!</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">get_input</span>

@@ -47,6 +47,7 @@
 <span class="sd">It is stored on the Server side (as opposed to protocol-specific sessions which</span>
 <span class="sd">are stored on the Portal side)</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
@@ -56,7 +57,6 @@
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="k">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="k">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">AttributeHandler</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">,</span> <span class="n">DbHolder</span>
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
@@ -65,6 +65,124 @@
 
 <span class="c1"># i18n</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="c1"># Handlers for Session.db/ndb operation</span>
+
+
+<div class="viewcode-block" id="NDbHolder"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NDbHolder">[docs]</a><span class="k">class</span> <span class="nc">NDbHolder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Holder for allowing property access of attributes&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NDbHolder.__init__"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NDbHolder.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">manager_name</span><span class="p">))</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="c1"># we allow to overload our default .all</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">attr</span> <span class="k">if</span> <span class="n">attr</span> <span class="k">else</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NDbHolder.get_all"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NDbHolder.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+    <span class="nb">all</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_all</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NAttributeHandler"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler">[docs]</a><span class="k">class</span> <span class="nc">NAttributeHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NAttributeHandler version without recache protection.</span>
+<span class="sd">    This stand-alone handler manages non-database saving.</span>
+<span class="sd">    It is similar to `AttributeHandler` and is used</span>
+<span class="sd">    by the `.ndb` handler in the same way as `.db` does</span>
+<span class="sd">    for the `AttributeHandler`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NAttributeHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialized on the object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.has"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if object has this attribute or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The Nattribute key to check.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            has_nattribute (bool): If Nattribute is set or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.get"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the named key value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The Nattribute key to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the value of the Nattribute.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.add"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add new key and value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The name of Nattribute to add.</span>
+<span class="sd">            value (any): The value to store.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.remove"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove Nattribute from storage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The name of the Nattribute to remove.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.clear"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all NAttributes from handler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="NAttributeHandler.all"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.NAttributeHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_tuples</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List the contents of the handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            return_tuples (bool, optional): Defines if the Nattributes</span>
+<span class="sd">                are returns as a list of keys or as a list of `(key, value)`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            nattributes (list): A list of keys `[key, key, ...]` or a</span>
+<span class="sd">                list of tuples `[(key, value), ...]` depending on the</span>
+<span class="sd">                setting of `return_tuples`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">return_tuples</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span></div></div>
 
 
 <span class="c1"># -------------------------------------------------------------</span>
@@ -97,10 +215,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_storage_string</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
     <span class="n">cmdset_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__cmdset_storage_get</span><span class="p">,</span> <span class="n">__cmdset_storage_set</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessid</span>
 
 <div class="viewcode-block" id="ServerSession.at_sync"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -271,7 +385,7 @@
 <span class="sd">        Update the protocol_flags and sync them with Portal.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            protocol_flag (any): A key and value to set in the</span>
+<span class="sd">            any: A key:value pair to set in the</span>
 <span class="sd">                protocol_flags dictionary.</span>
 
 <span class="sd">        Notes:</span>
@@ -303,13 +417,14 @@
 <span class="sd">        the respective inputfuncs.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (any): Incoming data from protocol on</span>
+<span class="sd">            any: Incoming data from protocol on</span>
 <span class="sd">                the form `{&quot;commandname&quot;: ((args), {kwargs}),...}`</span>
 <span class="sd">        Notes:</span>
 <span class="sd">            This method is here in order to give the user</span>
 <span class="sd">            a single place to catch and possibly process all incoming data from</span>
 <span class="sd">            the client. It should usually always end by sending</span>
 <span class="sd">            this data off to `self.sessionhandler.call_inputfuncs(self, **kwargs)`.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">call_inputfuncs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -319,9 +434,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            text (str): String input.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            any (str or tuple): Send-commands identified</span>
+<span class="sd">            kwargs (str or tuple): Send-commands identified</span>
 <span class="sd">                by their keys. Or &quot;options&quot;, carrying options</span>
 <span class="sd">                for the protocol(s).</span>
 
@@ -417,7 +530,7 @@
 
 <div class="viewcode-block" id="ServerSession.nattributes"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.nattributes">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">NAttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.attributes"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.attributes">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -435,7 +548,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span> <span class="o">=</span> <span class="n">DbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nattrhandler&quot;</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;nattributes&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span> <span class="o">=</span> <span class="n">NDbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nattrhandler&quot;</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;nattributes&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span></div>
 
     <span class="c1"># @ndb.setter</span>

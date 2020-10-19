@@ -125,15 +125,6 @@
                 <span class="k">break</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="c1"># pre-prepare a help index entry for quicker lookup</span>
-    <span class="bp">cls</span><span class="o">.</span><span class="n">search_index_entry</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-        <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">),</span>
-        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span><span class="p">,</span>
-        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
-        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
-
 
 <div class="viewcode-block" id="CommandMeta"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta">[docs]</a><span class="k">class</span> <span class="nc">CommandMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -559,6 +550,20 @@
                 <span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span><span class="p">}</span>
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span></div>
+        
+<div class="viewcode-block" id="Command.client_height"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.client_height">[docs]</a>    <span class="k">def</span> <span class="nf">client_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the client screenheight for the session using this command.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            client height (int): The height (in characters) of the client window.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span><span class="p">}</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span></div>
 
 <div class="viewcode-block" id="Command.styled_table"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_table">[docs]</a>    <span class="k">def</span> <span class="nf">styled_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
