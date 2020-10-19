@@ -38,25 +38,15 @@
             
   <div class="section" id="module-evennia.utils.create">
 <span id="evennia-utils-create"></span><h1>evennia.utils.create<a class="headerlink" href="#module-evennia.utils.create" title="Permalink to this headline">¶</a></h1>
-<p>This module gathers all the essential database-creation
-functions for the game engine’s various object types.</p>
-<p>Only objects created ‘stand-alone’ are in here, e.g. object Attributes
-are always created directly through their respective objects.</p>
-<p>Each creation_* function also has an alias named for the entity being
-created, such as create_object() and object().  This is for
-consistency with the utils.search module and allows you to do the
-shorter “create.object()”.</p>
-<p>The respective object managers hold more methods for manipulating and
-searching objects already existing in the database.</p>
-<dl class="simple">
-<dt>Models covered:</dt><dd><p>Objects
-Scripts
-Help
-Message
-Channel
-Accounts</p>
-</dd>
-</dl>
+<p>This module gathers all the essential database-creation functions for the game
+engine’s various object types.</p>
+<p>Only objects created ‘stand-alone’ are in here. E.g. object Attributes are
+always created through their respective objects handlers.</p>
+<p>Each <strong>creation_*</strong> function also has an alias named for the entity being created,
+such as create_object() and object(). This is for consistency with the
+utils.search module and allows you to do the shorter <strong>create.object()</strong>.</p>
+<p>The respective object managers hold more methods for manipulating and searching
+objects already existing in the database.</p>
 <dl class="py function">
 <dt id="evennia.utils.create.create_object">
 <code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destination</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nohome</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nattributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_object" title="Permalink to this definition">¶</a></dt>
@@ -66,15 +56,14 @@ Accounts</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Class or python path to a typeclass.</p></li>
 <li><p><strong>key</strong> (<em>str</em>) – Name of the new object. If not set, a name of
-#dbref will be set.</p></li>
+<strong>#dbref</strong> will be set.</p></li>
 <li><p><strong>home</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as the object’s
 home location.</p></li>
 <li><p><strong>permissions</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of permission strings or tuples (permstring, category).</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – one or more lockstrings, separated by semicolons.</p></li>
 <li><p><strong>aliases</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of alternative keys or tuples (aliasstring, category).</p></li>
 <li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</p></li>
-<li><p><strong>destination</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as an Exit’s
-target.</p></li>
+<li><p><strong>destination</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as an Exit’s target.</p></li>
 <li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
 <li><p><strong>nohome</strong> (<em>bool</em>) – This allows the creation of objects without a
 default home location; only used when creating the default

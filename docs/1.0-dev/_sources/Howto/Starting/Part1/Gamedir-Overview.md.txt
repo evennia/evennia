@@ -1,7 +1,5 @@
 # Overview of your new Game Dir
 
-[prev lesson](./Python-basic-introduction) | [next lesson](./Python-classes-and-objects)
-
 Next we will take a little detour to look at the _Tutorial World_. This is a little solo adventure
 that comes with Evennia, a showcase for some of the things that are possible. 
 
@@ -208,4 +206,3 @@ people change and re-structure this in various ways to better fit their ideas.
     tell that Two goblins, while both of the class 'Goblin' (so they follow the same code logic), should have different 
     equipment, stats and looks.
     
-[prev lesson](./Python-basic-introduction) | [next lesson](./Python-classes-and-objects)

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3. Starting to code Evennia &#8212; Evennia 1.0-dev documentation</title>
+    <title>Starting to code Evennia &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Overview of your new Game Dir" href="Gamedir-Overview.html" />
+    <link rel="prev" title="The Tutorial World" href="Tutorial-World-Introduction.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="Overview of your new Game Dir"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-World-Introduction.html" title="The Tutorial World"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Starting to code Evennia</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Starting to code Evennia</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="starting-to-code-evennia">
-<h1><span class="section-number">3. </span>Starting to code Evennia<a class="headerlink" href="#starting-to-code-evennia" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Gamedir-Overview.html"><span class="doc">next lesson</span></a></p>
+<h1>Starting to code Evennia<a class="headerlink" href="#starting-to-code-evennia" title="Permalink to this headline">¶</a></h1>
 <p>Time to dip our toe into some coding! Evennia is written and extended in <a class="reference external" href="http://python.org">Python</a>, which
 is a mature and professional programming language that is very fast to work with.</p>
 <p>That said, even though Python is widely considered easy to learn, we can only cover the most immediately
@@ -55,7 +63,7 @@ superuser powers back:</p>
 </pre></div>
 </div>
 <div class="section" id="evennia-hello-world">
-<h2><span class="section-number">3.1. </span>Evennia Hello world<a class="headerlink" href="#evennia-hello-world" title="Permalink to this headline">¶</a></h2>
+<h2>Evennia Hello world<a class="headerlink" href="#evennia-hello-world" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> Command (or <code class="docutils literal notranslate"><span class="pre">!</span></code>, which is an alias) allows you as a superuser to execute raw Python from in-
 game. This is useful for quick testing. From the game’s input line, enter the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
@@ -79,7 +87,7 @@ lines and are common for larger text-blocks. The way we use the <code class="doc
 single-line input however.</p>
 </div>
 <div class="section" id="making-some-text-graphics">
-<h2><span class="section-number">3.2. </span>Making some text ‘graphics’<a class="headerlink" href="#making-some-text-graphics" title="Permalink to this headline">¶</a></h2>
+<h2>Making some text ‘graphics’<a class="headerlink" href="#making-some-text-graphics" title="Permalink to this headline">¶</a></h2>
 <p>When making a text-game you will, unsurprisingly, be working a lot with text. Even if you have the occational
 button or even graphical element, the normal process is for the user to input commands as
 text and get text back. As we saw above, a piece of text is called a <em>string</em> in Python and is enclosed in
@@ -203,7 +211,7 @@ color at all). Use the Evennia webclient.</p>
 <p>Use the commands <code class="docutils literal notranslate"><span class="pre">color</span> <span class="pre">ansi</span></code> or <code class="docutils literal notranslate"><span class="pre">color</span> <span class="pre">xterm</span></code> to see which colors are available. Experiment!</p>
 </div>
 <div class="section" id="importing-code-from-other-modules">
-<h2><span class="section-number">3.3. </span>Importing code from other modules<a class="headerlink" href="#importing-code-from-other-modules" title="Permalink to this headline">¶</a></h2>
+<h2>Importing code from other modules<a class="headerlink" href="#importing-code-from-other-modules" title="Permalink to this headline">¶</a></h2>
 <p>As we saw in the previous sections, we used <code class="docutils literal notranslate"><span class="pre">.format</span></code> to format strings and <code class="docutils literal notranslate"><span class="pre">me.msg</span></code> to access
 the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method on <code class="docutils literal notranslate"><span class="pre">me</span></code>. This use of the full-stop character is used to access all sorts of resources,
 including that in other Python modules.</p>
@@ -267,7 +275,7 @@ important topic. But for now, let’s press on and resolve this particular probl
 </div></blockquote>
 </div>
 <div class="section" id="our-first-own-function">
-<h2><span class="section-number">3.4. </span>Our first own function<a class="headerlink" href="#our-first-own-function" title="Permalink to this headline">¶</a></h2>
+<h2>Our first own function<a class="headerlink" href="#our-first-own-function" title="Permalink to this headline">¶</a></h2>
 <p>We want to be able to print our hello-world message at any time, not just once after a server
 reload. Change your <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file to look like this:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -326,7 +334,7 @@ Hello world!
 </div>
 </div>
 <div class="section" id="sending-text-to-others">
-<h2><span class="section-number">3.5. </span>Sending text to others<a class="headerlink" href="#sending-text-to-others" title="Permalink to this headline">¶</a></h2>
+<h2>Sending text to others<a class="headerlink" href="#sending-text-to-others" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">print</span></code> command is a standard Python structure. We can use that here in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command since
 we can se the output. It’s great for debugging and quick testing. But if you need to send a text
 to an actual player, <code class="docutils literal notranslate"><span class="pre">print</span></code> won’t do, because it doesn’t know <em>who</em> to send to. Try this:</p>
@@ -348,7 +356,7 @@ to the object <code class="docutils literal notranslate"><span class="pre">you</
 debugging and <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> will be more useful for you in the future.</p>
 </div>
 <div class="section" id="parsing-python-errors">
-<h2><span class="section-number">3.6. </span>Parsing Python errors<a class="headerlink" href="#parsing-python-errors" title="Permalink to this headline">¶</a></h2>
+<h2>Parsing Python errors<a class="headerlink" href="#parsing-python-errors" title="Permalink to this headline">¶</a></h2>
 <p>Let’s try this new text-sending in the function we just created.  Go back to
 your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> file and Replace the function with this instead:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -397,7 +405,7 @@ command). As far as the module is concerned <code class="docutils literal notran
 Hence the <code class="docutils literal notranslate"><span class="pre">NameError</span></code>.</p>
 </div>
 <div class="section" id="passing-arguments-to-functions">
-<h2><span class="section-number">3.7. </span>Passing arguments to functions<a class="headerlink" href="#passing-arguments-to-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Passing arguments to functions<a class="headerlink" href="#passing-arguments-to-functions" title="Permalink to this headline">¶</a></h2>
 <p>We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> exists at the point when we run the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, because we can do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code>
 with no problem. So let’s <em>pass</em> that me along to the function so it knows what it should be.
 Go back to your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and change it to this:</p>
@@ -429,7 +437,7 @@ and the concept of <em>Leap before you Look</em>.</p>
 </div></blockquote>
 </div>
 <div class="section" id="finding-others-to-send-to">
-<h2><span class="section-number">3.8. </span>Finding others to send to<a class="headerlink" href="#finding-others-to-send-to" title="Permalink to this headline">¶</a></h2>
+<h2>Finding others to send to<a class="headerlink" href="#finding-others-to-send-to" title="Permalink to this headline">¶</a></h2>
 <p>Let’s wrap up this first Python <code class="docutils literal notranslate"><span class="pre">py</span></code> crash-course by finding someone else to send to.</p>
 <p>In Evennia’s <code class="docutils literal notranslate"><span class="pre">contrib/</span></code> folder (<code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/mirror.py</span></code>) is a handy little
 object called the <code class="docutils literal notranslate"><span class="pre">TutorialMirror</span></code>. The mirror will echo whatever is being sent to it to
@@ -492,7 +500,7 @@ find that Evennia provides ample tools for tagging, searching and finding things
 would be to talk to a player character, in which case the text you sent would have appeared in their game client.</p>
 </div>
 <div class="section" id="multi-line-py">
-<h2><span class="section-number">3.9. </span>Multi-line py<a class="headerlink" href="#multi-line-py" title="Permalink to this headline">¶</a></h2>
+<h2>Multi-line py<a class="headerlink" href="#multi-line-py" title="Permalink to this headline">¶</a></h2>
 <p>So far we have use <code class="docutils literal notranslate"><span class="pre">py</span></code> in single-line mode, using <code class="docutils literal notranslate"><span class="pre">;</span></code> to separate multiple inputs. This is very convenient
 when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter
 inside Evennia.</p>
@@ -579,7 +587,7 @@ string. Let’s combine this with searching for the mirror.</p>
 </div>
 </div>
 <div class="section" id="other-ways-to-test-python-code">
-<h2><span class="section-number">3.10. </span>Other ways to test Python code<a class="headerlink" href="#other-ways-to-test-python-code" title="Permalink to this headline">¶</a></h2>
+<h2>Other ways to test Python code<a class="headerlink" href="#other-ways-to-test-python-code" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> command is very powerful for experimenting with Python in-game. It’s great for quick testing.
 But you are still limited to working over telnet or the webclient, interfaces that doesn’t know anything
 about Python per-se.</p>
@@ -604,7 +612,7 @@ get at the first of them (counting starts from 0).</p>
 </div></blockquote>
 <p>Use <code class="docutils literal notranslate"><span class="pre">Ctrl-D</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-D</span></code> on Mac) or <code class="docutils literal notranslate"><span class="pre">quit()</span></code> to exit the Python console.</p>
 <div class="section" id="ipython">
-<h3><span class="section-number">3.10.1. </span>ipython<a class="headerlink" href="#ipython" title="Permalink to this headline">¶</a></h3>
+<h3>ipython<a class="headerlink" href="#ipython" title="Permalink to this headline">¶</a></h3>
 <p>The default Python shell is quite limited and ugly. It’s <em>highly</em> recommended to install <code class="docutils literal notranslate"><span class="pre">ipython</span></code> instead. This
 is a much nicer, third-party Python interpreter with colors and many usability improvements.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipython</span>
@@ -641,14 +649,13 @@ Python code, we need to save it in a Python module, like we did for <cite>world/
 </div>
 </div>
 <div class="section" id="conclusions">
-<h2><span class="section-number">3.11. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>This covers quite a lot of basic Python usage. We printed and formatted strings, defined our own
 first function, fixed an error and even searched and talked to a mirror! Being able to access
 python inside and outside of the game is an important skill for testing and debugging, but in
 practice you will be writing most your code in Python modules.</p>
 <p>To that end we also created a first new Python module in the <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> game dir, then imported and used it.
 Now let’s look at the rest of the stuff you’ve got going on inside that <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> folder …</p>
-<p><a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Gamedir-Overview.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -674,25 +681,31 @@ Now let’s look at the rest of the stuff you’ve got going on inside that <cod
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">3. Starting to code Evennia</a><ul>
-<li><a class="reference internal" href="#evennia-hello-world">3.1. Evennia Hello world</a></li>
-<li><a class="reference internal" href="#making-some-text-graphics">3.2. Making some text ‘graphics’</a></li>
-<li><a class="reference internal" href="#importing-code-from-other-modules">3.3. Importing code from other modules</a></li>
-<li><a class="reference internal" href="#our-first-own-function">3.4. Our first own function</a></li>
-<li><a class="reference internal" href="#sending-text-to-others">3.5. Sending text to others</a></li>
-<li><a class="reference internal" href="#parsing-python-errors">3.6. Parsing Python errors</a></li>
-<li><a class="reference internal" href="#passing-arguments-to-functions">3.7. Passing arguments to functions</a></li>
-<li><a class="reference internal" href="#finding-others-to-send-to">3.8. Finding others to send to</a></li>
-<li><a class="reference internal" href="#multi-line-py">3.9. Multi-line py</a></li>
-<li><a class="reference internal" href="#other-ways-to-test-python-code">3.10. Other ways to test Python code</a><ul>
-<li><a class="reference internal" href="#ipython">3.10.1. ipython</a></li>
+<li><a class="reference internal" href="#">Starting to code Evennia</a><ul>
+<li><a class="reference internal" href="#evennia-hello-world">Evennia Hello world</a></li>
+<li><a class="reference internal" href="#making-some-text-graphics">Making some text ‘graphics’</a></li>
+<li><a class="reference internal" href="#importing-code-from-other-modules">Importing code from other modules</a></li>
+<li><a class="reference internal" href="#our-first-own-function">Our first own function</a></li>
+<li><a class="reference internal" href="#sending-text-to-others">Sending text to others</a></li>
+<li><a class="reference internal" href="#parsing-python-errors">Parsing Python errors</a></li>
+<li><a class="reference internal" href="#passing-arguments-to-functions">Passing arguments to functions</a></li>
+<li><a class="reference internal" href="#finding-others-to-send-to">Finding others to send to</a></li>
+<li><a class="reference internal" href="#multi-line-py">Multi-line py</a></li>
+<li><a class="reference internal" href="#other-ways-to-test-python-code">Other ways to test Python code</a><ul>
+<li><a class="reference internal" href="#ipython">ipython</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#conclusions">3.11. Conclusions</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Tutorial-World-Introduction.html"
+                        title="previous chapter">The Tutorial World</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Gamedir-Overview.html"
+                        title="next chapter">Overview of your new Game Dir</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -719,8 +732,15 @@ Now let’s look at the rest of the stuff you’ve got going on inside that <cod
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="Overview of your new Game Dir"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-World-Introduction.html" title="The Tutorial World"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Starting to code Evennia</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Starting to code Evennia</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

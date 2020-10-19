@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>11. Searching for things &#8212; Evennia 1.0-dev documentation</title>
+    <title>Searching for things &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Django Database queries" href="Django-queries.html" />
+    <link rel="prev" title="Creating things" href="Creating-Things.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Django-queries.html" title="Django Database queries"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Creating-Things.html" title="Creating things"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11. </span>Searching for things</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Searching for things</a></li> 
       </ul>
     </div>  
 
@@ -37,12 +46,11 @@
           <div class="body" role="main">
             
   <div class="section" id="searching-for-things">
-<h1><span class="section-number">11. </span>Searching for things<a class="headerlink" href="#searching-for-things" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Creating-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Django-queries.html"><span class="doc">next lesson</span></a></p>
+<h1>Searching for things<a class="headerlink" href="#searching-for-things" title="Permalink to this headline">¶</a></h1>
 <p>We have gone through how to create the various entities in Evennia. But creating something is of little use
 if we cannot find and use it afterwards.</p>
 <div class="section" id="main-search-functions">
-<h2><span class="section-number">11.1. </span>Main search functions<a class="headerlink" href="#main-search-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Main search functions<a class="headerlink" href="#main-search-functions" title="Permalink to this headline">¶</a></h2>
 <p>The base tools are the <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code> functions, such as <code class="docutils literal notranslate"><span class="pre">evennia.search_object</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">rose</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
     <span class="n">acct</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyAccountName&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;foo@bar.com&quot;</span><span class="p">)</span>
@@ -76,7 +84,7 @@ more than one match is a sign of a problem and you need to handle this case your
 <a class="reference internal" href="../../../Evennia-API.html"><span class="doc">in the Search functions section</span></a> of the API frontpage.</p>
 </div>
 <div class="section" id="searching-using-object-search">
-<h2><span class="section-number">11.2. </span>Searching using Object.search<a class="headerlink" href="#searching-using-object-search" title="Permalink to this headline">¶</a></h2>
+<h2>Searching using Object.search<a class="headerlink" href="#searching-using-object-search" title="Permalink to this headline">¶</a></h2>
 <p>On the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is a <code class="docutils literal notranslate"><span class="pre">.search</span></code> method which we have already tried out when we made Commands. For
 this to be used you must already have an object available:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rose</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
@@ -138,7 +146,7 @@ here’s how you’d find something only in your inventory:</p>
 yourself and what you get back is now a list of zero, one or more matches!</p>
 </div>
 <div class="section" id="what-can-be-searched-for">
-<h2><span class="section-number">11.3. </span>What can be searched for<a class="headerlink" href="#what-can-be-searched-for" title="Permalink to this headline">¶</a></h2>
+<h2>What can be searched for<a class="headerlink" href="#what-can-be-searched-for" title="Permalink to this headline">¶</a></h2>
 <p>These are the main database entities one can search for:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../Components/Objects.html"><span class="doc">Objects</span></a></p></li>
@@ -151,11 +159,11 @@ yourself and what you get back is now a list of zero, one or more matches!</p>
 <p>Most of the time you’ll likely spend your time searching for Objects and the occasional Accounts.</p>
 <p>So to find an entity, what can be searched for?</p>
 <div class="section" id="search-by-key">
-<h3><span class="section-number">11.3.1. </span>Search by key<a class="headerlink" href="#search-by-key" title="Permalink to this headline">¶</a></h3>
+<h3>Search by key<a class="headerlink" href="#search-by-key" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> is the name of the entity. Searching for this is always case-insensitive.</p>
 </div>
 <div class="section" id="search-by-aliases">
-<h3><span class="section-number">11.3.2. </span>Search by aliases<a class="headerlink" href="#search-by-aliases" title="Permalink to this headline">¶</a></h3>
+<h3>Search by aliases<a class="headerlink" href="#search-by-aliases" title="Permalink to this headline">¶</a></h3>
 <p>Objects and Accounts can have any number of aliases. When searching for <code class="docutils literal notranslate"><span class="pre">key</span></code> these will searched too,
 you can’t easily search only for aliases.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rose</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;flower&quot;</span><span class="p">)</span>
@@ -165,7 +173,7 @@ you can’t easily search only for aliases.</p>
 you can assign new aliases to things with the <code class="docutils literal notranslate"><span class="pre">alias</span></code> command.</p>
 </div>
 <div class="section" id="search-by-location">
-<h3><span class="section-number">11.3.3. </span>Search by location<a class="headerlink" href="#search-by-location" title="Permalink to this headline">¶</a></h3>
+<h3>Search by location<a class="headerlink" href="#search-by-location" title="Permalink to this headline">¶</a></h3>
 <p>Only Objects (things inheriting from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code>) has a location. This is usually a room.
 The <code class="docutils literal notranslate"><span class="pre">Object.search</span></code> method will automatically limit it search by location, but it also works for the
 general search function. If we assume <code class="docutils literal notranslate"><span class="pre">room</span></code> is a particular Room instance,</p>
@@ -174,7 +182,7 @@ general search function. If we assume <code class="docutils literal notranslate"
 </div>
 </div>
 <div class="section" id="search-by-tags">
-<h3><span class="section-number">11.3.4. </span>Search by Tags<a class="headerlink" href="#search-by-tags" title="Permalink to this headline">¶</a></h3>
+<h3>Search by Tags<a class="headerlink" href="#search-by-tags" title="Permalink to this headline">¶</a></h3>
 <p>Think of a <a class="reference internal" href="../../../Components/Tags.html"><span class="doc">Tag</span></a> as the label the airport puts on your luggage when flying.
 Everyone going on the same plane gets a tag grouping them together so the airport can know what should
 go to which plane. Entities in Evennia can be grouped in the same way. Any number of tags can be attached
@@ -208,7 +216,7 @@ we can get all tagged entities within that category:</p>
 <p>This gets all three books.</p>
 </div>
 <div class="section" id="search-by-attribute">
-<h3><span class="section-number">11.3.5. </span>Search by Attribute<a class="headerlink" href="#search-by-attribute" title="Permalink to this headline">¶</a></h3>
+<h3>Search by Attribute<a class="headerlink" href="#search-by-attribute" title="Permalink to this headline">¶</a></h3>
 <p>We can also search by the <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc">Attributes</span></a> associated with entities.</p>
 <p>For example, let’s give our rose thorns:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rose</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">has_thorns</span> <span class="o">=</span> <span class="kc">True</span>
@@ -227,7 +235,7 @@ by-tag is generally faster.</p>
 </div></blockquote>
 </div>
 <div class="section" id="search-by-typeclass">
-<h3><span class="section-number">11.3.6. </span>Search by Typeclass<a class="headerlink" href="#search-by-typeclass" title="Permalink to this headline">¶</a></h3>
+<h3>Search by Typeclass<a class="headerlink" href="#search-by-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it’s useful to find all objects of a specific Typeclass. All of Evennia’s search tools support this.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">all_roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.flowers.Rose&quot;</span><span class="p">)</span> 
 </pre></div>
@@ -244,7 +252,7 @@ by-tag is generally faster.</p>
 Python. We’ll cover this some more as an <a class="reference external" href="#Extra-Credits">Extra-credits</a> section at the end of this lesson.</p>
 </div>
 <div class="section" id="search-by-dbref">
-<h3><span class="section-number">11.3.7. </span>Search by dbref<a class="headerlink" href="#search-by-dbref" title="Permalink to this headline">¶</a></h3>
+<h3>Search by dbref<a class="headerlink" href="#search-by-dbref" title="Permalink to this headline">¶</a></h3>
 <p>The database id or <code class="docutils literal notranslate"><span class="pre">#dbref</span></code> is unique and never-reused within each database table. In search methods you can
 replace the search for <code class="docutils literal notranslate"><span class="pre">key</span></code> with the dbref to search for. This must be written as a string <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">the_answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;#42&quot;</span><span class="p">)</span>
@@ -263,7 +271,7 @@ around and search by key/tags/attribute instead.</p>
 </div>
 </div>
 <div class="section" id="finding-objects-relative-each-other">
-<h2><span class="section-number">11.4. </span>Finding objects relative each other<a class="headerlink" href="#finding-objects-relative-each-other" title="Permalink to this headline">¶</a></h2>
+<h2>Finding objects relative each other<a class="headerlink" href="#finding-objects-relative-each-other" title="Permalink to this headline">¶</a></h2>
 <p>Let’s consider a <code class="docutils literal notranslate"><span class="pre">chest</span></code> with a <code class="docutils literal notranslate"><span class="pre">coin</span></code> inside it. The chests stand in a room <code class="docutils literal notranslate"><span class="pre">dungeon</span></code>. In the dungeon is also
 a <code class="docutils literal notranslate"><span class="pre">door</span></code>. This is an exit leading outside.</p>
 <ul class="simple">
@@ -296,12 +304,11 @@ We can also find what is inside each object. This is a list of things.</p>
 </ul>
 </div>
 <div class="section" id="summary">
-<h2><span class="section-number">11.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>Knowing how to find things is important and the tools from this section will serve you well. For most of your needs
 these tools will be all you need …</p>
 <p>… but not always. In the next lesson we will dive further into more complex searching when we look at
 Django queries and querysets in earnest.</p>
-<p><a class="reference internal" href="Creating-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Django-queries.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -327,25 +334,31 @@ Django queries and querysets in earnest.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">11. Searching for things</a><ul>
-<li><a class="reference internal" href="#main-search-functions">11.1. Main search functions</a></li>
-<li><a class="reference internal" href="#searching-using-object-search">11.2. Searching using Object.search</a></li>
-<li><a class="reference internal" href="#what-can-be-searched-for">11.3. What can be searched for</a><ul>
-<li><a class="reference internal" href="#search-by-key">11.3.1. Search by key</a></li>
-<li><a class="reference internal" href="#search-by-aliases">11.3.2. Search by aliases</a></li>
-<li><a class="reference internal" href="#search-by-location">11.3.3. Search by location</a></li>
-<li><a class="reference internal" href="#search-by-tags">11.3.4. Search by Tags</a></li>
-<li><a class="reference internal" href="#search-by-attribute">11.3.5. Search by Attribute</a></li>
-<li><a class="reference internal" href="#search-by-typeclass">11.3.6. Search by Typeclass</a></li>
-<li><a class="reference internal" href="#search-by-dbref">11.3.7. Search by dbref</a></li>
+<li><a class="reference internal" href="#">Searching for things</a><ul>
+<li><a class="reference internal" href="#main-search-functions">Main search functions</a></li>
+<li><a class="reference internal" href="#searching-using-object-search">Searching using Object.search</a></li>
+<li><a class="reference internal" href="#what-can-be-searched-for">What can be searched for</a><ul>
+<li><a class="reference internal" href="#search-by-key">Search by key</a></li>
+<li><a class="reference internal" href="#search-by-aliases">Search by aliases</a></li>
+<li><a class="reference internal" href="#search-by-location">Search by location</a></li>
+<li><a class="reference internal" href="#search-by-tags">Search by Tags</a></li>
+<li><a class="reference internal" href="#search-by-attribute">Search by Attribute</a></li>
+<li><a class="reference internal" href="#search-by-typeclass">Search by Typeclass</a></li>
+<li><a class="reference internal" href="#search-by-dbref">Search by dbref</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
-<li><a class="reference internal" href="#summary">11.5. Summary</a></li>
+<li><a class="reference internal" href="#finding-objects-relative-each-other">Finding objects relative each other</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Creating-Things.html"
+                        title="previous chapter">Creating things</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Django-queries.html"
+                        title="next chapter">Django Database queries</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -372,8 +385,15 @@ Django queries and querysets in earnest.</p>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Django-queries.html" title="Django Database queries"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Creating-Things.html" title="Creating things"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11. </span>Searching for things</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Searching for things</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

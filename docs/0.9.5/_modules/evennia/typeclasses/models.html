@@ -65,8 +65,6 @@
 <span class="sd">This module also contains the Managers for the respective models; inherit from</span>
 <span class="sd">these to create custom managers.</span>
 
-<span class="sd">----</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">signals</span>
 
@@ -79,7 +77,13 @@
 <span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="k">import</span> <span class="n">smart_str</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="k">import</span> <span class="n">slugify</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">Attribute</span><span class="p">,</span> <span class="n">AttributeHandler</span><span class="p">,</span> <span class="n">NAttributeHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Attribute</span><span class="p">,</span>
+    <span class="n">AttributeHandler</span><span class="p">,</span>
+    <span class="n">ModelAttributeBackend</span><span class="p">,</span>
+    <span class="n">InMemoryAttributeBackend</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">DbHolder</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="k">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="k">import</span> <span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">SharedMemoryModelBase</span>
@@ -201,35 +205,6 @@
         <span class="n">signals</span><span class="o">.</span><span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">call_at_first_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">new_class</span><span class="p">)</span>
         <span class="n">signals</span><span class="o">.</span><span class="n">pre_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">remove_attributes_on_delete</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">new_class</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_class</span>
-
-
-<span class="k">class</span> <span class="nc">DbHolder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Holder for allowing property access of attributes.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
-        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">manager_name</span><span class="p">))</span>
-        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
-            <span class="c1"># we allow to overload our default .all</span>
-            <span class="n">attr</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">attr</span> <span class="k">if</span> <span class="n">attr</span> <span class="k">else</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
-        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-
-    <span class="nb">all</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_all</span><span class="p">)</span>
 
 
 <span class="c1">#</span>
@@ -355,8 +330,10 @@
 <span class="sd">        than use the one in the model.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            *args: Passed through to parent.</span>
-<span class="sd">            **kwargs: Passed through to parent.</span>
+<span class="sd">            Passed through to parent.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            Passed through to parent.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            The loading mechanism will attempt the following steps:</span>
@@ -383,7 +360,7 @@
     <span class="c1"># initialize all handlers in a lazy fashion</span>
 <div class="viewcode-block" id="TypedObject.attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.attributes">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.locks"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.locks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -403,7 +380,7 @@
 
 <div class="viewcode-block" id="TypedObject.nattributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.nattributes">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">NAttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -680,7 +657,7 @@
 <span class="sd">                superuser lock bypass (be careful with this one).</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (any): Ignored, but is there to make the api</span>
+<span class="sd">            kwar (any): Ignored, but is there to make the api</span>
 <span class="sd">                consistent with the object-typeclass method access, which</span>
 <span class="sd">                use it to feed to its hook methods.</span>
 
@@ -769,18 +746,18 @@
     <span class="k">def</span> <span class="nf">__db_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attribute handler wrapper. Allows for the syntax</span>
-<span class="sd">        ::</span>
 
+<span class="sd">        ```python</span>
 <span class="sd">           obj.db.attrname = value</span>
-<span class="sd">             and</span>
+<span class="sd">           # and</span>
 <span class="sd">           value = obj.db.attrname</span>
-<span class="sd">             and</span>
+<span class="sd">           # and</span>
 <span class="sd">           del obj.db.attrname</span>
-<span class="sd">             and</span>
+<span class="sd">           # and</span>
 <span class="sd">           all_attr = obj.db.all()</span>
-
-<span class="sd">        (unless there is an attribute named &#39;all&#39;, in which case that will be</span>
-<span class="sd">        returned instead).</span>
+<span class="sd">           # (unless there is an attribute</span>
+<span class="sd">           #  named &#39;all&#39;, in which case that will be returned instead).</span>
+<span class="sd">        ```</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -791,14 +768,14 @@
 
     <span class="c1"># @db.setter</span>
     <span class="k">def</span> <span class="nf">__db_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop accidentally replacing the db object&quot;&quot;&quot;</span>
+        <span class="s2">&quot;Stop accidentally replacing the db object&quot;</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Cannot assign directly to db object! &quot;</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Use db.attr=value instead.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
     <span class="c1"># @db.deleter</span>
     <span class="k">def</span> <span class="nf">__db_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop accidental deletion.&quot;&quot;&quot;</span>
+        <span class="s2">&quot;Stop accidental deletion.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the db object!&quot;</span><span class="p">)</span>
 
     <span class="n">db</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__db_get</span><span class="p">,</span> <span class="n">__db_set</span><span class="p">,</span> <span class="n">__db_del</span><span class="p">)</span>
@@ -810,23 +787,10 @@
     <span class="c1"># @property ndb</span>
     <span class="k">def</span> <span class="nf">__ndb_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A non-attr_obj store (NonDataBase). Everything stored to this is</span>
-<span class="sd">        guaranteed to be cleared when a server is shutdown. Syntax is same as</span>
-<span class="sd">        for the `.db` property, e.g.</span>
-<span class="sd">        ::</span>
-
-<span class="sd">           obj.ndb.attrname = value</span>
-<span class="sd">             and</span>
-<span class="sd">           value = obj.ndb.attrname</span>
-<span class="sd">             and</span>
-<span class="sd">           del obj.ndb.attrname</span>
-<span class="sd">             and</span>
-<span class="sd">           all_attr = obj.ndb.all()</span>
-
-<span class="sd">        What makes this preferable over just assigning properties directly on</span>
-<span class="sd">        the object is that Evennia can track caching for these properties and</span>
-<span class="sd">        for example avoid wiping objects with set `.ndb` data on cache flushes.</span>
-
+<span class="sd">        A non-attr_obj store (ndb: NonDataBase). Everything stored</span>
+<span class="sd">        to this is guaranteed to be cleared when a server is shutdown.</span>
+<span class="sd">        Syntax is same as for the _get_db_holder() method and</span>
+<span class="sd">        property, e.g. obj.ndb.attr = value etc.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span>
@@ -931,32 +895,27 @@
 <div class="viewcode-block" id="TypedObject.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
 <span class="sd">        instances of this object.</span>
 
+<span class="sd">        ex. Chargen = &#39;/characters/create/&#39;</span>
+
+<span class="sd">        For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">        in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">        a named view of &#39;character-create&#39; would be referenced by this method.</span>
+
+<span class="sd">        ex.</span>
+<span class="sd">        url(r&#39;characters/create/&#39;, ChargenView.as_view(), name=&#39;character-create&#39;)</span>
+
+<span class="sd">        If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">        HTML anchor.</span>
+
+<span class="sd">        This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">        the actual view and limiting who can create new objects is the</span>
+<span class="sd">        developer&#39;s responsibility.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            path (str): URI path to object creation page, if defined.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
-
-<span class="sd">                Chargen = &#39;/characters/create/&#39;</span>
-
-<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
-<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
-<span class="sd">            a named view of &#39;character-create&#39; would be referenced by this method.</span>
-<span class="sd">            ::</span>
-
-<span class="sd">                url(r&#39;characters/create/&#39;, ChargenView.as_view(), name=&#39;character-create&#39;)</span>
-
-<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
-<span class="sd">            HTML anchor.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
-<span class="sd">            the actual view and limiting who can create new objects is the</span>
-<span class="sd">            developer&#39;s responsibility.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -973,21 +932,24 @@
 <span class="sd">            path (str): URI path to object detail page, if defined.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/&#39;</span>
+<span class="sd">            ```python</span>
+<span class="sd">            Oscar (Character) = &#39;/characters/oscar/1/&#39;</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
 <span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
 <span class="sd">            a named view of &#39;character-detail&#39; would be referenced by this method.</span>
-<span class="sd">            ::</span>
 
+
+<span class="sd">            ```python</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
 <span class="sd">                CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">            HTML anchor.</span>
 
-<span class="sd">        Notes:</span>
 <span class="sd">            This method is naive and simply returns a path. Securing access to</span>
 <span class="sd">            the actual view and limiting who can view this object is the</span>
 <span class="sd">            developer&#39;s responsibility.</span>
@@ -1007,25 +969,26 @@
 <span class="sd">        object.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            path (str): URI path to object puppet page, if defined.</span>
+<span class="sd">            str: URI path to object puppet page, if defined.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/puppet/&#39;</span>
+<span class="sd">            ```python</span>
+<span class="sd">            Oscar (Character) = &#39;/characters/oscar/1/puppet/&#39;</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
 <span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
 <span class="sd">            a named view of &#39;character-puppet&#39; would be referenced by this method.</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/puppet/$&#39;,</span>
-<span class="sd">                    CharPuppetView.as_view(), name=&#39;character-puppet&#39;)</span>
+<span class="sd">            ```python</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/puppet/$&#39;,</span>
+<span class="sd">                CharPuppetView.as_view(), name=&#39;character-puppet&#39;)</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">            HTML anchor.</span>
 
-<span class="sd">        Notes:</span>
 <span class="sd">            This method is naive and simply returns a path. Securing access to</span>
 <span class="sd">            the actual view and limiting who can view this object is the developer&#39;s</span>
 <span class="sd">            responsibility.</span>
@@ -1046,28 +1009,30 @@
 <span class="sd">        object.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            path (str): URI path to object update page, if defined.</span>
+<span class="sd">            str: URI path to object update page, if defined.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/change/&#39;</span>
+<span class="sd">            ```python</span>
+<span class="sd">            Oscar (Character) = &#39;/characters/oscar/1/change/&#39;</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
 <span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
 <span class="sd">            a named view of &#39;character-update&#39; would be referenced by this method.</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
-<span class="sd">                    CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
+<span class="sd">            ```python</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
+<span class="sd">            ```</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">            HTML anchor.</span>
 
-<span class="sd">        Notes:</span>
 <span class="sd">            This method is naive and simply returns a path. Securing access to</span>
 <span class="sd">            the actual view and limiting who can modify objects is the developer&#39;s</span>
 <span class="sd">            responsibility.</span>
+
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1086,25 +1051,27 @@
 <span class="sd">            path (str): URI path to object deletion page, if defined.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            ::</span>
 
-<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/delete/&#39;</span>
+<span class="sd">            ```python</span>
+<span class="sd">            Oscar (Character) = &#39;/characters/oscar/1/delete/&#39;</span>
+<span class="sd">            ```</span>
 
-<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
-<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
-<span class="sd">            a named view of &#39;character-detail&#39; would be referenced by this method.</span>
-<span class="sd">            ::</span>
+<span class="sd">            For this to work, the developer must have defined a named view</span>
+<span class="sd">            somewhere in urls.py that follows the format &#39;modelname-action&#39;, so</span>
+<span class="sd">            in this case a named view of &#39;character-detail&#39; would be referenced</span>
+<span class="sd">            by this method.</span>
 
-<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
-<span class="sd">                    CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
+<span class="sd">            ```python</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
+<span class="sd">                CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
+<span class="sd">            ```</span>
 
-<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
-<span class="sd">            HTML anchor.</span>
+<span class="sd">            If no View has been created and defined in urls.py, returns an HTML</span>
+<span class="sd">            anchor.</span>
 
-<span class="sd">        Notes:</span>
 <span class="sd">            This method is naive and simply returns a path. Securing access to</span>
-<span class="sd">            the actual view and limiting who can delete this object is the developer&#39;s</span>
-<span class="sd">            responsibility.</span>
+<span class="sd">            the actual view and limiting who can delete this object is the</span>
+<span class="sd">            developer&#39;s responsibility.</span>
 
 
 <span class="sd">        &quot;&quot;&quot;</span>

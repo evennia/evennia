@@ -1,5 +1,3 @@
-[prev lesson](./Planning-The-Tutorial-Game) | [next lesson](../Part3/Starting-Part3)
-
 # Planning the use of some useful contribs
 
 Evennia is deliberately bare-bones out of the box. The idea is that you should be as unrestricted as possible
@@ -252,4 +250,3 @@ in the next part of this tutorial series. When doing this for yourself, remember
 back to your planning and adjust it as you learn what works and what does not. 
 
 
-[prev lesson](./Planning-The-Tutorial-Game) | [next lesson](../Part3/Starting-Part3)

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>8. Our own commands &#8212; Evennia 1.0-dev documentation</title>
+    <title>Our own commands &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="More about Commands" href="More-on-Commands.html" />
+    <link rel="prev" title="Persistent objects and typeclasses" href="Learning-Typeclasses.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="More-on-Commands.html" title="More about Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Learning-Typeclasses.html" title="Persistent objects and typeclasses"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>Our own commands</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Our own commands</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="our-own-commands">
-<h1><span class="section-number">8. </span>Our own commands<a class="headerlink" href="#our-own-commands" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Searching-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="More-on-Commands.html"><span class="doc">next lesson</span></a></p>
+<h1>Our own commands<a class="headerlink" href="#our-own-commands" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we’ll learn how to create our own Evennia <em>Commands</em>. If you are new to Python you’ll
 also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
 <p>A Command is something that handles the input from a user and causes a result to happen.
@@ -65,7 +73,7 @@ commands in that cmdset available to the object. So, to summarize:</p>
 <li><p>CmdSets are stored on objects - this defines which commands are available to that object.</p></li>
 </ul>
 <div class="section" id="creating-a-custom-command">
-<h2><span class="section-number">8.1. </span>Creating a custom command<a class="headerlink" href="#creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
+<h2>Creating a custom command<a class="headerlink" href="#creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -317,7 +325,7 @@ Echo: &#39;Woo Tang!&#39;
 </div>
 <p>You will get the docstring you put in your Command-class.</p>
 <div class="section" id="making-our-cmdset-persistent">
-<h3><span class="section-number">8.1.1. </span>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
+<h3>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
 <p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple
 enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>permanent</em> change though:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -331,7 +339,7 @@ needing to re-add the MyCmdSet again. To remove the cmdset again, do</p>
 <p>But for now, keep it around, we’ll expand it with some more examples.</p>
 </div>
 <div class="section" id="figuring-out-who-to-hit">
-<h3><span class="section-number">8.1.2. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
+<h3>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching
 someone in the face! This is how we want it to work:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit &lt;target&gt;
@@ -484,12 +492,11 @@ You hit Smaug with full force!
 </div>
 </div>
 <div class="section" id="summary">
-<h2><span class="section-number">8.2. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves.
 We also upset a dragon.</p>
 <p>In the next lesson we’ll learn how to hit Smaug with different weapons. We’ll also
 get into how we replace and extend Evennia’s default Commands.</p>
-<p><a class="reference internal" href="Searching-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="More-on-Commands.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -515,17 +522,23 @@ get into how we replace and extend Evennia’s default Commands.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">8. Our own commands</a><ul>
-<li><a class="reference internal" href="#creating-a-custom-command">8.1. Creating a custom command</a><ul>
-<li><a class="reference internal" href="#making-our-cmdset-persistent">8.1.1. Making our cmdset persistent</a></li>
-<li><a class="reference internal" href="#figuring-out-who-to-hit">8.1.2. Figuring out who to hit</a></li>
+<li><a class="reference internal" href="#">Our own commands</a><ul>
+<li><a class="reference internal" href="#creating-a-custom-command">Creating a custom command</a><ul>
+<li><a class="reference internal" href="#making-our-cmdset-persistent">Making our cmdset persistent</a></li>
+<li><a class="reference internal" href="#figuring-out-who-to-hit">Figuring out who to hit</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#summary">8.2. Summary</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Learning-Typeclasses.html"
+                        title="previous chapter">Persistent objects and typeclasses</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="More-on-Commands.html"
+                        title="next chapter">More about Commands</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -552,8 +565,15 @@ get into how we replace and extend Evennia’s default Commands.</p>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="More-on-Commands.html" title="More about Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Learning-Typeclasses.html" title="Persistent objects and typeclasses"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>Our own commands</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Our own commands</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

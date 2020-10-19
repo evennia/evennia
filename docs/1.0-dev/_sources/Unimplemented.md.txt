@@ -1,6 +1,5 @@
 # Unimplemented
 
-```warning:: This page has not been written yet.
-```
+_Sorry, but this page has not been written yet._
 
-Return to the [front page](./index#Evennia-documentation).
+Go back or return to the [front page](./index#Evennia-documentation).

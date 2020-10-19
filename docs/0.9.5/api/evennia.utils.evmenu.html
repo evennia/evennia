@@ -38,9 +38,10 @@
             
   <div class="section" id="module-evennia.utils.evmenu">
 <span id="evennia-utils-evmenu"></span><h1>evennia.utils.evmenu<a class="headerlink" href="#module-evennia.utils.evmenu" title="Permalink to this headline">¶</a></h1>
-<p>The EvMenu is a full in-game menu system for Evennia.</p>
-<p>To start the menu, just import the EvMenu class from this module.</p>
-<p>Example usage:</p>
+<p>EvMenu</p>
+<p>This implements a full menu system for Evennia.</p>
+<p>To start the menu, just import the EvMenu class from this module.
+Example usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">EvMenu</span>
 
 <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_module_path</span><span class="p">,</span>
@@ -50,8 +51,8 @@
 </pre></div>
 </div>
 <p>Where <strong>caller</strong> is the Object to use the menu on - it will get a new
-cmdset while using the Menu. The <strong>menu_module_path</strong> is the python path
-to a python module containing function definitions. By adjusting the
+cmdset while using the Menu. The menu_module_path is the python path
+to a python module containing function definitions.  By adjusting the
 keyword options of the Menu() initialization call you can start the
 menu at different places in the menu definition file, adjust if the
 menu command should overload the normal commands or not, etc.</p>
@@ -77,7 +78,7 @@ command definition too) with function definitions:</p>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
 </div>
-<p>Where <strong>caller</strong> is the object using the menu and input_string is the
+<p>Where caller is the object using the menu and input_string is the
 command entered by the user on the <em>previous</em> node (the command
 entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
@@ -91,50 +92,43 @@ deleted when the menu is exited.</p>
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default “look” command is called.</p>
 <ul class="simple">
-<li><p><strong>text</strong> (str, tuple or None): Text shown at this node. If a tuple, the
-second element in the tuple is a help text to display at this
-node when the user enters the menu help command there.</p></li>
+<li><dl class="simple">
+<dt><strong>text</strong> (str, tuple or None): Text shown at this node. If a tuple, the</dt><dd><p>second element in the tuple is a help text to display at this
+node when the user enters the menu help command there.</p>
+</dd>
+</dl>
+</li>
 <li><p><strong>options</strong> (tuple, dict or None): If <strong>None</strong>, this exits the menu.
 If a single dict, this is a single-option node. If a tuple,
-it should be a tuple of option dictionaries. Option dicts have
-the following keys:</p>
+it should be a tuple of option dictionaries. Option dicts have the following keys:</p>
 <ul>
-<li><dl class="simple">
-<dt><strong>key</strong> (str or tuple, optional): What to enter to choose this option.</dt><dd><p>If a tuple, it must be a tuple of strings, where the first string is the
+<li><p><strong>key</strong> (str or tuple, optional): What to enter to choose this option.
+If a tuple, it must be a tuple of strings, where the first string is the
 key which will be shown to the user and the others are aliases.
 If unset, the options’ number will be used. The special key <strong>_default</strong>
 marks this option as the default fallback when no other option matches
 the user input. There can only be one <strong>_default</strong> option per node. It
-will not be displayed in the list.</p>
-</dd>
-</dl>
-</li>
+will not be displayed in the list.</p></li>
 <li><p><strong>desc</strong> (str, optional): This describes what choosing the option will do.</p></li>
-<li><dl class="simple">
-<dt><strong>goto</strong> (str, tuple or callable): If string, should be the name of node to go to</dt><dd><p>when this option is selected. If a callable, it has the signature
+<li><p><strong>goto</strong> (str, tuple or callable): If string, should be the name of node to go to
+when this option is selected. If a callable, it has the signature
 <strong>callable(caller[,raw_input][,**kwargs])</strong>. If a tuple, the first element
-is the callable and the second is a dict with the kwargs to pass to
+is the callable and the second is a dict with the <strong>**kwargs</strong> to pass to
 the callable. Those kwargs will also be passed into the next node if possible.
 Such a callable should return either a str or a (str, dict), where the
 string is the name of the next node to go to and the dict is the new,
 (possibly modified) kwarg to pass into the next node. If the callable returns
-None or the empty string, the current node will be revisited.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>exec</strong> (str, callable or tuple, optional): This takes the same input as <strong>goto</strong> above</dt><dd><p>and runs before it. If given a node name, the node will be executed but will not
+None or the empty string, the current node will be revisited.</p></li>
+<li><p><strong>exec</strong> (str, callable or tuple, optional): This takes the same input as <strong>goto</strong> above
+and runs before it. If given a node name, the node will be executed but will not
 be considered the next node. If node/callback returns str or (str, dict), these will
 replace the <strong>goto</strong> step (<strong>goto</strong> callbacks will not fire), with the string being the
 next node name and the optional dict acting as the kwargs-input for the next node.
-If an exec callable returns <strong>None</strong>, the current node is re-run.</p>
-</dd>
-</dl>
-</li>
+If an exec callable returns the empty string (only), the current node is re-run.</p></li>
 </ul>
 </li>
 </ul>
-<p>If key is not given, the option will automatically be identified by
+<p>If <strong>key</strong> is not given, the option will automatically be identified by
 its number 1..N.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in menu_module.py</span>
@@ -188,9 +182,8 @@ same Using <strong>help</strong> will show the help text, otherwise a list of
 available commands while in menu mode.</p>
 <p>The menu tree is exited either by using the in-menu quit command or by
 reaching a node without any options.</p>
-<p>For a menu demo, import CmdTestMenu from this module and add it to
-your default cmdset. Run it with this module, like <strong>testmenu
-evennia.utils.evmenu</strong>.</p>
+<p>For a menu demo, import <strong>CmdTestMenu</strong> from this module and add it to
+your default cmdset. Run it with this module, like <strong>testmenu evennia.utils.evmenu</strong>.</p>
 <div class="section" id="menu-generation-from-template-string">
 <h2>Menu generation from template string<a class="headerlink" href="#menu-generation-from-template-string" title="Permalink to this headline">¶</a></h2>
 <p>In evmenu.py is a helper function <strong>parse_menu_template</strong> that parses a
@@ -280,9 +273,9 @@ allowed, these will be added to the <strong>**kwargs</strong> going into the cal
 strings is only needed if wanting to pass strippable spaces, otherwise the
 key:values will be converted to strings/numbers with literal_eval before passed
 into the callable.</p>
-<p>The “&gt; ” option takes a glob or regex to perform different actions depending on user
-input. Make sure to sort these in increasing order of generality since they
-will be tested in sequence.</p>
+<p>The &gt; option takes a glob or regex to perform different actions depending
+on user input. Make sure to sort these in increasing order of generality since
+they will be tested in sequence.</p>
 <hr class="docutils" />
 <dl class="py exception">
 <dt id="evennia.utils.evmenu.EvMenuError">
@@ -363,6 +356,11 @@ commands the caller can use.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdEvMenuNode.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdEvMenuNode.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command', 'category': 'menu', 'key': '__noinput_command', 'tags': '', 'text': '\n    Menu options.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -496,14 +494,12 @@ menu will <em>not</em> be using this same session anymore after a reload.</p></l
 by default in all nodes of the menu. This will print out the current state of
 the menu. Deactivate for production use! When the debug flag is active, the
 <strong>persistent</strong> flag is deactivated.</p></li>
+<li><p><strong>**kwargs</strong> – All kwargs will become initialization variables on <strong>caller.ndb._menutree</strong>,
+to be available at run.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>any</strong> (<em>any</em>) – All kwargs will become initialization variables on <strong>caller.ndb._evmenu</strong>,
-to be available at run.</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#evennia.utils.evmenu.EvMenuError" title="evennia.utils.evmenu.EvMenuError"><strong>EvMenuError</strong></a> – If the start/end node is not found in menu tree.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#evennia.utils.evmenu.EvMenuError" title="evennia.utils.evmenu.EvMenuError"><strong>EvMenuError</strong></a> – If the start/end node is not found in menu tree.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -603,10 +599,8 @@ a (“nodename”, kwargs) tuple.</p></li>
 <li><p><strong>raw_string</strong> (<em>str</em>) – The raw default string entered on the
 previous node (only used if the node accepts it as an
 argument)</p></li>
+<li><p><strong>**kwargs</strong> – Extra arguments to goto callables.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>any</strong> – Extra arguments to goto callables.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -752,34 +746,29 @@ prepending those options added in the node.</p>
 <li><p><strong>option_generator</strong> (<em>callable</em><em> or </em><em>list</em>) – A list of strings indicating the options, or a callable
 that is called as option_generator(caller) to produce such a list.</p></li>
 <li><p><strong>select</strong> (<em>callable</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – Node to redirect a selection to. Its <strong>**kwargs</strong> will
-contain the <strong>available_choices</strong> list and <strong>selection</strong> will hold one
-of the elements in that list.  If a callable, it will be called as
-<strong>select(caller, menuchoice, **kwargs)</strong> where menuchoice is the
-chosen option as a string and <strong>available_choices</strong> is the list of available
-options offered by the option_generator. The callable whould return
-the name of the target node to goto after this selection (or None to repeat the
-list-node).  Note that if this is not given, the decorated node
-must itself provide a way to continue from the node!</p></li>
+contain the <strong>available_choices</strong> list and <strong>selection</strong> will hold one of the elements in
+that list.  If a callable, it will be called as
+<strong>select(caller, menuchoice, **kwargs)</strong> where menuchoice is the chosen option as a
+string and <strong>available_choices</strong> is a kwarg mapping the option keys to the choices
+offered by the option_generator. The callable whould return the name of the target node
+to goto after this selection (or None to repeat the list-node). Note that if this is not
+given, the decorated node must itself provide a way to continue from the node!</p></li>
 <li><p><strong>pagesize</strong> (<em>int</em>) – How many options to show per page.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_selectfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="c1"># menuchoice would be either &#39;foo&#39; or &#39;bar&#39; here</span>
-    <span class="c1"># kwargs[&#39;available_choices&#39;] would be the list [&#39;foo&#39;, &#39;bar&#39;]</span>
-    <span class="k">return</span> <span class="s2">&quot;the_next_node_to_go_to&quot;</span>
-
-<span class="nd">@list_node</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">],</span> <span class="n">_selectfunc</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">list_node</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">],</span> <span class="n">select</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;describing the list&quot;</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="p">[]</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
-<p>All normal <strong>goto</strong> or <strong>exec</strong> callables returned from the decorated nodes will, if they accept
-<strong>**kwargs</strong>, get a new kwarg <strong>available_choices</strong> injected. This is the ordered list of named
-options (descs) visible on the current node page.</p>
+<p>All normal <strong>goto</strong> or <strong>exec</strong> callables returned from the decorated nodes
+will, if they accept <strong>**kwargs</strong>, get a new kwarg ‘available_choices’
+injected. These are the ordered list of named options (descs) visible
+on the current node page.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -811,6 +800,11 @@ options (descs) visible on the current node page.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdGetInput.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdGetInput.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    Enter your data and press return.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -866,44 +860,29 @@ options (descs) visible on the current node page.</p>
 <dl class="py function">
 <dt id="evennia.utils.evmenu.get_input">
 <code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">get_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">prompt</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#get_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.get_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a helper function for easily request input from
-the caller.</p>
+<dd><p>This is a helper function for easily request input from the caller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Account</em><em> or </em><em>Object</em>) – The entity being asked
-the question. This should usually be an object
-controlled by a user.</p></li>
-<li><p><strong>prompt</strong> (<em>str</em>) – This text will be shown to the user,
-in order to let them know their input is needed.</p></li>
+<li><p><strong>caller</strong> (<em>Account</em><em> or </em><em>Object</em>) – The entity being asked the question. This
+should usually be an object controlled by a user.</p></li>
+<li><p><strong>prompt</strong> (<em>str</em>) – This text will be shown to the user, in order to let them
+know their input is needed.</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – A function that will be called
-when the user enters a reply. It must take three
-arguments: the <strong>caller</strong>, the <strong>prompt</strong> text and the
-<strong>result</strong> of the input given by the user. If the
-callback doesn’t return anything or return False,
-the input prompt will be cleaned up and exited. If
-returning True, the prompt will remain and continue to
-accept input.</p></li>
+when the user enters a reply. It must take three arguments: the
+<strong>caller</strong>, the <strong>prompt</strong> text and the <strong>result</strong> of the input given by
+the user. If the callback doesn’t return anything or return False,
+the input prompt will be cleaned up and exited. If returning True,
+the prompt will remain and continue to accept input.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – This allows to specify the
-session to send the prompt to. It’s usually only
-needed if <strong>caller</strong> is an Account in multisession modes
-greater than 2. The session is then updated by the
-command and is available (for example in callbacks)
-through <strong>caller.ndb.getinput._session</strong>.</p></li>
-<li><p><strong>args</strong> (<em>optional</em>) – Extra arguments will be
-passed to the fall back function as a list ‘args’
-and all keyword arguments as a dictionary ‘kwargs’.
-To utilise <strong>*args</strong> and <strong>**kwargs</strong>, a value for the
-session argument must be provided (None by default)
-and the callback function must take <strong>*args</strong> and
-<strong>**kwargs</strong> as arguments.</p></li>
-<li><p><strong>kwargs</strong> (<em>optional</em>) – Extra arguments will be
-passed to the fall back function as a list ‘args’
-and all keyword arguments as a dictionary ‘kwargs’.
-To utilise <strong>*args</strong> and <strong>**kwargs</strong>, a value for the
-session argument must be provided (None by default)
-and the callback function must take <strong>*args</strong> and
-<strong>**kwargs</strong> as arguments.</p></li>
+session to send the prompt to. It’s usually only needed if <strong>caller</strong>
+is an Account in multisession modes greater than 2. The session is
+then updated by the command and is available (for example in
+callbacks) through <strong>caller.ndb.getinput._session</strong>.</p></li>
+<li><p><strong>*args</strong> (<em>any</em>) – Extra arguments to pass to <strong>callback</strong>.  To utilise <strong>*args</strong>
+(and <strong>**kwargs</strong>), a value for the <strong>session</strong> argument must also be
+provided.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Extra kwargs to pass to <strong>callback</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -911,23 +890,21 @@ and the callback function must take <strong>*args</strong> and
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The result value sent to the callback is raw and not
-processed in any way. This means that you will get
-the ending line return character from most types of
-client inputs. So make sure to strip that before
-doing a comparison.</p>
-<p>When the prompt is running, a temporary object
-<strong>caller.ndb._getinput</strong> is stored; this will be removed
-when the prompt finishes.
-If you need the specific Session of the caller (which
-may not be easy to get if caller is an account in higher
-multisession modes), then it is available in the
-callback through <strong>caller.ndb._getinput._session</strong>.</p>
-<p>Chaining get_input functions will result in the caller
-stacking ever more instances of InputCmdSets. Whilst
-they will all be cleared on concluding the get_input
-chain, EvMenu should be considered for anything beyond
-a single question.</p>
+<p>The result value sent to the callback is raw and not processed in any
+way. This means that you will get the ending line return character from
+most types of client inputs. So make sure to strip that before doing a
+comparison.</p>
+<p>When the prompt is running, a temporary object <strong>caller.ndb._getinput</strong>
+is stored; this will be removed when the prompt finishes.</p>
+<p>If you need the specific Session of the caller (which may not be easy
+to get if caller is an account in higher multisession modes), then it
+is available in the callback through <strong>caller.ndb._getinput._session</strong>.
+This is why the <strong>session</strong> is required as input.</p>
+<p>It’s not recommended to ‘chain’ <strong>get_input</strong> into a sequence of
+questions. This will result in the caller stacking ever more instances
+of InputCmdSets. While they will all be cleared on concluding the
+get_input chain, EvMenu should be considered for anything beyond a
+single question.</p>
 </dd></dl>
 
 <dl class="py function">

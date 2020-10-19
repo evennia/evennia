@@ -1,7 +1,5 @@
 # Starting to code Evennia
 
-[prev lesson](./Tutorial-World-Introduction) | [next lesson](./Gamedir-Overview)
-
 Time to dip our toe into some coding! Evennia is written and extended in [Python](http://python.org), which
 is a mature and professional programming language that is very fast to work with.
 
@@ -651,4 +649,3 @@ practice you will be writing most your code in Python modules.
 To that end we also created a first new Python module in the `mygame/` game dir, then imported and used it.
 Now let's look at the rest of the stuff you've got going on inside that `mygame/` folder ...
 
-[prev lesson](./Tutorial-World-Introduction) | [next lesson](./Gamedir-Overview)

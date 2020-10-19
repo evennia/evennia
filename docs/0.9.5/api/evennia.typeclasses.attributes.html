@@ -44,9 +44,9 @@ both pure-string values and pickled arbitrary data.</p>
 the Attribute- and NickHandlers as well as the <strong>NAttributeHandler</strong>,
 which is a non-db version of Attributes.</p>
 <dl class="py class">
-<dt id="evennia.typeclasses.attributes.Attribute">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">Attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code></a></p>
+<dt id="evennia.typeclasses.attributes.IAttribute">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">IAttribute</code><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Attributes are things that are specific to different types of objects. For
 example, a drink container needs to store its fill level, whereas an exit
 needs to store its open/closed/locked/unlocked state. These are done via
@@ -81,6 +81,106 @@ attributes on the fly as we like.</p>
 </ul>
 </dd>
 </dl>
+<p>This class is an API/Interface/Abstract base class; do not instantiate it directly.</p>
+<dl class="py attribute">
+<dt id="evennia.typeclasses.attributes.IAttribute.locks">
+<code class="sig-name descname">locks</code><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttribute.locks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.key">
+<em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.strvalue">
+<em class="property">property </em><code class="sig-name descname">strvalue</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.strvalue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.category">
+<em class="property">property </em><code class="sig-name descname">category</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.model">
+<em class="property">property </em><code class="sig-name descname">model</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.attrtype">
+<em class="property">property </em><code class="sig-name descname">attrtype</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.attrtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.date_created">
+<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.date_created" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.lock_storage">
+<em class="property">property </em><code class="sig-name descname">lock_storage</code><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttribute.access">
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttribute.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttribute.access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if another object has permission to access.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>object</em>) – Entity trying to access this one.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of access sought, see
+the lock documentation.</p></li>
+<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – What result to return if no lock
+of access_type was found. The default, <strong>False</strong>, means a lockdown
+policy, only allowing explicit access.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – Not used; here to make the API consistent with
+other access calls.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (bool)</em> – If the lock was passed or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.attributes.InMemoryAttribute">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">InMemoryAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pk</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.IAttribute</span></code></a></p>
+<p>This Attribute is used purely for NAttributes/NAttributeHandler. It has no database backend.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttribute.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pk</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttribute.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttribute.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an Attribute that exists only in Memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pk</strong> (<em>int</em>) – This is a fake ‘primary key’ / id-field. It doesn’t actually have to be unique, but is fed an
+incrementing number from the InMemoryBackend by default. This is needed only so Attributes can be
+sorted. Some parts of the API also see the lack of a .pk field as a sign that the Attribute was
+deleted.</p></li>
+<li><p><strong>**kwargs</strong> – Other keyword arguments are used to construct the actual Attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttribute.value">
+<em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttribute.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.attributes.Attribute">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">Attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.IAttribute</span></code></a>, <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code></a></p>
+<p>This attribute is stored via Django. Most Attributes will be using this class.</p>
 <dl class="py attribute">
 <dt id="evennia.typeclasses.attributes.Attribute.db_key">
 <code class="sig-name descname">db_key</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.db_key" title="Permalink to this definition">¶</a></dt>
@@ -137,41 +237,6 @@ object the first time, the query is executed.</p>
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.typeclasses.attributes.Attribute.locks">
-<code class="sig-name descname">locks</code><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#Attribute.locks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.locks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.key">
-<em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.strvalue">
-<em class="property">property </em><code class="sig-name descname">strvalue</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.strvalue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.category">
-<em class="property">property </em><code class="sig-name descname">category</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.model">
-<em class="property">property </em><code class="sig-name descname">model</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.attrtype">
-<em class="property">property </em><code class="sig-name descname">attrtype</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.attrtype" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.date_created">
-<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.date_created" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.Attribute.lock_storage">
 <em class="property">property </em><code class="sig-name descname">lock_storage</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.lock_storage" title="Permalink to this definition">¶</a></dt>
@@ -184,29 +249,6 @@ object the first time, the query is executed.</p>
 We cannot cache here since it makes certain cases (such
 as storing a dbobj which is then deleted elsewhere) out-of-sync.
 The overhead of unpickling seems hard to avoid.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.Attribute.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'attrread'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#Attribute.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines if another object has permission to access.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>accessing_obj</strong> (<em>object</em>) – Entity trying to access this one.</p></li>
-<li><p><strong>access_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of access sought, see
-the lock documentation.</p></li>
-<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – What result to return if no lock
-of access_type was found. The default, <strong>False</strong>, means a lockdown
-policy, only allowing explicit access.</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – Not used; here to make the API consistent with
-other access calls.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>result (bool)</em> – If the lock was passed or not.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py exception">
@@ -237,6 +279,18 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.attrtype">
+<em class="property">property </em><code class="sig-name descname">attrtype</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.attrtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_attrtype</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.category">
+<em class="property">property </em><code class="sig-name descname">category</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.category" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_category</strong>.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="evennia.typeclasses.attributes.Attribute.channeldb_set">
 <code class="sig-name descname">channeldb_set</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.channeldb_set" title="Permalink to this definition">¶</a></dt>
@@ -254,6 +308,12 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.date_created">
+<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.date_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_date_created</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.typeclasses.attributes.Attribute.get_next_by_db_date_created">
 <code class="sig-name descname">get_next_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.get_next_by_db_date_created" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -268,6 +328,18 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <code class="sig-name descname">id</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.key">
+<em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_key</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.model">
+<em class="property">property </em><code class="sig-name descname">model</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_model</strong>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -307,6 +379,12 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.Attribute.strvalue">
+<em class="property">property </em><code class="sig-name descname">strvalue</code><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.strvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_strvalue</strong>.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="evennia.typeclasses.attributes.Attribute.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.typeclasses.attributes.Attribute.typename" title="Permalink to this definition">¶</a></dt>
@@ -315,20 +393,543 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">IAttributeBackend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract interface for the backends used by the Attribute Handler.</p>
+<p>All Backends must implement this base class.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.query_all">
+<code class="sig-name descname">query_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.query_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.query_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch all Attributes from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>attrlist (list)</em> – A list of Attribute objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.query_key">
+<code class="sig-name descname">query_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.query_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.query_key" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key of the Attribute being searched for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category of the desired Attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attribute (IAttribute)</em> – A single Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.query_category">
+<code class="sig-name descname">query_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.query_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.query_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns every matching Attribute as a list, given a category.</p>
+<p>This method calls up whatever storage the backend uses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attrs (list)</em> – The discovered Attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frontend for .get_cache. Retrieves Attribute(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – Attribute key to query for</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – Attribiute category</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>args (list)</em> –</p>
+<dl class="simple">
+<dt>Returns a list of zero or more matches</dt><dd><p>found from cache or database.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.reset_cache">
+<code class="sig-name descname">reset_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.reset_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.reset_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset cache from the outside.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_create_attribute">
+<code class="sig-name descname">do_create_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_create_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_create_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the hard work of actually creating Attributes, whatever is needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The Attribute’s key.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The Attribute’s category, or None</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – Any locks for the Attribute.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value of the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – Signifies if this is a strvalue Attribute. Value MUST be a string or
+this will lead to Trouble. Ignored for InMemory attributes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attr (IAttribute)</em> – The new Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.create_attribute">
+<code class="sig-name descname">create_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.create_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.create_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Attribute (using the class specified for the backend), (optionally) caches it, and returns it.</p>
+<p>This MUST actively save the Attribute to whatever database backend is used, AND
+call self.set_cache(key, category, new_attrobj)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The Attribute’s key.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The Attribute’s category, or None</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – Any locks for the Attribute.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value of the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – Signifies if this is a strvalue Attribute. Value MUST be a string or
+this will lead to Trouble. Ignored for InMemory attributes.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether to cache the new Attribute</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attr (IAttribute)</em> – The new Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute">
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sets a new Value to an Attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_batch_update_attribute">
+<code class="sig-name descname">do_batch_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_obj</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lock_storage</span></em>, <em class="sig-param"><span class="n">new_value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_batch_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_batch_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called opnly by batch add. For the database backend, this is a method
+of updating that can alter category and lock-storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr_obj</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being altered.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The attribute’s (new) category.</p></li>
+<li><p><strong>lock_storage</strong> (<em>str</em>) – The attribute’s new locks.</p></li>
+<li><p><strong>new_value</strong> (<em>obj</em>) – The Attribute’s new value.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – Signifies if this is a strvalue Attribute. Value MUST be a string or
+this will lead to Trouble. Ignored for InMemory attributes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_batch_finish">
+<code class="sig-name descname">do_batch_finish</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_batch_finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_batch_finish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after batch_add completed. Used for handling database operations
+and/or caching complications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr_objs</strong> (<em>list of IAttribute</em>) – The Attributes created/updated thus far.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.batch_add">
+<code class="sig-name descname">batch_add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.batch_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.batch_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch-version of <strong>.add()</strong>. This is more efficient than repeat-calling
+<strong>.add</strong> when having many Attributes to add.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em>) – <p>Tuples of varying length representing the
+Attribute to add to this object. Supported tuples are</p>
+<ul class="simple">
+<li><p>(key, value)</p></li>
+<li><p>(key, value, category)</p></li>
+<li><p>(key, value, category, lockstring)</p></li>
+<li><p>(key, value, category, lockstring, default_access)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If trying to pass a non-iterable as argument.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The indata tuple order matters, so if you want a lockstring but no
+category, set the category to <strong>None</strong>. This method does not have the
+ability to check editing permissions and is mainly used internally.
+It does not use the normal <strong>self.add</strong> but applies the Attributes
+directly to the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_delete_attribute">
+<code class="sig-name descname">do_delete_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the hard work of actually deleting things.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.delete_attribute">
+<code class="sig-name descname">delete_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an Attribute, deletes it. Also remove it from cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.update_attribute">
+<code class="sig-name descname">update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply updates an Attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.do_batch_delete">
+<code class="sig-name descname">do_batch_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_batch_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_batch_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of attributes, deletes them all.
+The default implementation is fine, but this is overridable since some databases may allow
+for a better method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attribute_list</strong> (<em>list of IAttribute</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.clear_attributes">
+<code class="sig-name descname">clear_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">default_access</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.clear_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.clear_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all Attributes on this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, clear only Attributes
+of this category.</p></li>
+<li><p><strong>accessing_obj</strong> (<em>object</em><em>, </em><em>optional</em>) – If given, check the
+<strong>attredit</strong> lock on each Attribute before continuing.</p></li>
+<li><p><strong>default_access</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use this permission as
+fallback if <strong>access_obj</strong> is given but there is no lock of
+type <strong>attredit</strong> on the Attribute in question.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.IAttributeBackend.get_all_attributes">
+<code class="sig-name descname">get_all_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.get_all_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.get_all_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply returns all Attributes of this object, sorted by their IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>attributes (list of IAttribute)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">InMemoryAttributeBackend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.IAttributeBackend" title="evennia.typeclasses.attributes.IAttributeBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.IAttributeBackend</span></code></a></p>
+<p>This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and normally lost
+on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes it manages, but these are
+of little importance beyond sorting and satisfying the caching logic to know an Attribute hasn’t been
+deleted out from under the cache’s nose.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.query_all">
+<code class="sig-name descname">query_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.query_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch all Attributes from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>attrlist (list)</em> – A list of Attribute objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.query_key">
+<code class="sig-name descname">query_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.query_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_key" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key of the Attribute being searched for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category of the desired Attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attribute (IAttribute)</em> – A single Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.query_category">
+<code class="sig-name descname">query_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.query_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns every matching Attribute as a list, given a category.</p>
+<p>This method calls up whatever storage the backend uses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attrs (list)</em> – The discovered Attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_create_attribute">
+<code class="sig-name descname">do_create_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_create_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_create_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>See parent class.</p>
+<p>strvalue has no meaning for InMemory attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute">
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sets a new Value to an Attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_update_attribute">
+<code class="sig-name descname">do_batch_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_obj</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lock_storage</span></em>, <em class="sig-param"><span class="n">new_value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_batch_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>No need to bother saving anything. Just set some values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_finish">
+<code class="sig-name descname">do_batch_finish</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_batch_finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_finish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nothing to do here for In-Memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr_objs</strong> (<em>list of IAttribute</em>) – The Attributes created/updated thus far.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute">
+<code class="sig-name descname">do_delete_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the Attribute from local storage. Once it’s out of the cache, garbage collection will handle the rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">ModelAttributeBackend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.IAttributeBackend" title="evennia.typeclasses.attributes.IAttributeBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.IAttributeBackend</span></code></a></p>
+<p>Uses Django models for storing Attributes.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.query_all">
+<code class="sig-name descname">query_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.query_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.query_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch all Attributes from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>attrlist (list)</em> – A list of Attribute objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.query_key">
+<code class="sig-name descname">query_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.query_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.query_key" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key of the Attribute being searched for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category of the desired Attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attribute (IAttribute)</em> – A single Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.query_category">
+<code class="sig-name descname">query_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.query_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.query_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns every matching Attribute as a list, given a category.</p>
+<p>This method calls up whatever storage the backend uses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attrs (list)</em> – The discovered Attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_create_attribute">
+<code class="sig-name descname">do_create_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_create_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_create_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the hard work of actually creating Attributes, whatever is needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The Attribute’s key.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The Attribute’s category, or None</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – Any locks for the Attribute.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value of the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – Signifies if this is a strvalue Attribute. Value MUST be a string or
+this will lead to Trouble. Ignored for InMemory attributes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>attr (IAttribute)</em> – The new Attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute">
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sets a new Value to an Attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
+<li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_update_attribute">
+<code class="sig-name descname">do_batch_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_obj</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lock_storage</span></em>, <em class="sig-param"><span class="n">new_value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_batch_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called opnly by batch add. For the database backend, this is a method
+of updating that can alter category and lock-storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr_obj</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being altered.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The attribute’s (new) category.</p></li>
+<li><p><strong>lock_storage</strong> (<em>str</em>) – The attribute’s new locks.</p></li>
+<li><p><strong>new_value</strong> (<em>obj</em>) – The Attribute’s new value.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – Signifies if this is a strvalue Attribute. Value MUST be a string or
+this will lead to Trouble. Ignored for InMemory attributes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_finish">
+<code class="sig-name descname">do_batch_finish</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_batch_finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_finish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after batch_add completed. Used for handling database operations
+and/or caching complications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr_objs</strong> (<em>list of IAttribute</em>) – The Attributes created/updated thus far.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_delete_attribute">
+<code class="sig-name descname">do_delete_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the hard work of actually deleting things.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.typeclasses.attributes.AttributeHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">AttributeHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">AttributeHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">backend_class</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Handler for adding Attributes to the object.</p>
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize handler.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.AttributeHandler.reset_cache">
-<code class="sig-name descname">reset_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.reset_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.reset_cache" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset cache from the outside.</p>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">backend_class</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the AttributeHandler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed object), etc.</p></li>
+<li><p><strong>backend_class</strong> (<em>IAttributeBackend class</em>) – The class of the backend to use.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -443,14 +1044,12 @@ repeat-calling add when having many Attributes to add.</p>
 <dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em>) – <p>Each argument should be a tuples (can be of varying
 length) representing the Attribute to add to this object.
 Supported tuples are</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>(key, value)</strong></p></li>
-<li><p><strong>(key, value, category)</strong></p></li>
-<li><p><strong>(key, value, category, lockstring)</strong></p></li>
-<li><p><strong>(key, value, category, lockstring, default_access)</strong></p></li>
+<ul class="simple">
+<li><p>(key, value)</p></li>
+<li><p>(key, value, category)</p></li>
+<li><p>(key, value, category, lockstring)</p></li>
+<li><p>(key, value, category, lockstring, default_access)</p></li>
 </ul>
-</div></blockquote>
 </p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -549,6 +1148,34 @@ Attributes has no lock of type <strong>attrread</strong> defined on them.</p></l
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.AttributeHandler.reset_cache">
+<code class="sig-name descname">reset_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.reset_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.reset_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.attributes.DbHolder">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">DbHolder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">manager_name</span><span class="o">=</span><span class="default_value">'attributes'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#DbHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.DbHolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holder for allowing property access of attributes</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.DbHolder.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">manager_name</span><span class="o">=</span><span class="default_value">'attributes'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#DbHolder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.DbHolder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.DbHolder.get_all">
+<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#DbHolder.get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.DbHolder.get_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.DbHolder.all">
+<em class="property">property </em><code class="sig-name descname">all</code><a class="headerlink" href="#evennia.typeclasses.attributes.DbHolder.all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -570,17 +1197,15 @@ matched by the in_template.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>(regex, str)</em> –</p>
-<dl class="simple">
-<dt>Regex to match against strings and a template</dt><dd><p>Template with markers <strong>{arg1}</strong>, <strong>{arg2}</strong>, etc for
-replacement using the standard <strong>.format</strong> method.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>regex  (regex)</em> – Regex to match against strings
+template (str): Template with markers <strong>**{arg1}, {arg2}**</strong>, etc for
+replacement using the standard .format method.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#evennia.typeclasses.attributes.NickTemplateInvalid" title="evennia.typeclasses.attributes.NickTemplateInvalid"><strong>attributes.NickTemplateInvalid</strong></a> – If the in/out template does not have a matching
-number of $args.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evennia.typecalasses.attributes.NickTemplateInvalid</strong> – If the in/out</p></li>
+<li><p><strong>template does not have a matching number of $args.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -613,7 +1238,15 @@ They also always use the <strong>strvalue</strong> fields for their data.</p>
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.NickHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NickHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NickHandler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize handler.</p>
+<dd><p>Setup the AttributeHandler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed object), etc.</p></li>
+<li><p><strong>backend_class</strong> (<em>IAttributeBackend class</em>) – The class of the backend to use.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -717,102 +1350,6 @@ with nicks stored on the Account level.</p></li>
 <dd class="field-even"><p><p><em>string (str)</em> –</p>
 <dl class="simple">
 <dt>A string with matching keys replaced with</dt><dd><p>their nick equivalents.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">NAttributeHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This stand-alone handler manages non-database saving.
-It is similar to <strong>AttributeHandler</strong> and is used
-by the <strong>.ndb</strong> handler in the same way as <strong>.db</strong> does
-for the <strong>AttributeHandler</strong>.</p>
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialized on the object</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.has">
-<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.has" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if object has this attribute or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The Nattribute key to check.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>has_nattribute (bool)</em> – If Nattribute is set or not.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the named key value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The Nattribute key to get.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the value of the Nattribute.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add new key and value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The name of Nattribute to add.</p></li>
-<li><p><strong>value</strong> (<em>any</em>) – The value to store.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove Nattribute from storage.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The name of the Nattribute to remove.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove all NAttributes from handler.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.attributes.NAttributeHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_tuples</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeHandler.all" title="Permalink to this definition">¶</a></dt>
-<dd><p>List the contents of the handler.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>return_tuples</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the Nattributes
-are returns as a list of keys or as a list of <strong>(key, value)</strong>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>nattributes (list)</em> –</p>
-<dl class="simple">
-<dt>A list of keys <strong>[key, key, …]</strong> or a</dt><dd><p>list of tuples <strong>[(key, value), …]</strong> depending on the
-setting of <strong>return_tuples</strong>.</p>
 </dd>
 </dl>
 </p>

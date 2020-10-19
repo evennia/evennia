@@ -19,3 +19,5 @@ and has a simple tech-demo to show it all works together. But there is no real c
 point - we need to actually make a world. 
 In part four we will expand our tech demo into a more full-fledged (if small) game by use of batchcommand
 and batchcode processors. 
+
+_TODO_

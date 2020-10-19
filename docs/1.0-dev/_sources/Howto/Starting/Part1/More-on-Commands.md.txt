@@ -1,7 +1,5 @@
 # More about Commands
 
-[prev lesson](./Adding-Commands) | [next lesson](./Creating-Things)
-
 In this lesson we learn some basics about parsing the input of Commands. We will 
 also learn how to add, modify and extend Evennia's default commands. 
 
@@ -497,4 +495,3 @@ In this lesson we got into some more advanced string formatting - many of those 
 the future! We also made a functional sword. Finally we got into how to add to, extend and replace a default 
 command on ourselves.
 
-[prev lesson](./Adding-Commands) | [next lesson](./Creating-Things)

@@ -88,6 +88,11 @@ the line is just added to the editor buffer).</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemNoInput.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    This is called when there is no input given\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -124,6 +129,11 @@ the line is just added to the editor buffer).</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemNoMatch.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    No command was found matching the given input.\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -172,6 +182,11 @@ the <strong>raw_cmdname</strong> is the cmdname unmodified by eventual prefix-st
 <dl class="py attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemMultimatch.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__multimatch_command', 'tags': '', 'text': &quot;\n    Multiple command matches.\n\n    The cmdhandler adds a special attribute 'matches' to this\n    system command.\n\n      matches = [(cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname) , (cmdname, ...), ...]\n\n    Here, `cmdname` is the command's name and `args` the rest of the incoming string,\n    without said command name. `cmdobj` is the Command instance, the cmdlen is\n    the same as len(cmdname) and mratio is a measure of how big a part of the\n    full input string the cmdname takes up - an exact match would be 1.0. Finally,\n    the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -286,6 +301,11 @@ the already formatted input.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemSendToChannel.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__send_to_channel_command', 'tags': '', 'text': '\n    This is a special command that the cmdhandler calls\n    when it detects that the command given matches\n    an existing Channel object key (or alias).\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>12. Django Database queries &#8212; Evennia 1.0-dev documentation</title>
+    <title>Django Database queries &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Evennia Starting Tutorial (Part 2)" href="../Part2/Starting-Part2.html" />
+    <link rel="prev" title="Searching for things" href="Searching-Things.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../Part2/Starting-Part2.html" title="Evennia Starting Tutorial (Part 2)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Searching-Things.html" title="Searching for things"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">12. </span>Django Database queries</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Django Database queries</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="django-database-queries">
-<h1><span class="section-number">12. </span>Django Database queries<a class="headerlink" href="#django-database-queries" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Searching-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="../Part2/Starting-Part2.html"><span class="doc">next lesson</span></a></p>
+<h1>Django Database queries<a class="headerlink" href="#django-database-queries" title="Permalink to this headline">¶</a></h1>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>More advanced lesson!</p>
@@ -130,7 +138,7 @@ found.</p></li>
 return querysets, which means you could in principle keep adding queries to their results as well.</p>
 </div></blockquote>
 <div class="section" id="queryset-field-lookups">
-<h2><span class="section-number">12.1. </span>Queryset field lookups<a class="headerlink" href="#queryset-field-lookups" title="Permalink to this headline">¶</a></h2>
+<h2>Queryset field lookups<a class="headerlink" href="#queryset-field-lookups" title="Permalink to this headline">¶</a></h2>
 <p>Above we found roses with exactly the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>. This is an <em>exact</em> match that is <em>case sensitive</em>,
 so it would not find <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is case-sensitive and the same as =</span>
@@ -170,7 +178,7 @@ comparisons (same for <code class="docutils literal notranslate"><span class="pr
 <a class="reference external" href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#field-lookups">django docs</a> on the subject.</p>
 </div>
 <div class="section" id="get-that-werewolf">
-<h2><span class="section-number">12.2. </span>Get that werewolf …<a class="headerlink" href="#get-that-werewolf" title="Permalink to this headline">¶</a></h2>
+<h2>Get that werewolf …<a class="headerlink" href="#get-that-werewolf" title="Permalink to this headline">¶</a></h2>
 <p>Let’s see if we can make a query for the werewolves in the moonlight we mentioned at the beginning
 of this section.</p>
 <p>Firstly, we make ourselves and our current location match the criteria, so we can test:</p>
@@ -227,7 +235,7 @@ separate fields <em>on</em> that object like <code class="docutils literal notra
 </div></blockquote>
 </div>
 <div class="section" id="complex-queries">
-<h2><span class="section-number">12.3. </span>Complex queries<a class="headerlink" href="#complex-queries" title="Permalink to this headline">¶</a></h2>
+<h2>Complex queries<a class="headerlink" href="#complex-queries" title="Permalink to this headline">¶</a></h2>
 <p>All examples so far used <code class="docutils literal notranslate"><span class="pre">AND</span></code> relations. The arguments to <code class="docutils literal notranslate"><span class="pre">.filter</span></code> are added together with <code class="docutils literal notranslate"><span class="pre">AND</span></code>
 (“we want tag room to be “monlit” <em>and</em> lycantrhopy be &gt; 2”).</p>
 <p>For queries using <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> we need Django’s
@@ -323,7 +331,7 @@ same Character via different paths, so we add <code class="docutils literal notr
 one instance of each Character in the result.</p>
 </div>
 <div class="section" id="annotations">
-<h2><span class="section-number">12.4. </span>Annotations<a class="headerlink" href="#annotations" title="Permalink to this headline">¶</a></h2>
+<h2>Annotations<a class="headerlink" href="#annotations" title="Permalink to this headline">¶</a></h2>
 <p>What if we wanted to filter on some condition that isn’t represented easily by a field on the
 object? Maybe we want to find rooms only containing five or more objects?</p>
 <p>We <em>could</em> do it like this (don’t actually do it this way!):</p>
@@ -380,7 +388,7 @@ use <code class="docutils literal notranslate"><span class="pre">num_objects__gt
 harder to get one’s head around but much more efficient than lopping over all objects in Python.</p>
 </div>
 <div class="section" id="f-objects">
-<h2><span class="section-number">12.5. </span>F-objects<a class="headerlink" href="#f-objects" title="Permalink to this headline">¶</a></h2>
+<h2>F-objects<a class="headerlink" href="#f-objects" title="Permalink to this headline">¶</a></h2>
 <p>What if we wanted to compare two dynamic parameters against one another in a query? For example, what if
 instead of having 5 or more objects, we only wanted objects that had a bigger inventory than they had
 tags (silly example, but …)? This can be with Django’s
@@ -412,7 +420,7 @@ directly use these results in the filter. Using <code class="docutils literal no
 condition to be calculated on the fly, completely within the database.</p>
 </div>
 <div class="section" id="grouping-and-returning-only-certain-properties">
-<h2><span class="section-number">12.6. </span>Grouping and returning only certain properties<a class="headerlink" href="#grouping-and-returning-only-certain-properties" title="Permalink to this headline">¶</a></h2>
+<h2>Grouping and returning only certain properties<a class="headerlink" href="#grouping-and-returning-only-certain-properties" title="Permalink to this headline">¶</a></h2>
 <p>Suppose you used tags to mark someone belonging to an organization. Now you want to make a list and
 need to get the membership count of every organization all at once.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.annotate</span></code>, <code class="docutils literal notranslate"><span class="pre">.values_list</span></code>, and <code class="docutils literal notranslate"><span class="pre">.order_by</span></code> queryset methods are useful for this. Normally when
@@ -461,12 +469,11 @@ in a format like the following:</p>
 </div>
 </div>
 <div class="section" id="conclusions">
-<h2><span class="section-number">12.7. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>We have covered a lot of ground in this lesson and covered several more complex topics. Knowing how to
 query using Django is a powerful skill to have.</p>
 <p>This concludes the first part of the Evennia starting tutorial - “What we have”. Now we have a good foundation
 to understand how to plan what our tutorial game will be about.</p>
-<p><a class="reference internal" href="Searching-Things.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="../Part2/Starting-Part2.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -492,18 +499,24 @@ to understand how to plan what our tutorial game will be about.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">12. Django Database queries</a><ul>
-<li><a class="reference internal" href="#queryset-field-lookups">12.1. Queryset field lookups</a></li>
-<li><a class="reference internal" href="#get-that-werewolf">12.2. Get that werewolf …</a></li>
-<li><a class="reference internal" href="#complex-queries">12.3. Complex queries</a></li>
-<li><a class="reference internal" href="#annotations">12.4. Annotations</a></li>
-<li><a class="reference internal" href="#f-objects">12.5. F-objects</a></li>
-<li><a class="reference internal" href="#grouping-and-returning-only-certain-properties">12.6. Grouping and returning only certain properties</a></li>
-<li><a class="reference internal" href="#conclusions">12.7. Conclusions</a></li>
+<li><a class="reference internal" href="#">Django Database queries</a><ul>
+<li><a class="reference internal" href="#queryset-field-lookups">Queryset field lookups</a></li>
+<li><a class="reference internal" href="#get-that-werewolf">Get that werewolf …</a></li>
+<li><a class="reference internal" href="#complex-queries">Complex queries</a></li>
+<li><a class="reference internal" href="#annotations">Annotations</a></li>
+<li><a class="reference internal" href="#f-objects">F-objects</a></li>
+<li><a class="reference internal" href="#grouping-and-returning-only-certain-properties">Grouping and returning only certain properties</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Searching-Things.html"
+                        title="previous chapter">Searching for things</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../Part2/Starting-Part2.html"
+                        title="next chapter">Evennia Starting Tutorial (Part 2)</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -530,8 +543,15 @@ to understand how to plan what our tutorial game will be about.</p>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../Part2/Starting-Part2.html" title="Evennia Starting Tutorial (Part 2)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Searching-Things.html" title="Searching for things"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">12. </span>Django Database queries</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Django Database queries</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
