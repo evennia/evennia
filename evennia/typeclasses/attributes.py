@@ -578,8 +578,8 @@ class IAttributeBackend:
 
     def do_batch_finish(self, attr_objs):
         """
-        Called only by batch_add. Used for handling database operations and/or
-        caching complications.
+        Called after batch_add completed. Used for handling database operations
+        and/or caching complications.
 
         Args:
             attr_objs (list of IAttribute): The Attributes created/updated thus far.
@@ -1098,10 +1098,11 @@ class AttributeHandler:
             *args (tuple): Each argument should be a tuples (can be of varying
                 length) representing the Attribute to add to this object.
                 Supported tuples are
-                    - `(key, value)`
-                    - `(key, value, category)`
-                    - `(key, value, category, lockstring)`
-                    - `(key, value, category, lockstring, default_access)`
+
+                - (key, value)
+                - (key, value, category)
+                - (key, value, category, lockstring)
+                - (key, value, category, lockstring, default_access)
 
         Keyword Args:
             strattr (bool): If `True`, value must be a string. This
