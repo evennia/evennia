@@ -6,7 +6,7 @@
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 
-### Evennia 0.95 (master)
+### Evennia 0.9.5 (master)
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
@@ -81,6 +81,7 @@ without arguments starts a full interactive Python console.
 - `EvMenu.msg(txt)` added as a central place to send text to the user, makes it easier to override.
   Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
 - New EvMenu templating system for quickly building simpler EvMenus without as much code.
+- Add `Command.client_height()` method to match existing `.client_width` (stricako)
 
 
 ## Evennia 0.9 (2018-2019)
