@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>4. Overview of your new Game Dir &#8212; Evennia 1.0-dev documentation</title>
+    <title>Overview of your new Game Dir &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Python Classes and objects" href="Python-classes-and-objects.html" />
+    <link rel="prev" title="Starting to code Evennia" href="Python-basic-introduction.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Python-classes-and-objects.html" title="Python Classes and objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Python-basic-introduction.html" title="Starting to code Evennia"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>Overview of your new Game Dir</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of your new Game Dir</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="overview-of-your-new-game-dir">
-<h1><span class="section-number">4. </span>Overview of your new Game Dir<a class="headerlink" href="#overview-of-your-new-game-dir" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">next lesson</span></a></p>
+<h1>Overview of your new Game Dir<a class="headerlink" href="#overview-of-your-new-game-dir" title="Permalink to this headline">¶</a></h1>
 <p>Next we will take a little detour to look at the <em>Tutorial World</em>. This is a little solo adventure
 that comes with Evennia, a showcase for some of the things that are possible.</p>
 <p>Now we have ‘run the game’ a bit and started with our forays into Python from inside Evennia.
@@ -99,7 +107,7 @@ Or a new folder ‘rules’ for your RPG rules? This is fine. If you move things
 to update Evennia’s default settings to point to the right places in the new structure.</p>
 </div></blockquote>
 <div class="section" id="commands">
-<h2><span class="section-number">4.1. </span>commands/<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<h2>commands/<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">commands/</span></code> folder holds Python modules related to creating and extending the <a class="reference internal" href="../../../Components/Commands.html"><span class="doc">Commands</span></a>
 of Evennia. These manifest in game like the server understanding input like <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">dig</span></code>.</p>
 <div class="sidebar">
@@ -119,7 +127,7 @@ from <code class="docutils literal notranslate"><span class="pre">command.py</sp
 </ul>
 </div>
 <div class="section" id="server">
-<h2><span class="section-number">4.2. </span>server/<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
+<h2>server/<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
 <p>This folder contains resource necessary for running Evennia. Contrary to the other folders, the structure
 of this should be kept the way it is.</p>
 <ul class="simple">
@@ -129,13 +137,13 @@ make a copy once you have set up everything you need and just copy that back to 
 If you delete this file you can easily recreate it by running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>.</p></li>
 </ul>
 <div class="section" id="server-logs">
-<h3><span class="section-number">4.2.1. </span>server/logs/<a class="headerlink" href="#server-logs" title="Permalink to this headline">¶</a></h3>
+<h3>server/logs/<a class="headerlink" href="#server-logs" title="Permalink to this headline">¶</a></h3>
 <p>This holds the server logs. When you do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code>, the evennia program is in fact tailing and concatenating
 the <code class="docutils literal notranslate"><span class="pre">server.log</span></code> and <code class="docutils literal notranslate"><span class="pre">portal.log</span></code> files in this directory. The logs are rotated every week. Depending on your settings,
 other logs, like the webserver HTTP request log can also be found here.</p>
 </div>
 <div class="section" id="server-conf">
-<h3><span class="section-number">4.2.2. </span>server/conf/<a class="headerlink" href="#server-conf" title="Permalink to this headline">¶</a></h3>
+<h3>server/conf/<a class="headerlink" href="#server-conf" title="Permalink to this headline">¶</a></h3>
 <p>This contains all configuration files of the Evennia server. These are regular Python modules which
 means that they must be extended with valid Python. You can also add logic to them if you wanted to.</p>
 <p>Common for the settings is that you generally will never them directly via their python-path; instead Evennia
@@ -192,7 +200,7 @@ to add them.</p></li>
 </ul>
 </div>
 <div class="section" id="typeclasses">
-<h3><span class="section-number">4.2.3. </span>typeclasses/<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h3>
+<h3>typeclasses/<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc">Typeclasses</span></a> of Evennia are Evennia-specific Python classes whose instances save themselves
 to the database. This allows a Character to remain in the same place and your updated strength stat to still
 be the same after a server reboot.</p>
@@ -220,7 +228,7 @@ have the ability to execute code repeatedly, on a timer.</p></li>
 </ul>
 </div>
 <div class="section" id="web">
-<h3><span class="section-number">4.2.4. </span>web/<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
+<h3>web/<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
 <p>This folder contains folders for overriding the default web-presence of Evennia with your own designs.
 Most of these folders are empty except for a README file or a subset of other empty folders.</p>
 <ul class="simple">
@@ -240,7 +248,7 @@ Evennia will copy static data from <code class="docutils literal notranslate"><s
 </ul>
 </div>
 <div class="section" id="world">
-<h3><span class="section-number">4.2.5. </span>world/<a class="headerlink" href="#world" title="Permalink to this headline">¶</a></h3>
+<h3>world/<a class="headerlink" href="#world" title="Permalink to this headline">¶</a></h3>
 <p>This folder only contains some example files. It’s meant to hold ‘the rest’ of your game implementation. Many
 people change and re-structure this in various ways to better fit their ideas.</p>
 <ul class="simple">
@@ -252,7 +260,6 @@ to easily vary objects without changing their base typeclass. For example, one c
 tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different
 equipment, stats and looks.</p></li>
 </ul>
-<p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 </div>
@@ -279,20 +286,26 @@ equipment, stats and looks.</p></li>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">4. Overview of your new Game Dir</a><ul>
-<li><a class="reference internal" href="#commands">4.1. commands/</a></li>
-<li><a class="reference internal" href="#server">4.2. server/</a><ul>
-<li><a class="reference internal" href="#server-logs">4.2.1. server/logs/</a></li>
-<li><a class="reference internal" href="#server-conf">4.2.2. server/conf/</a></li>
-<li><a class="reference internal" href="#typeclasses">4.2.3. typeclasses/</a></li>
-<li><a class="reference internal" href="#web">4.2.4. web/</a></li>
-<li><a class="reference internal" href="#world">4.2.5. world/</a></li>
+<li><a class="reference internal" href="#">Overview of your new Game Dir</a><ul>
+<li><a class="reference internal" href="#commands">commands/</a></li>
+<li><a class="reference internal" href="#server">server/</a><ul>
+<li><a class="reference internal" href="#server-logs">server/logs/</a></li>
+<li><a class="reference internal" href="#server-conf">server/conf/</a></li>
+<li><a class="reference internal" href="#typeclasses">typeclasses/</a></li>
+<li><a class="reference internal" href="#web">web/</a></li>
+<li><a class="reference internal" href="#world">world/</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Python-basic-introduction.html"
+                        title="previous chapter">Starting to code Evennia</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Python-classes-and-objects.html"
+                        title="next chapter">Python Classes and objects</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -319,8 +332,15 @@ equipment, stats and looks.</p></li>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Python-classes-and-objects.html" title="Python Classes and objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Python-basic-introduction.html" title="Starting to code Evennia"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>Overview of your new Game Dir</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of your new Game Dir</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

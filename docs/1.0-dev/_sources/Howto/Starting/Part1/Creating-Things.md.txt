@@ -1,6 +1,5 @@
 # Creating things
 
-[prev lesson](./Learning-Typeclasses) | [next lesson](./Searching-Things)
 
 We have already created some things - dragons for example. There are many different things to create
 in Evennia though. In the last lesson we learned about typeclasses, the way to make objects persistent in the database.
@@ -47,7 +46,4 @@ An _Account_ is an out-of-character (OOC) entity, with no existence in the game 
 You can find the parent class for Accounts in `typeclasses/accounts.py`. 
 
 _TODO_
-
-
-[prev lesson](./Learning-Typeclasses) | [next lesson](./Searching-Things)
 

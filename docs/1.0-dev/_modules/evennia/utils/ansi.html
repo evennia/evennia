@@ -42,20 +42,19 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ANSI - Gives colour to text.</span>
 
-<span class="sd">Use the codes defined in ANSIPARSER in your text to apply colour to text</span>
-<span class="sd">according to the ANSI standard.</span>
-<span class="sd">::</span>
+<span class="sd">Use the codes defined in ANSIPARSER in your text</span>
+<span class="sd">to apply colour to text according to the ANSI standard.</span>
 
-<span class="sd"> This is |rRed text|n and this is normal again.</span>
+<span class="sd">Examples:</span>
 
-<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly; it is run by</span>
-<span class="sd">Evennia just before returning data to/from the user. Depreciated/decativated</span>
-<span class="sd">example forms are available in contribs by extending the ansi mapping</span>
+<span class="sd">```python</span>
+<span class="sd">&quot;This is |rRed text|n and this is normal again.&quot;</span>
+<span class="sd">```</span>
 
-<span class="sd">This module also contains the `ANSIString` custom string-type, which correctly</span>
-<span class="sd">wraps/manipulates and tracks lengths of strings containing ANSI-markup.</span>
-
-<span class="sd">----</span>
+<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly;</span>
+<span class="sd">it is run by Evennia just before returning data to/from the</span>
+<span class="sd">user.  Depreciated example forms are available by extending</span>
+<span class="sd">the ansi mapping.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -123,14 +122,16 @@
 
 <div class="viewcode-block" id="ANSIParser"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser">[docs]</a><span class="k">class</span> <span class="nc">ANSIParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class that parses ANSI markup to ANSI command sequences</span>
+<span class="sd">    A class that parses ANSI markup</span>
+<span class="sd">    to ANSI command sequences</span>
 
-<span class="sd">    We also allow to escape colour codes by prepending with</span>
-<span class="sd">    an extra `|`, so `||r` will literally print `|r`.</span>
+<span class="sd">    We also allow to escape colour codes</span>
+<span class="sd">    by prepending with a \ for xterm256,</span>
+<span class="sd">    an extra | for Merc-style codes</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Mapping using |r, |n etc</span>
+    <span class="c1"># Mapping using {r {n etc</span>
 
     <span class="n">ansi_map</span> <span class="o">=</span> <span class="p">[</span>
         <span class="c1"># alternative |-format</span>
@@ -629,9 +630,10 @@
 
 <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Some string functions, like those manipulating capital letters, return a</span>
-<span class="sd">    string the same length as the original. This function allows us to do the</span>
-<span class="sd">    same, replacing all the non-coded characters with the resulting string.</span>
+<span class="sd">    Some string functions, like those manipulating capital letters,</span>
+<span class="sd">    return a string the same length as the original. This function</span>
+<span class="sd">    allows us to do the same, replacing all the non-coded characters</span>
+<span class="sd">    with the resulting string.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -864,7 +866,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">offset</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="n">iterable</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">]</span>
 
     <span class="nd">@classmethod</span>
@@ -1026,12 +1028,9 @@
 <span class="sd">                occurrence of the separator rather than the first.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            result (tuple):</span>
-<span class="sd">                - prefix (ANSIString): The part of the string before the</span>
-<span class="sd">                  separator</span>
-<span class="sd">                - sep (ANSIString): The separator itself</span>
-<span class="sd">                - postfix (ANSIString): The part of the string after the</span>
-<span class="sd">                  separator.</span>
+<span class="sd">            ANSIString: The part of the string before the separator</span>
+<span class="sd">            ANSIString: The separator itself</span>
+<span class="sd">            ANSIString: The part of the string after the separator.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="s2">&quot;_clean_string&quot;</span><span class="p">):</span>
@@ -1330,26 +1329,22 @@
 <span class="sd">        Joins together strings in an iterable, using this string between each</span>
 <span class="sd">        one.</span>
 
+<span class="sd">        NOTE: This should always be used for joining strings when ANSIStrings</span>
+<span class="sd">        are involved. Otherwise color information will be discarded by python,</span>
+<span class="sd">        due to details in the C implementation of strings.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            iterable (list of strings): A list of strings to join together</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            result (ANSIString): A single string with all of the iterable&#39;s</span>
+<span class="sd">            ANSIString: A single string with all of the iterable&#39;s</span>
 <span class="sd">                contents concatenated, with this string between each.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            ::</span>
-<span class="sd">                ANSIString(&#39;, &#39;).join([&#39;up&#39;, &#39;right&#39;, &#39;left&#39;, &#39;down&#39;])</span>
 
-<span class="sd">            Would return</span>
-<span class="sd">            ::</span>
-
+<span class="sd">                &gt;&gt;&gt; ANSIString(&#39;, &#39;).join([&#39;up&#39;, &#39;right&#39;, &#39;left&#39;, &#39;down&#39;])</span>
 <span class="sd">                ANSIString(&#39;up, right, left, down&#39;)</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This should always be used for joining strings when ANSIStrings are</span>
-<span class="sd">            involved. Otherwise color information will be discarded by python,</span>
-<span class="sd">            due to details in the C implementation of strings.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>

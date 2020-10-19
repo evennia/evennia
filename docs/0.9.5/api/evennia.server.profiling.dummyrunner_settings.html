@@ -42,13 +42,17 @@
 <p>This module defines dummyrunner settings and sets up
 the actions available to dummy accounts.</p>
 <p>The settings are global variables:</p>
-<p>TIMESTEP - time in seconds between each ‘tick’
-CHANCE_OF_ACTION - chance 0-1 of action happening
-CHANCE_OF_LOGIN - chance 0-1 of login happening
-TELNET_PORT - port to use, defaults to settings.TELNET_PORT
-ACTIONS - see below</p>
+<ul class="simple">
+<li><p>TIMESTEP - time in seconds between each ‘tick’</p></li>
+<li><p>CHANCE_OF_ACTION - chance 0-1 of action happening</p></li>
+<li><p>CHANCE_OF_LOGIN - chance 0-1 of login happening</p></li>
+<li><p>TELNET_PORT - port to use, defaults to settings.TELNET_PORT</p></li>
+<li><p>ACTIONS - see below</p></li>
+</ul>
 <p>ACTIONS is a tuple</p>
-<p>(login_func, logout_func, (0.3, func1), (0.1, func2) … )</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">login_func</span><span class="p">,</span> <span class="n">logout_func</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">func1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">func2</span><span class="p">)</span> <span class="o">...</span> <span class="p">)</span>
+</pre></div>
+</div>
 <p>where the first entry is the function to call on first connect, with a
 chance of occurring given by CHANCE_OF_LOGIN. This function is usually
 responsible for logging in the account. The second entry is always
@@ -65,28 +69,22 @@ returns a string or a list of command strings to execute.  Use the
 client object for optionally saving data between actions.</p>
 <p>The client object has the following relevant properties and methods:</p>
 <ul class="simple">
-<li><dl class="simple">
-<dt>key - an optional client key. This is only used for dummyrunner output.</dt><dd><p>Default is “Dummy-&lt;cid&gt;”</p>
-</dd>
-</dl>
-</li>
+<li><p>key - an optional client key. This is only used for dummyrunner output.
+Default is “Dummy-&lt;cid&gt;”</p></li>
 <li><p>cid - client id</p></li>
 <li><p>gid - globally unique id, hashed with time stamp</p></li>
 <li><p>istep - the current step</p></li>
 <li><p>exits - an empty list. Can be used to store exit names</p></li>
 <li><p>objs - an empty list. Can be used to store object names</p></li>
-<li><dl class="simple">
-<dt>counter() - returns a unique increasing id, hashed with time stamp</dt><dd><p>to make it unique also between dummyrunner instances.</p>
-</dd>
-</dl>
-</li>
+<li><p>counter() - returns a unique increasing id, hashed with time stamp
+to make it unique also between dummyrunner instances.</p></li>
 </ul>
 <p>The return should either be a single command string or a tuple of
 command strings. This list of commands will always be executed every
 TIMESTEP with a chance given by CHANCE_OF_ACTION by in the order given
 (no randomness) and allows for setting up a more complex chain of
 commands (such as creating an account and logging in).</p>
-<p>—</p>
+<hr class="docutils" />
 <dl class="py function">
 <dt id="evennia.server.profiling.dummyrunner_settings.c_login">
 <code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_login" title="Permalink to this definition">¶</a></dt>

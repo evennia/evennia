@@ -39,24 +39,25 @@
   <div class="section" id="module-evennia.utils.ansi">
 <span id="evennia-utils-ansi"></span><h1>evennia.utils.ansi<a class="headerlink" href="#module-evennia.utils.ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI - Gives colour to text.</p>
-<p>Use the codes defined in ANSIPARSER in your text to apply colour to text
-according to the ANSI standard.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">This</span> <span class="ow">is</span> <span class="o">|</span><span class="n">rRed</span> <span class="n">text</span><span class="o">|</span><span class="n">n</span> <span class="ow">and</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">again</span><span class="o">.</span>
+<p>Use the codes defined in ANSIPARSER in your text
+to apply colour to text according to the ANSI standard.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |rRed text|n and this is normal again.&quot;</span>
 </pre></div>
 </div>
-<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly; it is run by
-Evennia just before returning data to/from the user. Depreciated/decativated
-example forms are available in contribs by extending the ansi mapping</p>
-<p>This module also contains the <strong>ANSIString</strong> custom string-type, which correctly
-wraps/manipulates and tracks lengths of strings containing ANSI-markup.</p>
-<hr class="docutils" />
+<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly;
+it is run by Evennia just before returning data to/from the
+user.  Depreciated example forms are available by extending
+the ansi mapping.</p>
 <dl class="py class">
 <dt id="evennia.utils.ansi.ANSIParser">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIParser</code><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class that parses ANSI markup to ANSI command sequences</p>
-<p>We also allow to escape colour codes by prepending with
-an extra <strong>|</strong>, so <strong>||r</strong> will literally print <strong>|r</strong>.</p>
+<p>A class that parses ANSI markup
+to ANSI command sequences</p>
+<p>We also allow to escape colour codes
+by prepending with a for xterm256,
+an extra | for Merc-style codes</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map">
 <code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>
@@ -417,15 +418,9 @@ occurrence of the separator rather than the first.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>result (tuple)</em> –</p>
-<ul class="simple">
-<li><p>prefix (ANSIString): The part of the string before the
-separator</p></li>
-<li><p>sep (ANSIString): The separator itself</p></li>
-<li><p>postfix (ANSIString): The part of the string after the
-separator.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p><em>ANSIString</em> – The part of the string before the separator
+ANSIString: The separator itself
+ANSIString: The part of the string after the separator.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -771,12 +766,15 @@ left untouched.  Characters mapped to None are deleted.</p>
 <code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.join" title="Permalink to this definition">¶</a></dt>
 <dd><p>Joins together strings in an iterable, using this string between each
 one.</p>
+<p>NOTE: This should always be used for joining strings when ANSIStrings
+are involved. Otherwise color information will be discarded by python,
+due to details in the C implementation of strings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>iterable</strong> (<em>list of strings</em>) – A list of strings to join together</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>result (ANSIString)</em> –</p>
+<dd class="field-even"><p><p><em>ANSIString</em> –</p>
 <dl class="simple">
 <dt>A single string with all of the iterable’s</dt><dd><p>contents concatenated, with this string between each.</p>
 </dd>
@@ -785,18 +783,10 @@ one.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<dl class="simple">
-<dt>::</dt><dd><p>ANSIString(‘, ‘).join([‘up’, ‘right’, ‘left’, ‘down’])</p>
-</dd>
-</dl>
-<p>Would return</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ANSIString</span><span class="p">(</span><span class="s1">&#39;up, right, left, down&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ANSIString</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;down&#39;</span><span class="p">])</span>
+<span class="go">ANSIString(&#39;up, right, left, down&#39;)</span>
 </pre></div>
 </div>
-<p class="rubric">Notes</p>
-<p>This should always be used for joining strings when ANSIStrings are
-involved. Otherwise color information will be discarded by python,
-due to details in the C implementation of strings.</p>
 </dd></dl>
 
 <dl class="py method">

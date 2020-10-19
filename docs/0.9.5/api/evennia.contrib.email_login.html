@@ -73,7 +73,7 @@ the module given by settings.CONNECTION_SCREEN_MODULE.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['con', 'conn', 'co']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['conn', 'con', 'co']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -101,6 +101,11 @@ there is no object yet before the account has logged in)</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.email_login.CmdUnconnectedConnect.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'conn con co', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    Connect to the game.\n\n    Usage (at login screen):\n        connect &lt;email&gt; &lt;password&gt;\n\n    Use the create command to first create an account before logging in.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -120,7 +125,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedCreate.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['cre', 'cr']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedCreate.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['cr', 'cre']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedCreate.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -152,6 +157,11 @@ name enclosed in quotes:</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedCreate.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.email_login.CmdUnconnectedCreate.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'cr cre', 'category': 'general', 'key': 'create', 'tags': '', 'text': '\n    Create a new account.\n\n    Usage (at login screen):\n        create &quot;accountname&quot; &lt;email&gt; &lt;password&gt;\n\n    This creates a new account account.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -194,6 +204,11 @@ version is a bit more complicated.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedQuit.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.email_login.CmdUnconnectedQuit.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q qu', 'category': 'general', 'key': 'quit', 'tags': '', 'text': '\n    We maintain a different version of the `quit` command\n    here for unconnected accounts for the sake of simplicity. The logged in\n    version is a bit more complicated.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -210,7 +225,7 @@ All it does is display the connect screen.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['look', 'l']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'look']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -234,6 +249,11 @@ All it does is display the connect screen.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.email_login.CmdUnconnectedLook.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l look', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': '\n    This is an unconnected version of the `look` command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -249,7 +269,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -271,6 +291,11 @@ for simplicity. It shows a pane of info.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.email_login.CmdUnconnectedHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

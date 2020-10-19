@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>7. Persistent objects and typeclasses &#8212; Evennia 1.0-dev documentation</title>
+    <title>Persistent objects and typeclasses &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Our own commands" href="Adding-Commands.html" />
+    <link rel="prev" title="Overview of the Evennia library" href="Evennia-Library-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Adding-Commands.html" title="Our own commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="Overview of the Evennia library"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>Persistent objects and typeclasses</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Persistent objects and typeclasses</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="persistent-objects-and-typeclasses">
-<h1><span class="section-number">7. </span>Persistent objects and typeclasses<a class="headerlink" href="#persistent-objects-and-typeclasses" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Creating-Things.html"><span class="doc">next lesson</span></a></p>
+<h1>Persistent objects and typeclasses<a class="headerlink" href="#persistent-objects-and-typeclasses" title="Permalink to this headline">¶</a></h1>
 <p>Now that we have learned a little about how to find things in the Evennia library, let’s use it.</p>
 <p>In the <a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">Python classes and objects</span></a> lesson we created the dragons Fluffy, Cuddly
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we <code class="docutils literal notranslate"><span class="pre">restart</span></code>
@@ -100,7 +108,7 @@ the server or <code class="docutils literal notranslate"><span class="pre">quit(
 </pre></div>
 </td></tr></table></div>
 <div class="section" id="our-first-persistent-object">
-<h2><span class="section-number">7.1. </span>Our first persistent object<a class="headerlink" href="#our-first-persistent-object" title="Permalink to this headline">¶</a></h2>
+<h2>Our first persistent object<a class="headerlink" href="#our-first-persistent-object" title="Permalink to this headline">¶</a></h2>
 <p>At this point we should know enough to understand what is happening in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code>. Let’s
 open it:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -192,7 +200,7 @@ you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let
 inherits from Evennia’s <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, as we saw). By extension, this means that <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> also inherits
 from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, just from further away!</p>
 <div class="section" id="making-a-new-object-by-calling-the-class">
-<h3><span class="section-number">7.1.1. </span>Making a new object by calling the class<a class="headerlink" href="#making-a-new-object-by-calling-the-class" title="Permalink to this headline">¶</a></h3>
+<h3>Making a new object by calling the class<a class="headerlink" href="#making-a-new-object-by-calling-the-class" title="Permalink to this headline">¶</a></h3>
 <p>First reload the server as usual. We will need to create the dragon a little differently this time:</p>
 <div class="sidebar">
 <p class="sidebar-title">Keyword arguments</p>
@@ -233,7 +241,7 @@ Smaug breathes fire!
 </div>
 </div>
 <div class="section" id="creating-using-create-object">
-<h3><span class="section-number">7.1.2. </span>Creating using create_object<a class="headerlink" href="#creating-using-create-object" title="Permalink to this headline">¶</a></h3>
+<h3>Creating using create_object<a class="headerlink" href="#creating-using-create-object" title="Permalink to this headline">¶</a></h3>
 <p>Creating Smaug like we did above is nice because it’s similar to how we created non-database
 bound Python instances before. But you need to use <code class="docutils literal notranslate"><span class="pre">db_key</span></code> instead of <code class="docutils literal notranslate"><span class="pre">key</span></code> and you also have to
 remember to call <code class="docutils literal notranslate"><span class="pre">.save()</span></code> afterwards. Evennia has a helper function that is more common to use,
@@ -256,7 +264,7 @@ multiple Fluffies we could get the second one with <code class="docutils literal
 </div></blockquote>
 </div>
 <div class="section" id="creating-using-create-command">
-<h3><span class="section-number">7.1.3. </span>Creating using create-command<a class="headerlink" href="#creating-using-create-command" title="Permalink to this headline">¶</a></h3>
+<h3>Creating using create-command<a class="headerlink" href="#creating-using-create-command" title="Permalink to this headline">¶</a></h3>
 <p>Finally, you can also create a new Dragon using the familiar builder-commands we explored a few lessons ago:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Cuddly</span><span class="p">:</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">monsters</span><span class="o">.</span><span class="n">Monster</span>
 </pre></div>
@@ -272,7 +280,7 @@ to understand just what the user wants to create.</p>
 </div>
 </div>
 <div class="section" id="typeclasses">
-<h2><span class="section-number">7.2. </span>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h2>
+<h2>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">Object</span></code> (and <code class="docutils literal notranslate"><span class="pre">DefafultObject</span></code> class we inherited from above is what we refer to as a <em>Typeclass</em>. This
 is an Evennia thing. The instance of a typeclass saves itself to the database when it is created, and after
 that you can just search for it to get it back. We use the term <em>typeclass</em> or <em>typeclassed</em> to differentiate
@@ -313,7 +321,7 @@ can easily just change the child classes to inherit in that way instead; Evennia
 <p>As seen with our <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> example, you don’t <em>have</em> to modify these modules directly. You can just make your
 own modules and import the base class.</p>
 <div class="section" id="examining-and-defaults">
-<h3><span class="section-number">7.2.1. </span>Examining and defaults<a class="headerlink" href="#examining-and-defaults" title="Permalink to this headline">¶</a></h3>
+<h3>Examining and defaults<a class="headerlink" href="#examining-and-defaults" title="Permalink to this headline">¶</a></h3>
 <p>When you do</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">giantess</span><span class="p">:</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">monsters</span><span class="o">.</span><span class="n">Monster</span>
 <span class="n">You</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">Monster</span><span class="p">:</span> <span class="n">giantess</span><span class="o">.</span>
@@ -394,7 +402,7 @@ layout of your game dir considerably if you wanted. You just need to tell Evenni
 </div>
 </div>
 <div class="section" id="modifying-ourselves">
-<h2><span class="section-number">7.3. </span>Modifying ourselves<a class="headerlink" href="#modifying-ourselves" title="Permalink to this headline">¶</a></h2>
+<h2>Modifying ourselves<a class="headerlink" href="#modifying-ourselves" title="Permalink to this headline">¶</a></h2>
 <p>Let’s try to modify ourselves a little. Open up <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -458,7 +466,7 @@ commands available to you at a given moment.</p></li>
 <p>Look at the <strong>Typeclass</strong> field and you’ll find that it points to <code class="docutils literal notranslate"><span class="pre">typeclasses.character.Character</span></code> as expected.
 So if we modify this class we’ll also modify ourselves.</p>
 <div class="section" id="a-method-on-ourselves">
-<h3><span class="section-number">7.3.1. </span>A method on ourselves<a class="headerlink" href="#a-method-on-ourselves" title="Permalink to this headline">¶</a></h3>
+<h3>A method on ourselves<a class="headerlink" href="#a-method-on-ourselves" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something simple first. Back in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -512,7 +520,7 @@ starting from zero:</p>
 </div>
 </div>
 <div class="section" id="attributes">
-<h3><span class="section-number">7.3.2. </span>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>So what happens when we increase our strength? This would be one way:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span>
@@ -610,7 +618,7 @@ server reload. Let’s modify the strength:</p>
 <p>Our change now survives a reload since Evennia automatically saves the Attribute to the database for us.</p>
 </div>
 <div class="section" id="setting-things-on-new-characters">
-<h3><span class="section-number">7.3.3. </span>Setting things on new Characters<a class="headerlink" href="#setting-things-on-new-characters" title="Permalink to this headline">¶</a></h3>
+<h3>Setting things on new Characters<a class="headerlink" href="#setting-things-on-new-characters" title="Permalink to this headline">¶</a></h3>
 <p>Things a looking better, but one thing remains strange - the stats start out with a value <code class="docutils literal notranslate"><span class="pre">None</span></code> and we
 have to manually set them to something reasonable. In a later lesson we will investigate character-creation
 in more detail. For now, let’s give every new character some random stats to start with.</p>
@@ -685,7 +693,7 @@ created long before, so it will not be called again.</p>
 </div>
 </div>
 <div class="section" id="updating-all-characters-in-a-loop">
-<h3><span class="section-number">7.3.4. </span>Updating all Characters in a loop<a class="headerlink" href="#updating-all-characters-in-a-loop" title="Permalink to this headline">¶</a></h3>
+<h3>Updating all Characters in a loop<a class="headerlink" href="#updating-all-characters-in-a-loop" title="Permalink to this headline">¶</a></h3>
 <p>Needless to say, for your game you are wise to have a feel for what you want to go into the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook
 before you create a lot of objects (characters in this case). But should it come to that you don’t want to have to
 go around and re-run the method on everyone manually. For the Python beginner, doing this will also give a chance to
@@ -726,21 +734,20 @@ of all of them that we then immediately loop over. Boom, we just updated all Cha
 </div>
 </div>
 <div class="section" id="extra-credits">
-<h2><span class="section-number">7.4. </span>Extra Credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
+<h2>Extra Credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
 <p>This principle is the same for other typeclasses. So using the tools explored in this lesson, try to expand
 the default room with an <code class="docutils literal notranslate"><span class="pre">is_dark</span></code> flag. It can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
 Have all new rooms start with <code class="docutils literal notranslate"><span class="pre">is_dark</span> <span class="pre">=</span> <span class="pre">False</span></code> and make it so that once you change it, it survives a reload.
 Oh, and if you created any other rooms before, make sure they get the new flag too!</p>
 </div>
 <div class="section" id="conclusions">
-<h2><span class="section-number">7.5. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>In this lesson we created database-persistent dragons by having their classes inherit from one <code class="docutils literal notranslate"><span class="pre">Object</span></code>, one
 of Evennia’s <em>typeclasses</em>. We explored where Evennia looks for typeclasses if we don’t specify the path
 explicitly. We then modified ourselves - via the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class - to give us some simple RPG stats. This
 led to the need to use Evennia’s <em>Attributes</em>, settable via <code class="docutils literal notranslate"><span class="pre">.db</span></code> and to use a for-loop to update ourselves.</p>
 <p>Typeclasses are a fundamental part of Evennia and we will see a lot of more uses of them in the course of
 this tutorial. But that’s enough of them for now. It’s time to take some action. Let’s learn about <em>Commands</em>.</p>
-<p><a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Creating-Things.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -766,30 +773,36 @@ this tutorial. But that’s enough of them for now. It’s time to take some act
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">7. Persistent objects and typeclasses</a><ul>
-<li><a class="reference internal" href="#our-first-persistent-object">7.1. Our first persistent object</a><ul>
-<li><a class="reference internal" href="#making-a-new-object-by-calling-the-class">7.1.1. Making a new object by calling the class</a></li>
-<li><a class="reference internal" href="#creating-using-create-object">7.1.2. Creating using create_object</a></li>
-<li><a class="reference internal" href="#creating-using-create-command">7.1.3. Creating using create-command</a></li>
+<li><a class="reference internal" href="#">Persistent objects and typeclasses</a><ul>
+<li><a class="reference internal" href="#our-first-persistent-object">Our first persistent object</a><ul>
+<li><a class="reference internal" href="#making-a-new-object-by-calling-the-class">Making a new object by calling the class</a></li>
+<li><a class="reference internal" href="#creating-using-create-object">Creating using create_object</a></li>
+<li><a class="reference internal" href="#creating-using-create-command">Creating using create-command</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#typeclasses">7.2. Typeclasses</a><ul>
-<li><a class="reference internal" href="#examining-and-defaults">7.2.1. Examining and defaults</a></li>
+<li><a class="reference internal" href="#typeclasses">Typeclasses</a><ul>
+<li><a class="reference internal" href="#examining-and-defaults">Examining and defaults</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#modifying-ourselves">7.3. Modifying ourselves</a><ul>
-<li><a class="reference internal" href="#a-method-on-ourselves">7.3.1. A method on ourselves</a></li>
-<li><a class="reference internal" href="#attributes">7.3.2. Attributes</a></li>
-<li><a class="reference internal" href="#setting-things-on-new-characters">7.3.3. Setting things on new Characters</a></li>
-<li><a class="reference internal" href="#updating-all-characters-in-a-loop">7.3.4. Updating all Characters in a loop</a></li>
+<li><a class="reference internal" href="#modifying-ourselves">Modifying ourselves</a><ul>
+<li><a class="reference internal" href="#a-method-on-ourselves">A method on ourselves</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#setting-things-on-new-characters">Setting things on new Characters</a></li>
+<li><a class="reference internal" href="#updating-all-characters-in-a-loop">Updating all Characters in a loop</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#extra-credits">7.4. Extra Credits</a></li>
-<li><a class="reference internal" href="#conclusions">7.5. Conclusions</a></li>
+<li><a class="reference internal" href="#extra-credits">Extra Credits</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Evennia-Library-Overview.html"
+                        title="previous chapter">Overview of the Evennia library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Adding-Commands.html"
+                        title="next chapter">Our own commands</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -816,8 +829,15 @@ this tutorial. But that’s enough of them for now. It’s time to take some act
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Adding-Commands.html" title="Our own commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="Overview of the Evennia library"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>Persistent objects and typeclasses</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Persistent objects and typeclasses</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

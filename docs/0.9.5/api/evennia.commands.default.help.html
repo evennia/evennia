@@ -125,7 +125,7 @@ entry is displayed.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.default.help.CmdHelp.format_help_list">
-<em class="property">static </em><code class="sig-name descname">format_help_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hdict_cmds</span></em>, <em class="sig-param"><span class="n">hdict_db</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.format_help_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.format_help_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format_help_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hdict_cmds</span></em>, <em class="sig-param"><span class="n">hdict_db</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.format_help_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.format_help_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output a category-ordered list. The input are the
 pre-loaded help files for commands and database-helpfiles
 respectively.  You can override this method to return a
@@ -199,6 +199,11 @@ False: the command shouldn’t appear in the table.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -259,6 +264,11 @@ is to let everyone read the help file.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.help.CmdSetHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(Helper)'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'sethelp', 'tags': '', 'text': '\n    Edit the help database.\n\n    Usage:\n      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]\n\n    Switches:\n      edit - open a line editor to edit the topic\'s help text.\n      replace - overwrite existing help topic.\n      append - add text to the end of existing topic with a newline between.\n      extend - as append, but don\'t add a newline.\n      delete - remove help topic.\n\n    Examples:\n      sethelp throw = This throws something at ...\n      sethelp/append pickpocketing,Thievery = This steals ...\n      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...\n      sethelp/edit thievery\n\n    This command manipulates the help database. A help entry can be created,\n    appended/merged to and deleted. If you don\'t assign a category, the\n    &quot;General&quot; category will be used. If no lockstring is specified, default\n    is to let everyone read the help file.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>10. Creating things &#8212; Evennia 1.0-dev documentation</title>
+    <title>Creating things &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Searching for things" href="Searching-Things.html" />
+    <link rel="prev" title="More about Commands" href="More-on-Commands.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Searching-Things.html" title="Searching for things"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="More-on-Commands.html" title="More about Commands"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">10. </span>Creating things</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Creating things</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="creating-things">
-<h1><span class="section-number">10. </span>Creating things<a class="headerlink" href="#creating-things" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Searching-Things.html"><span class="doc">next lesson</span></a></p>
+<h1>Creating things<a class="headerlink" href="#creating-things" title="Permalink to this headline">¶</a></h1>
 <p>We have already created some things - dragons for example. There are many different things to create
 in Evennia though. In the last lesson we learned about typeclasses, the way to make objects persistent in the database.</p>
 <p>Given the path to a Typeclass, there are three ways to create an instance of it:</p>
@@ -69,7 +77,7 @@ to let regular players or builders without Python-access help build the game wor
 </li>
 </ul>
 <div class="section" id="creating-objects">
-<h2><span class="section-number">10.1. </span>Creating Objects<a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h2>
+<h2>Creating Objects<a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h2>
 <p>This is one of the most common creation-types. These are entities that inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> at any distance.
 They have an existence in the game world and includes rooms, characters, exits, weapons, flower pots and castles.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span>
@@ -81,11 +89,10 @@ They have an existence in the game world and includes rooms, characters, exits, 
 (<code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>) will be used.</p>
 </div>
 <div class="section" id="creating-accounts">
-<h2><span class="section-number">10.2. </span>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Permalink to this headline">¶</a></h2>
+<h2>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Permalink to this headline">¶</a></h2>
 <p>An <em>Account</em> is an out-of-character (OOC) entity, with no existence in the game world.
 You can find the parent class for Accounts in <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>.</p>
 <p><em>TODO</em></p>
-<p><a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Searching-Things.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -111,13 +118,19 @@ You can find the parent class for Accounts in <code class="docutils literal notr
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">10. Creating things</a><ul>
-<li><a class="reference internal" href="#creating-objects">10.1. Creating Objects</a></li>
-<li><a class="reference internal" href="#creating-accounts">10.2. Creating Accounts</a></li>
+<li><a class="reference internal" href="#">Creating things</a><ul>
+<li><a class="reference internal" href="#creating-objects">Creating Objects</a></li>
+<li><a class="reference internal" href="#creating-accounts">Creating Accounts</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="More-on-Commands.html"
+                        title="previous chapter">More about Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Searching-Things.html"
+                        title="next chapter">Searching for things</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -144,8 +157,15 @@ You can find the parent class for Accounts in <code class="docutils literal notr
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Searching-Things.html" title="Searching for things"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="More-on-Commands.html" title="More about Commands"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">10. </span>Creating things</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Creating things</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

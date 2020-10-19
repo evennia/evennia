@@ -55,8 +55,8 @@
 <span class="sd">Obelisk</span>
 <span class="sd">LightSource</span>
 <span class="sd">CrumblingWall</span>
-<span class="sd">Weapon</span>
-<span class="sd">WeaponRack</span>
+<span class="sd">TutorialWeapon</span>
+<span class="sd">TutorialWeaponRack</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -832,7 +832,7 @@
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
-<span class="c1"># Weapon - object type</span>
+<span class="c1"># TutorialWeapon - object type</span>
 <span class="c1">#</span>
 <span class="c1"># A weapon is necessary in order to fight in the tutorial</span>
 <span class="c1"># world. A weapon (which here is assumed to be a bladed</span>
@@ -972,7 +972,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAttack</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="Weapon"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.Weapon">[docs]</a><span class="k">class</span> <span class="nc">Weapon</span><span class="p">(</span><span class="n">TutorialObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeapon"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeapon">[docs]</a><span class="k">class</span> <span class="nc">TutorialWeapon</span><span class="p">(</span><span class="n">TutorialObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This defines a bladed weapon.</span>
 
@@ -984,7 +984,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Weapon.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.Weapon.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeapon.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeapon.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called at first creation of the object&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hit</span> <span class="o">=</span> <span class="mf">0.4</span>  <span class="c1"># hit chance</span>
@@ -993,7 +993,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">magic</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetWeapon</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Weapon.reset"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.Weapon.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeapon.reset"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeapon.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When reset, the weapon is simply deleted, unless it has a place</span>
 <span class="sd">        to return to.</span>
@@ -1023,7 +1023,7 @@
 
 <span class="n">WEAPON_PROTOTYPES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;weapon&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia.contrib.tutorial_world.objects.Weapon&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia.contrib.tutorial_world.objects.TutorialWeapon&quot;</span><span class="p">,</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Weapon&quot;</span><span class="p">,</span>
         <span class="s2">&quot;hit&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
         <span class="s2">&quot;parry&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
@@ -1168,7 +1168,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGetWeapon</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="WeaponRack"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.WeaponRack">[docs]</a><span class="k">class</span> <span class="nc">WeaponRack</span><span class="p">(</span><span class="n">TutorialObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeaponRack"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeaponRack">[docs]</a><span class="k">class</span> <span class="nc">TutorialWeaponRack</span><span class="p">(</span><span class="n">TutorialObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object represents a weapon store. When people use the</span>
 <span class="sd">    &quot;get weapon&quot; command on this rack, it will produce one</span>
@@ -1185,7 +1185,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="WeaponRack.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.WeaponRack.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeaponRack.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        called at creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1204,7 +1204,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">no_more_weapons_msg</span> <span class="o">=</span> <span class="s2">&quot;you find nothing else of use.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">available_weapons</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">,</span> <span class="s2">&quot;dagger&quot;</span><span class="p">,</span> <span class="s2">&quot;sword&quot;</span><span class="p">,</span> <span class="s2">&quot;club&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="WeaponRack.produce_weapon"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.WeaponRack.produce_weapon">[docs]</a>    <span class="k">def</span> <span class="nf">produce_weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialWeaponRack.produce_weapon"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.produce_weapon">[docs]</a>    <span class="k">def</span> <span class="nf">produce_weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will produce a new weapon from the rack,</span>
 <span class="sd">        assuming the caller hasn&#39;t already gotten one. When</span>

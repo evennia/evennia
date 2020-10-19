@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>5. Python Classes and objects &#8212; Evennia 1.0-dev documentation</title>
+    <title>Python Classes and objects &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Overview of the Evennia library" href="Evennia-Library-Overview.html" />
+    <link rel="prev" title="Overview of your new Game Dir" href="Gamedir-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="Overview of the Evennia library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="Overview of your new Game Dir"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Python Classes and objects</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python Classes and objects</a></li> 
       </ul>
     </div>  
 
@@ -37,12 +46,11 @@
           <div class="body" role="main">
             
   <div class="section" id="python-classes-and-objects">
-<h1><span class="section-number">5. </span>Python Classes and objects<a class="headerlink" href="#python-classes-and-objects" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Gamedir-Overview.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc">next lesson</span></a></p>
+<h1>Python Classes and objects<a class="headerlink" href="#python-classes-and-objects" title="Permalink to this headline">¶</a></h1>
 <p>We have now learned how to run some simple Python code from inside (and outside) your game server.
 We have also taken a look at what our game dir looks and what is where. Now we’ll start to use it.</p>
 <div class="section" id="importing-things">
-<h2><span class="section-number">5.1. </span>Importing things<a class="headerlink" href="#importing-things" title="Permalink to this headline">¶</a></h2>
+<h2>Importing things<a class="headerlink" href="#importing-things" title="Permalink to this headline">¶</a></h2>
 <p>No one writes something as big as an online game in one single huge file. Instead one breaks up the
 code into separate files (modules). Each module is dedicated to different purposes. Not only does
 it make things cleaner, organized and easier to understand. It also makes it easier to re-use code -
@@ -153,7 +161,7 @@ Closing the Python console.
 imports at the top, resources that are then used by all code in that module.</p>
 </div>
 <div class="section" id="on-classes-and-objects">
-<h2><span class="section-number">5.2. </span>On classes and objects<a class="headerlink" href="#on-classes-and-objects" title="Permalink to this headline">¶</a></h2>
+<h2>On classes and objects<a class="headerlink" href="#on-classes-and-objects" title="Permalink to this headline">¶</a></h2>
 <p>Now that we know about imports, let look at a real Evennia module and try to understand it.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> in your text editor of choice.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -200,7 +208,7 @@ things to understand before you can use Evennia efficiently.</p>
 other concepts are often clumped together under the term Object-Oriented-Programming (OOP).</p>
 </div>
 <div class="section" id="classes-and-instances">
-<h3><span class="section-number">5.2.1. </span>Classes and instances<a class="headerlink" href="#classes-and-instances" title="Permalink to this headline">¶</a></h3>
+<h3>Classes and instances<a class="headerlink" href="#classes-and-instances" title="Permalink to this headline">¶</a></h3>
 <p>A ‘class’ can be seen as a ‘template’ for a ‘type’ of object. The class describes the basic functionality
 of everyone of that class. For example, we could have a class <code class="docutils literal notranslate"><span class="pre">Monster</span></code> which has resources for moving itself
 from room to room.</p>
@@ -312,7 +320,7 @@ Fluffy is moving!
 later used to print with the right name! Again, note that we didn’t include <code class="docutils literal notranslate"><span class="pre">self</span></code> when calling.</p>
 </div>
 <div class="section" id="what-s-so-good-about-objects">
-<h3><span class="section-number">5.2.2. </span>What’s so good about objects?<a class="headerlink" href="#what-s-so-good-about-objects" title="Permalink to this headline">¶</a></h3>
+<h3>What’s so good about objects?<a class="headerlink" href="#what-s-so-good-about-objects" title="Permalink to this headline">¶</a></h3>
 <p>So far all we’ve seen a class do is to behave our first <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function but more complex. We
 could just have made a function:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -343,7 +351,7 @@ objects in turn:</p>
 </ul>
 </div>
 <div class="section" id="classes-can-have-children">
-<h3><span class="section-number">5.2.3. </span>Classes can have children<a class="headerlink" href="#classes-can-have-children" title="Permalink to this headline">¶</a></h3>
+<h3>Classes can have children<a class="headerlink" href="#classes-can-have-children" title="Permalink to this headline">¶</a></h3>
 <p>Classes can <em>inherit</em> from each other. A “child” class will inherit everything from its “parent” class. But if
 the child adds something with the same name as its parent, it will <em>override</em> whatever it got from its parent.</p>
 <p>Let’s expand <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> with another class:</p>
@@ -466,13 +474,12 @@ you want to change. Evennia uses this concept a lot.</p>
 </div>
 </div>
 <div class="section" id="summary">
-<h2><span class="section-number">5.3. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>We have created our first dragons from classes. We have learned a little about how you <em>instantiate</em> a class
 into an <em>object</em>. We have seen some examples of <em>inheritance</em> and we tested to <em>override</em> a method in the parent
 with one in the child class. We also used <code class="docutils literal notranslate"><span class="pre">super()</span></code> to good effect.</p>
 <p>We have used pretty much raw Python so far. In the coming lessons we’ll start to look at the extra bits that Evennia
 provides. But first we need to learn just where to find everything.</p>
-<p><a class="reference internal" href="Gamedir-Overview.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -498,19 +505,25 @@ provides. But first we need to learn just where to find everything.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Python Classes and objects</a><ul>
-<li><a class="reference internal" href="#importing-things">5.1. Importing things</a></li>
-<li><a class="reference internal" href="#on-classes-and-objects">5.2. On classes and objects</a><ul>
-<li><a class="reference internal" href="#classes-and-instances">5.2.1. Classes and instances</a></li>
-<li><a class="reference internal" href="#what-s-so-good-about-objects">5.2.2. What’s so good about objects?</a></li>
-<li><a class="reference internal" href="#classes-can-have-children">5.2.3. Classes can have children</a></li>
+<li><a class="reference internal" href="#">Python Classes and objects</a><ul>
+<li><a class="reference internal" href="#importing-things">Importing things</a></li>
+<li><a class="reference internal" href="#on-classes-and-objects">On classes and objects</a><ul>
+<li><a class="reference internal" href="#classes-and-instances">Classes and instances</a></li>
+<li><a class="reference internal" href="#what-s-so-good-about-objects">What’s so good about objects?</a></li>
+<li><a class="reference internal" href="#classes-can-have-children">Classes can have children</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#summary">5.3. Summary</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Gamedir-Overview.html"
+                        title="previous chapter">Overview of your new Game Dir</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Evennia-Library-Overview.html"
+                        title="next chapter">Overview of the Evennia library</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -537,8 +550,15 @@ provides. But first we need to learn just where to find everything.</p>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="Overview of the Evennia library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="Overview of your new Game Dir"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Python Classes and objects</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python Classes and objects</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

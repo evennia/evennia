@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>6. Overview of the Evennia library &#8212; Evennia 1.0-dev documentation</title>
+    <title>Overview of the Evennia library &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -15,7 +15,9 @@
     <script src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Persistent objects and typeclasses" href="Learning-Typeclasses.html" />
+    <link rel="prev" title="Python Classes and objects" href="Python-classes-and-objects.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,8 +28,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Learning-Typeclasses.html" title="Persistent objects and typeclasses"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Python-classes-and-objects.html" title="Python Classes and objects"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Overview of the Evennia library</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" accesskey="U">Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of the Evennia library</a></li> 
       </ul>
     </div>  
 
@@ -37,8 +46,7 @@
           <div class="body" role="main">
             
   <div class="section" id="overview-of-the-evennia-library">
-<h1><span class="section-number">6. </span>Overview of the Evennia library<a class="headerlink" href="#overview-of-the-evennia-library" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">next lesson</span></a></p>
+<h1>Overview of the Evennia library<a class="headerlink" href="#overview-of-the-evennia-library" title="Permalink to this headline">¶</a></h1>
 <div class="sidebar">
 <p class="sidebar-title">API</p>
 <p>API stands for <cite>Application Programming Interface</cite>, a description for how to access
@@ -55,7 +63,7 @@ what you can download from us. The github repo is also searchable.</p>
 if you want to help with Evennia’s development itself. See the
 <a class="reference internal" href="../../../Setup/Extended-Installation.html"><span class="doc">extended install instructions</span></a> if you want to do this.</p>
 <div class="section" id="where-is-it">
-<h2><span class="section-number">6.1. </span>Where is it?<a class="headerlink" href="#where-is-it" title="Permalink to this headline">¶</a></h2>
+<h2>Where is it?<a class="headerlink" href="#where-is-it" title="Permalink to this headline">¶</a></h2>
 <p>If Evennia is installed, you can import from it simply with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">some_module</span>
@@ -126,7 +134,7 @@ package <code class="docutils literal notranslate"><span class="pre">evennia</sp
 are listed if you <a class="reference internal" href="../../../Evennia-API.html"><span class="doc">scroll down a bit</span></a> on the Evennia-API page.</p>
 </div>
 <div class="section" id="an-example-of-exploring-the-library">
-<h2><span class="section-number">6.2. </span>An example of exploring the library<a class="headerlink" href="#an-example-of-exploring-the-library" title="Permalink to this headline">¶</a></h2>
+<h2>An example of exploring the library<a class="headerlink" href="#an-example-of-exploring-the-library" title="Permalink to this headline">¶</a></h2>
 <p>In the previous lesson we took a brief look at <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects</span></code> as an example of a Python module. Let’s
 open it again. Inside is the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class, which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>.
 Near the top of the module is this line:</p>
@@ -162,7 +170,6 @@ to look it up in the docs:</p>
 <li><p>You can now read what this does and what methods are on it. If you want to see the full source, click the
 [<a class="reference external" href="../../../_modules/evennia/objects/objects.html#DefaultObject">source</a>] link.</p></li>
 </ol>
-<p><a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">prev lesson</span></a> | <a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">next lesson</span></a></p>
 </div>
 </div>
 
@@ -188,13 +195,19 @@ to look it up in the docs:</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">6. Overview of the Evennia library</a><ul>
-<li><a class="reference internal" href="#where-is-it">6.1. Where is it?</a></li>
-<li><a class="reference internal" href="#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
+<li><a class="reference internal" href="#">Overview of the Evennia library</a><ul>
+<li><a class="reference internal" href="#where-is-it">Where is it?</a></li>
+<li><a class="reference internal" href="#an-example-of-exploring-the-library">An example of exploring the library</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Python-classes-and-objects.html"
+                        title="previous chapter">Python Classes and objects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Learning-Typeclasses.html"
+                        title="next chapter">Persistent objects and typeclasses</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -221,8 +234,15 @@ to look it up in the docs:</p>
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Learning-Typeclasses.html" title="Persistent objects and typeclasses"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Python-classes-and-objects.html" title="Python Classes and objects"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Overview of the Evennia library</a></li> 
+          <li class="nav-item nav-item-1"><a href="Starting-Part1.html" >Starting Tutorial (Part 1)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of the Evennia library</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

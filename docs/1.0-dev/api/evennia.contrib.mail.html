@@ -217,6 +217,11 @@ the newly created mails.</p></li>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'mail', 'category': 'general', 'key': '&#64;mail', 'tags': '', 'text': '\n    Communicate with others by sending mail.\n\n    Usage:\n      &#64;mail       - Displays all the mail an account has in their mailbox\n      &#64;mail &lt;#&gt;   - Displays a specific message\n      &#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;\n              - Sends a message to the comma separated list of accounts.\n      &#64;mail/delete &lt;#&gt; - Deletes a specific message\n      &#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]\n              - Forwards an existing message to the specified list of accounts,\n                original message is delivered with optional Message prepended.\n      &#64;mail/reply &lt;#&gt;=&lt;message&gt;\n              - Replies to a message #. Prepends message to the original\n                message text.\n    Switches:\n      delete  - deletes a message\n      forward - forward a received message to another object with an optional message attached.\n      reply   - Replies to a received message, appending the original message to the bottom.\n    Examples:\n      &#64;mail 2\n      &#64;mail Griatch=New mail/Hey man, I am sending you a message!\n      &#64;mail/delete 6\n      &#64;mail/forward feend78 Griatch=4/You guys should read this.\n      &#64;mail/reply 9=Thanks for the info!\n\n    '}</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -283,6 +288,11 @@ reply   - Replies to a received message, appending the original message to the b
 <dl class="py attribute">
 <dt id="evennia.contrib.mail.CmdMailCharacter.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'mail', 'category': 'general', 'key': '&#64;mail', 'tags': '', 'text': '\n    Communicate with others by sending mail.\n\n    Usage:\n      &#64;mail       - Displays all the mail an account has in their mailbox\n      &#64;mail &lt;#&gt;   - Displays a specific message\n      &#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;\n              - Sends a message to the comma separated list of accounts.\n      &#64;mail/delete &lt;#&gt; - Deletes a specific message\n      &#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]\n              - Forwards an existing message to the specified list of accounts,\n                original message is delivered with optional Message prepended.\n      &#64;mail/reply &lt;#&gt;=&lt;message&gt;\n              - Replies to a message #. Prepends message to the original\n                message text.\n    Switches:\n      delete  - deletes a message\n      forward - forward a received message to another object with an optional message attached.\n      reply   - Replies to a received message, appending the original message to the bottom.\n    Examples:\n      &#64;mail 2\n      &#64;mail Griatch=New mail/Hey man, I am sending you a message!\n      &#64;mail/delete 6\n      &#64;mail/forward feend78 Griatch=4/You guys should read this.\n      &#64;mail/reply 9=Thanks for the info!\n\n    '}</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
