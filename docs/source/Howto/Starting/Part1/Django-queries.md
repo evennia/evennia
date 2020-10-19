@@ -1,7 +1,5 @@
 # Django Database queries
 
-[prev lesson](./Searching-Things) | [next lesson](../Part2/Starting-Part2)
-
 ```important:: More advanced lesson!
   
     Learning about Django's queryset language is very useful once you start doing more advanced things 
@@ -397,5 +395,3 @@ query using Django is a powerful skill to have.
 
 This concludes the first part of the Evennia starting tutorial - "What we have". Now we have a good foundation
 to understand how to plan what our tutorial game will be about.
-
-[prev lesson](./Searching-Things) | [next lesson](../Part2/Starting-Part2)

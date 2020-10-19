@@ -1,7 +1,5 @@
 # Searching for things
 
-[prev lesson](./Creating-Things) | [next lesson](./Django-queries)
-
 We have gone through how to create the various entities in Evennia. But creating something is of little use 
 if we cannot find and use it afterwards. 
 
@@ -260,6 +258,4 @@ these tools will be all you need ...
 
 ... but not always. In the next lesson we will dive further into more complex searching when we look at 
 Django queries and querysets in earnest.
-
-[prev lesson](./Creating-Things) | [next lesson](./Django-queries)
 

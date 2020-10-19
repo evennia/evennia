@@ -1,7 +1,5 @@
 # Starting Tutorial (Part 1)
 
-[Start](./Building-Quickstart)
-  
 ```sidebar:: Tutorial Parts
 
   **Part 1: What we have**
@@ -23,23 +21,19 @@ and share with others!
 
 ## Lessons of Part 1 - "What we have"
 
-```toctree::
-    :numbered: 
-    :maxdepth: 1
-
-    Building stuff <Building-Quickstart>
-    The Tutorial World <Tutorial-World-Introduction>
-    Python basics <Python-basic-introduction>
-    Game dir overview <Gamedir-Overview>
-    Python classes and objects <Python-classes-and-objects>
-    Accessing the Evennia library <Evennia-Library-Overview>
-    Typeclasses and Persistent objects <Learning-Typeclasses>
-    Making first own Commands <Adding-Commands>
-    Parsing and replacing default Commands <More-on-Commands>
-    Creating things <Creating-Things>
-    Searching for things <Searching-Things>
-    Advanced searching with Django queries <Django-queries>
-```
+1. Introduction (you are here)
+1. [Building stuff](./Building-Quickstart)
+1. [The Tutorial World](./Tutorial-World-Introduction)
+1. [Python basics](./Python-basic-introduction)
+1. [Game dir overview](./Gamedir-Overview)
+1. [Python classes and objects](./Python-classes-and-objects)
+1. [Accessing the Evennia library](./Evennia-Library-Overview)
+1. [Typeclasses and Persistent objects](./Learning-Typeclasses)
+1. [Making first own Commands](./Adding-Commands)
+1. [Parsing and replacing default Commands](./More-on-Commands)
+1. [Creating things](./Creating-Things)
+1. [Searching for things](./Searching-Things)
+1. [Advanced searching with Django queries](./Django-queries)
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
 and how to find things we are looking for. We will also dive into some of things you'll 
@@ -114,4 +108,22 @@ first enter that gamedir and run
 
   You should now be good to go!  
   
-  [Start](./Building-Quickstart)
+  
+  ```toctree::
+    :hidden:
+  
+    Building-Quickstart
+    Tutorial-World-Introduction
+    Python-basic-introduction
+    Gamedir-Overview
+    Python-classes-and-objects
+    Evennia-Library-Overview
+    Learning-Typeclasses
+    Adding-Commands
+    More-on-Commands
+    Creating-Things
+    Searching-Things
+    Django-queries
+    ../Part2/Starting-Part2
+
+```

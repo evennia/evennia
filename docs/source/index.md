@@ -37,3 +37,22 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 - [Table of Contents](./toc) - an alphabetical listing of all regular documentation pages
 
 Want to help improve the docs? See the page on [Contributing to the docs](./Contributing-Docs)!
+
+
+```toctree::
+    :hidden:
+
+    Evennia-Introduction
+    Setup/Setup-Quickstart 
+    Howto/Starting/Part1/Starting-Part1
+    How-To-Get-And-Give-Help
+    Setup/Setup-Overview
+    Howto/Howto-Overview
+    Components/Components-Overview
+    Concepts/Concepts-Overview
+    Evennia-API
+    Coding/Coding-Overview
+    Contribs/Contrib-Overview
+    Links
+
+```

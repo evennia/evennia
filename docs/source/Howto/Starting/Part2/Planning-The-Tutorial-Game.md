@@ -1,5 +1,3 @@
-[prev lesson](./Game-Planning) | [next lesson](./Planning-Some-Useful-Contribs)
-
 # Planning our tutorial game
 
 Using the general plan from last lesson we'll now establish what kind of game we want to create for this tutorial.
@@ -425,5 +423,3 @@ playable game!
 Before starting to code in earnest a good coder should always do an inventory of all the stuff they _don't_ need
 to code themselves. So in the next lesson we will check out what help we have from Evennia's _contribs_. 
 
-
-[prev lesson](./Game-Planning) | [next lesson](./Planning-Some-Useful-Contribs)
