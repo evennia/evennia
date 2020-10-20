@@ -35,10 +35,10 @@ class Throttle(object):
         try:
             self.storage = caches['throttle']
         except Exception as e:
-            logger.log_err(f'Throttle: {e}')
+            logger.log_trace("Throttle: Errors encountered; using default cache.")
             self.storage = caches['default']
             
-        self.name = kwargs.get('name', 'ip-throttle')
+        self.name = kwargs.get('name', 'undefined-throttle')
         self.limit = kwargs.get("limit", 5)
         self.cache_size = kwargs.get('cache_size', self.limit)
         self.timeout = kwargs.get("timeout", 5 * 60)
