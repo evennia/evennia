@@ -125,22 +125,58 @@ class Throttle(object):
         if not previously_throttled and currently_throttled:
             logger.log_sec(f"Throttle Activated: {failmsg} (IP: {ip}, {self.limit} hits in {self.timeout} seconds.)")
             
-        self.record_key(ip)
-            
-    def record_key(self, key, *args, **kwargs):
+        self.record_ip(ip)
+        
+    def remove(self, ip, *args, **kwargs):
+        """
+        Clears data stored for an IP from the throttle.
+        
+        Args:
+            ip(str): IP to clear.
+        
+        """
+        exists = self.get(ip)
+        if not exists: return False
+        
+        cache_key = self.get_cache_key(ip)
+        self.storage.delete(cache_key)
+        self.unrecord_ip(ip)
+        
+        # Return True if NOT exists
+        return ~bool(self.get(ip))
+        
+    def record_ip(self, ip, *args, **kwargs):
         """
         Tracks keys as they are added to the cache (since there is no way to 
         get a list of keys after-the-fact).
         
         Args:
-            key(str): Key being added to cache. This should be the original
-                key, not the cache-prefixed version.
+            ip(str): IP being added to cache. This should be the original
+                IP, not the cache-prefixed key.
             
         """
         keys_key = self.get_cache_key('keys')
         keys = self.storage.get(keys_key, set())
-        keys.add(key)
+        keys.add(ip)
         self.storage.set(keys_key, keys, self.timeout)
+        return True
+        
+    def unrecord_ip(self, ip, *args, **kwargs):
+        """
+        Forces removal of a key from the key registry.
+        
+        Args:
+            ip(str): IP to remove from list of keys.
+            
+        """
+        keys_key = self.get_cache_key('keys')
+        keys = self.storage.get(keys_key, set())
+        try: 
+            keys.remove(ip)
+            self.storage.set(keys_key, keys, self.timeout)
+            return True
+        except KeyError:
+            return False
 
     def check(self, ip):
         """
@@ -171,7 +207,7 @@ class Throttle(object):
                 return True
             else:
                 # timeout has passed. clear faillist
-                self.storage.delete(cache_key)
+                self.remove(ip)
                 return False
         else:
             return False
