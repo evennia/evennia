@@ -509,7 +509,7 @@ Command {self} has no defined `func()` - showing on-command variables:
                 "SCREENWIDTH", {0: settings.CLIENT_DEFAULT_WIDTH}
             )[0]
         return settings.CLIENT_DEFAULT_WIDTH
-        
+
     def client_height(self):
         """
         Get the client screenheight for the session using this command.

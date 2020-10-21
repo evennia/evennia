@@ -31,8 +31,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Attribute manager methods
     def get_attribute(
-            self, key=None, category=None, value=None, strvalue=None,
-            obj=None, attrtype=None, **kwargs):
+        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
+    ):
         """
         Return Attribute objects by key, by category, by value, by
         `strvalue`, by object (it is stored on) or with a combination of

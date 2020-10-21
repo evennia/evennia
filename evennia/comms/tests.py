@@ -21,7 +21,9 @@ class ObjectCreationTest(EvenniaTest):
 class ChannelWholistTests(EvenniaTest):
     def setUp(self):
         super().setUp()
-        self.default_channel, _ = DefaultChannel.create("coffeetalk", description="A place to talk about coffee.")
+        self.default_channel, _ = DefaultChannel.create(
+            "coffeetalk", description="A place to talk about coffee."
+        )
         self.default_channel.connect(self.obj1)
 
     def test_wholist_shows_subscribed_objects(self):
@@ -31,7 +33,9 @@ class ChannelWholistTests(EvenniaTest):
 
     def test_wholist_shows_none_when_empty(self):
         # No one hates dogs
-        empty_channel, _ = DefaultChannel.create("doghaters", description="A place where dog haters unite.")
+        empty_channel, _ = DefaultChannel.create(
+            "doghaters", description="A place where dog haters unite."
+        )
         expected = "<None>"
         result = empty_channel.wholist
         self.assertEqual(expected, result)

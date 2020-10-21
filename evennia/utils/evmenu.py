@@ -1660,9 +1660,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
 _RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S[\S\s]*?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
-_RE_CALLABLE = re.compile(
-    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M
-)
+_RE_CALLABLE = re.compile(r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M)
 
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
 
@@ -1676,8 +1674,8 @@ _OPTION_COMMENT_START = "#"
 # Input/option/goto handler functions that allows for dynamically generated
 # nodes read from the menu template.
 
-def _process_callable(caller, goto, goto_callables, raw_string,
-                      current_nodename, kwargs):
+
+def _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs):
     """
     Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of
     the right-hand-side of the template options and map this to an actual
@@ -1693,12 +1691,18 @@ def _process_callable(caller, goto, goto_callables, raw_string,
             for kwarg in gotokwargs.split(","):
                 if kwarg and "=" in kwarg:
                     key, value = [part.strip() for part in kwarg.split("=", 1)]
-                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                               "evmenu_current_nodename", "evmenu_goto_callables"):
+                    if key in (
+                        "evmenu_goto",
+                        "evmenu_gotomap",
+                        "_current_nodename",
+                        "evmenu_current_nodename",
+                        "evmenu_goto_callables",
+                    ):
                         raise RuntimeError(
                             f"EvMenu template error: goto-callable '{goto}' uses a "
                             f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                            "system. Rename the kwarg.")
+                            "system. Rename the kwarg."
+                        )
                     try:
                         key = literal_eval(key)
                     except ValueError:
@@ -1725,8 +1729,7 @@ def _generated_goto_func(caller, raw_string, **kwargs):
     goto = kwargs["evmenu_goto"]
     goto_callables = kwargs["evmenu_goto_callables"]
     current_nodename = kwargs["evmenu_current_nodename"]
-    return _process_callable(caller, goto, goto_callables, raw_string,
-                             current_nodename, kwargs)
+    return _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs)
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
@@ -1746,13 +1749,15 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
     # start with glob patterns
     for pattern, goto in gotomap.items():
         if fnmatch(raw_string.lower(), pattern):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
         if pattern and re.match(pattern, raw_string.lower(), flags=re.I + re.M):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no match, show error
     raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
@@ -1783,6 +1788,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         dict: A `{"node": nodefunc}` menutree suitable to pass into EvMenu.
 
     """
+
     def _validate_kwarg(goto, kwarg):
         """
         Validate goto-callable kwarg is on correct form.
@@ -1792,14 +1798,21 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 f"EvMenu template error: goto-callable '{goto}' has a "
                 f"non-kwarg argument ({kwarg}). All callables in the "
                 "template must have only keyword-arguments, or no "
-                "args at all.")
+                "args at all."
+            )
         key, _ = [part.strip() for part in kwarg.split("=", 1)]
-        if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                   "evmenu_current_nodename", "evmenu_goto_callables"):
+        if key in (
+            "evmenu_goto",
+            "evmenu_gotomap",
+            "_current_nodename",
+            "evmenu_current_nodename",
+            "evmenu_goto_callables",
+        ):
             raise RuntimeError(
                 f"EvMenu template error: goto-callable '{goto}' uses a "
                 f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                "system. Rename the kwarg.")
+                "system. Rename the kwarg."
+            )
 
     def _parse_options(nodename, optiontxt, goto_callables):
         """
@@ -1829,7 +1842,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
             if match:
                 kwargs = match.group("kwargs")
                 if kwargs:
-                    for kwarg in kwargs.split(','):
+                    for kwarg in kwargs.split(","):
                         _validate_kwarg(goto, kwarg)
 
             # parse key [;aliases|pattern]
@@ -1841,7 +1854,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
 
             if main_key.startswith(_OPTION_INPUT_MARKER):
                 # if we have a pattern, build the arguments for _default later
-                pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
+                pattern = main_key[len(_OPTION_INPUT_MARKER) :].strip()
                 inputparsemap[pattern] = goto
             else:
                 # a regular goto string/callable target
@@ -1902,12 +1915,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
 
 
 def template2menu(
-    caller,
-    menu_template,
-    goto_callables=None,
-    startnode="start",
-    persistent=False,
-    **kwargs,
+    caller, menu_template, goto_callables=None, startnode="start", persistent=False, **kwargs,
 ):
     """
     Helper function to generate and start an EvMenu based on a menu template
@@ -1932,9 +1940,4 @@ def template2menu(
     """
     goto_callables = goto_callables or {}
     menu_tree = parse_menu_template(caller, menu_template, goto_callables)
-    return EvMenu(
-        caller,
-        menu_tree,
-        persistent=persistent,
-        **kwargs,
-    )
+    return EvMenu(caller, menu_tree, persistent=persistent, **kwargs,)

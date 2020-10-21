@@ -331,7 +331,7 @@ class CmdSetHandler(object):
 
         if mergelist:
             # current is a result of mergers
-            mergelist="+".join(mergelist)
+            mergelist = "+".join(mergelist)
             strings.append(f" <Merged {mergelist}>: {self.current}")
         else:
             # current is a single cmdset
