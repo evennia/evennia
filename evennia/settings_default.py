@@ -864,6 +864,21 @@ WEBCLIENT_OPTIONS = {
     # messages
 }
 
+# Django cache settings
+# https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'throttle': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 60 * 5,
+        'OPTIONS': {
+            'MAX_ENTRIES': 2000
+        }
+    }
+}
+
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {
