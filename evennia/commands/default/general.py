@@ -379,10 +379,13 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             string = "You are not carrying anything."
         else:
             from evennia.utils.ansi import raw as raw_ansi
+
             table = self.styled_table(border="header")
             for item in items:
-                table.add_row(f"|C{item.name}|n",
-                              "{}|n".format(utils.crop(raw_ansi(item.db.desc), width=50) or ""))
+                table.add_row(
+                    f"|C{item.name}|n",
+                    "{}|n".format(utils.crop(raw_ansi(item.db.desc), width=50) or ""),
+                )
             string = f"|wYou are carrying:\n{table}"
         self.caller.msg(string)
 

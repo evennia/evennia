@@ -2516,12 +2516,14 @@ class CmdExamine(ObjManipCommand):
 
             def _format_options(cmdset):
                 """helper for cmdset-option display"""
+
                 def _truefalse(string, value):
                     if value is None:
                         return ""
                     if value:
                         return f"{string}: T"
                     return f"{string}: F"
+
                 options = ", ".join(
                     _truefalse(opt, getattr(cmdset, opt))
                     for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
@@ -2538,7 +2540,8 @@ class CmdExamine(ObjManipCommand):
                     continue
                 options = _format_options(cmdset)
                 stored.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})")
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})"
+                )
             output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(stored)
 
             # this gets all components of the currently merged set
@@ -2576,13 +2579,15 @@ class CmdExamine(ObjManipCommand):
             # the resulting merged cmdset
             options = _format_options(current_cmdset)
             merged = [
-                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"]
+                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"
+            ]
 
             # the merge stack
             for cmdset in all_cmdsets:
                 options = _format_options(cmdset)
                 merged.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})")
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})"
+                )
             output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(merged)
 
             # list the commands available to this object
