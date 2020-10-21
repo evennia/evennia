@@ -90,8 +90,8 @@ class ThrottleTest(EvenniaTest):
     """
 
     def test_throttle(self):
-        ips = ("94.100.176.153", "45.56.148.77", "5.196.1.129")
-        kwargs = {"limit": 5, "timeout": 15 * 60}
+        ips = ("256.256.256.257", "257.257.257.257", "258.258.258.258")
+        kwargs = {"name": "testing", "limit": 5, "timeout": 15 * 60}
 
         throttle = Throttle(**kwargs)
 
@@ -124,3 +124,14 @@ class ThrottleTest(EvenniaTest):
 
         # There should only be (cache_size * num_ips) total in the Throttle cache
         self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips))
+        
+        # Make sure the cache is populated
+        self.assertTrue(throttle.get())
+        
+        # Remove the test IPs from the throttle cache 
+        # (in case persistent storage was configured by the user)
+        for ip in ips:
+            self.assertTrue(throttle.remove(ip))
+            
+        # Make sure the cache is empty
+        self.assertFalse(throttle.get())
