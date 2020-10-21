@@ -175,7 +175,7 @@ def _to_ansi(obj, regexable=False):
         return ANSIString(obj, regexable=regexable)
 
 
-class EvForm(object):
+class EvForm:
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
@@ -460,40 +460,3 @@ class EvForm(object):
     def __str__(self):
         "Prints the form"
         return str(ANSIString("\n").join([line for line in self.form]))
-
-
-def _test():
-    "test evform. This is used by the unittest system."
-    form = EvForm("evennia.utils.tests.data.evform_example")
-
-    # add data to each tagged form cell
-    form.map(
-        cells={
-            "AA": "|gTom the Bouncer",
-            2: "|yGriatch",
-            3: "A sturdy fellow",
-            4: 12,
-            5: 10,
-            6: 5,
-            7: 18,
-            8: 10,
-            9: 3,
-            "F": "rev 1",
-        }
-    )
-    # create the EvTables
-    tableA = EvTable("HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols")
-    tableB = EvTable(
-        "Skill",
-        "Value",
-        "Exp",
-        table=[
-            ["Shooting", "Herbalism", "Smithing"],
-            [12, 14, 9],
-            ["550/1200", "990/1400", "205/900"],
-        ],
-        border="incols",
-    )
-    # add the tables to the proper ids in the form
-    form.map(tables={"A": tableA, "B": tableB})
-    return str(form)
