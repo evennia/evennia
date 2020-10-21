@@ -21,6 +21,7 @@
 - Make `object.search` support 'stacks=0' keyword - if ``>0``, the method will return
   N identical matches instead of triggering a multi-match error.
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
+- Make IP throttle use Django-based cache system for optional persistence (PR by strikaco)
 
 
 ### Evennia 0.9.5 (master)
