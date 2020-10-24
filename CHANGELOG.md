@@ -82,6 +82,7 @@ without arguments starts a full interactive Python console.
   Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
 - New EvMenu templating system for quickly building simpler EvMenus without as much code.
 - Add `Command.client_height()` method to match existing `.client_width` (stricako)
+- Include more Web-client info in `session.protocol_flags`.
 
 
 ## Evennia 0.9 (2018-2019)
