@@ -22,7 +22,8 @@
   N identical matches instead of triggering a multi-match error.
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 - Make IP throttle use Django-based cache system for optional persistence (PR by strikaco)
-
+- Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
+  "TutorialWeaponRack" to prevent collisions with classes in mygame
 
 ### Evennia 0.9.5 (master)
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
@@ -98,8 +99,8 @@ without arguments starts a full interactive Python console.
 - `EvMenu.msg(txt)` added as a central place to send text to the user, makes it easier to override.
   Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
 - New EvMenu templating system for quickly building simpler EvMenus without as much code.
-- Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
-  "TutorialWeaponRack" to prevent collisions with classes in mygame
+- Add `Command.client_height()` method to match existing `.client_width` (stricako)
+- Include more Web-client info in `session.protocol_flags`.
 
 
 ## Evennia 0.9 (2018-2019)
