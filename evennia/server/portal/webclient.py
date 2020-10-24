@@ -119,6 +119,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
 
+        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        self.protocol_flags["UTF-8"] = True
+        self.protocol_flags["OOB"] = True
+
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
         # actually do the connection
