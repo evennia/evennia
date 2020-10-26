@@ -844,7 +844,7 @@ def spawn(*prototypes, **kwargs):
         prototypes (str or dict): Each argument should either be a
             prototype_key (will be used to find the prototype) or a full prototype
             dictionary. These will be batched-spawned as one object each.
-    Kwargs:
+    Keyword Args:
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
             the global protparents dictionary accessible by the input

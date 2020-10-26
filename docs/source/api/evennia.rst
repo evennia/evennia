@@ -6,8 +6,13 @@ evennia
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+
+
+.. toctree::
+   :maxdepth: 6
+
+   evennia.settings_default
+
 
 .. toctree::
    :maxdepth: 6
@@ -25,11 +30,3 @@ Subpackages
    evennia.typeclasses
    evennia.utils
    evennia.web
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 6
-
-   evennia.settings_default

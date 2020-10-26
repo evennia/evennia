@@ -6,7 +6,7 @@ twisted >= 20.3.0, < 21.0.0
 pytz
 django-sekizai
 inflect
-autobahn >= 17.9.3
+autobahn >= 20.7.1, < 21.0.0
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0

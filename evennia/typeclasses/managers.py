@@ -35,11 +35,11 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     ):
         """
         Return Attribute objects by key, by category, by value, by
-        strvalue, by object (it is stored on) or with a combination of
+        `strvalue`, by object (it is stored on) or with a combination of
         those criteria.
 
-        Attrs:
-            key (str, optional): The attribute's key to search for
+        Args:
+            key (str, optional): The attribute's key to search for.
             category (str, optional): The category of the attribute(s)
                 to search for.
             value (str, optional): The attribute value to search for.
@@ -52,7 +52,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 precedence if given.
             obj (Object, optional): On which object the Attribute to
                 search for is.
-            attrype (str, optional): An attribute-type to search for.
+            attrtype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
             kwargs (any): Currently unused. Reserved for future use.
@@ -84,7 +84,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         Get a nick, in parallel to `get_attribute`.
 
-        Attrs:
+        Args:
             key (str, optional): The nicks's key to search for
             category (str, optional): The category of the nicks(s) to search for.
             value (str, optional): The attribute value to search for. Note that this
@@ -170,7 +170,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
 
-        Attrs:
+        Args:
             key (str, optional): The Tag's key to search for
             category (str, optional): The Tag of the attribute(s)
                 to search for.
@@ -260,7 +260,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 this is either `None` (a normal Tag), `alias` or
                 `permission`. This always apply to all queried tags.
 
-        Kwargs:
+        Keyword Args:
             match (str): "all" (default) or "any"; determines whether the
                 target object must be tagged with ALL of the provided
                 tags/categories or ANY single one. ANY will perform a weighted
@@ -651,7 +651,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django get method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method
         Returns:
@@ -673,7 +673,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:
@@ -796,7 +796,7 @@ class TypeclassManager(TypedObjectManager):
         Variation of get that not only returns the current typeclass
         but also all subclasses of that typeclass.
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method.
         Returns:
@@ -821,7 +821,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:

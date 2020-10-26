@@ -160,7 +160,7 @@ def get_worn_clothes(character, exclude_covered=False):
     Args:
         character (obj): The character to get a list of worn clothes from.
 
-    Kwargs:
+    Keyword Args:
         exclude_covered (bool): If True, excludes clothes covered by other
                                 clothing from the returned list.
 
@@ -237,7 +237,7 @@ class Clothing(DefaultObject):
             wearer (obj): character object wearing this clothing object
             wearstyle (True or str): string describing the style of wear or True for none
 
-        Kwargs:
+        Keyword Args:
             quiet (bool): If false, does not message the room
 
         Notes:
@@ -276,7 +276,7 @@ class Clothing(DefaultObject):
         Args:
             wearer (obj): character object wearing this clothing object
 
-        Kwargs:
+        Keyword Args:
             quiet (bool): If false, does not message the room
         """
         self.db.worn = False

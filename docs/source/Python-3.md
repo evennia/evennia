@@ -1,6 +1,7 @@
 # Python 3
 
-> *Note: Evennia only supports Python 2.7+ at this time. This page gathers various development information relevant to server developers.*
+> *Note: Evennia only supports Python 2.7+ at this time. This page gathers various development
+information relevant to server developers.*
 
 Django can work with Python 2 and 3 already, though changes may be required to how the Evennia code
 uses it. Twisted has much Python 3 compatibility, but not all modules within it have been ported
@@ -17,16 +18,20 @@ it still works correctly with Twisted on Python 3.
 # "Strings"
 Broadly (and perhaps over-simplified):
 
-* Twisted [expects bytes](http://twistedmatrix.com/trac/wiki/FrequentlyAskedQuestions#WhydontTwistedsnetworkmethodssupportUnicodeobjectsaswellasstrings)
-* Django [expects "" to be unicode](https://docs.djangoproject.com/en/1.8/topics/python3/#unicode-literals)
+* Twisted [expects bytes](http://twistedmatrix.com/trac/wiki/FrequentlyAskedQuestions#WhydontTwisted
+snetworkmethodssupportUnicodeobjectsaswellasstrings)
+* Django [expects "" to be unicode](https://docs.djangoproject.com/en/1.8/topics/python3/#unicode-
+literals)
 
-I think we should use (roughly speaking) "" for unicode and b"" for bytes everywhere, but I need to look at the impacts of this more closely.
+I think we should use (roughly speaking) "" for unicode and b"" for bytes everywhere, but I need to
+look at the impacts of this more closely.
 
 # Links
 
 * http://twistedmatrix.com/documents/current/core/howto/python3.html
 * https://twistedmatrix.com/trac/wiki/Plan/Python3
-* [Twisted Python3 bugs](https://twistedmatrix.com/trac/query?status=assigned&status=new&status=reopened&group=status&milestone=Python-3.x)
+* [Twisted Python3 bugs](https://twistedmatrix.com/trac/query?status=assigned&status=new&status=reop
+ened&group=status&milestone=Python-3.x)
 
 # Twisted module status
 

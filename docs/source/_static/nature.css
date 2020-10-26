@@ -40,6 +40,7 @@ hr {
 
 div.document {
     background-color: #eeeeea;
+    max-width: 1090px;
 }
 
 div.body {
@@ -56,6 +57,7 @@ div.footer {
     padding: 13px 0;
     text-align: center;
     font-size: 75%;
+    max-width:1080px;
 }
 
 div.footer a {
@@ -69,6 +71,7 @@ div.related {
     color: #9FA0A0;
     /*! text-shadow: 0px 1px 0 #444; */
     font-size: 0.9em;
+    max-width: 1090px;
 }
 
 div.related a {
@@ -393,4 +396,65 @@ code.descname {
 .exception {
   background-color: #fff9f9;
   padding: 5px;
+}
+
+
+/* -- screen sizes ------------------------------------------------------------------ */
+
+@media print, screen and (max-width: 960px) {
+
+  div.body {
+    width: auto;
+  }
+
+  div.bodywrapper {
+    margin-left: 0px;
+    margin-top: 110px;
+  }
+
+  div.document,
+  div.documentwrapper,
+  div.bodywrapper {
+      margin: 0 !important;
+      width: 100%;
+  }
+
+  div.sphinxsidebar {
+    visibility: hidden;
+  }
+
+  .search {
+    visibility: visible;
+    position: absolute;
+    top: -7px;
+    right: 200px;
+  }
+
+  #top-link {
+      display: none;
+  }
+}
+
+@media print, screen and (max-width: 720px) {
+
+  div.related>ul {
+    visibility: hidden;
+  }
+
+  div.related>ul>li.nav-item.nav-item-0 {
+    visibility: visible;
+  }
+
+  .search {
+    right: 10px;
+  }
+
+}
+
+@media print, screen and (max-width: 480px) {
+
+  div.body {
+    padding-left: 2px;
+  }
+
 }

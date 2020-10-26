@@ -177,6 +177,59 @@ class ANSIStringTestCase(TestCase):
         self.assertEqual(a.rstrip(), ANSIString("   |r   Test of stuff |b with spaces|n"))
         self.assertEqual(b.strip(), b)
 
+    def test_regex_search(self):
+        """
+        Test regex-search in ANSIString - the found position should ignore any ansi-markers
+        """
+        string = ANSIString(" |r|[b  Test ")
+        match = re.search(r"Test", string)
+        self.assertTrue(match)
+        self.assertEqual(match.span(), (3, 7))
+
+    def test_regex_replace(self):
+        """
+        Inserting text into an ansistring at an index position should ignore
+        the ansi markers but not remove them!
+
+        """
+        string = ANSIString("A |rTest|n string")
+        match = re.search(r"Test", string)
+        ix1, ix2 = match.span()
+        self.assertEqual((ix1, ix2), (2, 6))
+
+        result = string[:ix1] + "Replacement" + string[ix2:]
+        expected = ANSIString("A |rReplacement|n string")
+
+        self.assertEqual(expected, result)
+
+    def test_slice_insert(self):
+        """
+        Inserting a slice should not remove ansi markup (issue #2205)
+        """
+        string = ANSIString("|rTest|n")
+        split_string = string[:0] + "Test" + string[4:]
+        self.assertEqual(string.raw(), split_string.raw())
+
+    def test_slice_insert_longer(self):
+        """
+        The ANSIString replays the color code before the split in order to
+        produce a *visually* identical result. The result is a longer string in
+        raw characters, but one which correctly represents the color output.
+        """
+        string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
+        # from evennia import set_trace;set_trace()
+        split_string = string[:9] + "Test" + string[13:]
+        self.assertEqual(
+            repr((ANSIString("A bigger ")
+            + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
+            + ANSIString("|r|n of things |bwith more color|n")).raw()),
+            repr(split_string.raw()))
+
+    def test_slice_full(self):
+        string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
+        split_string = string[:]
+        self.assertEqual(string.raw(), split_string.raw())
+
 
 class TestTextToHTMLparser(TestCase):
     def setUp(self):

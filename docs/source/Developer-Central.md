@@ -1,7 +1,8 @@
 # Developer Central
 
 
-This page serves as a central nexus for information on using Evennia as well as developing the library itself.
+This page serves as a central nexus for information on using Evennia as well as developing the
+library itself.
 
 ### General Evennia development information
 
@@ -26,7 +27,7 @@ This page serves as a central nexus for information on using Evennia as well as 
 
 #### Core components and protocols
 
-- [Server and Portal](./Portal-And-Server)  
+- [Server and Portal](./Portal-And-Server)
   - [Sessions](./Sessions)
   - [Configuration and module plugins](./Server-Conf)
 - [The message path](./Messagepath)
@@ -34,14 +35,14 @@ This page serves as a central nexus for information on using Evennia as well as 
   - [Inputfuncs](./Inputfuncs)
   - [Adding new protocols (client APIs) and services](./Custom-Protocols)
 - [Adding new database models](./New-Models)
-- [Running and writing unit tests](./Unit-Testing)
-- [Running profiling](./Profiling) 
+- [Unit Testing](./Unit-Testing)
+- [Running profiling](./Profiling)
 - [Debugging your code](./Debugging)
 
 #### In-game Commands
 
 - [Command System overview](./Command-System)
-- [Commands](./Commands) 
+- [Commands](./Commands)
 - [Command Sets](./Command-Sets)
 - [Command Auto-help](./Help-System#command-auto-help-system)
 
@@ -65,7 +66,7 @@ This page serves as a central nexus for information on using Evennia as well as 
 - [Tags](./Tags)
   - [Tags for Aliases and Permissions](./Tags#using-aliases-and-permissions)
 
-#### Web 
+#### Web
 
 - [Web features overview](./Web-Features)
 - [The Webclient](./Webclient)
@@ -91,13 +92,79 @@ This page serves as a central nexus for information on using Evennia as well as 
 
 ### Developer brainstorms and whitepages
 
-- [API refactoring](./API-refactoring), discussing what parts of the Evennia API needs a refactoring/cleanup/simplification
-- [Docs refactoring](./Docs-refactoring), discussing how to reorganize and structure this wiki/docs better going forward
+- [API refactoring](./API-refactoring), discussing what parts of the Evennia API needs a
+refactoring/cleanup/simplification
+- [Docs refactoring](./Docs-refactoring), discussing how to reorganize and structure this wiki/docs
+better going forward
 - [Webclient brainstorm](./Webclient-brainstorm), some ideas for a future webclient gui
 - [Roadmap](./Roadmap), a tentative list of future major features
-- [Change log](https://github.com/evennia/evennia/blob/master/CHANGELOG.md) of big Evennia updates over time
+- [Change log](https://github.com/evennia/evennia/blob/master/CHANGELOG.md) of big Evennia updates
+over time
 
 
 [group]: https://groups.google.com/forum/#!forum/evennia
-[online-form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0 
+[online-form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDE
+zY1RoZGc6MQ#gid=0
 [issues]: https://github.com/evennia/evennia/issues
+
+
+```toctree::
+    :hidden:
+   
+    Coding-Introduction
+    Licensing
+    Contributing
+    Using-MUX-as-a-Standard
+    Version-Control
+    Using-Travis
+    Game-Planning
+    First-Steps-Coding
+    Internationalization
+    Quirks
+    Setting-up-PyCharm
+    Directory-Overview
+    Evennia-API
+    Execute-Python-Code
+    Portal-And-Server
+    Sessions
+    Server-Conf 
+    Messagepath
+    OOB
+    Inputfuncs
+    Custom-Protocols
+    New-Models
+    Unit-Testing
+    Profiling
+    Debugging
+    Command-System
+    Commands
+    Command-Sets
+    Help-System
+    Typeclasses
+    Objects
+    Accounts 
+    Communications
+    Scripts
+    TickerHandler
+    Coding-Utils
+    MonitorHandler
+    Attributes
+    Nicks
+    Tags
+    Web-Features
+    Webclient
+    Web-Tutorial
+    Locks
+    Signals
+    Coding-Utils
+    EvMenu
+    EvMore
+    EvEditor
+    Spawner-and-Prototypes
+    TextTags
+    Async-Process
+    API-refactoring
+    Docs-refactoring
+    Webclient-brainstorm 
+
+```

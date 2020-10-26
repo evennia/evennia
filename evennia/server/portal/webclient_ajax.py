@@ -382,7 +382,7 @@ class AjaxWebClientSession(session.Session):
         """
         Data User -> Evennia
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Incoming data.
 
         """
@@ -392,7 +392,7 @@ class AjaxWebClientSession(session.Session):
         """
         Data Evennia -> User
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Options to the protocol
         """
         self.sessionhandler.data_out(self, **kwargs)
@@ -405,7 +405,7 @@ class AjaxWebClientSession(session.Session):
         Args:
             text (str): Text to send.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Remove all color.
@@ -457,7 +457,7 @@ class AjaxWebClientSession(session.Session):
             cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
-        Kwargs:
+        Keyword Args:
             options (dict): These are ignored for oob commands. Use command
                 arguments (which can hold dicts) to send instructions to the
                 client instead.

@@ -432,9 +432,8 @@ The web client starts out having two panes - the input-pane for entering command
 and the main window.
 
 - Use |y<Return>|n (or click the arrow on the right) to send your input.
-- Use |yCtrl + <up/down-arrow>|n to step back and forth in your command-history.
-- Use |yCtrl + <Return>|n to add a new line to your input without sending.
-(Cmd instead of Ctrl-key on Macs)
+- Use |yShift + <up/down-arrow>|n to step back and forth in your command-history.
+- Use |yShift + <Return>|n to add a new line to your input without sending.
 
 There is also some |wextra|n info to learn about customizing the webclient.
 

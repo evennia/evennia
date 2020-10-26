@@ -5,7 +5,7 @@ This is the main top-level API for Evennia. You can explore the evennia library
 by accessing evennia.<subpackage> directly. From inside the game you can read
 docs of all object by viewing its `__doc__` string, such as through
 
-    @py evennia.ObjectDB.__doc__
+    py evennia.ObjectDB.__doc__
 
 For full functionality you should explore this module via a django-
 aware shell. Go to your game directory and use the command
@@ -20,27 +20,13 @@ See www.evennia.com for full documentation.
 # docstring header
 
 DOCSTRING = """
-|cEvennia|n 'flat' API (use |wevennia.<component>.__doc__|n to read doc-strings
-                        and |wdict(evennia.component)|n or
-                        |wevennia.component.__dict__ to see contents)
-|cTypeclass-bases:|n                      |cDatabase models|n:
-   DefaultAccount     DefaultObject          AccountDB     ObjectDB
-     DefaultGuest       DefaultCharacter     ChannelDB
-                        DefaultRoom          ScriptDB
-   DefaultChannel       DefaultExit          Msg
-   DefaultScript
-|cSearch functions:|n                     |cCommand parents and helpers:|n
-   search_account       search_object        default_cmds
-   search_script        search_channel       Command       InterruptCommand
-   search_help          search_message       CmdSet
-   search_tag           managers          |cUtilities:|n
-|cCreate functions:|n                        settings       lockfuncs
-   create_account       create_object        logger         gametime
-   create_script        create_channel       ansi           spawn
-   create_help_entry    create_message       contrib        managers
-|cGlobal handlers:|n                         set_trace
-   TICKER_HANDLER       TASK_HANDLER         EvMenu         EvTable
-   SESSION_HANDLER      CHANNEL_HANDLER      EvForm         EvEditor """
+Evennia MU* creation system.
+
+Online manual and API docs are found at http://www.evennia.com.
+
+Flat-API shortcut names:
+{}
+"""
 
 # Delayed loading of properties
 
@@ -248,10 +234,6 @@ def _init():
     from .utils.containers import GLOBAL_SCRIPTS
     from .utils.containers import OPTION_CLASSES
 
-    # initialize the doc string
-    global __doc__
-    __doc__ = ansi.parse_ansi(DOCSTRING)
-
     # API containers
 
     class _EvContainer(object):
@@ -414,7 +396,7 @@ def _init():
     GLOBAL_SCRIPTS.start()
 
 
-def set_trace(term_size=(140, 40), debugger="auto"):
+def set_trace(term_size=(140, 80), debugger="auto"):
     """
     Helper function for running a debugger inside the Evennia event loop.
 
@@ -461,9 +443,21 @@ def set_trace(term_size=(140, 40), debugger="auto"):
         dbg = pdb.Pdb(stdout=sys.__stdout__)
 
     try:
-        # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger
-        # this point, not the actual code location)
+        # Start debugger, forcing it up one stack frame (otherwise `set_trace`
+        # will start debugger this point, not the actual code location)
         dbg.set_trace(sys._getframe().f_back)
     except Exception:
         # Stopped at breakpoint. Press 'n' to continue into the code.
         dbg.set_trace()
+
+
+# initialize the doc string
+global __doc__
+__doc__ = DOCSTRING.format(
+    "\n- "
+    + "\n- ".join(
+        f"evennia.{key}"
+        for key in sorted(globals())
+        if not key.startswith("_") and key not in ("DOCSTRING",)
+    )
+)

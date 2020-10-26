@@ -164,7 +164,7 @@ def client_options(session, *args, **kwargs):
     This allows the client an OOB way to inform us about its name and capabilities.
     This will be integrated into the session settings
 
-    Kwargs:
+    Keyword Args:
         get (bool): If this is true, return the settings as a dict
             (ignore all other kwargs).
         client (str): A client identifier, like "mushclient".
@@ -282,7 +282,7 @@ def login(session, *args, **kwargs):
     Peform a login. This only works if session is currently not logged
     in. This will also automatically throttle too quick attempts.
 
-    Kwargs:
+    Keyword Args:
         name (str): Account name
         password (str): Plain-text password
 
@@ -308,7 +308,7 @@ def get_value(session, *args, **kwargs):
     Return the value of a given attribute or db_property on the
     session's current account or character.
 
-    Kwargs:
+    Keyword Args:
       name (str): Name of info value to return. Only names
         in the _gettable dictionary earlier in this module
         are accepted.
@@ -325,7 +325,7 @@ def _testrepeat(**kwargs):
     This is a test function for using with the repeat
     inputfunc.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Session to return to.
     """
     import time
@@ -342,7 +342,7 @@ def repeat(session, *args, **kwargs):
     this is meant as an example of limiting the number of
     possible call functions.
 
-    Kwargs:
+    Keyword Args:
         callback (str): The function to call. Only functions
             from the _repeatable dictionary earlier in this
             module are available.
@@ -403,7 +403,7 @@ def monitor(session, *args, **kwargs):
     """
     Adds monitoring to a given property or Attribute.
 
-    Kwargs:
+    Keyword Args:
       name (str): The name of the property or Attribute
         to report. No db_* prefix is needed. Only names
         in the _monitorable dict earlier in this module
@@ -485,8 +485,9 @@ def webclient_options(session, *args, **kwargs):
     If kwargs is not empty, the key/values stored in there will be persisted
     to the account object.
 
-    Kwargs:
+    Keyword Args:
         <option name>: an option to save
+
     """
     account = session.account
 

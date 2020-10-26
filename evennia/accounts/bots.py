@@ -278,7 +278,7 @@ class IRCBot(Bot):
         Args:
             text (str, optional): Incoming text from channel.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options dict with the following allowed keys:
                 - from_channel (str): dbid of a channel this text originated from.
                 - from_obj (list): list of objects sending this text.
@@ -308,7 +308,7 @@ class IRCBot(Bot):
             session (Session, optional): Session responsible for this
                 command. Note that this is the bot.
             txt (str, optional):  Command string.
-        Kwargs:
+        Keyword Args:
             user (str): The name of the user who sent the message.
             channel (str): The name of channel the message was sent to.
             type (str): Nature of message. Either 'msg', 'action', 'nicklist'
@@ -518,7 +518,7 @@ class GrapevineBot(Bot):
         Args:
             text (str, optional): Incoming text from channel.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options dict with the following allowed keys:
                 - from_channel (str): dbid of a channel this text originated from.
                 - from_obj (list): list of objects sending this text.

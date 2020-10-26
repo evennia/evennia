@@ -175,7 +175,7 @@ class CmdHelp(Command):
             False: the command shouldn't appear in the table.
 
         """
-        return True
+        return cmd.access(caller, "view", default=True)
 
     def parse(self):
         """
@@ -222,8 +222,11 @@ class CmdHelp(Command):
             # system, but not be displayed in the table, or be displayed differently.
             for cmd in all_cmds:
                 if self.should_list_cmd(cmd, caller):
-                    key = (cmd.auto_help_display_key
-                           if hasattr(cmd, "auto_help_display_key") else cmd.key)
+                    key = (
+                        cmd.auto_help_display_key
+                        if hasattr(cmd, "auto_help_display_key")
+                        else cmd.key
+                    )
                     hdict_cmd[cmd.help_category].append(key)
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
@@ -271,10 +274,7 @@ class CmdHelp(Command):
             cmd = match[0]
             key = cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key
             formatted = self.format_help_entry(
-                key,
-                cmd.get_help(caller, cmdset),
-                aliases=cmd.aliases,
-                suggested=suggestions,
+                key, cmd.get_help(caller, cmdset), aliases=cmd.aliases, suggested=suggestions,
             )
             self.msg_help(formatted)
             return
@@ -294,10 +294,16 @@ class CmdHelp(Command):
         # try to see if a category name was entered
         if query in all_categories:
             self.msg_help(
-                self.format_help_list({
-                    query: [
-                        cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key
-                        for cmd in all_cmds if cmd.help_category == query]},
+                self.format_help_list(
+                    {
+                        query: [
+                            cmd.auto_help_display_key
+                            if hasattr(cmd, "auto_help_display_key")
+                            else cmd.key
+                            for cmd in all_cmds
+                            if cmd.help_category == query
+                        ]
+                    },
                     {query: [topic.key for topic in all_topics if topic.help_category == query]},
                 )
             )

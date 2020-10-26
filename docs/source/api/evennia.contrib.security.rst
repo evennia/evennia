@@ -6,8 +6,6 @@ evennia.contrib.security
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 6

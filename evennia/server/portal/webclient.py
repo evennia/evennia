@@ -119,6 +119,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
 
+        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        self.protocol_flags["UTF-8"] = True
+        self.protocol_flags["OOB"] = True
+
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
         # actually do the connection
@@ -242,7 +246,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         Args:
             text (str): Text to send.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Clean out all color.
@@ -297,7 +301,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
-        Kwargs:
+        Keyword Args:
             options (dict): These are ignored for oob commands. Use command
                 arguments (which can hold dicts) to send instructions to the
                 client instead.

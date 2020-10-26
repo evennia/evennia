@@ -57,7 +57,7 @@ class ConnectionWizard(object):
         """
         Ask a yes/no question inline.
 
-        Kwargs:
+        Keyword Args:
             prompt (str): The prompt to ask.
             default (str): "yes" or "no", used if pressing return.
         Returns:
@@ -83,7 +83,7 @@ class ConnectionWizard(object):
         """
         Ask multiple-choice question, get response inline.
 
-        Kwargs:
+        Keyword Args:
             prompt (str): Input prompt.
             options (list): List of options. Will be indexable by sequence number 1...
             default (int): The list index+1 of the default choice, if any
@@ -114,7 +114,7 @@ class ConnectionWizard(object):
         """
         Get arbitrary input inline.
 
-        Kwargs:
+        Keyword Args:
             prompt (str): The display prompt.
             default (str): If empty input, use this.
             validator (callable): If given, the input will be passed

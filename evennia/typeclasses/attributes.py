@@ -596,12 +596,13 @@ class AttributeHandler(object):
             *args (tuple): Each argument should be a tuples (can be of varying
                 length) representing the Attribute to add to this object.
                 Supported tuples are
+
                     - `(key, value)`
                     - `(key, value, category)`
                     - `(key, value, category, lockstring)`
                     - `(key, value, category, lockstring, default_access)`
 
-        Kwargs:
+        Keyword Args:
             strattr (bool): If `True`, value must be a string. This
                 will save the value without pickling which is less
                 flexible but faster to search (not often used except
@@ -847,12 +848,12 @@ def initialize_nick_templates(in_template, out_template):
             matched by the in_template.
 
     Returns:
-        regex  (regex): Regex to match against strings
-        template (str): Template with markers {arg1}, {arg2}, etc for
-            replacement using the standard .format method.
+        (regex, str): Regex to match against strings and a template
+            Template with markers `{arg1}`, `{arg2}`, etc for
+            replacement using the standard `.format` method.
 
     Raises:
-        NickTemplateInvalid: If the in/out template does not have a matching
+        attributes.NickTemplateInvalid: If the in/out template does not have a matching
             number of $args.
 
     """

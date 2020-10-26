@@ -16,6 +16,7 @@ We also need to build the toc-tree and should do so automatically for now.
 import glob
 import re
 import datetime
+import textwrap
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 _RE_REF_LINK = re.compile(r"\[[\w -\[\]]*?\]\(.+?\)", re.I + re.S + re.U)
@@ -32,13 +33,13 @@ _INDEX_PREFIX = f"""
 
 # VERSION WARNING
 
-> This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
+> This is the experimental static v0.95 documentation of Evennia, _automatically_ generated from the
 > [evennia wiki](https://github.com/evennia/evennia/wiki/) at {datetime.datetime.now()}.
-> There are known conversion issues which  will _not_ be addressed in this version - refer to 
+> There are known conversion issues which  will _not_ be addressed in this version - refer to
 > the original wiki if you have trouble.
 >
 > Manual conversion and cleanup will instead happen during development of the upcoming v1.0
-> version of this static documentation. 
+> version of this static documentation.
 
 """
 
@@ -265,10 +266,19 @@ def convert_links(files, outdir):
                 if text.split("\n")[0].strip().startswith("[]")
                 else text.split("\n")
             )
-            text = "\n".join(text)
+
+            # wrap text
+            formatted_lines = []
+            for line in text:
+                if line.strip():
+                    formatted_lines.append(textwrap.fill(line, width=100))
+                else:
+                    formatted_lines.append(line)
+            text = "\n".join(formatted_lines)
 
             if not is_index:
                 text = f"# {title}\n\n{text}"
+
 
         with open(outfile, "w") as fil:
             fil.write(text)

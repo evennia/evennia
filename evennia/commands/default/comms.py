@@ -833,7 +833,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 receiver = f"|n,{clr}".join([obj.name for obj in page.receivers])
                 if sending:
                     template = to_template
-                    sender =  f"{sender} " if multi_send else ""
+                    sender = f"{sender} " if multi_send else ""
                     receiver = f" {receiver}" if multi_recv else f" {receiver}"
                 else:
                     template = from_template
@@ -848,7 +848,6 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                         receiver=receiver,
                         message=page.message,
                     )
-
                 )
             lastpages = "\n ".join(listing)
 
