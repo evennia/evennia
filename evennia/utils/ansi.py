@@ -1,20 +1,19 @@
 """
 ANSI - Gives colour to text.
 
-Use the codes defined in ANSIPARSER in your text to apply colour to text
-according to the ANSI standard.
-::
+Use the codes defined in ANSIPARSER in your text
+to apply colour to text according to the ANSI standard.
 
- This is |rRed text|n and this is normal again.
+Examples:
 
-Mostly you should not need to call `parse_ansi()` explicitly; it is run by
-Evennia just before returning data to/from the user. Depreciated/decativated
-example forms are available in contribs by extending the ansi mapping
+```python
+"This is |rRed text|n and this is normal again."
+```
 
-This module also contains the `ANSIString` custom string-type, which correctly
-wraps/manipulates and tracks lengths of strings containing ANSI-markup.
-
-----
+Mostly you should not need to call `parse_ansi()` explicitly;
+it is run by Evennia just before returning data to/from the
+user.  Depreciated example forms are available by extending
+the ansi mapping.
 
 """
 import functools
@@ -82,14 +81,16 @@ _COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
 
 class ANSIParser(object):
     """
-    A class that parses ANSI markup to ANSI command sequences
+    A class that parses ANSI markup
+    to ANSI command sequences
 
-    We also allow to escape colour codes by prepending with
-    an extra `|`, so `||r` will literally print `|r`.
+    We also allow to escape colour codes
+    by prepending with a \ for xterm256,
+    an extra | for Merc-style codes
 
     """
 
-    # Mapping using |r, |n etc
+    # Mapping using {r {n etc
 
     ansi_map = [
         # alternative |-format
@@ -525,6 +526,13 @@ def raw(string):
     return string.replace("{", "{{").replace("|", "||")
 
 
+# ------------------------------------------------------------
+#
+# ANSIString - ANSI-aware string class
+#
+# ------------------------------------------------------------
+
+
 def _spacing_preflight(func):
     """
     This wrapper function is used to do some preflight checks on
@@ -588,9 +596,10 @@ def _on_raw(func_name):
 
 def _transform(func_name):
     """
-    Some string functions, like those manipulating capital letters, return a
-    string the same length as the original. This function allows us to do the
-    same, replacing all the non-coded characters with the resulting string.
+    Some string functions, like those manipulating capital letters,
+    return a string the same length as the original. This function
+    allows us to do the same, replacing all the non-coded characters
+    with the resulting string.
 
     """
 
@@ -823,7 +832,7 @@ class ANSIString(str, metaclass=ANSIMeta):
 
         """
         if not offset:
-            return []
+            return iterable
         return [i + offset for i in iterable]
 
     @classmethod
@@ -894,9 +903,23 @@ class ANSIString(str, metaclass=ANSIMeta):
         replayed.
 
         """
-        slice_indexes = self._char_indexes[slc]
+        char_indexes = self._char_indexes
+        slice_indexes = char_indexes[slc]
         # If it's the end of the string, we need to append final color codes.
         if not slice_indexes:
+            # if we find no characters it may be because we are just outside
+            # of the interval, using an open-ended slice. We must replay all
+            # of the escape characters until/after this point.
+            if char_indexes:
+                if slc.start is None and slc.stop is None:
+                    # a [:] slice of only escape characters
+                    return ANSIString(self._raw_string[slc])
+                if slc.start is None:
+                    # this is a [:x] slice
+                    return ANSIString(self._raw_string[:char_indexes[0]])
+                if slc.stop is None:
+                    # a [x:] slice
+                    return ANSIString(self._raw_string[char_indexes[-1] + 1:])
             return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string
@@ -916,7 +939,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 # raw_string not long enough
                 pass
         if i is not None:
-            append_tail = self._get_interleving(self._char_indexes.index(i) + 1)
+            append_tail = self._get_interleving(char_indexes.index(i) + 1)
         else:
             append_tail = ""
         return ANSIString(string + append_tail, decoded=True)
@@ -985,12 +1008,9 @@ class ANSIString(str, metaclass=ANSIMeta):
                 occurrence of the separator rather than the first.
 
         Returns:
-            result (tuple):
-                - prefix (ANSIString): The part of the string before the
-                  separator
-                - sep (ANSIString): The separator itself
-                - postfix (ANSIString): The part of the string after the
-                  separator.
+            ANSIString: The part of the string before the separator
+            ANSIString: The separator itself
+            ANSIString: The part of the string after the separator.
 
         """
         if hasattr(sep, "_clean_string"):
@@ -1289,26 +1309,22 @@ class ANSIString(str, metaclass=ANSIMeta):
         Joins together strings in an iterable, using this string between each
         one.
 
+        NOTE: This should always be used for joining strings when ANSIStrings
+        are involved. Otherwise color information will be discarded by python,
+        due to details in the C implementation of strings.
+
         Args:
             iterable (list of strings): A list of strings to join together
 
         Returns:
-            result (ANSIString): A single string with all of the iterable's
+            ANSIString: A single string with all of the iterable's
                 contents concatenated, with this string between each.
 
         Examples:
             ::
-                ANSIString(', ').join(['up', 'right', 'left', 'down'])
 
-            Would return
-            ::
-
+                >>> ANSIString(', ').join(['up', 'right', 'left', 'down'])
                 ANSIString('up, right, left, down')
-
-        Notes:
-            This should always be used for joining strings when ANSIStrings are
-            involved. Otherwise color information will be discarded by python,
-            due to details in the C implementation of strings.
 
         """
         result = ANSIString("")
