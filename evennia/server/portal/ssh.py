@@ -263,7 +263,7 @@ class SshProtocol(Manhole, session.Session):
         """
         Data Evennia -> User
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Options to the protocol.
 
         """
@@ -276,18 +276,19 @@ class SshProtocol(Manhole, session.Session):
         Args:
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
-        Kwargs:
-            options (dict): Send-option flags
-                   - mxp: Enforce MXP link support.
-                   - ansi: Enforce no ANSI colors.
-                   - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
-                   - nocolor: Strip all colors.
-                   - raw: Pass string through without any ansi processing
-                        (i.e. include Evennia ansi markers but do not
-                        convert them into ansi tokens)
-                   - echo: Turn on/off line echo on the client. Turn
-                        off line echo for client, for example for password.
-                        Note that it must be actively turned back on again!
+        Keyword Args:
+            options (dict): Send-option flags:
+
+                - mxp: Enforce MXP link support.
+                - ansi: Enforce no ANSI colors.
+                - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
+                - nocolor: Strip all colors.
+                - raw: Pass string through without any ansi processing
+                  (i.e. include Evennia ansi markers but do not
+                  convert them into ansi tokens)
+                - echo: Turn on/off line echo on the client. Turn
+                  off line echo for client, for example for password.
+                  Note that it must be actively turned back on again!
 
         """
         # print "telnet.send_text", args,kwargs  # DEBUG

@@ -399,17 +399,18 @@ class Evennia(object):
         """
         Shuts down the server from inside it.
 
-        mode - sets the server restart mode.
-               'reload' - server restarts, no "persistent" scripts
-                          are stopped, at_reload hooks called.
-               'reset' - server restarts, non-persistent scripts stopped,
-                         at_shutdown hooks called but sessions will not
-                         be disconnected.
-               'shutdown' - like reset, but server will not auto-restart.
-        _reactor_stopping - this is set if server is stopped by a kill
-                            command OR this method was already called
-                             once - in both cases the reactor is
-                             dead/stopping already.
+        Keyword Args:
+            mode (str): Sets the server restart mode:
+            - 'reload': server restarts, no "persistent" scripts
+              are stopped, at_reload hooks called.
+            - 'reset' - server restarts, non-persistent scripts stopped,
+              at_shutdown hooks called but sessions will not
+              be disconnected.
+            -'shutdown' - like reset, but server will not auto-restart.
+            _reactor_stopping: This is set if server is stopped by a kill
+                command OR this method was already called
+                once - in both cases the reactor is dead/stopping already.
+
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method

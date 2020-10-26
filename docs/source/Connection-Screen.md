@@ -1,7 +1,7 @@
 # Connection Screen
 
 
-When you first connect to your game you are greeted by Evennia's default connection screen. 
+When you first connect to your game you are greeted by Evennia's default connection screen.
 
     
     ==============================================================
@@ -16,10 +16,11 @@ When you first connect to your game you are greeted by Evennia's default connect
      Enter help for more info. look will re-show this screen.
     ==============================================================
 
-Effective, but not very exciting. You will most likely want to change this to be more unique for your game. This is simple: 
+Effective, but not very exciting. You will most likely want to change this to be more unique for
+your game. This is simple:
 
 1. Edit `mygame/server/conf/connection_screens.py`.
-1. [Reload](./Start-Stop-Reload) Evennia. 
+1. [Reload](./Start-Stop-Reload) Evennia.
 
 Evennia will look into this module and locate all *globally defined strings* in it. These strings
 are used as the text in your connection screen and are shown to the user at startup. If more than

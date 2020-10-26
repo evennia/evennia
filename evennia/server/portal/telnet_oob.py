@@ -11,8 +11,8 @@ instruct the client to play sounds or to update a graphical health
 bar.
 
 > Note that in Evennia's Web client, all send commands are "OOB commands",
- (including the "text" one), there is no equivalence to MSDP/GMCP for the
- webclient since it doesn't need it.
+(including the "text" one), there is no equivalence to MSDP/GMCP for the
+webclient since it doesn't need it.
 
 This implements the following telnet OOB communication protocols:
 
@@ -159,14 +159,15 @@ class TelnetOOB(object):
         Notes:
             The output of this encoding will be
             MSDP structures on these forms:
-            ```
-            [cmdname, [], {}]          -> VAR cmdname VAL ""
-            [cmdname, [arg], {}]       -> VAR cmdname VAL arg
-            [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
-            [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
-            [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
-                                           VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
-            ```
+            ::
+
+                [cmdname, [], {}]          -> VAR cmdname VAL ""
+                [cmdname, [arg], {}]       -> VAR cmdname VAL arg
+                [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+                [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                                               VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+
             Further nesting is not supported, so if an array argument consists
             of an array (for example), that array will be json-converted to a
             string.
@@ -233,25 +234,24 @@ class TelnetOOB(object):
             to have adopted). A cmdname without Package will end
             up in the Core package, while Core package names will
             be stripped on the Evennia side.
+            ::
 
-            ```
-            [cmd.name, [], {}]          -> Cmd.Name
-            [cmd.name, [arg], {}]       -> Cmd.Name arg
-            [cmd.name, [args],{}]       -> Cmd.Name [args]
-            [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
-            [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
-            ```
+                [cmd.name, [], {}]          -> Cmd.Name
+                [cmd.name, [arg], {}]       -> Cmd.Name arg
+                [cmd.name, [args],{}]       -> Cmd.Name [args]
+                [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
+                [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
 
         Notes:
             There are also a few default mappings between evennia outputcmds and
             GMCP:
-            ```
-            client_options -> Core.Supports.Get
-            get_inputfuncs -> Core.Commands.Get
-            get_value      -> Char.Value.Get
-            repeat         -> Char.Repeat.Update
-            monitor        -> Char.Monitor.Update
-            ```
+            ::
+
+                client_options -> Core.Supports.Get
+                get_inputfuncs -> Core.Commands.Get
+                get_value      -> Char.Value.Get
+                repeat         -> Char.Repeat.Update
+                monitor        -> Char.Monitor.Update
 
         """
 
@@ -287,14 +287,13 @@ class TelnetOOB(object):
         Notes:
             Clients should always send MSDP data on
             one of the following forms:
+            ::
 
-            ```
-            cmdname ''          -> [cmdname, [], {}]
-            cmdname val         -> [cmdname, [val], {}]
-            cmdname array       -> [cmdname, [array], {}]
-            cmdname table       -> [cmdname, [], {table}]
-            cmdname array cmdname table -> [cmdname, [array], {table}]
-            ```
+                cmdname ''          -> [cmdname, [], {}]
+                cmdname val         -> [cmdname, [val], {}]
+                cmdname array       -> [cmdname, [array], {}]
+                cmdname table       -> [cmdname, [], {table}]
+                cmdname array cmdname table -> [cmdname, [array], {table}]
 
             Observe that all MSDP_VARS are used to identify cmdnames,
             so if there are multiple arrays with the same cmdname
@@ -388,14 +387,13 @@ class TelnetOOB(object):
             We assume the structure is valid JSON.
 
             The following is parsed into Evennia's formal structure:
+            ::
 
-            ```
-            Core.Name                         -> [name, [], {}]
-            Core.Name string                  -> [name, [string], {}]
-            Core.Name [arg, arg,...]          -> [name, [args], {}]
-            Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
-            Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
-            ```
+                Core.Name                         -> [name, [], {}]
+                Core.Name string                  -> [name, [string], {}]
+                Core.Name [arg, arg,...]          -> [name, [args], {}]
+                Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
+                Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
 
         """
         if isinstance(data, list):

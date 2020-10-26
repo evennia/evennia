@@ -6,16 +6,7 @@ evennia.utils
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 6
-
-   evennia.utils.idmapper
-
-Submodules
-----------
 
 .. toctree::
    :maxdepth: 6
@@ -41,3 +32,9 @@ Submodules
    evennia.utils.text2html
    evennia.utils.utils
    evennia.utils.validatorfuncs
+
+
+.. toctree::
+   :maxdepth: 6
+
+   evennia.utils.idmapper

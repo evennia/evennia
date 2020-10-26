@@ -1,12 +1,10 @@
 """
-EvMenu
-
-This implements a full menu system for Evennia.
+The EvMenu is a full in-game menu system for Evennia.
 
 To start the menu, just import the EvMenu class from this module.
-Example usage:
 
-```python
+Example usage:
+::
 
     from evennia.utils.evmenu import EvMenu
 
@@ -14,11 +12,10 @@ Example usage:
          startnode="node1",
          cmdset_mergetype="Replace", cmdset_priority=1,
          auto_quit=True, cmd_on_exit="look", persistent=True)
-```
 
 Where `caller` is the Object to use the menu on - it will get a new
-cmdset while using the Menu. The menu_module_path is the python path
-to a python module containing function definitions.  By adjusting the
+cmdset while using the Menu. The `menu_module_path` is the python path
+to a python module containing function definitions. By adjusting the
 keyword options of the Menu() initialization call you can start the
 menu at different places in the menu definition file, adjust if the
 menu command should overload the normal commands or not, etc.
@@ -32,8 +29,7 @@ no such restrictions exist.
 
 The menu is defined in a module (this can be the same module as the
 command definition too) with function definitions:
-
-```python
+::
 
     def node1(caller):
         # (this is the start node if called like above)
@@ -47,14 +43,13 @@ command definition too) with function definitions:
     def another_node(caller, input_string, **kwargs):
         # code
         return text, options
-```
 
-Where caller is the object using the menu and input_string is the
+Where `caller` is the object using the menu and input_string is the
 command entered by the user on the *previous* node (the command
 entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
 both one or two arguments interchangeably. It also accepts nodes
-that takes **kwargs.
+that takes `**kwargs`.
 
 The menu tree itself is available on the caller as
 `caller.ndb._evmenu`. This makes it a convenient place to store
@@ -65,43 +60,43 @@ The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
-    text (str, tuple or None): Text shown at this node. If a tuple, the
-        second element in the tuple is a help text to display at this
-        node when the user enters the menu help command there.
-    options (tuple, dict or None): If `None`, this exits the menu.
-        If a single dict, this is a single-option node. If a tuple,
-        it should be a tuple of option dictionaries. Option dicts have
-        the following keys:
-            - `key` (str or tuple, optional): What to enter to choose this option.
-                If a tuple, it must be a tuple of strings, where the first string is the
-                key which will be shown to the user and the others are aliases.
-                If unset, the options' number will be used. The special key `_default`
-                marks this option as the default fallback when no other option matches
-                the user input. There can only be one `_default` option per node. It
-                will not be displayed in the list.
-            - `desc` (str, optional): This describes what choosing the option will do.
-            - `goto` (str, tuple or callable): If string, should be the name of node to go to
-                when this option is selected. If a callable, it has the signature
-                `callable(caller[,raw_input][,**kwargs]). If a tuple, the first element
-                is the callable and the second is a dict with the **kwargs to pass to
-                the callable. Those kwargs will also be passed into the next node if possible.
-                Such a callable should return either a str or a (str, dict), where the
-                string is the name of the next node to go to and the dict is the new,
-                (possibly modified) kwarg to pass into the next node. If the callable returns
-                None or the empty string, the current node will be revisited.
-            - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
-                and runs before it. If given a node name, the node will be executed but will not
-                be considered the next node. If node/callback returns str or (str, dict), these will
-                replace the `goto` step (`goto` callbacks will not fire), with the string being the
-                next node name and the optional dict acting as the kwargs-input for the next node.
-                If an exec callable returns the empty string (only), the current node is re-run.
+- `text` (str, tuple or None): Text shown at this node. If a tuple, the
+  second element in the tuple is a help text to display at this
+  node when the user enters the menu help command there.
+- `options` (tuple, dict or None): If `None`, this exits the menu.
+  If a single dict, this is a single-option node. If a tuple,
+  it should be a tuple of option dictionaries. Option dicts have
+  the following keys:
+
+  - `key` (str or tuple, optional): What to enter to choose this option.
+      If a tuple, it must be a tuple of strings, where the first string is the
+      key which will be shown to the user and the others are aliases.
+      If unset, the options' number will be used. The special key `_default`
+      marks this option as the default fallback when no other option matches
+      the user input. There can only be one `_default` option per node. It
+      will not be displayed in the list.
+  - `desc` (str, optional): This describes what choosing the option will do.
+  - `goto` (str, tuple or callable): If string, should be the name of node to go to
+      when this option is selected. If a callable, it has the signature
+      `callable(caller[,raw_input][,**kwargs])`. If a tuple, the first element
+      is the callable and the second is a dict with the kwargs to pass to
+      the callable. Those kwargs will also be passed into the next node if possible.
+      Such a callable should return either a str or a (str, dict), where the
+      string is the name of the next node to go to and the dict is the new,
+      (possibly modified) kwarg to pass into the next node. If the callable returns
+      None or the empty string, the current node will be revisited.
+  - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
+      and runs before it. If given a node name, the node will be executed but will not
+      be considered the next node. If node/callback returns str or (str, dict), these will
+      replace the `goto` step (`goto` callbacks will not fire), with the string being the
+      next node name and the optional dict acting as the kwargs-input for the next node.
+      If an exec callable returns `None`, the current node is re-run.
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
 
 Example:
-
-```python
+::
 
     # in menu_module.py
 
@@ -137,10 +132,9 @@ Example:
         text = "This ends the menu since there are no options."
         return text, None
 
-```
-
 When starting this menu with  `Menu(caller, "path.to.menu_module")`,
 the first node will look something like this:
+::
 
     This is a node text
     ______________________________________
@@ -257,10 +251,11 @@ strings is only needed if wanting to pass strippable spaces, otherwise the
 key:values will be converted to strings/numbers with literal_eval before passed
 into the callable.
 
-The `> ` option takes a glob or regex to perform different actions depending on user
+The "> " option takes a glob or regex to perform different actions depending on user
 input. Make sure to sort these in increasing order of generality since they
 will be tested in sequence.
 
+----
 
 """
 
@@ -538,7 +533,7 @@ class EvMenu:
                 the menu. Deactivate for production use! When the debug flag is active, the
                 `persistent` flag is deactivated.
 
-        Kwargs:
+        Keyword Args:
             any (any): All kwargs will become initialization variables on `caller.ndb._evmenu`,
                 to be available at run.
 
@@ -738,6 +733,30 @@ class EvMenu:
         """
         Call a node-like callable, with a variable number of raw_string, *args, **kwargs, all of
         which should work also if not present (only `caller` is always required). Return its result.
+
+        Viable node-like callable forms:
+        ::
+
+            _callname(caller)
+            _callname(caller, raw_string)
+            _callname(caller, **kwargs)
+            _callname(caller, raw_string, **kwargs)
+
+        If this is a node:
+
+        - `caller` is the one using the menu.
+        - `raw_string` is the users exact input on the *previous* node.
+        - `**kwargs` is either passed through the previous node or returned
+          along with the node name from the goto-callable leading to this node.
+
+        If this is a goto-callable:
+
+        - `caller` is the one using the menu.
+        - `raw_string` is the user's exact input when chosing the option that triggered
+          this goto-callable.
+        - `**kwargs` is any extra dict passed to the callable in the option
+          definition, or (if no explit kwarg was given to the callable) the
+          previous node's kwarg, if any.
 
         """
         try:
@@ -943,7 +962,7 @@ class EvMenu:
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
-        Kwargs:
+        Keyword Args:
             any: Extra arguments to goto callables.
 
         """
@@ -1317,24 +1336,32 @@ def list_node(option_generator, select=None, pagesize=10):
         option_generator (callable or list): A list of strings indicating the options, or a callable
             that is called as option_generator(caller) to produce such a list.
         select (callable or str, optional): Node to redirect a selection to. Its `**kwargs` will
-            contain the `available_choices` list and `selection` will hold one of the elements in
-            that list.  If a callable, it will be called as
-                select(caller, menuchoice, **kwargs) where menuchoice is the chosen option as a
-            string and `available_choices` is a kwarg mapping the option keys to the choices
-            offered by the option_generator. The callable whould return the name of the target node
-            to goto after this selection (or None to repeat the list-node). Note that if this is not
-            given, the decorated node must itself provide a way to continue from the node!
+            contain the `available_choices` list and `selection` will hold one
+            of the elements in that list.  If a callable, it will be called as
+            `select(caller, menuchoice, **kwargs)` where menuchoice is the
+            chosen option as a string and `available_choices` is the list of available
+            options offered by the option_generator. The callable whould return
+            the name of the target node to goto after this selection (or None to repeat the
+            list-node).  Note that if this is not given, the decorated node
+            must itself provide a way to continue from the node!
         pagesize (int): How many options to show per page.
 
     Example:
-        @list_node(['foo', 'bar'], select)
-        def node_index(caller):
-            text = "describing the list"
-            return text, []
+        ::
+
+            def _selectfunc(caller, menuchoice, **kwargs):
+                # menuchoice would be either 'foo' or 'bar' here
+                # kwargs['available_choices'] would be the list ['foo', 'bar']
+                return "the_next_node_to_go_to"
+
+            @list_node(['foo', 'bar'], _selectfunc)
+            def node_index(caller):
+                text = "describing the list"
+                return text, []
 
     Notes:
         All normal `goto` or `exec` callables returned from the decorated nodes will, if they accept
-        **kwargs, get a new kwarg 'available_choices' injected. These are the ordered list of named
+        `**kwargs`, get a new kwarg `available_choices` injected. This is the ordered list of named
         options (descs) visible on the current node page.
 
     """
@@ -1579,13 +1606,13 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
             greater than 2. The session is then updated by the
             command and is available (for example in callbacks)
             through `caller.ndb.getinput._session`.
-        *args, **kwargs (optional): Extra arguments will be
+        args, kwargs (optional): Extra arguments will be
             passed to the fall back function as a list 'args'
             and all keyword arguments as a dictionary 'kwargs'.
-            To utilise *args and **kwargs, a value for the
+            To utilise `*args` and `**kwargs`, a value for the
             session argument must be provided (None by default)
-            and the callback function must take *args and
-            **kwargs as arguments.
+            and the callback function must take `*args` and
+            `**kwargs` as arguments.
 
     Raises:
         RuntimeError: If the given callback is not callable.
@@ -1633,9 +1660,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
 _RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S[\S\s]*?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
-_RE_CALLABLE = re.compile(
-    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M
-)
+_RE_CALLABLE = re.compile(r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M)
 
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
 
@@ -1649,8 +1674,8 @@ _OPTION_COMMENT_START = "#"
 # Input/option/goto handler functions that allows for dynamically generated
 # nodes read from the menu template.
 
-def _process_callable(caller, goto, goto_callables, raw_string,
-                      current_nodename, kwargs):
+
+def _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs):
     """
     Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of
     the right-hand-side of the template options and map this to an actual
@@ -1666,12 +1691,18 @@ def _process_callable(caller, goto, goto_callables, raw_string,
             for kwarg in gotokwargs.split(","):
                 if kwarg and "=" in kwarg:
                     key, value = [part.strip() for part in kwarg.split("=", 1)]
-                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                               "evmenu_current_nodename", "evmenu_goto_callables"):
+                    if key in (
+                        "evmenu_goto",
+                        "evmenu_gotomap",
+                        "_current_nodename",
+                        "evmenu_current_nodename",
+                        "evmenu_goto_callables",
+                    ):
                         raise RuntimeError(
                             f"EvMenu template error: goto-callable '{goto}' uses a "
                             f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                            "system. Rename the kwarg.")
+                            "system. Rename the kwarg."
+                        )
                     try:
                         key = literal_eval(key)
                     except ValueError:
@@ -1698,8 +1729,7 @@ def _generated_goto_func(caller, raw_string, **kwargs):
     goto = kwargs["evmenu_goto"]
     goto_callables = kwargs["evmenu_goto_callables"]
     current_nodename = kwargs["evmenu_current_nodename"]
-    return _process_callable(caller, goto, goto_callables, raw_string,
-                             current_nodename, kwargs)
+    return _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs)
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
@@ -1719,13 +1749,15 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
     # start with glob patterns
     for pattern, goto in gotomap.items():
         if fnmatch(raw_string.lower(), pattern):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
         if pattern and re.match(pattern, raw_string.lower(), flags=re.I + re.M):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no match, show error
     raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
@@ -1756,6 +1788,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         dict: A `{"node": nodefunc}` menutree suitable to pass into EvMenu.
 
     """
+
     def _validate_kwarg(goto, kwarg):
         """
         Validate goto-callable kwarg is on correct form.
@@ -1765,14 +1798,21 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 f"EvMenu template error: goto-callable '{goto}' has a "
                 f"non-kwarg argument ({kwarg}). All callables in the "
                 "template must have only keyword-arguments, or no "
-                "args at all.")
+                "args at all."
+            )
         key, _ = [part.strip() for part in kwarg.split("=", 1)]
-        if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                   "evmenu_current_nodename", "evmenu_goto_callables"):
+        if key in (
+            "evmenu_goto",
+            "evmenu_gotomap",
+            "_current_nodename",
+            "evmenu_current_nodename",
+            "evmenu_goto_callables",
+        ):
             raise RuntimeError(
                 f"EvMenu template error: goto-callable '{goto}' uses a "
                 f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                "system. Rename the kwarg.")
+                "system. Rename the kwarg."
+            )
 
     def _parse_options(nodename, optiontxt, goto_callables):
         """
@@ -1802,7 +1842,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
             if match:
                 kwargs = match.group("kwargs")
                 if kwargs:
-                    for kwarg in kwargs.split(','):
+                    for kwarg in kwargs.split(","):
                         _validate_kwarg(goto, kwarg)
 
             # parse key [;aliases|pattern]
@@ -1814,7 +1854,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
 
             if main_key.startswith(_OPTION_INPUT_MARKER):
                 # if we have a pattern, build the arguments for _default later
-                pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
+                pattern = main_key[len(_OPTION_INPUT_MARKER) :].strip()
                 inputparsemap[pattern] = goto
             else:
                 # a regular goto string/callable target
@@ -1875,12 +1915,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
 
 
 def template2menu(
-    caller,
-    menu_template,
-    goto_callables=None,
-    startnode="start",
-    persistent=False,
-    **kwargs,
+    caller, menu_template, goto_callables=None, startnode="start", persistent=False, **kwargs,
 ):
     """
     Helper function to generate and start an EvMenu based on a menu template
@@ -1905,9 +1940,4 @@ def template2menu(
     """
     goto_callables = goto_callables or {}
     menu_tree = parse_menu_template(caller, menu_template, goto_callables)
-    return EvMenu(
-        caller,
-        menu_tree,
-        persistent=persistent,
-        **kwargs,
-    )
+    return EvMenu(caller, menu_tree, persistent=persistent, **kwargs,)

@@ -6,8 +6,7 @@ evennia.commands.default
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+
 
 .. toctree::
    :maxdepth: 6

@@ -1639,7 +1639,7 @@ def error_check_python_modules(show_warnings=False):
     python source files themselves). Best they fail already here
     before we get any further.
 
-    Kwargs:
+    Keyword Args:
         show_warnings (bool): If non-fatal warning messages should be shown.
 
     """

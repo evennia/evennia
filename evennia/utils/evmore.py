@@ -7,6 +7,7 @@ down in the text (the name comes from the traditional 'more' unix
 command).
 
 To use, simply pass the text through the EvMore object:
+::
 
     from evennia.utils.evmore import EvMore
 
@@ -14,17 +15,20 @@ To use, simply pass the text through the EvMore object:
     EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
 
 One can also use the convenience function msg from this module:
+::
 
     from evennia.utils import evmore
 
     text = some_long_text_output()
     evmore.msg(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
 
-Where always_page decides if the pager is used also if the text is not
-long enough to need to scroll, session is used to determine which session to relay to
-and justify_kwargs are kwargs to pass to utils.utils.justify in order to change the formatting
-of the text. The remaining **kwargs will be passed on to the
-caller.msg() construct every time the page is updated.
+Where always_page decides if the pager is used also if the text is not long
+enough to need to scroll, session is used to determine which session to relay
+to and `justify_kwargs` are kwargs to pass to `utils.utils.justify` in order to
+change the formatting of the text. The remaining `**kwargs` will be passed on to
+the `caller.msg()` construct every time the page is updated.
+
+----
 
 """
 from django.conf import settings
@@ -124,9 +128,10 @@ def queryset_maxsize(qs):
     return qs.count()
 
 
-class EvMore(object):
+class EvMore:
     """
-    The main pager object
+    The main pager object.
+
     """
 
     def __init__(
@@ -144,23 +149,25 @@ class EvMore(object):
     ):
 
         """
-        Initialization of the inp handler.
+        Initialization of the Evmore input handler.
 
         Args:
             caller (Object or Account): Entity reading the text.
             inp (str, EvTable, Paginator or iterator): The text or data to put under paging.
+
                 - If a string, paginage normally. If this text contains
-                   one or more `\f` format symbol, automatic pagination and justification
-                   are force-disabled and page-breaks will only happen after each `\f`.
+                  one or more \\\\f (backslash + f) format symbols, automatic
+                  pagination and justification are force-disabled and
+                  page-breaks will only happen after each \\\\f.
                 - If `EvTable`, the EvTable will be paginated with the same
-                   setting on each page if it is too long. The table
-                   decorations will be considered in the size of the page.
+                  setting on each page if it is too long. The table
+                  decorations will be considered in the size of the page.
                 - Otherwise `inp` is converted to an iterator, where each step is
-                   expected to be a line in the final display. Each line
-                   will be run through `iter_callable`.
-            always_page (bool, optional): If `False`, the
-                pager will only kick in if `inp` is too big
-                to fit the screen.
+                  expected to be a line in the final display. Each line
+                  will be run through `iter_callable`.
+
+            always_page (bool, optional): If `False`, the pager will only kick
+                in if `inp` is too big to fit the screen.
             session (Session, optional): If given, this session will be used
                 to determine the screen width and will receive all output.
             justify (bool, optional): If set, auto-justify long lines. This must be turned
@@ -176,30 +183,51 @@ class EvMore(object):
                 the caller when the more page exits. Note that this will be using whatever
                 cmdset the user had *before* the evmore pager was activated (so none of
                 the evmore commands will be available when this is run).
-            kwargs (any, optional): These will be passed on to the `caller.msg` method.
+            kwargs (any, any): These will be passed on to the `caller.msg` method.
 
         Examples:
-
             Basic use:
-            ```
-            super_long_text = " ... "
-            EvMore(caller, super_long_text)
-            ```
-            Paginator
-            ```
-            from django.core.paginator import Paginator
-            query = ObjectDB.objects.all()
-            pages = Paginator(query, 10)  # 10 objs per page
-            EvMore(caller, pages)
-            ```
-            Every page an EvTable
-            ```
-            from evennia import EvTable
-            def _to_evtable(page):
-                table = ... # convert page to a table
-                return EvTable(*headers, table=table, ...)
-            EvMore(caller, pages, page_formatter=_to_evtable)
-            ```
+            ::
+
+                super_long_text = " ... "
+                EvMore(caller, super_long_text)
+
+            Paginated query data - this is an optimization to avoid fetching
+            database data until it's actually paged to.
+            ::
+
+                from django.core.paginator import Paginator
+
+                query = ObjectDB.objects.all()
+                pages = Paginator(query, 10)  # 10 objs per page
+                EvMore(caller, pages)
+
+            Automatic split EvTable over multiple EvMore pages
+            ::
+
+                table = EvMore(*header, table=tabledata)
+                EvMore(caller, table)
+
+            Every page a separate EvTable (optimization for very large data sets)
+            ::
+
+                from evennia import EvTable, EvMore
+
+                class TableEvMore(EvMore):
+                    def init_pages(self, data):
+                        pages = # depends on data type
+                        super().init_pages(pages)
+
+                    def page_formatter(self, page):
+                        table = EvTable()
+
+                        for line in page:
+                            cols = # split raw line into columns
+                            table.add_row(*cols)
+
+                        return str(table)
+
+                TableEvMore(caller, pages)
 
         """
         self._caller = caller
@@ -386,9 +414,10 @@ class EvMore(object):
 
     def init_f_str(self, text):
         """
-        The input contains \f markers. We use \f to indicate the user wants to
-        enforce their line breaks on their own. If so, we do no automatic
-        line-breaking/justification at all.
+        The input contains \\\\f (backslash + f) markers. We use \\\\f to indicate
+        the user wants to enforce their line breaks on their own. If so, we do
+        no automatic line-breaking/justification at all.
+
         """
         self._data = text.split("\f")
         self._npages = len(self._data)
@@ -433,14 +462,17 @@ class EvMore(object):
 
         Notes:
             If overridden, this method must perform the following  actions:
-            - read and re-store `self._data` (the incoming data set) if needed for pagination to work.
+
+            - read and re-store `self._data` (the incoming data set) if needed
+              for pagination to work.
             - set `self._npages` to the total number of pages. Default is 1.
             - set `self._paginator` to a callable that will take a page number 1...N and return
-                the data to display on that page (not any decorations or next/prev buttons). If only
-                wanting to change the paginator, override `self.paginator` instead.
-            - set `self._page_formatter` to a callable that will receive the page from `self._paginator`
-                and format it with one element per line. Default is `str`. Or override `self.page_formatter`
-                directly instead.
+              the data to display on that page (not any decorations or next/prev buttons). If only
+              wanting to change the paginator, override `self.paginator` instead.
+            - set `self._page_formatter` to a callable that will receive the
+              page from `self._paginator` and format it with one element per
+              line. Default is `str`. Or override `self.page_formatter`
+              directly instead.
 
             By default, helper methods are called that perform these actions
             depending on supported inputs.
@@ -520,15 +552,17 @@ def msg(
     Args:
         caller (Object or Account): Entity reading the text.
         text (str, EvTable or iterator): The text or data to put under paging.
+
             - If a string, paginage normally. If this text contains
-              one or more `\f` format symbol, automatic pagination is disabled
-              and page-breaks will only happen after each `\f`.
+              one or more \\\\f (backslash + f) format symbol, automatic pagination is disabled
+              and page-breaks will only happen after each \\\\f.
             - If `EvTable`, the EvTable will be paginated with the same
-                setting on each page if it is too long. The table
-                decorations will be considered in the size of the page.
+              setting on each page if it is too long. The table
+              decorations will be considered in the size of the page.
             - Otherwise `text` is converted to an iterator, where each step is
               is expected to be a line in the final display, and each line
               will be run through repr().
+
         always_page (bool, optional): If `False`, the
             pager will only kick in if `text` is too big
             to fit the screen.

@@ -1,6 +1,6 @@
 # Command System
 
-- [Commands](./Commands) 
+- [Commands](./Commands)
 - [Command Sets](./Command-Sets)
 - [Command Auto-help](./Help-System#command-auto-help-system)
 

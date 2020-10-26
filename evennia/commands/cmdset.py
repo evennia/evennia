@@ -358,14 +358,18 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         perm = "perm" if self.permanent else "non-perm"
-        options = ", ".join([
-            "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
-            for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
-            if getattr(self, opt) is not None
-        ])
+        options = ", ".join(
+            [
+                "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
+                for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+                if getattr(self, opt) is not None
+            ]
+        )
         options = (", " + options) if options else ""
-        return f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: " + ", ".join(
-            [str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        return (
+            f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: "
+            + ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        )
 
     def __iter__(self):
         """
