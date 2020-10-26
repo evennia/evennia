@@ -526,6 +526,13 @@ def raw(string):
     return string.replace("{", "{{").replace("|", "||")
 
 
+# ------------------------------------------------------------
+#
+# ANSIString - ANSI-aware string class
+#
+# ------------------------------------------------------------
+
+
 def _spacing_preflight(func):
     """
     This wrapper function is used to do some preflight checks on
@@ -896,9 +903,23 @@ class ANSIString(str, metaclass=ANSIMeta):
         replayed.
 
         """
-        slice_indexes = self._char_indexes[slc]
+        char_indexes = self._char_indexes
+        slice_indexes = char_indexes[slc]
         # If it's the end of the string, we need to append final color codes.
         if not slice_indexes:
+            # if we find no characters it may be because we are just outside
+            # of the interval, using an open-ended slice. We must replay all
+            # of the escape characters until/after this point.
+            if char_indexes:
+                if slc.start is None and slc.stop is None:
+                    # a [:] slice of only escape characters
+                    return ANSIString(self._raw_string[slc])
+                if slc.start is None:
+                    # this is a [:x] slice
+                    return ANSIString(self._raw_string[:char_indexes[0]])
+                if slc.stop is None:
+                    # a [x:] slice
+                    return ANSIString(self._raw_string[char_indexes[-1] + 1:])
             return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string
@@ -918,7 +939,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 # raw_string not long enough
                 pass
         if i is not None:
-            append_tail = self._get_interleving(self._char_indexes.index(i) + 1)
+            append_tail = self._get_interleving(char_indexes.index(i) + 1)
         else:
             append_tail = ""
         return ANSIString(string + append_tail, decoded=True)

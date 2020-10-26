@@ -165,9 +165,12 @@ def _to_rect(lines):
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    if isinstance(obj, str):
+    if isinstance(obj, ANSIString):
+        return obj
+    elif isinstance(obj, str):
         # since ansi will be parsed twice (here and in the normal ansi send), we have to
-        # escape the |-structure twice.
+        # escape the |-structure twice. TODO: This is tied to the default color-tag syntax
+        # which is not ideal for those wanting to replace/extend it ...
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
