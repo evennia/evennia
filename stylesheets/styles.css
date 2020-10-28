@@ -327,6 +327,15 @@ a.github {
   background-color: #efeeec;
 }
 
+.buttonsidetext {
+  position: absolute;
+  rotate: -90deg;
+  transform-origin: top left;
+  padding-left: 11px;
+  left: 25px;
+  opacity: 0.5;
+}
+
 
 /* Section - for main page content */
 
@@ -408,6 +417,7 @@ footer {
   font-style: italic; 
 }
 
+/* sponsor buttons */
 
 .sponsor {
   margin-left: -24px;
@@ -484,6 +494,10 @@ footer {
     position: absolute;
     top: -2px;
     right: 167px;
+  }
+
+  .buttonsidetext {
+    display: none; 
   }
 
 
