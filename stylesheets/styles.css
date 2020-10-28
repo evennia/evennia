@@ -293,6 +293,14 @@ header li {
   margin-bottom: 1px;
 }
 
+.header-text {
+  line-height: 1.2;
+  margin-top: -10px;
+  margin-bottom: 25px;
+  opacity: 0.6;
+}
+
+
 a.buttons {
   display: table-cell;
   width:132px;
@@ -485,7 +493,7 @@ footer {
 
   .newsfeed {
     position: absolute;
-    top: 103px;
+    top: 70px;
     right: 200px;
   }
 
