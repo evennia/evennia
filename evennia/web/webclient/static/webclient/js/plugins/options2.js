@@ -183,6 +183,7 @@ let options2 = (function () {
         onOptionsUI: onOptionsUI,
         onPrompt: onPrompt,
         onOptionCheckboxChanged: onOptionCheckboxChanged,
+        onOpenCloseOptions: onOpenCloseOptions,
     }
 })();
 window.plugin_handler.add("options2", options2);
