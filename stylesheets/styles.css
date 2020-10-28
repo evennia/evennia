@@ -290,8 +290,7 @@ header ul {
 
 header li {
 	list-style-type: none;
-	margin-bottom: 12px;
-
+  margin-bottom: 1px;
 }
 
 a.buttons {
@@ -313,11 +312,14 @@ a.buttons {
   text-decoration: none;
   background-color: #efeeec;
   vertical-align: middle;
-  
 }
 
 a.buttons:hover {
   background-color: #fff
+}
+
+.buttonsection {
+    margin-bottom: 14px;
 }
 
 a.github {
@@ -496,6 +498,7 @@ footer {
   header {
     float: none;
     padding:-10px 20px 0 20px;
+    height: 23vh;
   }
 
 	section {
@@ -524,6 +527,7 @@ footer {
   .newsfeed, .sponsor {
     display: none;
   }
+
 
 }
 
@@ -561,7 +565,7 @@ footer {
 
 
   header {
-    height: 20vh;
+    height: 23vh;
   }
 
   .img, .img.screenshot {
