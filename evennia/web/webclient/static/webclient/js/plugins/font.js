@@ -57,8 +57,8 @@ let font_plugin = (function () {
     // 
     var onFontFamily = function (evnt) {
         var family = $(evnt.target).val();
-        $(document.body).css('font-family', family);
-        localStorage.setItem('evenniaFontFamily', family);
+        $(document.body).css("font-family", family);
+        localStorage.setItem("evenniaFontFamily", family);
     }
  
     //
@@ -76,15 +76,13 @@ let font_plugin = (function () {
         var sizeselect = $("<select>");
 
         var fonts = Object.keys(font_urls);
-        for (var x = 0; x < fonts.length; x++) {
-            var option = $("<option value='"+fonts[x]+"'>"+fonts[x]+"</option>");
-            fontselect.append(option);
+        for( const font of fonts ) {
+            fontselect.append( $("<option value='"+font+"'>"+font+"</option>") );
         }
 
         for (var x = 4; x < 21; x++) {
             var val = (x/10.0);
-            var option = $("<option value='"+val+"'>"+x+"</option>");
-            sizeselect.append(option);
+            sizeselect.append( $("<option value='"+val+"'>"+x+"</option>") );
         }
 
         fontselect.val( getActiveFontFamily() );
