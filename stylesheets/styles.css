@@ -407,6 +407,25 @@ footer {
 }
 
 
+.sponsor {
+  margin-left: -24px;
+}
+
+.patreon {
+  scale: 0.6;
+}
+
+.paypal {
+  scale: 0.6;
+}
+
+.sponsor-column {
+    float: left;
+    width: 33%;
+    padding: 2px;
+}
+
+
 /* Media alternatives */
 
 
@@ -458,6 +477,14 @@ footer {
     right: 200px;
   }
 
+  .sponsor {
+    float: none;
+    position: absolute;
+    top: -2px;
+    right: 167px;
+  }
+
+
 }
 
 
@@ -494,7 +521,7 @@ footer {
     max-width: 480px; 
   }
 
-  .newsfeed {
+  .newsfeed, .sponsor {
     display: none;
   }
 
@@ -528,13 +555,13 @@ footer {
 
   header > h1.header, 
   header > p.header,
-  .logo {
+  .logo, .sponsor {
     display: none;
   }
 
 
   header {
-    height: 15vh;
+    height: 20vh;
   }
 
   .img, .img.screenshot {
