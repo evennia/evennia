@@ -499,6 +499,28 @@ let goldenlayout = (function () {
 
 
     //
+    // upload the named layout to the Evennia server as an option
+    var uploadLayouts = function () {
+        if( window.Evennia.isConnected() && myLayout.isInitialised ) {
+            var obj = {};
+
+            // iterate over each layout, storing the json for each into our temp obj
+            for( const key of evenniaGoldenLayouts.keys() ) {
+                if( key !== "default" ) {
+                    obj[key] = JSON.stringify( evenniaGoldenLayouts.get(key) );
+                }
+            }
+
+            // store our temp object as json out to window.options.webclientLayouts
+            window.options["webclientActiveLayout"] = activeLayoutName;
+            window.options["webclientLayouts"] = JSON.stringify( obj );
+            window.Evennia.msg("webclient_options", [], window.options);
+        }
+    }
+
+
+
+    //
     //
     var onRemoveLayout = function (evnt) {
         var name = $(evnt.target).parent().attr("id");
@@ -507,11 +529,7 @@ let goldenlayout = (function () {
         evenniaGoldenLayouts.delete(name);
         layout.remove();
 
-        if( window.Evennia.isConnected() && myLayout.isInitialised ) {
-            window.options["webclientActiveLayout"] = activeLayoutName;
-            window.options["webclientLayouts"] = JSON.stringify( evenniaGoldenLayouts );
-            window.Evennia.msg("webclient_options", [], window.options);
-        }
+        uploadLayouts();
     }
 
 
@@ -561,12 +579,7 @@ let goldenlayout = (function () {
             localStorage.setItem( "evenniaGoldenLayoutSavedState", JSON.stringify( evenniaGoldenLayouts.get(name) ) );
             localStorage.setItem( "evenniaGoldenLayoutSavedStateName", activeLayoutName );
 
-            // upload it to the server
-            if( window.Evennia.isConnected() && myLayout.isInitialised ) {
-                window.options["webclientActiveLayout"] = name;
-                window.options["webclientLayouts"] = JSON.stringify( evenniaGoldenLayouts );
-                window.Evennia.msg("webclient_options", [], window.options);
-            }
+            uploadLayouts();
 
             resetUI( evenniaGoldenLayouts.get(name) );
         }
@@ -669,10 +682,13 @@ let goldenlayout = (function () {
     var onGotOptions = function (args, kwargs) {
         // Reset the UI if the JSON layout sent from the server doesn't match the client's current JSON
         if( "webclientLayouts" in kwargs ) {
-            let mapping = JSON.parse( kwargs["webclientLayouts"] );
-            evenniaGoldenLayouts = new Map();
-            for( var layout in mapping ) {
-                evenniaGoldenLayouts.set( layout, mapping[layout] );
+            var layouts = JSON.parse( kwargs["webclientLayouts"] );
+
+            // deserialize key/layout pairs into evenniaGoldenLayouts
+            for( var key in layouts ) {
+                if( key !== "default" && layouts.hasOwnProperty(key) ) { // codacy.com guard-rail
+                    evenniaGoldenLayouts.set( key, JSON.parse(layouts[key]) );
+                }
             }
         }
     }
