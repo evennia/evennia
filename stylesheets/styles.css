@@ -337,8 +337,8 @@ a.github {
 
 .buttonsidetext {
   position: absolute;
-  rotate: -90deg;
   transform-origin: top left;
+  transform: rotate(-90deg);
   padding-left: 11px;
   left: 25px;
   opacity: 0.5;
@@ -449,7 +449,7 @@ footer {
 /* Media alternatives */
 
 
-@media print, screen and (max-width: 960px) {
+@media print, screen and (max-width: 960px), (orientation: portrait)  {
 
   div.wrapper {
     width:auto;
@@ -478,6 +478,11 @@ footer {
 
   header ul, header p.view {
     position:static;
+  }
+
+  .header-text {
+    word-wrap: break-word;
+    width: 150px;
   }
 
   .linksection {
@@ -550,7 +555,6 @@ footer {
     display: none;
   }
 
-
 }
 
 @media print, screen and (max-width: 480px) {
@@ -566,13 +570,8 @@ footer {
     right: 20px;
   }
 
-
   .img, .img.screenshot {
     max-width: 400px; 
-  }
-
-  .header-text {
-    display: none;
   }
 
 }
