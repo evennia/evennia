@@ -469,7 +469,7 @@ footer {
   } 
 
   section {
-    padding:20px 84px 100px 50px;
+    padding:20px 8px 100px 25px;
   }
 
   header a small {
@@ -489,7 +489,6 @@ footer {
     position: absolute;
     top: 20px;
     right: 20px;
-    z-
   }
 
   .img, .img.screenshot {
@@ -517,7 +516,7 @@ footer {
 }
 
 
-@media print, screen and (max-width: 720px) {
+@media print, screen and (max-width: 760px) {
   body {
     word-wrap:break-word;
   }
@@ -525,7 +524,6 @@ footer {
   header {
     float: none;
     padding:-10px 20px 0 20px;
-    height: 23vh;
   }
 
 	section {
@@ -557,7 +555,7 @@ footer {
 
 }
 
-@media print, screen and (max-width: 480px) {
+@media print, screen and (max-width: 520px) {
 
 
   div.linksection > ul > li {
@@ -576,21 +574,25 @@ footer {
 
 }
 
-@media print, screen and (max-width: 400px) {
+@media print, screen and (max-width: 435px) {
 
   header > h1.header, 
   header > p.header,
-  .logo, .sponsor {
+  .sponsor {
     display: none;
-  }
-
-
-  header {
-    height: 23vh;
   }
 
   .img, .img.screenshot {
     max-width: 300px; 
+  }
+
+  header {
+    padding: 70px; 
+  }
+  section {
+    max-width: 435;
+    padding-left: 3px;   
+    padding-right: 3px;   
   }
 
 }
