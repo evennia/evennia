@@ -83,11 +83,10 @@ technologies and tools.</p>
 
 <img class="img floatright" src="images/book.png" alt="Book">
 <p>
-<a href="https://demo.evennia.com">https://demo.evennia.com</a> sports an
-almost vanilla install of a default Evennia server. Apart from Evennia's
-tutorial-world it also has a few extra places to experience and try out. Use it
-to get a taste for what's possible. You can also ask questions in our support
-channel directly from inside the demo!</p>
+<a href="https://demo.evennia.com">https://demo.evennia.com</a> hosts an
+almost default Evennia server with some extra examples. Use it to get a taste for
+what's possible. You can also send questions to our support channel directly
+from inside the demo!</p>
 
 <h2>
 <a name="installation" class="anchor"
@@ -126,26 +125,43 @@ connect to it with a traditional third-party MUD client on <code>localhost, port
 
 <img class="img floatleft" src="images/inkwell.png" alt="Inkwell">
 
-<p>Evennia aims to take care of all the gritty networking, database-handling
-and other boring details that all MU*s games need. The idea is to allow you,
-the game developer, to concentrate solely on designing the game systems. We try
-to get out of your way as much as possible.</p>
-
-<p>Evennia is game-agnostic. So we have no opinions on what style of play or
-genre of game you should make. We don't prescribe any skills, classes, races or
-other things that will be specific for your game anyway. Indeed, people have
-used Evennia for non-MU*s as well - it's very suitable for wild experimenting
-and fast prototyping!</p>
-
-<p>Some game concepts and systems are more common than others though. For these
-we offer a growing library of optional code-snippets and bigger game systems
-you can build from, copy or be inspired by. These are mostly contributed by our
-very friendly developer community.</p> 
-
-<p>Finally, we have tried to make Evennia's code as readable and
-well-documented as possible, should you need to dive in. We have also 
-spent a lot of time on our <a href="docs/latest/index.html">extensive documentation</a>,
-all in order to to help you get productive in Evennia with less fuss.</p>
+<ul>
+  <li>
+    <strong>A toolbox and framework:</strong> Evennia is intended for game developers
+    who want to make a game uniquely theirs. But it's also easy enough to be a
+    popular tool for quick game prototyping and for those who want an
+    educational project for learning Python. 
+  </li>
+  <li>
+    <strong>Game agnostic:</strong> Evennia does not prescribe a genre, game
+    rules, skills, classes, combat system or other things that will be specific
+    for your game anyway. 
+  </li>
+  <li>
+    <strong>Optionally a little less unique:</strong> We have a growing library of
+    commonly needed code-snippets and bigger game systems that you can choose to 
+    build from, copy or be inspired by. 
+  <li>
+    <strong>What we do:</strong> Evennia takes care of all the gritty
+    networking, database-handling and other boring details that all online
+    games need. The idea is to allow you, the game developer, to focus on
+    designing your game's systems and content.
+  </li>
+  <li>
+    <strong>Modern workflow:</strong> Coding in Evennia is primarily done by
+    normal Python modules and classes, making the codebase extremely flexible -
+    you don't tweak the library itself, you just override the defaults and tell
+    Evennia where to find your changes. For experienced developers, not relying
+    on some custom in-game scripting language means you can use modern
+    development tools, version control and workflows.
+  </li>
+    <strong>A lot of help:</strong> Evennia's code is heavily documented should
+    you want to dive in. We have also spent a lot of time on our <a
+    href="docs/latest/index.html">extensive documentation</a>. Finally, our
+  active and friendly developer community is always there to help you if you
+  get stuck!
+  </li>
+</ul>
 
 
 <h2><a name="default-content" class="anchor"
@@ -153,37 +169,30 @@ all in order to to help you get productive in Evennia with less fuss.</p>
     octicon-link"></span></a>Default Content</h2>
 
 <p>Whereas your Evennia game starts out with no game-specific content, it's not
-empty! Out of the box you get a 'talker'-style game: You can create rooms and
-items, pick up stuff, talk to people, walk around, do light roleplay with
-emotes ... all the base things you expect.</p>
+empty! Out of the box you get a 'talker'-style game with basic functionality:
+You can create rooms and items, pick up stuff, talk to people, walk around, do
+light roleplay with emotes ... this starting point is easy to extend or
+completely replace as you prefer.</p>
 
 <p>Here are some of the default resources and tools available out of the box:</p>
 
 <ul>
   <li>Classes for persistent objects, exits, rooms and characters.</li>
-  <li>Separation between character and their accounts (multi-character play, if desired)</li>
-  <li>In-game channels and chats (including linking to external chat channels)
-  <li>About 90 commands for administration, building, chatting, basic roleplay etc</li>
-  <li>Available commands and even their function can vary with circumstance and game state</li>
-  <li>Delays, tickers, timers (fully asynchronous, no threading so no risk of race conditions)</li>
-  <li>In-game menu-creation system</li>
-  <li>Prototype system, for making variations of objects (like monsters or items) without new classes</li>
-  <li>Lock and access mini-language for very flexible access control</li>
-  <li>Tutorial-world with examples</li>
-  <li>Easy storage of custom data on all game objects</li>
-  <li>Search, creation, and a large number of coding utilities</li>
-  <li>A <code>contrib/</code> folder with optional full systems and shorter snippets</li>
+  <li>Separation between character and their accounts (multi-character play, if desired).</li>
+  <li>In-game channels and chats (including linking to external chat channels).
+  <li>Some 90 commands for administration, building, chatting, basic roleplay etc.</li>
+  <li>Available commands and even their function can vary with circumstance and game state.</li>
+  <li>Delays, tickers, timers (fully asynchronous, no threading so no risk of race conditions).</li>
+  <li>In-game menu-creation system.</li>
+  <li>Prototype system, for making variations of objects (like monsters or items) without new classes.</li>
+  <li>Lock and access mini-language for very flexible access control.</li>
+  <li>Tutorial-world with examples.</li>
+  <li>Easy storage of custom data on all game objects.</li>
+  <li>Search, creation, and a large number of coding utilities.</li>
+  <li>A <code>contrib/</code> folder with optional full systems and shorter snippets.</li>
 </ul>
 
 <img class="img floatright" src="images/dice.png" alt="Dice">
-
-<p>Coding in Evennia is primarily done by normal Python modules, making the
-codebase extremely flexible - you don't tweak the library itself, you just
-override the defaults and tell Evennia where to find your changes.</p>
-
-<p>You use Python classes to represent your objects,
-scripts and players. The database layer is mostly abstracted away but if you
-want you can also leverage the full power of Django's mature ORM.</p>
 
 <h2><a name="some server features" class="anchor"
   href="#some-server-features"><span class="octicon
@@ -191,23 +200,23 @@ want you can also leverage the full power of Django's mature ORM.</p>
 
   <ul>
     <li>HTML5 webclient (websocket with ajax/comet fallback)</li>
-    <li>Telnet, Telnet+SSL, SSH</li>
     <li>Website via own webserver (HTTP, HTTPS with external proxy)</li>
-    <li>Game channels links to IRC, Grapevine</li>
-    <li>RSS feed, Twitter feed (with snippet from docs)</li>
-    <li>Different databases supported via Django: Sqlite3, PostgreSQL, MySQL ...</li>
-    <li>MUD-specific telnet protocols supported:</li>
-      <ul> 
+    <li>Telnet, Telnet+SSL, SSH</li>
+    <li>MUD-specific telnet protocols (Webclient uses custom JSON protocol instead):
+      <ul style="margin-bottom:0px;"> 
         <li>GMCP and MSDP out-of-band protocols</li>
         <li>MXP (inline links only)</li>
         <li>ANSI and XTerm256 color support</li>
         <li>MSSP status for websites tracking MUDs</li>
         <li>NAWS, TTYPE, MCCP etc ...</li>
-      </ul>
-      <li>Based on Django and Twisted, both well-supported and hardened Python projects</i>
-      <li>Asynchronous, event-driven architecture without risk of race-conditions</i>
-      <li>Reload server without disconnecting players</li>
-      <li>Extendable protocols for adding custom integrations</li>
+      </ul></li>
+    <li>In-Game channels can link to IRC, Grapevine</li>
+    <li>RSS feed, Twitter feed (with snippet from docs)</li>
+    <li>Different databases supported via Django: Sqlite3, PostgreSQL, MySQL ...</li>
+    <li>Based on Django and Twisted, both well-supported and hardened Python projects</i>
+    <li>Asynchronous, event-driven architecture without risk of race-conditions</i>
+    <li>Reload server without disconnecting players</li>
+    <li>Extendable protocols for adding custom integrations</li>
   </ul>
 
 
