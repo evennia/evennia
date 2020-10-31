@@ -590,9 +590,8 @@ footer {
     padding: 70px; 
   }
   section {
-    max-width: 435;
-    padding-left: 3px;   
-    padding-right: 3px;   
+    padding-left: 5px;   
+    padding-right: 5px;   
   }
 
 }
