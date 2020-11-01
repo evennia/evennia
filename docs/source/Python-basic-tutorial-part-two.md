@@ -310,7 +310,7 @@ class DefaultCharacter(DefaultObject):
 This means that `DefaultCharacter` is in *itself* a child of something called `DefaultObject`! Let's
 see what this parent class provides. It's in the same module as `DefaultCharacter`, you just need to
 [scroll up near the
-top](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L182):
+top](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193):
 
 ```python
 class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
