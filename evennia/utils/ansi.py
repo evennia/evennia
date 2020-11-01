@@ -85,8 +85,7 @@ class ANSIParser(object):
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with a \ for xterm256,
-    an extra | for Merc-style codes
+    by prepending with an extra |.
 
     """
 
@@ -97,6 +96,7 @@ class ANSIParser(object):
         (r"|n", ANSI_NORMAL),  # reset
         (r"|/", ANSI_RETURN),  # line break
         (r"|-", ANSI_TAB),  # tab
+        (r"|>", ANSI_SPACE * 4),  # indent (4 spaces)
         (r"|_", ANSI_SPACE),  # space
         (r"|*", ANSI_INVERSE),  # invert
         (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
