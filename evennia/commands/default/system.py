@@ -842,21 +842,30 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 return
             if service.name[:7] == "Evennia":
                 if delmode:
-                    caller.msg("You cannot remove a core Evennia service (named 'Evennia***').")
+                    caller.msg("You cannot remove a core Evennia service (named 'Evennia*').")
                     return
-                string = "You seem to be shutting down a core Evennia service (named 'Evennia***'). Note that"
-                string += "stopping some TCP port services will *not* disconnect users *already*"
-                string += "connected on those ports, but *may* instead cause spurious errors for them. To "
-                string += "safely and permanently remove ports, change settings file and restart the server."
+                string = ("|RYou seem to be shutting down a core Evennia "
+                          "service (named 'Evennia*').\nNote that stopping "
+                          "some TCP port services will *not* disconnect users "
+                          "*already* connected on those ports, but *may* "
+                          "instead cause spurious errors for them.\nTo safely "
+                          "and permanently remove ports, change settings file "
+                          "and restart the server.|n\n")
                 caller.msg(string)
 
             if delmode:
                 service.stopService()
                 service_collection.removeService(service)
-                caller.msg("Stopped and removed service '%s'." % self.args)
+                caller.msg("|gStopped and removed service '%s'.|n" % self.args)
             else:
-                service.stopService()
-                caller.msg("Stopped service '%s'." % self.args)
+                caller.msg(f"Stopping service '{self.args}'...")
+                try:
+                    service.stopService()
+                except Exception as err:
+                    caller.msg(f"|rErrors were reported when stopping this service{err}.\n"
+                               "If there are remaining problems, try reloading "
+                               "or rebooting the server.")
+                caller.msg("|g... Stopped service '%s'.|n" % self.args)
             return
 
         if switches[0] == "start":
@@ -864,8 +873,14 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             if service.running:
                 caller.msg("That service is already running.")
                 return
-            caller.msg("Starting service '%s'." % self.args)
-            service.startService()
+            caller.msg(f"Starting service '{self.args}' ...")
+            try:
+                service.startService()
+            except Exception as err:
+                caller.msg(f"|rErrors were reported when starting this service{err}.\n"
+                           "If there are remaining problems, try reloading the server, changing the "
+                           "settings if it's a non-standard service.|n")
+            caller.msg("|gService started.|n")
 
 
 class CmdAbout(COMMAND_DEFAULT_CLASS):
