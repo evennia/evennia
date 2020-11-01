@@ -93,7 +93,7 @@ class MonitorHandler(object):
 
     def at_update(self, obj, fieldname):
         """
-        Called by the field as it saves.
+        Called by the field/attribute as it saves.
 
         """
         to_delete = []

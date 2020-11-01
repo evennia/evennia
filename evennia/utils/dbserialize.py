@@ -300,6 +300,10 @@ class _SaverDict(_SaverMutable, MutableMapping):
     def has_key(self, key):
         return key in self._data
 
+    @_save
+    def update(self, *args, **kwargs):
+        self._data.update(*args, **kwargs)
+
 
 class _SaverSet(_SaverMutable, MutableSet):
     """
