@@ -389,7 +389,7 @@ gaming style you like and possibly any new ones you can come up with!
 (aka MUDs, MUSHes, MUX, MOOs...). It is open-source and |wfree to use|n, also for
 commercial projects (BSD license).
 
-Out of the box, Evennia provides a |wfull, if empty game|n. Whereas you can play
+Out of the box, Evennia provides a |wworking, if empty game|n. Whereas you can play
 via traditional telnet MUD-clients, the server runs your game's website and
 offers a |wHTML5 webclient|n so that people can play your game in their browser
 without downloading anything extra.

@@ -521,9 +521,8 @@ def webclient_options(session, *args, **kwargs):
             session=session,
         )
     else:
-        # kwargs provided: persist them to the account object
-        for key, value in kwargs.items():
-            clientoptions[key] = value
+        # kwargs provided: persist them to the account object.
+        clientoptions.update(kwargs)
 
 
 # OOB protocol-specific aliases and wrappers
