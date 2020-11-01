@@ -268,12 +268,14 @@ An "emitter" object must have a function
                 // Parse the incoming data, send to emitter
                 // Incoming data is on the form [cmdname, args, kwargs]
                 data = JSON.parse(data);
+                // console.log(" server->client:", data)
                 Evennia.emit(data[0], data[1], data[2]);
             };
         }
 
         var msg = function(data) {
             // send data across the wire. Make sure to json it.
+            // console.log("client->server:", data)
             websocket.send(JSON.stringify(data));
         };
 
