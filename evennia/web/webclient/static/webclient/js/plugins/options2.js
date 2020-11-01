@@ -4,7 +4,7 @@
  */
 let options2 = (function () {
 
-    var options_container = null ;
+    var optionsContainer = null ;
 
     //
     // When the user changes a setting from the interface
@@ -51,35 +51,6 @@ let options2 = (function () {
     }
 
 
-    //
-    // Create and register the "options" golden-layout component
-    var createOptionsComponent = function () {
-        var myLayout = window.plugins["goldenlayout"].getGL();
-
-        myLayout.registerComponent( "options", function (container, componentState) {
-            var plugins = window.plugins;
-            options_container = container.getElement();
-
-            // build the buttons
-            var div = $("<div class='accordion' style='overflow-y:scroll; height:inherit;'>");
-
-            for( let plugin in plugins ) {
-                if( "onOptionsUI" in plugins[plugin] ) {
-                    var card = $("<div class='card'>");
-                    var body = $("<div>");
-
-                    plugins[plugin].onOptionsUI( body );
-
-                    card.append(body); 
-                    card.appendTo( div );
-                }
-            }
-
-            div.appendTo( options_container );
-        });
-    }
-
-
     // handler for the "Options" button
     var onOpenCloseOptions = function () {
         var optionsComponent = {
@@ -92,7 +63,7 @@ let options2 = (function () {
 
         // Create a new GoldenLayout tab filled with the optionsComponent above
         var myLayout = window.plugins["goldenlayout"].getGL();
-        if( ! options_container ) {
+        if( ! optionsContainer ) {
             // open new optionsComponent
             var main = myLayout.root.getItemsByType("stack")[0].getActiveContentItem();
 
@@ -102,16 +73,19 @@ let options2 = (function () {
                     .closeElement
                     .off("click")
                     .click( function () {
-                        options_container = null;
+                        optionsContainer = null;
                         tab.contentItem.remove();
+                        window.plugins["default_in"].setKeydownFocus(true);
                     });
-                    options_container = tab.contentItem;
+                    optionsContainer = tab.contentItem;
                 }
             });
             main.parent.addChild( optionsComponent );
+
+            window.plugins["default_in"].setKeydownFocus(false);
         } else {
-            options_container.remove();
-            options_container = null;
+            optionsContainer.remove();
+            optionsContainer = null;
         }
     }
 
@@ -129,6 +103,34 @@ let options2 = (function () {
             if( (key === "available_server_tags") && addKnownType ) {
                 $.each( value, addKnownType );
             }
+        });
+    }
+
+    //
+    // Create and register the "options" golden-layout component
+    var onLayoutChanged = function () {
+        var myLayout = window.plugins["goldenlayout"].getGL();
+
+        myLayout.registerComponent( "options", function (container, componentState) {
+            var plugins = window.plugins;
+            optionsContainer = container.getElement();
+
+            // build the buttons
+            var div = $("<div class='accordion' style='overflow-y:scroll; height:inherit;'>");
+
+            for( let plugin in plugins ) {
+                if( "onOptionsUI" in plugins[plugin] ) {
+                    var card = $("<div class='card'>");
+                    var body = $("<div>");
+
+                    plugins[plugin].onOptionsUI( body );
+
+                    card.append(body); 
+                    card.appendTo( div );
+                }
+            }
+
+            div.appendTo( optionsContainer );
         });
     }
 
@@ -165,7 +167,7 @@ let options2 = (function () {
     var postInit = function() {
         // Are we using GoldenLayout?
         if( window.plugins["goldenlayout"] ) {
-            createOptionsComponent();
+            onLayoutChanged();
 
             $("#optionsbutton").bind("click", onOpenCloseOptions);
         }
@@ -176,10 +178,12 @@ let options2 = (function () {
         init: init,
         postInit: postInit,
         onGotOptions: onGotOptions,
+        onLayoutChanged: onLayoutChanged,
         onLoggedIn: onLoggedIn,
         onOptionsUI: onOptionsUI,
         onPrompt: onPrompt,
         onOptionCheckboxChanged: onOptionCheckboxChanged,
+        onOpenCloseOptions: onOpenCloseOptions,
     }
 })();
 window.plugin_handler.add("options2", options2);

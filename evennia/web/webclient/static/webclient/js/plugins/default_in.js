@@ -3,7 +3,9 @@
  * Evennia Webclient default "send-text-on-enter-key" IO plugin
  *
  */
-let defaultin_plugin = (function () {
+let defaultInPlugin = (function () {
+
+    var focusOnKeydown = true;
 
     //
     // handle the default <enter> key triggering onSend()
@@ -50,19 +52,28 @@ let defaultin_plugin = (function () {
 
             // Anything else, focus() a textarea if needed, and allow the default event
             default:
-                // is an inputfield actually focused?
-                if( inputfield.length < 1 ) {
-                    // Nope, focus the last .inputfield found in the DOM (or #inputfield)
-                    //     :last only matters if multi-input plugins are in use
-                    inputfield = $(".inputfield:last");
-                    inputfield.focus();
-                    if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
-                        $("#inputfield").focus();
+                // has some other UI element turned off this behavior temporarily?
+                if( focusOnKeydown ) {
+                    // is an inputfield actually focused?
+                    if( inputfield.length < 1 ) {
+                        // Nope, focus the last .inputfield found in the DOM (or #inputfield)
+                        //     :last only matters if multi-input plugins are in use
+                        inputfield = $(".inputfield:last");
+                        inputfield.focus();
+                        if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
+                            $("#inputfield").focus();
+                        }
                     }
                 }
         }
 
         return true;
+    }
+
+    //
+    // allow other UI elements to toggle this focus behavior on/off
+    var setKeydownFocus = function (bool) {
+        focusOnKeydown = bool;
     }
 
     //
@@ -81,6 +92,7 @@ let defaultin_plugin = (function () {
     return {
         init: init,
         onKeydown: onKeydown,
+        setKeydownFocus: setKeydownFocus,
     }
 })();
-window.plugin_handler.add("defaultin", defaultin_plugin);
+window.plugin_handler.add("default_in", defaultInPlugin);
