@@ -19,38 +19,81 @@ let font_plugin = (function () {
 
     //
     //
+    var setStartingFont = function () {
+        var fontfamily = localStorage.getItem("evenniaFontFamily");
+        if( !fontfamily ) {
+            $(document.body).css("font-family", fontfamily);
+        }
+
+        var fontsize = localStorage.getItem("evenniaFontSize");
+        if( !fontsize ) {
+            $(document.body).css("font-size", fontsize+"em");
+        }
+    }
+
+    //
+    //
+    var getActiveFontFamily = function () {
+        var family = "DejaVu Sans Mono";
+        var fontfamily = localStorage.getItem("evenniaFontFamily");
+        if( fontfamily != null ) {
+            family = fontfamily;
+        }
+        return family;
+    }
+
+    //
+    //
+    var getActiveFontSize = function () {
+        var size = "0.9";
+        var fontsize = localStorage.getItem("evenniaFontSize");
+        if( fontsize != null ) {
+            size = fontsize;
+        }
+        return size;
+    }
+
+    //
+    // 
+    var onFontFamily = function (evnt) {
+        var family = $(evnt.target).val();
+        $(document.body).css("font-family", family);
+        localStorage.setItem("evenniaFontFamily", family);
+    }
+ 
+    //
+    //
+    var onFontSize = function (evnt) {
+        var size = $(evnt.target).val();
+        $(document.body).css("font-size", size+"em");
+        localStorage.setItem("evenniaFontSize", size);
+    }
+
+    //
     //
     var onOptionsUI = function (parentdiv) {
-        var fontselect = $('<select>');
-        var sizeselect = $('<select>');
+        var fontselect = $("<select>");
+        var sizeselect = $("<select>");
 
         var fonts = Object.keys(font_urls);
-        for (var x = 0; x < fonts.length; x++) {
-            var option = $('<option value="'+fonts[x]+'">'+fonts[x]+'</option>');
-            fontselect.append(option);
+        for( const font of fonts ) {
+            fontselect.append( $("<option value='"+font+"'>"+font+"</option>") );
         }
 
         for (var x = 4; x < 21; x++) {
             var val = (x/10.0);
-            var option = $('<option value="'+val+'">'+x+'</option>');
-            sizeselect.append(option);
+            sizeselect.append( $("<option value='"+val+"'>"+x+"</option>") );
         }
 
-        fontselect.val('DejaVu Sans Mono'); // default value
-        sizeselect.val('0.9'); // default scaling factor
+        fontselect.val( getActiveFontFamily() );
+        sizeselect.val( getActiveFontSize() );
 
-        // font-family change callback
-        fontselect.on('change', function () {
-            $(document.body).css('font-family', $(this).val());
-        });
-
-        // font size change callback
-        sizeselect.on('change', function () {
-            $(document.body).css('font-size', $(this).val()+"em");
-        });
+        // font change callbacks
+        fontselect.on("change", onFontFamily);
+        sizeselect.on("change", onFontSize);
 
         // add the font selection dialog control to our parentdiv
-        parentdiv.append('<div style="font-weight: bold">Font Selection:</div>');
+        parentdiv.append("<div style='font-weight: bold'>Font Selection:</div>");
         parentdiv.append(fontselect);
         parentdiv.append(sizeselect);
     }
@@ -65,10 +108,12 @@ let font_plugin = (function () {
         for (var x = 0; x < fonts.length; x++) {
             if ( fonts[x] != "Monospace" ) {
                 var url = font_urls[ fonts[x] ];
-                var link = $('<link href="'+url+'" rel="stylesheet">');
+                var link = $("<link href='"+url+"' rel='stylesheet'>");
                 head.append( link );
             }
         }
+
+        setStartingFont();
     }
 
     return {
