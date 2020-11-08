@@ -168,18 +168,28 @@ class CmdHelp(Command):
         Returns the formatted string, ready to be sent.
 
         """
-        string = _SEP + "\n"
-        if title:
-            string += "|CHelp for |w%s|n" % title
-        if aliases:
-            string += " |C(aliases: %s|C)|n" % ("|C,|n ".join("|w%s|n" % ali for ali in aliases))
-        if help_text:
-            string += "\n%s" % dedent(help_text.rstrip())
-        if suggested:
-            string += "\n\n|CSuggested:|n "
-            string += "%s" % fill("|C,|n ".join("|w%s|n" % sug for sug in suggested))
-        string.strip()
-        string += "\n" + _SEP
+        start_chunk = f"{_SEP}\n"
+        title_chunk = f"|CHelp for |w{title}|n" if title else ""
+        aliases_chunk = " |C(aliases: {}|C)|n" \
+            .format("|C,|n ".join(f"|w{ali}|n" for ali in aliases)) \
+            if aliases else ""
+        help_text_chunk = f"\n{dedent(help_text.rstrip())}" \
+            if help_text else ""
+        suggested_chunk = \
+            "\n\n|CSuggested:|n {}" \
+            .format(fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested))) \
+            if suggested else ""
+        end_chunk = f"\n{_SEP}"
+
+        help_entry_chunks = [
+            start_chunk,
+            title_chunk,
+            aliases_chunk,
+            help_text_chunk,
+            suggested_chunk,
+            end_chunk,
+        ]
+        string = "".join(help_entry_chunks)
         return string
 
     def format_help_list(self, hdict_cmds, hdict_db):
