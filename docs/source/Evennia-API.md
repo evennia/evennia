@@ -60,8 +60,8 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 - [evennia.Command](api:evennia.commands.command#evennia.commands.command.Command) - base [Command](./Commands) class. See also `evennia.default_cmds.MuxCommand`
 - [evennia.CmdSet](api:evennia.commands.cmdset#evennia.commands.cmdset.CmdSet) - base [Cmdset](./Command-Sets) class
-- [evennia.default_cmds](api:Default-Command-Help) - access all default command classes as properties
-- [evennia.syscmdkeys](api:Commands#System-Commands) - access system command keys as properties
+- evennia.default_cmds - access to all [default command classes](api:evennia.commands.default) as properties
+- evennia.syscmdkeys - access to all [system command](./Commands#system-commands) names as properties
 
 ### Utilities
 
@@ -94,5 +94,4 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Contributions
 
-- [evennia.contrib](https://github.com/evennia/evennia/blob/master/evennia/contrib/) -
-game-specific contributions and plugins ([docs](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md))
+- [evennia.contrib](api:evennia.contrib) - game-specific contributions and plugins ([README](github:evennia/contrib/README.md))
