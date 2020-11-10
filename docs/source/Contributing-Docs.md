@@ -2,7 +2,7 @@
 
 
 ```warning::
-    WARNING: This system is still WIP and many things are bound to change!
+    The creation of docs pages is still WIP and we are still figuring things out here and there.
 ```
 
 Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: Check out the branch of Evennia you want to edit the documentation for. Create your
@@ -643,7 +643,7 @@ a good idea to end with four dashes `----`. This will create a visible line betw
 class/function docs to follow. See for example [the Traits docs](api:evennia.contrib.traits).
 
 All non-private classes, methods and functions must have a Google-style docstring, as per the 
-[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
+[Evennia coding style guidelines](github:evennia/CODING_STYLE.md). This will then be correctly formatted
 into pretty api docs.
 
 ## Technical
@@ -661,19 +661,19 @@ extension
 to understand our friendly Google-style docstrings used in classes and functions etc.
 
 
-[sphinx](https://www.sphinx-doc.org/en/master/)
-[recommonmark](https://recommonmark.readthedocs.io/en/latest/index.html)
-[commonmark](https://spec.commonmark.org/current/)
-[commonmark-help](https://commonmark.org/help/)
-[sphinx-autodoc](http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
-[sphinx-napoleon](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
+[sphinx]: https://www.sphinx-doc.org/en/master/
+[recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
+[commonmark]: https://spec.commonmark.org/current/
+[commonmark-help]: https://commonmark.org/help/
+[sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
+[sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 [getting-started]: Setup/Setup-Quickstart
 [contributing]: ./Contributing
-[ReST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
-[ReST-tables](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables)
-[ReST-directives](https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html)
-[Windows-WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+[ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+[ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables
+[ReST-directives]: https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html
+[Windows-WSL]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [linkdemo]: #Links
-[retext](https://github.com/retext-project/retext)
-[grip](https://github.com/joeyespo/grip)
-[pycharm](https://www.jetbrains.com/pycharm/)
+[retext]: https://github.com/retext-project/retext
+[grip]: https://github.com/joeyespo/grip
+[pycharm]: https://www.jetbrains.com/pycharm/

@@ -4,7 +4,7 @@ This section contains information useful to world builders.
 
 ### Building basics
 
-- [Default in-game commands](./Default-Command-Help)
+- [Default in-game commands](api:evennia.commands.default)
 - [Building Quick-start](./Building-Quickstart)
 - [Giving build permissions to others](./Building-Permissions)
 - [Adding text tags](./TextTags)
@@ -29,7 +29,6 @@ This section contains information useful to world builders.
 ```toctree::
     :hidden:
 
-    Default-Command-Help
     Building-Quickstart
     Building-Permissions
     TextTags
