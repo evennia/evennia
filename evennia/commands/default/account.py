@@ -304,7 +304,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         character_candidates = []
 
         if not self.args:
-            character_candidates = [account.db._last_puppet] or []
+            character_candidates = [account.db._last_puppet] if account.db._last_puppet else []
             if not character_candidates:
                 self.msg("Usage: ic <character>")
                 return
