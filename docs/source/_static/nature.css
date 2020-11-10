@@ -398,6 +398,16 @@ code.descname {
   padding: 5px;
 }
 
+/* The develop-branch warning header */
+
+.develop {
+  background-color: #ffe4e4;
+  align-content: center;
+  width: auto;
+  text-align: center;
+  letter-spacing: 15px;
+}
+
 
 /* -- screen sizes ------------------------------------------------------------------ */
 

@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
