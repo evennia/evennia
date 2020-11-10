@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [./A voice operated elevator using events](./A-voice-operated-elevator-using-events)
 - [./API refactoring](./API-refactoring)
 - [./Accounts](./Accounts)
