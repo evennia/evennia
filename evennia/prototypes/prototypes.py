@@ -929,7 +929,10 @@ def init_spawn_value(value, validator=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    return protfunc_parser(value)
+    result = protfunc_parser(value)
+    if result != value:
+        return validator(result)
+    return result
 
 
 def value_to_obj_or_any(value):
