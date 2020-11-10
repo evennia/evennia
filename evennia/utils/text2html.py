@@ -308,7 +308,7 @@ class TextToHTMLparser(object):
         elif cdict["lineend"]:
             return "<br>"
         elif cdict["tab"]:
-            text = cdict["tab"].replace("\t", "<span class=\"tabspace\">&#0009;</span>")
+            text = cdict["tab"].replace("\t", " " + "&nbsp;" * (self.tabstop - 1))
             return text
         elif cdict["space"] or cdict["spacestart"]:
             text = cdict["space"]
