@@ -392,8 +392,12 @@ def _init():
     BASE_GUEST_TYPECLASS = class_from_module(settings.BASE_GUEST_TYPECLASS)
     del class_from_module
 
-    # delayed starts
+    # delayed starts - important so as to not back-access evennia before it has
+    # finished initializing
     GLOBAL_SCRIPTS.start()
+    from .prototypes import prototypes
+    prototypes.load_module_prototypes()
+    del prototypes
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):
