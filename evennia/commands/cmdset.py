@@ -518,15 +518,16 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             # cmd is a command set so merge all commands in that set
             # to this one. We raise a visible error if we created
             # an infinite loop (adding cmdset to itself somehow)
+            cmdset = cmd
             try:
-                cmd = self._instantiate(cmd)
+                cmdset = self._instantiate(cmdset)
             except RuntimeError:
-                string = "Adding cmdset %(cmd)s to %(class)s lead to an "
-                string += "infinite loop. When adding a cmdset to another, "
-                string += "make sure they are not themself cyclically added to "
-                string += "the new cmdset somewhere in the chain."
-                raise RuntimeError(_(string) % {"cmd": cmd, "class": self.__class__})
-            cmds = cmd.commands
+                err = ("Adding cmdset {cmdset} to {cls} lead to an "
+                       "infinite loop. When adding a cmdset to another, "
+                       "make sure they are not themself cyclically added to "
+                       "the new cmdset somewhere in the chain.")
+                raise RuntimeError(_(err.format(cmdset=cmdset, cls=self.__class__)))
+            cmds = cmdset.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]
         else:
@@ -535,7 +536,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         system_commands = self.system_commands
         for cmd in cmds:
             # add all commands
-            if not hasattr(cmd, "obj"):
+            if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
             try:
                 ic = commands.index(cmd)
