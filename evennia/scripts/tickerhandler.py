@@ -80,9 +80,15 @@ _SA = object.__setattr__
 
 
 _ERROR_ADD_TICKER = """TickerHandler: Tried to add an invalid ticker:
-{storekey}
+{store_key}
 Ticker was not added."""
 
+_ERROR_ADD_TICKER_SUB_SECOND = """You are trying to add a ticker running faster
+than once per second. This is not supported and also probably not useful:
+Spamming messages to the user faster than once per second serves no purpose in
+a text-game, and if you want to update some property, consider doing so
+on-demand rather than using a ticker.
+"""
 
 class Ticker(object):
     """
@@ -359,7 +365,8 @@ class TickerHandler(object):
             obj (Object, tuple or None): Subscribing object if any. If a tuple, this is
                 a packed_obj tuple from dbserialize.
             path (str or None): Python-path to callable, if any.
-            interval (int): Ticker interval.
+            interval (int): Ticker interval. Floats will be converted to
+                nearest lower integer value.
             callfunc (callable or str): This is either the callable function or
                 the name of the method to call. Note that the callable is never
                 stored in the key; that is uniquely identified with the python-path.
@@ -378,6 +385,9 @@ class TickerHandler(object):
                 `idstring` and `persistent` are integers, strings and bools respectively.
 
         """
+        if interval < 1:
+            raise RuntimeError(_ERROR_ADD_TICKER_SUB_SECOND)
+
         interval = int(interval)
         persistent = bool(persistent)
         packed_obj = pack_dbobj(obj)
