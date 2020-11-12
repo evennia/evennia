@@ -144,35 +144,41 @@ def homogenize_prototype(prototype, custom_keys=None):
 
 # module-based prototypes
 
-for mod in settings.PROTOTYPE_MODULES:
-    # to remove a default prototype, override it with an empty dict.
-    # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = []
-    for variable_name, prot in all_from_module(mod).items():
-        if isinstance(prot, dict):
-            if "prototype_key" not in prot:
-                prot["prototype_key"] = variable_name.lower()
-            prots.append((prot["prototype_key"], homogenize_prototype(prot)))
-    # assign module path to each prototype_key for easy reference
-    _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
-    # make sure the prototype contains all meta info
-    for prototype_key, prot in prots:
-        actual_prot_key = prot.get("prototype_key", prototype_key).lower()
-        prot.update(
-            {
-                "prototype_key": actual_prot_key,
-                "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
-                "prototype_locks": (
-                    prot["prototype_locks"]
-                    if "prototype_locks" in prot
-                    else "use:all();edit:false()"
-                ),
-                "prototype_tags": list(
-                    set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
-                ),
-            }
-        )
-        _MODULE_PROTOTYPES[actual_prot_key] = prot
+def load_module_prototypes():
+    """
+    This is called by `evennia.__init__` as Evennia initializes. It's important
+    to do this late so as to not interfere with evennia initialization.
+
+    """
+    for mod in settings.PROTOTYPE_MODULES:
+        # to remove a default prototype, override it with an empty dict.
+        # internally we store as (key, desc, locks, tags, prototype_dict)
+        prots = []
+        for variable_name, prot in all_from_module(mod).items():
+            if isinstance(prot, dict):
+                if "prototype_key" not in prot:
+                    prot["prototype_key"] = variable_name.lower()
+                prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+        # assign module path to each prototype_key for easy reference
+        _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
+        # make sure the prototype contains all meta info
+        for prototype_key, prot in prots:
+            actual_prot_key = prot.get("prototype_key", prototype_key).lower()
+            prot.update(
+                {
+                    "prototype_key": actual_prot_key,
+                    "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
+                    "prototype_locks": (
+                        prot["prototype_locks"]
+                        if "prototype_locks" in prot
+                        else "use:all();edit:false()"
+                    ),
+                    "prototype_tags": list(
+                        set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
+                    ),
+                }
+            )
+            _MODULE_PROTOTYPES[actual_prot_key] = prot
 
 
 # Db-based prototypes
