@@ -78,6 +78,45 @@ class TestCreateScript(EvenniaTest):
         assert script.key == "test_script"
         script.stop()
 
+    def test_attr_creation_func(self):
+        """
+        Test of assigning attributes during creation
+
+        """
+        attrvalue = {'test1': 1, 'test2': 'boo'}
+
+        # creation-function direct call
+        script = create.create_script(
+            key='script_broken',
+            attributes=[
+                ('testname', attrvalue, '')
+            ]
+        )
+        self.assertTrue(script)
+        self.assertEqual(script.db.testname, None)  # since the category is '' and not None
+        self.assertEqual(script.attributes.get("testname", category=''), attrvalue)
+        script.stop()
+
+    def test_attr_method_creation_malformed(self):
+        """
+        Adding the wrong type for one attribute-tuple element
+
+        """
+        attrvalue = {'test1': 1, 'test2': 'boo'}
+
+        # method-based creation
+        script, err = DefaultScript.create(
+            'scripttest2',
+            attributes=[
+                # test of wrong syntax - last element should be bool
+                ('testname', attrvalue, None, '', '')
+            ]
+        )
+        self.assertFalse(err)
+        self.assertTrue(script)
+        self.assertEqual(script.db.testname, attrvalue)
+        script.stop()
+
 
 class TestCreateHelpEntry(TestCase):
 

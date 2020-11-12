@@ -181,10 +181,10 @@ class Attribute(SharedMemoryModel):
     #
 
     def __str__(self):
-        return smart_str("%s(%s)" % (self.db_key, self.id))
+        return smart_str("%s[category=%s](#%s)" % (self.db_key, self.db_category, self.id))
 
     def __repr__(self):
-        return "%s(%s)" % (self.db_key, self.id)
+        return "%s[category=%s](#%s)" % (self.db_key, self.db_category, self.id)
 
     def access(self, accessing_obj, access_type="attrread", default=False, **kwargs):
         """
@@ -257,7 +257,7 @@ class AttributeHandler(object):
                 "%s-%s"
                 % (
                     to_str(attr.db_key).lower(),
-                    attr.db_category.lower() if attr.db_category else None,
+                    attr.db_category.lower() if attr.db_category is not None else None,
                 ),
                 attr,
             )
@@ -289,7 +289,7 @@ class AttributeHandler(object):
 
         """
         key = key.strip().lower() if key else None
-        category = category.strip().lower() if category else None
+        category = category.strip().lower() if category is not None else None
         if key:
             cachekey = "%s-%s" % (key, category)
             cachefound = False
@@ -558,6 +558,7 @@ class AttributeHandler(object):
             return
 
         category = category.strip().lower() if category is not None else None
+
         keystr = key.strip().lower()
         attr_obj = self._getcache(key, category)
 
