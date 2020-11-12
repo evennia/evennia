@@ -438,7 +438,7 @@ class IAttributeBackend:
 
         """
         key = key.strip().lower() if key else None
-        category = category.strip().lower() if category else None
+        category = category.strip().lower() if category is not None else None
         if key:
             return self._get_cache_key(key, category)
         return self._get_cache_category(category)
