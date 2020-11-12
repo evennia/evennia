@@ -1199,3 +1199,28 @@ class TestCmdParser(TestCase):
             cmdparser.cmdparser("test1hello", a_cmdset, None),
             [("test1", "hello", bcmd, 5, 0.5, "test1")],
         )
+
+
+class TestCmdSetNesting(EvenniaTest):
+    """
+    Test 'nesting' of cmdsets by adding
+    """
+
+    def test_nest(self):
+
+        class CmdA(Command):
+            key = "a"
+
+            def func(self):
+                self.msg(str(self.obj))
+
+        class CmdSetA(CmdSet):
+            def at_cmdset_creation(self):
+                self.add(CmdA)
+
+        class CmdSetB(CmdSet):
+            def at_cmdset_creation(self):
+                self.add(CmdSetA)
+
+        cmd = self.char1.cmdset.cmdset_stack[-1].commands[0]
+        self.assertEqual(cmd.obj, self.char1)
