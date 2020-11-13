@@ -471,7 +471,12 @@ class ObjectDBManager(TypedObjectManager):
                 matches = _searcher(searchdata, candidates, typeclass, exact=exact)
 
         # deal with result
-        if len(matches) > 1 and match_number is not None:
+        if len(matches) == 1 and match_number is not None and match_number != 0:
+            # this indicates trying to get a single match with a match-number
+            # targeting some higher-number match (like 2-box when there is only
+            # one box in the room). This leads to a no-match.
+            matches = []
+        elif len(matches) > 1 and match_number is not None:
             # multiple matches, but a number was given to separate them
             if 0 <= match_number < len(matches):
                 # limit to one match
