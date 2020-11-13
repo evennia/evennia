@@ -466,7 +466,6 @@ class ObjectDBManager(TypedObjectManager):
                 # strips the number
                 match_number, searchdata = match.group("number"), match.group("name")
                 match_number = int(match_number) - 1
-                match_number = match_number if match_number >= 0 else None
             if match_number is not None or not exact:
                 # run search again, with the exactness set by call
                 matches = _searcher(searchdata, candidates, typeclass, exact=exact)
@@ -474,11 +473,13 @@ class ObjectDBManager(TypedObjectManager):
         # deal with result
         if len(matches) > 1 and match_number is not None:
             # multiple matches, but a number was given to separate them
-            try:
+            if 0 <= match_number < len(matches):
+                # limit to one match
                 matches = [matches[match_number]]
-            except IndexError:
-                # match number not matching anything
-                pass
+            else:
+                # a number was given outside of range. This means a no-match.
+                matches = []
+
         # return a list (possibly empty)
         return matches
 

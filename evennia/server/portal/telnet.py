@@ -85,7 +85,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
-
             logger.log_err(f"Malformed telnet input: {err}")
 
     def connectionMade(self):

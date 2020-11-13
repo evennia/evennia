@@ -389,7 +389,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                    a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
-                   between multiple same-named matches
+                   between multiple same-named matches. The exact form of this input
+                   is given by `settings.SEARCH_MULTIMATCH_REGEX`.
             global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
