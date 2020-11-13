@@ -367,7 +367,7 @@ class EvenniaLogFile(logfile.LogFile):
             logfile.LogFile.rotate(self)
             return
         lines = tail_log_file(self.path, 0, self.num_lines_to_append)
-        logfile.LogFile.rotate(self)
+        super().rotate()
         for line in lines:
             self.write(line)
 
