@@ -83,6 +83,8 @@ without arguments starts a full interactive Python console.
 - New EvMenu templating system for quickly building simpler EvMenus without as much code.
 - Add `Command.client_height()` method to match existing `.client_width` (stricako)
 - Include more Web-client info in `session.protocol_flags`.
+- Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
+  only two boxes in location.
 
 
 ## Evennia 0.9 (2018-2019)
