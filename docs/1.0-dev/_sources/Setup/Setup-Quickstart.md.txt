@@ -11,6 +11,11 @@ Evennia requires Python3.7+. As with most Python packages, using a
 installation independent from the system libraries. It's _not_ recommended 
 to install Evennia as superuser. 
 
+```warning::
+
+   This is not yet available. Switch to the 0.9.5 version of these docs to install Evennia.
+```
+
     pip install evennia
 
 Make sure the `evennia` command works. Use `evennia -h` for usage help (or read on).

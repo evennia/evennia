@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -42,19 +43,64 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ANSI - Gives colour to text.</span>
 
-<span class="sd">Use the codes defined in ANSIPARSER in your text</span>
-<span class="sd">to apply colour to text according to the ANSI standard.</span>
+<span class="sd">Use the codes defined in the *ANSIParser* class to apply colour to text. The</span>
+<span class="sd">`parse_ansi` function in this module parses text for markup and `strip_ansi`</span>
+<span class="sd">removes it.</span>
 
-<span class="sd">Examples:</span>
+<span class="sd">You should usually not need to call `parse_ansi` explicitly; it is run by</span>
+<span class="sd">Evennia just before returning data to/from the user. Alternative markup is</span>
+<span class="sd">possible by overriding the parser class (see also contrib/ for deprecated</span>
+<span class="sd">markup schemes).</span>
+
+
+<span class="sd">Supported standards:</span>
+
+<span class="sd">- ANSI 8 bright and 8 dark fg (foreground) colors</span>
+<span class="sd">- ANSI 8 dark bg (background) colors</span>
+<span class="sd">- &#39;ANSI&#39; 8 bright bg colors &#39;faked&#39; with xterm256 (bright bg not included in ANSI standard)</span>
+<span class="sd">- Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors</span>
+
+<span class="sd">## Markup</span>
+
+<span class="sd">ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color). Capital</span>
+<span class="sd">letters indicate the &#39;dark&#39; variant.</span>
+
+<span class="sd">- `|r` fg bright red</span>
+<span class="sd">- `|R` fg dark red</span>
+<span class="sd">- `|[r` bg bright red</span>
+<span class="sd">- `|[R` bg dark red</span>
+<span class="sd">- `|[R|g` bg dark red, fg bright green</span>
 
 <span class="sd">```python</span>
 <span class="sd">&quot;This is |rRed text|n and this is normal again.&quot;</span>
+
 <span class="sd">```</span>
 
-<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly;</span>
-<span class="sd">it is run by Evennia just before returning data to/from the</span>
-<span class="sd">user.  Depreciated example forms are available by extending</span>
-<span class="sd">the ansi mapping.</span>
+<span class="sd">Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:</span>
+
+<span class="sd">- `|500` fg bright red</span>
+<span class="sd">- `|050` fg bright green</span>
+<span class="sd">- `|005` fg bright blue</span>
+<span class="sd">- `|110` fg dark brown</span>
+<span class="sd">- `|425` fg pink</span>
+<span class="sd">- `|[431` bg orange</span>
+
+<span class="sd">Xterm256 greyscale:</span>
+
+<span class="sd">- `|=a` fg black</span>
+<span class="sd">- `|=g` fg dark grey</span>
+<span class="sd">- `|=o` fg middle grey</span>
+<span class="sd">- `|=v` fg bright grey</span>
+<span class="sd">- `|=z` fg white</span>
+<span class="sd">- `|[=r` bg middle grey</span>
+
+<span class="sd">```python</span>
+<span class="sd">&quot;This is |500Red text|n and this is normal again.&quot;</span>
+<span class="sd">&quot;This is |[=jText on dark grey background&quot;</span>
+
+<span class="sd">```</span>
+
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -126,8 +172,7 @@
 <span class="sd">    to ANSI command sequences</span>
 
 <span class="sd">    We also allow to escape colour codes</span>
-<span class="sd">    by prepending with a \ for xterm256,</span>
-<span class="sd">    an extra | for Merc-style codes</span>
+<span class="sd">    by prepending with an extra `|`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -138,6 +183,7 @@
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|n&quot;</span><span class="p">,</span> <span class="n">ANSI_NORMAL</span><span class="p">),</span>  <span class="c1"># reset</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|/&quot;</span><span class="p">,</span> <span class="n">ANSI_RETURN</span><span class="p">),</span>  <span class="c1"># line break</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|-&quot;</span><span class="p">,</span> <span class="n">ANSI_TAB</span><span class="p">),</span>  <span class="c1"># tab</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&gt;&quot;</span><span class="p">,</span> <span class="n">ANSI_SPACE</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>  <span class="c1"># indent (4 spaces)</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|_&quot;</span><span class="p">,</span> <span class="n">ANSI_SPACE</span><span class="p">),</span>  <span class="c1"># space</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|*&quot;</span><span class="p">,</span> <span class="n">ANSI_INVERSE</span><span class="p">),</span>  <span class="c1"># invert</span>
         <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|^&quot;</span><span class="p">,</span> <span class="n">ANSI_BLINK</span><span class="p">),</span>  <span class="c1"># blinking text (very annoying and not supported by all clients)</span>
@@ -567,6 +613,13 @@
     <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{{&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span></div>
 
 
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># ANSIString - ANSI-aware string class</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
 <span class="k">def</span> <span class="nf">_spacing_preflight</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This wrapper function is used to do some preflight checks on</span>
@@ -937,9 +990,23 @@
 <span class="sd">        replayed.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slice_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="n">slc</span><span class="p">]</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span>
+        <span class="n">slice_indexes</span> <span class="o">=</span> <span class="n">char_indexes</span><span class="p">[</span><span class="n">slc</span><span class="p">]</span>
         <span class="c1"># If it&#39;s the end of the string, we need to append final color codes.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">slice_indexes</span><span class="p">:</span>
+            <span class="c1"># if we find no characters it may be because we are just outside</span>
+            <span class="c1"># of the interval, using an open-ended slice. We must replay all</span>
+            <span class="c1"># of the escape characters until/after this point.</span>
+            <span class="k">if</span> <span class="n">char_indexes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slc</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># a [:] slice of only escape characters</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">slc</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># this is a [:x] slice</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[:</span><span class="n">char_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># a [x:] slice</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">char_indexes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
             <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_raw_string</span>
@@ -959,7 +1026,7 @@
                 <span class="c1"># raw_string not long enough</span>
                 <span class="k">pass</span>
         <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interleving</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interleving</span><span class="p">(</span><span class="n">char_indexes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">append_tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1484,6 +1551,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

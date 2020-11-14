@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.text2html</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -138,7 +139,7 @@
     <span class="n">re_blink</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;(?:</span><span class="si">%s</span><span class="s2">)(.*?)(?=</span><span class="si">%s</span><span class="s2">|</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blink</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\[&quot;</span><span class="p">),</span> <span class="n">fgstop</span><span class="p">,</span> <span class="n">bgstop</span><span class="p">))</span>
     <span class="n">re_inverse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;(?:</span><span class="si">%s</span><span class="s2">)(.*?)(?=</span><span class="si">%s</span><span class="s2">|</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inverse</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\[&quot;</span><span class="p">),</span> <span class="n">fgstop</span><span class="p">,</span> <span class="n">bgstop</span><span class="p">))</span>
     <span class="n">re_string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;(?P&lt;htmlchars&gt;[&lt;&amp;&gt;])|(?P&lt;firstspace&gt;(?&lt;=\S)  )|(?P&lt;space&gt; [ \t]+)|&quot;</span>
+        <span class="sa">r</span><span class="s2">&quot;(?P&lt;htmlchars&gt;[&lt;&amp;&gt;])|(?P&lt;tab&gt;[\t]+)|(?P&lt;space&gt; +)|&quot;</span>
         <span class="sa">r</span><span class="s2">&quot;(?P&lt;spacestart&gt;^ )|(?P&lt;lineend&gt;\r\n|\r|\n)&quot;</span><span class="p">,</span>
         <span class="n">re</span><span class="o">.</span><span class="n">S</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">,</span>
     <span class="p">)</span>
@@ -348,13 +349,12 @@
             <span class="k">return</span> <span class="n">html_escape</span><span class="p">(</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;htmlchars&quot;</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;lineend&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="s2">&quot;&lt;br&gt;&quot;</span>
-        <span class="k">elif</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;firstspace&quot;</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot; &amp;nbsp;&quot;</span>
-        <span class="k">elif</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabstop</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot;&amp;nbsp;&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabstop</span>
+        <span class="k">elif</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;tab&quot;</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;tab&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot;&amp;nbsp;&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabstop</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">text</span>
         <span class="k">elif</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;spacestart&quot;</span><span class="p">]:</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;nbsp;&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabstop</span><span class="p">)</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;nbsp;&quot;</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;nbsp;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">text</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -453,6 +453,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.text2html</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -555,15 +556,16 @@
             <span class="c1"># cmd is a command set so merge all commands in that set</span>
             <span class="c1"># to this one. We raise a visible error if we created</span>
             <span class="c1"># an infinite loop (adding cmdset to itself somehow)</span>
+            <span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmd</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Adding cmdset </span><span class="si">%(cmd)s</span><span class="s2"> to </span><span class="si">%(class)s</span><span class="s2"> lead to an &quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;infinite loop. When adding a cmdset to another, &quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;make sure they are not themself cyclically added to &quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;the new cmdset somewhere in the chain.&quot;</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">})</span>
-            <span class="n">cmds</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">commands</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Adding cmdset </span><span class="si">{cmdset}</span><span class="s2"> to </span><span class="si">{cls}</span><span class="s2"> lead to an &quot;</span>
+                       <span class="s2">&quot;infinite loop. When adding a cmdset to another, &quot;</span>
+                       <span class="s2">&quot;make sure they are not themself cyclically added to &quot;</span>
+                       <span class="s2">&quot;the new cmdset somewhere in the chain.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmdset</span><span class="o">=</span><span class="n">cmdset</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)))</span>
+            <span class="n">cmds</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">commands</span>
         <span class="k">elif</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
             <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -572,7 +574,7 @@
         <span class="n">system_commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_commands</span>
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">:</span>
             <span class="c1"># add all commands</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdsetobj</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">ic</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
@@ -757,6 +759,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

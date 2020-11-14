@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -39,16 +40,57 @@
   <div class="section" id="module-evennia.utils.ansi">
 <span id="evennia-utils-ansi"></span><h1>evennia.utils.ansi<a class="headerlink" href="#module-evennia.utils.ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI - Gives colour to text.</p>
-<p>Use the codes defined in ANSIPARSER in your text
-to apply colour to text according to the ANSI standard.</p>
-<p>Examples:</p>
+<p>Use the codes defined in the <em>ANSIParser</em> class to apply colour to text. The
+<strong>parse_ansi</strong> function in this module parses text for markup and <strong>strip_ansi</strong>
+removes it.</p>
+<p>You should usually not need to call <strong>parse_ansi</strong> explicitly; it is run by
+Evennia just before returning data to/from the user. Alternative markup is
+possible by overriding the parser class (see also contrib/ for deprecated
+markup schemes).</p>
+<p>Supported standards:</p>
+<ul class="simple">
+<li><p>ANSI 8 bright and 8 dark fg (foreground) colors</p></li>
+<li><p>ANSI 8 dark bg (background) colors</p></li>
+<li><p>‘ANSI’ 8 bright bg colors ‘faked’ with xterm256 (bright bg not included in ANSI standard)</p></li>
+<li><p>Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors</p></li>
+</ul>
+<div class="section" id="markup">
+<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
+<p>ANSI colors: <strong>r</strong> ed, <strong>g</strong> reen, <strong>y</strong> ellow, <strong>b</strong> lue, <strong>m</strong> agenta, <strong>c</strong> yan, <strong>n</strong> ormal (no color). Capital
+letters indicate the ‘dark’ variant.</p>
+<ul class="simple">
+<li><p><strong>|r</strong> fg bright red</p></li>
+<li><p><strong>|R</strong> fg dark red</p></li>
+<li><p><strong>|[r</strong> bg bright red</p></li>
+<li><p><strong>|[R</strong> bg dark red</p></li>
+<li><p><strong>|[R|g</strong> bg dark red, fg bright green</p></li>
+</ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |rRed text|n and this is normal again.&quot;</span>
 </pre></div>
 </div>
-<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly;
-it is run by Evennia just before returning data to/from the
-user.  Depreciated example forms are available by extending
-the ansi mapping.</p>
+<p>Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:</p>
+<ul class="simple">
+<li><p><strong>|500</strong> fg bright red</p></li>
+<li><p><strong>|050</strong> fg bright green</p></li>
+<li><p><strong>|005</strong> fg bright blue</p></li>
+<li><p><strong>|110</strong> fg dark brown</p></li>
+<li><p><strong>|425</strong> fg pink</p></li>
+<li><p><strong>|[431</strong> bg orange</p></li>
+</ul>
+<p>Xterm256 greyscale:</p>
+<ul class="simple">
+<li><p><strong>|=a</strong> fg black</p></li>
+<li><p><strong>|=g</strong> fg dark grey</p></li>
+<li><p><strong>|=o</strong> fg middle grey</p></li>
+<li><p><strong>|=v</strong> fg bright grey</p></li>
+<li><p><strong>|=z</strong> fg white</p></li>
+<li><p><strong>|[=r</strong> bg middle grey</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |500Red text|n and this is normal again.&quot;</span>
+<span class="s2">&quot;This is |[=jText on dark grey background&quot;</span>
+</pre></div>
+</div>
+<hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.utils.ansi.ANSIParser">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIParser</code><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser" title="Permalink to this definition">¶</a></dt>
@@ -56,11 +98,10 @@ the ansi mapping.</p>
 <p>A class that parses ANSI markup
 to ANSI command sequences</p>
 <p>We also allow to escape colour codes
-by prepending with a for xterm256,
-an extra | for Merc-style codes</p>
+by prepending with an extra <strong>|</strong>.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map">
-<code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|&gt;', '    '), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -120,7 +161,7 @@ an extra | for Merc-style codes</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_sub">
-<code class="sig-name descname">ansi_sub</code><em class="property"> = re.compile('\\|n|\\|/|\\|\\-|\\|_|\\|\\*|\\|\\^|\\|u|\\|r|\\|g|\\|y|\\|b|\\|m|\\|c|\\|w|\\|x|\\|R|\\|G|\\|Y|\\|B|\\|M|\\|C|\\|W|\\|X|\\|h|\\|H|\\|!R|\\|!G|\\|!Y|\\|!B|\\|!M|\\|!C|\\|!W|\\|!X|\\|\\[R|\\|\\[G|\\|\, re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_sub" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ansi_sub</code><em class="property"> = re.compile('\\|n|\\|/|\\|\\-|\\|&gt;|\\|_|\\|\\*|\\|\\^|\\|u|\\|r|\\|g|\\|y|\\|b|\\|m|\\|c|\\|w|\\|x|\\|R|\\|G|\\|Y|\\|B|\\|M|\\|C|\\|W|\\|X|\\|h|\\|H|\\|!R|\\|!G|\\|!Y|\\|!B|\\|!M|\\|!C|\\|!W|\\|!X|\\|\\[R|\\|\\[G, re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_sub" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -130,7 +171,7 @@ an extra | for Merc-style codes</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map_dict">
-<code class="sig-name descname">ansi_map_dict</code><em class="property"> = {'|!B': '\x1b[34m', '|!C': '\x1b[36m', '|!G': '\x1b[32m', '|!M': '\x1b[35m', '|!R': '\x1b[31m', '|!W': '\x1b[37m', '|!X': '\x1b[30m', '|!Y': '\x1b[33m', '|*': '\x1b[7m', '|-': '\t', '|/': '\r\n', '|B': '\x1b[22m\x1b[34m', '|C': '\x1b[22m\x1b[36m', '|G': '\x1b[22m\x1b[32m', '|H': '\x1b[22m', '|M': '\x1b[22m\x1b[35m', '|R': '\x1b[22m\x1b[31m', '|W': '\x1b[22m\x1b[37m', '|X': '\x1b[22m\x1b[30m', '|Y': '\x1b[22m\x1b[33m', '|[B': '\x1b[44m', '|[C': '\x1b[46m', '|[G': '\x1b[42m', '|[M': '\x1b[45m', '|[R': '\x1b[41m', '|[W': '\x1b[47m', '|[X': '\x1b[40m', '|[Y': '\x1b[43m', '|^': '\x1b[5m', '|_': ' ', '|b': '\x1b[1m\x1b[34m', '|c': '\x1b[1m\x1b[36m', '|g': '\x1b[1m\x1b[32m', '|h': '\x1b[1m', '|m': '\x1b[1m\x1b[35m', '|n': '\x1b[0m', '|r': '\x1b[1m\x1b[31m', '|u': '\x1b[4m', '|w': '\x1b[1m\x1b[37m', '|x': '\x1b[1m\x1b[30m', '|y': '\x1b[1m\x1b[33m'}</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ansi_map_dict</code><em class="property"> = {'|!B': '\x1b[34m', '|!C': '\x1b[36m', '|!G': '\x1b[32m', '|!M': '\x1b[35m', '|!R': '\x1b[31m', '|!W': '\x1b[37m', '|!X': '\x1b[30m', '|!Y': '\x1b[33m', '|*': '\x1b[7m', '|-': '\t', '|/': '\r\n', '|&gt;': '    ', '|B': '\x1b[22m\x1b[34m', '|C': '\x1b[22m\x1b[36m', '|G': '\x1b[22m\x1b[32m', '|H': '\x1b[22m', '|M': '\x1b[22m\x1b[35m', '|R': '\x1b[22m\x1b[31m', '|W': '\x1b[22m\x1b[37m', '|X': '\x1b[22m\x1b[30m', '|Y': '\x1b[22m\x1b[33m', '|[B': '\x1b[44m', '|[C': '\x1b[46m', '|[G': '\x1b[42m', '|[M': '\x1b[45m', '|[R': '\x1b[41m', '|[W': '\x1b[47m', '|[X': '\x1b[40m', '|[Y': '\x1b[43m', '|^': '\x1b[5m', '|_': ' ', '|b': '\x1b[1m\x1b[34m', '|c': '\x1b[1m\x1b[36m', '|g': '\x1b[1m\x1b[32m', '|h': '\x1b[1m', '|m': '\x1b[1m\x1b[35m', '|n': '\x1b[0m', '|r': '\x1b[1m\x1b[31m', '|u': '\x1b[4m', '|w': '\x1b[1m\x1b[37m', '|x': '\x1b[1m\x1b[30m', '|y': '\x1b[1m\x1b[33m'}</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -846,6 +887,7 @@ with.</p></li>
 </dd></dl>
 
 </div>
+</div>
 
 
             <div class="clearer"></div>
@@ -867,6 +909,14 @@ with.</p></li>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.utils.ansi</a><ul>
+<li><a class="reference internal" href="#markup">Markup</a></li>
+</ul>
+</li>
+</ul>
+
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -896,6 +946,7 @@ with.</p></li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

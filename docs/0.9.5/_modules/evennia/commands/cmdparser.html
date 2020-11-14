@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -250,10 +251,15 @@
         <span class="n">quality</span> <span class="o">=</span> <span class="p">[</span><span class="n">mat</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">for</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">]</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="n">quality</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">quality</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">:]</span>
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">match_index</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># We couldn&#39;t separate match by quality, but we have an</span>
         <span class="c1"># index argument to tell us which match to use.</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="n">match_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">match_index</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="n">match_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we tried to give an index outside of the range - this means</span>
+            <span class="c1"># a no-match</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># no matter what we have at this point, we have to return it.</span>
     <span class="k">return</span> <span class="n">matches</span></div>
@@ -302,6 +308,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
