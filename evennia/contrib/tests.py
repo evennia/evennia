@@ -2403,7 +2403,7 @@ class TestPuzzles(CommandTest):
 
         # try solving with multiple parts but incomplete set
         self._use(
-            "1-steel, 2-steel", "You try to utilize these but nothing happens ... something amiss?"
+            "steel-1, steel-2", "You try to utilize these but nothing happens ... something amiss?"
         )
 
         # arm the other puzzle. Their parts are identical
@@ -2414,7 +2414,7 @@ class TestPuzzles(CommandTest):
         # multiple puzzles. Both can be solved but
         # only one is.
         self._use(
-            "1-steel, 2-flint, 3-steel, 3-flint",
+            "steel-1, flint-2, steel-3, flint-3",
             "Your gears start turning and 2 different ideas come to your mind ... ",
         )
         self._check_room_contents({"steel": 2, "flint": 2, "fire": 2}, check_test_tags=True)
@@ -2422,7 +2422,7 @@ class TestPuzzles(CommandTest):
         self.room1.msg_contents = Mock()
 
         # solve all
-        self._use("1-steel, 1-flint", "You are a Genius")
+        self._use("steel-1, flint-1", "You are a Genius")
         self.room1.msg_contents.assert_called_once_with(
             "|cChar|n performs some kind of tribal dance and |yfire|n seems to appear from thin air",
             exclude=(self.char1,),
@@ -2541,9 +2541,9 @@ class TestPuzzles(CommandTest):
         self._arm(recipe_dbref, "makefire", ["steel", "flint", "red steel", "steel"])
         self._check_room_contents({"steel": 2, "red steel": 1, "flint": 1})
         self._use(
-            "1-steel, flint", "You try to utilize these but nothing happens ... something amiss?"
+            "steel-1, flint", "You try to utilize these but nothing happens ... something amiss?"
         )
-        self._use("1-steel, flint, red steel, 3-steel", "You are a Genius")
+        self._use("steel-1, flint, red steel, steel-3", "You are a Genius")
         self._check_room_contents({"smoke": 1, "fire": 1})
         _box_all()
 
@@ -2984,7 +2984,7 @@ class TestPuzzles(CommandTest):
             }
         )
 
-        self._use("1-battery, flashlight", "You are a Genius")
+        self._use("battery-1, flashlight", "You are a Genius")
         self._check_room_contents(
             {
                 "battery": 2,
@@ -2995,7 +2995,7 @@ class TestPuzzles(CommandTest):
             }
         )
 
-        self._use("1-battery, flashlight-w-1", "You are a Genius")
+        self._use("battery-1, flashlight-w-1", "You are a Genius")
         self._check_room_contents(
             {
                 "battery": 1,
