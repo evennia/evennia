@@ -1,19 +1,64 @@
 """
 ANSI - Gives colour to text.
 
-Use the codes defined in ANSIPARSER in your text
-to apply colour to text according to the ANSI standard.
+Use the codes defined in the *ANSIParser* class to apply colour to text. The
+`parse_ansi` function in this module parses text for markup and `strip_ansi`
+removes it.
 
-Examples:
+You should usually not need to call `parse_ansi` explicitly; it is run by
+Evennia just before returning data to/from the user. Alternative markup is
+possible by overriding the parser class (see also contrib/ for deprecated
+markup schemes).
+
+
+Supported standards:
+
+- ANSI 8 bright and 8 dark fg (foreground) colors
+- ANSI 8 dark bg (background) colors
+- 'ANSI' 8 bright bg colors 'faked' with xterm256 (bright bg not included in ANSI standard)
+- Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors
+
+## Markup
+
+ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color). Capital
+letters indicate the 'dark' variant.
+
+- `|r` fg bright red
+- `|R` fg dark red
+- `|[r` bg bright red
+- `|[R` bg dark red
+- `|[R|g` bg dark red, fg bright green
 
 ```python
 "This is |rRed text|n and this is normal again."
+
 ```
 
-Mostly you should not need to call `parse_ansi()` explicitly;
-it is run by Evennia just before returning data to/from the
-user.  Depreciated example forms are available by extending
-the ansi mapping.
+Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:
+
+- `|500` fg bright red
+- `|050` fg bright green
+- `|005` fg bright blue
+- `|110` fg dark brown
+- `|425` fg pink
+- `|[431` bg orange
+
+Xterm256 greyscale:
+
+- `|=a` fg black
+- `|=g` fg dark grey
+- `|=o` fg middle grey
+- `|=v` fg bright grey
+- `|=z` fg white
+- `|[=r` bg middle grey
+
+```python
+"This is |500Red text|n and this is normal again."
+"This is |[=jText on dark grey background"
+
+```
+
+----
 
 """
 import functools
@@ -85,7 +130,7 @@ class ANSIParser(object):
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with an extra |.
+    by prepending with an extra `|`.
 
     """
 
