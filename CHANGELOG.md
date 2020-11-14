@@ -25,7 +25,10 @@
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
   "TutorialWeaponRack" to prevent collisions with classes in mygame
 
-### Evennia 0.9.5 (master)
+### Evennia 0.9.5
+
+A transitional release, including new doc system
+
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
