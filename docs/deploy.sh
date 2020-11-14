@@ -21,6 +21,7 @@ ls -Q | grep -v build | xargs rm -Rf
 cp -Rf build/html/* .
 # TODO automate this? 
 ln -s 0.9.5 latest
+ln -s 0.9.5/index.html .
 
 # docs/build is in .gitignore so will not be included
 git add .
