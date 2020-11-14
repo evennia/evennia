@@ -1,12 +1,15 @@
 # Changelog
 
-## Evennia 1.0 (2019-) (WIP)
+## Evennia 1.0-dev (2019-) (WIP)
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 
-### Evennia 0.9.5 (master)
+### Evennia 0.9.5 (Nov 2020)
+
+A transitional release, including new doc system.
+
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
