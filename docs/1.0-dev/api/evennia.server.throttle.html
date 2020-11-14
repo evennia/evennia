@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -47,8 +48,8 @@
 particular threshold.</p>
 <p>This version of the throttle is usable by both the terminal server as well
 as the web server, imposes limits on memory consumption by using deques
-with length limits instead of open-ended lists, and removes sparse keys when
-no recent failures have been recorded.</p>
+with length limits instead of open-ended lists, and uses native Django
+caches for automatic key eviction and persistence configurability.</p>
 <dl class="py attribute">
 <dt id="evennia.server.throttle.Throttle.error_msg">
 <code class="sig-name descname">error_msg</code><em class="property"> = 'Too many failed attempts; you must wait a few minutes before trying again.'</em><a class="headerlink" href="#evennia.server.throttle.Throttle.error_msg" title="Permalink to this definition">¶</a></dt>
@@ -61,6 +62,7 @@ no recent failures have been recorded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of this throttle.</p></li>
 <li><p><strong>limit</strong> (<em>int</em>) – Max number of failures before imposing limiter</p></li>
 <li><p><strong>timeout</strong> (<em>int</em>) – number of timeout seconds after
 max number of tries has been reached.</p></li>
@@ -68,6 +70,25 @@ max number of tries has been reached.</p></li>
 rolling window; this is NOT the same as the limit after which
 the throttle is imposed!</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.throttle.Throttle.get_cache_key">
+<code class="sig-name descname">get_cache_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/throttle.html#Throttle.get_cache_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.throttle.Throttle.get_cache_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ‘prefixed’ key containing arbitrary terms to prevent key
+collisions in the same namespace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.throttle.Throttle.touch">
+<code class="sig-name descname">touch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/throttle.html#Throttle.touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.throttle.Throttle.touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refreshes the timeout on a given key and ensures it is recorded in the
+key register.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Key of entry to renew.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -108,6 +129,41 @@ of throttle.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.throttle.Throttle.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/throttle.html#Throttle.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.throttle.Throttle.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears data stored for an IP from the throttle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em>) – IP to clear.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.throttle.Throttle.record_ip">
+<code class="sig-name descname">record_ip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/throttle.html#Throttle.record_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.throttle.Throttle.record_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tracks keys as they are added to the cache (since there is no way to
+get a list of keys after-the-fact).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em>) – IP being added to cache. This should be the original
+IP, not the cache-prefixed key.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.throttle.Throttle.unrecord_ip">
+<code class="sig-name descname">unrecord_ip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/throttle.html#Throttle.unrecord_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.throttle.Throttle.unrecord_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forces removal of a key from the key registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em>) – IP to remove from list of keys.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -186,6 +242,7 @@ fails recently.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

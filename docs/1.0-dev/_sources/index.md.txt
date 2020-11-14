@@ -1,14 +1,14 @@
 
 ```warning::
 
-  This is the **experimental** and **unstable** documentation for the
-  development branch of Evennia (v1.0-dev). It's based on converted docs
-  from the Evennia wiki (https://github.com/evennia/evennia/wiki/) at
-  2020-06-12 22:36:53. There are known conversion issues and missing links.
-  This will slowly be ironed out as this is developed.
+  This is the **WIP** documentation for the
+  development branch of Evennia (v1.0-dev). The text is based on the 
+  original Evennia `wiki <https://github.com.evennia/evennia/wiki>`_ 
+  but it's being refactored heavily. There are known conversion issues 
+  and missing links. This will slowly be ironed out as this is developed.
 
-  For now you are best off using the original wiki, or the less changing v0.9.5
-  of these docs. You have been warned.
+  New things will be added to this version only, but for now you are best 
+  off using v0.9.5 of the docs, or the original wiki. You have been warned.
 ```
 
 # Evennia Documentation

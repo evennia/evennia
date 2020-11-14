@@ -30,6 +30,7 @@
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -432,8 +433,12 @@
     <span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">class_from_module</span>
 
-    <span class="c1"># delayed starts</span>
+    <span class="c1"># delayed starts - important so as to not back-access evennia before it has</span>
+    <span class="c1"># finished initializing</span>
     <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="kn">from</span> <span class="nn">.prototypes</span> <span class="k">import</span> <span class="n">prototypes</span>
+    <span class="n">prototypes</span><span class="o">.</span><span class="n">load_module_prototypes</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">prototypes</span>
 
 
 <div class="viewcode-block" id="set_trace"><a class="viewcode-back" href="../api/evennia.html#evennia.set_trace">[docs]</a><span class="k">def</span> <span class="nf">set_trace</span><span class="p">(</span><span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="n">debugger</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
@@ -545,6 +550,7 @@
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

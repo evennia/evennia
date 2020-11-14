@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -121,9 +122,15 @@
 
 
 <span class="n">_ERROR_ADD_TICKER</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;TickerHandler: Tried to add an invalid ticker:</span>
-<span class="si">{storekey}</span><span class="s2"></span>
+<span class="si">{store_key}</span><span class="s2"></span>
 <span class="s2">Ticker was not added.&quot;&quot;&quot;</span>
 
+<span class="n">_ERROR_ADD_TICKER_SUB_SECOND</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are trying to add a ticker running faster</span>
+<span class="s2">than once per second. This is not supported and also probably not useful:</span>
+<span class="s2">Spamming messages to the user faster than once per second serves no purpose in</span>
+<span class="s2">a text-game, and if you want to update some property, consider doing so</span>
+<span class="s2">on-demand rather than using a ticker.</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Ticker"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker">[docs]</a><span class="k">class</span> <span class="nc">Ticker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -400,7 +407,8 @@
 <span class="sd">            obj (Object, tuple or None): Subscribing object if any. If a tuple, this is</span>
 <span class="sd">                a packed_obj tuple from dbserialize.</span>
 <span class="sd">            path (str or None): Python-path to callable, if any.</span>
-<span class="sd">            interval (int): Ticker interval.</span>
+<span class="sd">            interval (int): Ticker interval. Floats will be converted to</span>
+<span class="sd">                nearest lower integer value.</span>
 <span class="sd">            callfunc (callable or str): This is either the callable function or</span>
 <span class="sd">                the name of the method to call. Note that the callable is never</span>
 <span class="sd">                stored in the key; that is uniquely identified with the python-path.</span>
@@ -419,6 +427,9 @@
 <span class="sd">                `idstring` and `persistent` are integers, strings and bools respectively.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">_ERROR_ADD_TICKER_SUB_SECOND</span><span class="p">)</span>
+
         <span class="n">interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
         <span class="n">persistent</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">persistent</span><span class="p">)</span>
         <span class="n">packed_obj</span> <span class="o">=</span> <span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -717,6 +728,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

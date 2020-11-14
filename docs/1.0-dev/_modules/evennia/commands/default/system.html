@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -883,21 +884,30 @@
                 <span class="k">return</span>
             <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">delmode</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot remove a core Evennia service (named &#39;Evennia***&#39;).&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot remove a core Evennia service (named &#39;Evennia*&#39;).&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You seem to be shutting down a core Evennia service (named &#39;Evennia***&#39;). Note that&quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;stopping some TCP port services will *not* disconnect users *already*&quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;connected on those ports, but *may* instead cause spurious errors for them. To &quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;safely and permanently remove ports, change settings file and restart the server.&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;|RYou seem to be shutting down a core Evennia &quot;</span>
+                          <span class="s2">&quot;service (named &#39;Evennia*&#39;).</span><span class="se">\n</span><span class="s2">Note that stopping &quot;</span>
+                          <span class="s2">&quot;some TCP port services will *not* disconnect users &quot;</span>
+                          <span class="s2">&quot;*already* connected on those ports, but *may* &quot;</span>
+                          <span class="s2">&quot;instead cause spurious errors for them.</span><span class="se">\n</span><span class="s2">To safely &quot;</span>
+                          <span class="s2">&quot;and permanently remove ports, change settings file &quot;</span>
+                          <span class="s2">&quot;and restart the server.|n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">delmode</span><span class="p">:</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
                 <span class="n">service_collection</span><span class="o">.</span><span class="n">removeService</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Stopped and removed service &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gStopped and removed service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Stopped service &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stopping service &#39;</span><span class="si">{self.args}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|rErrors were reported when stopping this service</span><span class="si">{err}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                               <span class="s2">&quot;If there are remaining problems, try reloading &quot;</span>
+                               <span class="s2">&quot;or rebooting the server.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g... Stopped service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span>
@@ -905,8 +915,14 @@
             <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That service is already running.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Starting service &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-            <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span></div></div>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Starting service &#39;</span><span class="si">{self.args}</span><span class="s2">&#39; ...&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|rErrors were reported when starting this service</span><span class="si">{err}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                           <span class="s2">&quot;If there are remaining problems, try reloading the server, changing the &quot;</span>
+                           <span class="s2">&quot;settings if it&#39;s a non-standard service.|n&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gService started.|n&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdAbout"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdAbout">[docs]</a><span class="k">class</span> <span class="nc">CmdAbout</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1251,6 +1267,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -33,6 +33,7 @@
         <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Contributing to Evennia Docs</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -44,42 +45,18 @@
 <h1>Contributing to Evennia Docs<a class="headerlink" href="#contributing-to-evennia-docs" title="Permalink to this headline">¶</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>WARNING: This system is still WIP and many things are bound to change!</p>
+<p>The creation of docs pages is still WIP and we are still figuring things out here and there.</p>
 </div>
-<p>Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: Check out the branch of Evennia you want to edit the documentation for. Create your
+<p>Contributing to the docs is is like <a class="reference internal" href="Contributing.html"><span class="doc">contributing to the rest of Evennia</span></a>: Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> and make a PR for it!</p>
 <p>The documentation source files are <code class="docutils literal notranslate"><span class="pre">*.md</span></code> (Markdown) files found in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>.
 Markdown files are simple text files that can be edited with a normal text editor. They can also
 contain raw HTML directives (but that is very rarely needed). They primarly use
-the [Markdown][commonmark] syntax. See <a class="reference external" href="#Editing-syntax">the syntax section below</a> for more help.</p>
+the <a class="reference external" href="https://spec.commonmark.org/current/">Markdown</a> syntax. See <a class="reference external" href="#Editing-syntax">the syntax section below</a> for more help.</p>
 <div class="section" id="source-file-structure">
 <h2>Source file structure<a class="headerlink" href="#source-file-structure" title="Permalink to this headline">¶</a></h2>
-<p>The sources are organized into several rough categories, with only a few administrative documents
-at the root of <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>. The folders are named in singular form since they will
-primarily be accessed as link refs (e.g. <code class="docutils literal notranslate"><span class="pre">Component/Account</span></code>)</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Components/</span></code> are docs describing separate Evennia building blocks, that is, things
-that you can import and use. This extends and elaborates on what can be found out by reading
-the api docs themselves. Example are documentation for <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>, <code class="docutils literal notranslate"><span class="pre">Objects</span></code> and <code class="docutils literal notranslate"><span class="pre">Commands</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Concepts/</span></code> describes how larger-scale features of Evennia hang together - things that
-can’t easily be broken down into one isolated component. This can be general descriptions of
-how Models and Typeclasses interact to the path a message takes from the client to the server
-and back.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Setup/</span></code> holds detailed docs on installing, running and maintaining the Evennia server and
-the infrastructure around it.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Coding/</span></code> has help on how to interact with, use and navigate the Evennia codebase itself.
-This also has non-Evennia-specific help on general development concepts and how to set up a sane
-development environment.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Contribs/</span></code> holds documentation specifically for packages in the <code class="docutils literal notranslate"><span class="pre">evennia/contribs/</span></code> folder.
-Any contrib-specific tutorials will be found here instead of in <code class="docutils literal notranslate"><span class="pre">Howtos</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/</span></code> holds docs that describe how to achieve a specific goal, effect or
-result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the
-documentation for further reading.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/Starting/</span></code> holds all documents part of the initial tutorial sequence.</p></li>
-</ul>
-</li>
-</ul>
+<p>For v 0.9.5, the sources are all together under <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>. The main files are all
+Markdown (<code class="docutils literal notranslate"><span class="pre">.md</span></code>) files.</p>
 <p>Other files and folders:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">source/api/</span></code> contains the auto-generated API documentation as <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files. Don’t edit these
@@ -94,16 +71,16 @@ the Evennia version on a new branch.</p></li>
 <div class="section" id="building-the-docs-locally">
 <h2>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h2>
 <p>The sources in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> are built into a documentation using the
-[Sphinx][sphinx] static generator system. To do this locally you need to use a
-system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> static generator system. To do this locally you need to use a
+system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>). Lacking
 that, you could in principle also run the sphinx build-commands manually - read
 the <code class="docutils literal notranslate"><span class="pre">evennia/docs/Makefile</span></code> to see which commands are run by the <code class="docutils literal notranslate"><span class="pre">make</span></code>-commands
 referred to in this document.</p>
 <p>You don’t necessarily <em>have</em> to build the docs locally to contribute. Markdown is
 not hard and is very readable on its raw text-form.</p>
 <p>You can furthermore get a good feel for how things will look using a
-Markdown-viewer like [Grip][grip]. Editors like [ReText][retext] or IDE’s like
-[PyCharm][pycharm] also have native Markdown previews. Building the docs locally is
+Markdown-viewer like <a class="reference external" href="https://github.com/joeyespo/grip">Grip</a>. Editors like <a class="reference external" href="https://github.com/retext-project/retext">ReText</a> or IDE’s like
+<a class="reference external" href="https://www.jetbrains.com/pycharm/">PyCharm</a> also have native Markdown previews. Building the docs locally is
 however the only way to make sure the outcome is exactly as you expect. The process
 will also find any mistakes you made, like making a typo in a link.</p>
 <div class="section" id="building-only-the-main-documentation">
@@ -196,7 +173,7 @@ view the full docs.</p></li>
 <p>If you for some reason want to use another location of your <code class="docutils literal notranslate"><span class="pre">gamedir/</span></code>, or want it
 named something else (maybe you already use the name ‘gamedir’ for your development …),
 you can do so by setting the <code class="docutils literal notranslate"><span class="pre">EVGAMEDIR</span></code> environment variable to the absolute path
-of your alternative game dir. For example:</p>
+of your alternative game dir. For example (bash):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EVGAMEDIR</span><span class="o">=/</span><span class="n">my</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">mygamedir</span> <span class="n">make</span> <span class="n">local</span>
 </pre></div>
 </div>
@@ -246,7 +223,7 @@ available at https://evennia.github.io/evennia/latest/.</p>
 </div>
 <div class="section" id="editing-syntax">
 <h1>Editing syntax<a class="headerlink" href="#editing-syntax" title="Permalink to this headline">¶</a></h1>
-<p>The format used for Evennia’s docs is [Markdown][commonmark-help] (Commonmark). While markdown
+<p>The format used for Evennia’s docs is <a class="reference external" href="https://commonmark.org/help/">Markdown</a> (Commonmark). While markdown
 supports a
 few alternative forms for some of these, we try to stick to the below forms for consistency.</p>
 <div class="section" id="italic-bold">
@@ -314,7 +291,7 @@ thing to remember.</p>
 <div class="section" id="links">
 <h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">[linktext](url_or_ref)</span></code> - gives a clickable link [linktext][linkdemo].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[linktext](url_or_ref)</span></code> - gives a clickable link <a class="reference external" href="#Links">linktext</a>.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">url_or_ref</span></code> can either be a full <code class="docutils literal notranslate"><span class="pre">http://...</span></code> url or an internal <em>reference</em>. For example, use
 <code class="docutils literal notranslate"><span class="pre">[my</span> <span class="pre">document](My-Document)</span></code> to link to the document <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/My-Document.md</span></code>. Avoid
@@ -435,7 +412,7 @@ def a_python_func(x):
 <div class="section" id="rest-blocks">
 <h2>ReST blocks<a class="headerlink" href="#rest-blocks" title="Permalink to this headline">¶</a></h2>
 <p>Markdown is easy to read and use. But while it does most of what we need, there are some things it’s
-not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup
+not quite as expressive as it needs to be. For this we need to fall back to the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">ReST</a> markup
 language which the documentation system uses under the hood. This is done by specifying <code class="docutils literal notranslate"><span class="pre">eval_rst</span></code>
 as the name of the <code class="docutils literal notranslate"><span class="pre">language</span></code> of a literal block:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```eval_rst
@@ -446,7 +423,7 @@ as the name of the <code class="docutils literal notranslate"><span class="pre">
 ```
 </pre></div>
 </div>
-<p>There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for
+<p>There is also a short-hand form for starting a <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html">ReST directive</a> without need for
 <code class="docutils literal notranslate"><span class="pre">eval_rst</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```directive:: possible-option
 
@@ -577,7 +554,7 @@ a plain HTML string in the markdown like so:</p>
 <div style="clear: right;"></div></div>
 <div class="section" id="tables">
 <h3>Tables<a class="headerlink" href="#tables" title="Permalink to this headline">¶</a></h3>
-<p>A table is specified using [ReST table syntax][ReST-tables] (they don’t need to be indented):</p>
+<p>A table is specified using <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables">ReST table syntax</a> (they don’t need to be indented):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```eval_rst
 
 =====  =====  =======
@@ -724,37 +701,21 @@ including header levels down to 4th level (<code class="docutils literal notrans
 a good idea to end with four dashes <code class="docutils literal notranslate"><span class="pre">----</span></code>. This will create a visible line between the documentation and the
 class/function docs to follow. See for example <a class="reference external" href="api/evennia.contrib.traits.html">the Traits docs</a>.</p>
 <p>All non-private classes, methods and functions must have a Google-style docstring, as per the
-[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/CODING_STYLE.md">Evennia coding style guidelines</a>. This will then be correctly formatted
 into pretty api docs.</p>
 </div>
 <div class="section" id="technical">
 <h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
-<p>Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us
+<p>Evennia leverages <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with the <a class="reference external" href="https://recommonmark.readthedocs.io/en/latest/index.html">recommonmark</a> extension, which allows us
 to write our
-docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather
+docs in light-weight Markdown (more specifically <a class="reference external" href="https://spec.commonmark.org/current/">CommonMark</a>, like on github) rather
 than ReST.
 The recommonmark extension however also allows us to use ReST selectively in the places were it is
 more
 expressive than the simpler (but much easier) Markdown.</p>
-<p>For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon]
+<p>For <a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc">autodoc-generation</a> generation, we use the sphinx-<a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">napoleon</a>
 extension
 to understand our friendly Google-style docstrings used in classes and functions etc.</p>
-<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/">sphinx</a>
-<a class="reference external" href="https://recommonmark.readthedocs.io/en/latest/index.html">recommonmark</a>
-<a class="reference external" href="https://spec.commonmark.org/current/">commonmark</a>
-<a class="reference external" href="https://commonmark.org/help/">commonmark-help</a>
-<a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc">sphinx-autodoc</a>
-<a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">sphinx-napoleon</a>
-[getting-started]: Setup/Setup-Quickstart
-[contributing]: ./Contributing
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">ReST</a>
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables">ReST-tables</a>
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html">ReST-directives</a>
-<a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>
-[linkdemo]: #Links
-<a class="reference external" href="https://github.com/retext-project/retext">retext</a>
-<a class="reference external" href="https://github.com/joeyespo/grip">grip</a>
-<a class="reference external" href="https://www.jetbrains.com/pycharm/">pycharm</a></p>
 </div>
 </div>
 
@@ -863,6 +824,7 @@ to understand our friendly Google-style docstrings used in classes and functions
         <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Contributing to Evennia Docs</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

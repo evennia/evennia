@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -206,9 +207,12 @@
 
 <span class="k">def</span> <span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="s2">&quot;convert to ANSIString&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># since ansi will be parsed twice (here and in the normal ansi send), we have to</span>
-        <span class="c1"># escape the |-structure twice.</span>
+        <span class="c1"># escape the |-structure twice. TODO: This is tied to the default color-tag syntax</span>
+        <span class="c1"># which is not ideal for those wanting to replace/extend it ...</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">_ANSI_ESCAPE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;||||&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">_to_ansi</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
@@ -218,7 +222,7 @@
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EvForm"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm">[docs]</a><span class="k">class</span> <span class="nc">EvForm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvForm"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm">[docs]</a><span class="k">class</span> <span class="nc">EvForm</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object is instantiated with a text file and parses</span>
 <span class="sd">    it for rectangular form fields. It can then be fed a</span>
@@ -504,43 +508,6 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Prints the form&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">]))</span></div>
-
-
-<span class="k">def</span> <span class="nf">_test</span><span class="p">():</span>
-    <span class="s2">&quot;test evform. This is used by the unittest system.&quot;</span>
-    <span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;evennia.utils.tests.data.evform_example&quot;</span><span class="p">)</span>
-
-    <span class="c1"># add data to each tagged form cell</span>
-    <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-        <span class="n">cells</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;AA&quot;</span><span class="p">:</span> <span class="s2">&quot;|gTom the Bouncer&quot;</span><span class="p">,</span>
-            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;|yGriatch&quot;</span><span class="p">,</span>
-            <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;A sturdy fellow&quot;</span><span class="p">,</span>
-            <span class="mi">4</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-            <span class="mi">5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-            <span class="mi">6</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-            <span class="mi">7</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-            <span class="mi">8</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-            <span class="mi">9</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-            <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="s2">&quot;rev 1&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
-    <span class="c1"># create the EvTables</span>
-    <span class="n">tableA</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;HP&quot;</span><span class="p">,</span> <span class="s2">&quot;MV&quot;</span><span class="p">,</span> <span class="s2">&quot;MP&quot;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;**&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;*****&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;***&quot;</span><span class="p">]],</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
-    <span class="n">tableB</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
-        <span class="s2">&quot;Skill&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Value&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Exp&quot;</span><span class="p">,</span>
-        <span class="n">table</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">[</span><span class="s2">&quot;Shooting&quot;</span><span class="p">,</span> <span class="s2">&quot;Herbalism&quot;</span><span class="p">,</span> <span class="s2">&quot;Smithing&quot;</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
-            <span class="p">[</span><span class="s2">&quot;550/1200&quot;</span><span class="p">,</span> <span class="s2">&quot;990/1400&quot;</span><span class="p">,</span> <span class="s2">&quot;205/900&quot;</span><span class="p">],</span>
-        <span class="p">],</span>
-        <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># add the tables to the proper ids in the form</span>
-    <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">tableA</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">tableB</span><span class="p">})</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
 </pre></div>
 
             <div class="clearer"></div>
@@ -586,6 +553,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

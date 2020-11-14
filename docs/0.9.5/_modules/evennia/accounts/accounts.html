@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -93,10 +94,10 @@
 
 <span class="c1"># Create throttles for too many account-creations and login attempts</span>
 <span class="n">CREATION_THROTTLE</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span>
-    <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_TIMEOUT</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;creation&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_TIMEOUT</span>
 <span class="p">)</span>
 <span class="n">LOGIN_THROTTLE</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span>
-    <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_TIMEOUT</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_TIMEOUT</span>
 <span class="p">)</span>
 
 
@@ -1761,6 +1762,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
+      <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
