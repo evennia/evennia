@@ -1184,8 +1184,8 @@ class TestCmdParser(TestCase):
     @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)")
     def test_num_prefixes(self):
         self.assertEqual(cmdparser.try_num_prefixes("look me"), (None, None))
-        self.assertEqual(cmdparser.try_num_prefixes("3-look me"), ("3", "look me"))
-        self.assertEqual(cmdparser.try_num_prefixes("567-look me"), ("567", "look me"))
+        self.assertEqual(cmdparser.try_num_prefixes("look me-3"), ("3", "look me"))
+        self.assertEqual(cmdparser.try_num_prefixes("look me-567"), ("567", "look me"))
 
     @override_settings(
         SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
