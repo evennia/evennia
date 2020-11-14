@@ -53,7 +53,7 @@ html_static_path = ["_static"]
 
 # which branches to include in multi-versioned docs
 # - master, develop and vX.X branches
-smv_branch_whitelist = r"^master$|^develop$|^v[0-9\.]+?$"
+smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
