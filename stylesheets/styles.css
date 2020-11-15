@@ -581,11 +581,11 @@ footer {
 
 @media print, screen and (max-width: 435px) {
 
-  header > h1.header, 
+  /*header > h1.header, 
   header > p.header,
   .sponsor {
     display: none;
-  }
+  }*/
 
   .img, .img.screenshot {
     max-width: 300px; 
