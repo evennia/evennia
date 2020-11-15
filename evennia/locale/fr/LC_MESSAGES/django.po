@@ -30,8 +30,8 @@ msgstr "Il y a plusieurs correspondances possibles."
 
 #: .\commands\cmdhandler.py:704
 #, python-format
-msgid "Command '%s' is not available."
-msgstr "La commande '%s' n'est pas disponible."
+msgid "Command '{command}' is not available."
+msgstr "La commande '{command}' n'est pas disponible."
 
 #: .\commands\cmdhandler.py:709
 #, python-format
