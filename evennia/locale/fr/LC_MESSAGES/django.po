@@ -35,8 +35,8 @@ msgstr "La commande '{command}' n'est pas disponible."
 
 #: .\commands\cmdhandler.py:709
 #, python-format
-msgid " Maybe you meant %s?"
-msgstr " Vouliez-vous dire %s ?"
+msgid " Maybe you meant {command}?"
+msgstr " Vouliez-vous dire {command} ?"
 
 #: .\commands\cmdhandler.py:709
 msgid "or"
