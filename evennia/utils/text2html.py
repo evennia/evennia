@@ -97,8 +97,8 @@ class TextToHTMLparser(object):
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
     re_string = re.compile(
-        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<space> +)|"
-        r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
+        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<spacestart>^ +)|(?P<newlinespace>\|/ +)|"
+        r"(?P<space> +)|(?P<lineend>\r\n|\r|\n)",
         re.S | re.M | re.I,
     )
     re_dblspace = re.compile(r" {2,}", re.M)
@@ -308,9 +308,17 @@ class TextToHTMLparser(object):
         elif cdict["lineend"]:
             return "<br>"
         elif cdict["tab"]:
-            text = cdict["tab"].replace("\t", " " + "&nbsp;" * (self.tabstop - 1))
+            text = cdict["tab"].replace("\t", "&nbsp;" + "&nbsp;" * (self.tabstop - 1))
             return text
-        elif cdict["space"] or cdict["spacestart"]:
+        elif cdict["spacestart"]:
+            text = cdict["spacestart"]
+            text = "&nbsp;" if len(text) == 1 else "&nbsp;" + text[1:].replace(" ", "&nbsp;")
+            return text
+        elif cdict["newlinespace"]:
+            text = cdict["newlinespace"]
+            text = "&nbsp;" if len(text) == 1 else "&nbsp;" + text[1:].replace(" ", "&nbsp;")
+            return text
+        elif cdict["space"]:
             text = cdict["space"]
             text = " " if len(text) == 1 else " " + text[1:].replace(" ", "&nbsp;")
             return text
