@@ -999,7 +999,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
                 self.msg("Already quelling Account %s permissions." % permstr)
                 return
             account.attributes.add("_quell", True)
-            puppet = self.session.puppet
+            puppet = self.session.puppet if self.session else None
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
