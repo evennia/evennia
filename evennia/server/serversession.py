@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, lazy_property
+from evennia.utils.utils import make_iter, lazy_property, class_from_module
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
@@ -25,13 +25,15 @@ _ANSI = None
 # i18n
 from django.utils.translation import gettext as _
 
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
+
 
 # -------------------------------------------------------------
 # Server Session
 # -------------------------------------------------------------
 
 
-class ServerSession(Session):
+class ServerSession(_BASE_SESSION_CLASS):
     """
     This class represents an account's session and is a template for
     individual protocols to communicate with Evennia.
