@@ -18,7 +18,7 @@ from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (
-    variable_from_module,
+    variable_from_module, class_from_module,
     is_iter,
     make_iter,
     delay,
@@ -75,8 +75,7 @@ def delayed_import():
     global _ServerSession, _AccountDB, _ServerConfig, _ScriptDB
     if not _ServerSession:
         # we allow optional arbitrary serversession class for overloading
-        modulename, classname = settings.SERVER_SESSION_CLASS.rsplit(".", 1)
-        _ServerSession = variable_from_module(modulename, classname)
+        _ServerSession = class_from_module(settings.SERVER_SESSION_CLASS)
     if not _AccountDB:
         from evennia.accounts.models import AccountDB as _AccountDB
     if not _ServerConfig:
@@ -84,10 +83,10 @@ def delayed_import():
     if not _ScriptDB:
         from evennia.scripts.models import ScriptDB as _ScriptDB
     # including once to avoid warnings in Python syntax checkers
-    assert _ServerSession
-    assert _AccountDB
-    assert _ServerConfig
-    assert _ScriptDB
+    assert _ServerSession, "ServerSession class could not load"
+    assert _AccountDB, "AccountDB class could not load"
+    assert _ServerConfig, "ServerConfig class could not load"
+    assert _ScriptDB, "ScriptDB class c ould not load"
 
 
 # -----------------------------------------------------------

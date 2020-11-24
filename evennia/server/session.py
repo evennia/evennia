@@ -12,7 +12,7 @@ import time
 # ------------------------------------------------------------
 
 
-class Session(object):
+class Session:
     """
     This class represents a player's session and is a template for
     both portal- and server-side sessions.

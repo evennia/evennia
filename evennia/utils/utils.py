@@ -1411,7 +1411,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
 
 def class_from_module(path, defaultpaths=None):
     """
-    Return a class from a module, given the module's path. This is
+    Return a class from a module, given the class' full python path. This is
     primarily used to convert db_typeclass_path:s to classes.
 
     Args:
