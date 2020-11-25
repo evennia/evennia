@@ -934,8 +934,8 @@ def spawn(*prototypes, **kwargs):
 
         val = prot.pop("tags", [])
         tags = []
-        for (tag, category, data) in val:
-            tags.append((init_spawn_value(tag, str), category, data))
+        for (tag, category, *data) in val:
+            tags.append((init_spawn_value(tag, str), category, data[0] if data else None))
 
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:
@@ -955,8 +955,9 @@ def spawn(*prototypes, **kwargs):
         # the rest are attribute tuples (attrname, value, category, locks)
         val = make_iter(prot.pop("attrs", []))
         attributes = []
-        for (attrname, value, category, locks) in val:
-            attributes.append((attrname, init_spawn_value(value), category, locks))
+        for (attrname, value, *rest) in val:
+            attributes.append((attrname, init_spawn_value(value),
+                               rest[0] if rest else None, rest[1] if len(rest) > 1 else None))
 
         simple_attributes = []
         for key, value in (
