@@ -344,7 +344,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_string(initer, endsep="and", addquote=False):
+def iter_to_str(initer, endsep="and", addquote=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
@@ -391,8 +391,9 @@ def iter_to_string(initer, endsep="and", addquote=False):
         return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
 
 
-# legacy alias
-list_to_string = iter_to_string
+# legacy aliases
+list_to_string = iter_to_str
+iter_to_string = iter_to_str
 
 
 def wildcard_to_regexp(instring):
