@@ -50,3 +50,6 @@ twistd.bat
 
 # never commit docs/build
 docs/build
+
+# venv folder per instructions
+evenv
