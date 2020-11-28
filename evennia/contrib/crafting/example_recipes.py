@@ -32,10 +32,10 @@ around with them.
     sword guard = crucible steel + hammer[T] + anvil[T] + furnace[T]
 
     rawhide = fur + knife[T]
-    oak bark = oak wood + knife[T]
+    oak bark + cleaned oak wood = oak wood + knife[T]
     leather = rawhide + oak bark + water + cauldron[T]
 
-    sword handle = oak wood + knife[T]
+    sword handle = cleaned oak wood + knife[T]
 
     sword = sword blade + sword guard + sword pommel
             + sword handle + leather + knife[T] + hammer[T] + furnace[T]
@@ -90,7 +90,7 @@ class _SwordSmithingBaseRecipe(CraftingRecipe):
     failed_message = ("You work and work but you are not happy with the result. "
                       "You need to start over.")
 
-    def do_craft(self, validated_inputs, **kwargs):
+    def do_craft(self, **kwargs):
         """
         Making a sword blade takes skill. Here we emulate this by introducing a
         random chance of failure (in a real game this could be a skill check
@@ -117,7 +117,7 @@ class _SwordSmithingBaseRecipe(CraftingRecipe):
         if random.random() < 0.8:
             # 80% chance of success. This will spawn the sword and show
             # success-message.
-            return super().do_craft()
+            return super().do_craft(**kwargs)
         else:
             # fail and show failed message
             return None
@@ -161,7 +161,7 @@ class SwordGuardRecipe(_SwordSmithingBaseRecipe):
     sword's blade and also protects the hand when parrying.
 
     """
-    name = "sword pommel"
+    name = "sword guard"
     tool_tags = ["hammer", "anvil", "furnace"]
     consumable_tags = ["crucible steel"]
     output_prototypes = [
@@ -191,6 +191,7 @@ class OakBarkRecipe(CraftingRecipe):
     The actual thing needed for tanning leather is Tannin, but we skip
     the step of refining tannin from the bark and use the bark as-is.
 
+    This produces two outputs - the bark and the cleaned wood.
     """
     name = "oak bark"
     tool_tags = ["knife"]
@@ -198,7 +199,11 @@ class OakBarkRecipe(CraftingRecipe):
     output_prototypes = [
         {"key": "Oak bark",
          "desc": "Bark of oak, stripped from the core wood.",
-         "tags": [("oak bark", "crafting_material")]}
+         "tags": [("oak bark", "crafting_material")]},
+        {"key": "Oak Wood (cleaned)",
+         "desc": "Oakwood core, stripped of bark.",
+         "tags": [("cleaned oak wood", "crafting_material")]},
+
     ]
 
 
@@ -228,7 +233,7 @@ class SwordHandleRecipe(CraftingRecipe):
     """
     name = "sword handle"
     tool_tags = ["knife"]
-    consumable_tags = ["oak wood"]
+    consumable_tags = ["cleaned oak wood"]
     output_prototypes = [
         {"key": "Sword handle",
          "desc": "Two pieces of wood to be be fitted onto a sword's tang as its handle.",

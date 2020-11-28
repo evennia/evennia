@@ -915,8 +915,15 @@ def spawn(*prototypes, **kwargs):
         val = prot.pop("location", None)
         create_kwargs["db_location"] = init_spawn_value(val, value_to_obj)
 
-        val = prot.pop("home", settings.DEFAULT_HOME)
-        create_kwargs["db_home"] = init_spawn_value(val, value_to_obj)
+        val = prot.pop("home", None)
+        if val:
+            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj)
+        else:
+            try:
+                create_kwargs["db_home"] = init_spawn_value(settings.DEFAULT_HOME, value_to_obj)
+            except ObjectDB.DoesNotExist:
+                # settings.DEFAULT_HOME not existing is common for unittests
+                pass
 
         val = prot.pop("destination", None)
         create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj)
