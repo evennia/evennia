@@ -956,7 +956,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
             "|wIn-Game time",
             "|wReal time x %g" % gametime.TIMEFACTOR,
             align="l",
-            width=77,
+            width=78,
             border_top=0,
         )
         epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
