@@ -405,7 +405,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 to search. Note that this is used to query the *contents* of a
                 location and will not match for the location itself -
                 if you want that, don't set this or use `candidates` to specify
-                exactly which objects should be searched.
+                exactly which objects should be searched. If this nor candidates are
+                given, candidates will include caller's inventory, current location and
+                all objects in the current location.
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
                 to search database fields (db_ will be automatically

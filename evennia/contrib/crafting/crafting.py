@@ -63,7 +63,8 @@ Recipes are put in one or more modules added as a list to the
     CRAFT_MODULE_RECIPES = ['world.recipes_weapons', 'world.recipes_potions']
 
 Below is an example of a crafting recipe. See the `CraftingRecipe` class for
-details of which properties and methods are available.
+details of which properties and methods are available to override - the craft
+behavior can be modified substantially this way.
 
 ```python
 
@@ -93,6 +94,8 @@ recipes.
 from copy import copy
 from evennia.utils.utils import (
     iter_to_str, callables_from_module, inherits_from, make_iter)
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.command import Command
 from evennia.prototypes.spawner import spawn
 from evennia.utils.create import create_object
 
@@ -131,8 +134,11 @@ class CraftingValidationError(CraftingError):
 
 class CraftingRecipeBase:
     """
-    This is the base of the crafting system. The recipe handles all aspects of
-    performing a 'craft' operation.
+    The recipe handles all aspects of performing a 'craft' operation. This is
+    the base of the crafting system, intended to be replace if you want to
+    adapt it for very different functionality - see the `CraftingRecipe` child
+    class for an implementation of the most common type of crafting using
+    objects.
 
     Example of usage:
     ::
@@ -144,6 +150,19 @@ class CraftingRecipeBase:
     consumed - so in that case the recipe cannot be used a second time (doing so
     will raise a `CraftingError`)
 
+    Process:
+
+    1. `.craft(**kwargs)` - this starts the process on the initialized recipe. The kwargs
+       are optional but will be passed into all of the following hooks.
+    2. `.pre_craft(**kwargs)` - this normally validates inputs and stores them in
+       `.validated_inputs.`. Raises `CraftingValidationError` otherwise.
+    4. `.do_craft(**kwargs)` - should return the crafted item(s) or the empty list. Any
+       crafting errors should be immediately reported to user.
+    5. `.post_craft(crafted_result, **kwargs)`- always called, even if `pre_craft`
+       raised a `CraftingError` or `CraftingValidationError`.
+       Should return `crafted_result` (modified or not).
+
+
     """
     name = "recipe base"
 
@@ -151,8 +170,6 @@ class CraftingRecipeBase:
     # don't set this unless crafting inputs are *not* consumed by the crafting
     # process (otherwise subsequent calls will fail).
     allow_reuse = False
-    # this is set to avoid re-validation if recipe is re-run
-    is_validated = False
 
     def __init__(self, crafter, *inputs, **kwargs):
         """
@@ -183,44 +200,26 @@ class CraftingRecipeBase:
         """
         self.crafter.msg(message, {"type": "crafting"})
 
-    def validate_inputs(self, **kwargs):
+    def pre_craft(self, **kwargs):
         """
         Hook to override.
 
-        Make sure the provided inputs are valid. This should always be run.
-        This should validate `self.inputs` which are the inputs given when
-        creating this recipe.
+        This is called just before crafting operation and is normally
+        responsible for validating the inputs, storing data on
+        `self.validated_inputs`.
 
         Args:
-            **kwargs: These are optional extra flags passed during intialization.
+            **kwargs: Optional extra flags passed during initialization or
+            `.craft(**kwargs)`.
 
         Raises:
             CraftingValidationError: If validation fails.
-
-        Note:
-            This method should store validated results on the recipe for the
-            other hooks to access. It is also responsible for properly sending
-            error messages to e.g.  self.crafter (usually via `self.msg`).
 
         """
         if self.allow_craft:
             self.validated_inputs = self.inputs[:]
         else:
             raise CraftingValidationError
-
-    def pre_craft(self, **kwargs):
-        """
-        Hook to override.
-
-        This is called just before crafting operation, after inputs have been
-        validated. At this point the validated inputs are available on the
-        class instance.
-
-        Args:
-            **kwargs: Optional extra flags passed during initialization.
-
-        """
-        pass
 
     def do_craft(self, **kwargs):
         """
@@ -231,7 +230,6 @@ class CraftingRecipeBase:
         inputs are available on this recipe instance.
 
         Args:
-            validated_inputs (any): Data previously returned from `pre_craft`.
             **kwargs: Any extra flags passed at initialization.
 
         Returns:
@@ -281,29 +279,31 @@ class CraftingRecipeBase:
 
         """
         craft_result = None
-        err = ""
         if self.allow_craft:
+
+            # override/extend craft_kwargs from initialization.
             craft_kwargs = copy(self.craft_kwargs)
             craft_kwargs.update(kwargs)
 
             try:
-                # this assigns to self.validated_inputs
-                if not self.is_validated:
-                    self.validate_inputs(**craft_kwargs)
-                    self.is_validated = True
-
-                # run the crafting process - each accesses validated data directly
-                self.pre_craft(**craft_kwargs)
-                craft_result = self.do_craft(**craft_kwargs)
-                self.post_craft(craft_result, **craft_kwargs)
-            except (CraftingError, CraftingValidationError) as exc:
-                # use this to abort crafting early
+                try:
+                    # this assigns to self.validated_inputs
+                    self.pre_craft(**craft_kwargs)
+                except (CraftingError, CraftingValidationError):
+                    if raise_exception:
+                        raise
+                else:
+                    craft_result = self.do_craft(**craft_kwargs)
+                finally:
+                    craft_result = self.post_craft(craft_result, **craft_kwargs)
+            except (CraftingError, CraftingValidationError):
                 if raise_exception:
                     raise
+
             # possibly turn off re-use depending on class setting
             self.allow_craft = self.allow_reuse
         elif not self.allow_reuse:
-            raise CraftingError("Cannot re-run crafting without refreshing recipe first.")
+            raise CraftingError("Cannot re-run crafting without re-initializing recipe first.")
         if craft_result is None and raise_exception:
             raise CraftingError(f"Crafting of {self.name} failed.")
         return craft_result
@@ -312,44 +312,52 @@ class CraftingRecipeBase:
 class CraftingRecipe(CraftingRecipeBase):
     """
     The CraftRecipe implements the most common form of crafting: Combining (and
-    optionally consuming) inputs to produce a new result. This type of recipe
-    only works with typeclassed entities as inputs and outputs, since it's
-    based on Tags and prototypes.
+    consuming) inputs to produce a new result. This type of recipe only works
+    with typeclassed entities as inputs and outputs, since it's based on Tags
+    and Prototypes.
 
     There are two types of crafting ingredients: 'tools' and 'consumables'. The
     difference between them is that the former is not consumed in the crafting
-    process. So if you need a hammer and anvil to craft a sword, they are 'tools'
-    whereas the materials of the sword are 'consumables'.
+    process. So if you need a hammer and anvil to craft a sword, they are
+    'tools' whereas the materials of the sword are 'consumables'.
 
     Examples:
     ::
 
-        class SwordRecipe(CraftRecipe):
-            name = "sword"
-            input_tags = ["hilt", "pommel", "strips of leather", "sword blade"]
+        class FlourRecipe(CraftRecipe):
+            name = "flour"
+            tool_tags = ['windmill']
+            consumable_tags = ["wheat"]
             output_prototypes = [
-                {"key": "sword",
-                 "typeclass": "typeclassess.weapons.bladed.Sword",
-                 "tags": [("sword", "weapon"), ("melee", "weapontype"),
-                          ("edged", "weapontype")]
+                {"key": "Bag of flour",
+                 "typeclass": "typeclasses.food.Flour",
+                 "desc": "A small bag of flour."
+                 "tags": [("flour", "crafting_material"),
                 }
-            ]
+
+        class BreadRecipe(CraftRecipe):
+            name = "bread"
+            tool_tags = ["roller", "owen"]
+            consumable_tags = ["flour", "egg", "egg", "salt", "water", "yeast"]
+            output_prototypes = [
+                {"key": "bread",
+                 "desc": "A tasty bread."
+                }
+
 
     ## Properties on the class level:
 
     - `name` (str): The name of this recipe. This should be globally unique.
+
+    ### tools
+
     - `tool_tag_category` (str): What tag-category tools must use. Default is
       'crafting_tool'.
-    - `consumable_tag_category` (str): What tag-category consumables must use.
-      Default is 'crafting_material'.
     - `tool_tags` (list): Object-tags to use for tooling. If more than one instace
       of a tool is needed, add multiple entries here.
-
-    ### cool-settings
-
     - `tool_names` (list): Human-readable names for tools. These are used for informative
-      messages/errors. If not given, tags will be used. If given, this list should
-      match the length of `tool_tags`.
+      messages/errors. If not given, the tags will be used. If given, this list should
+      match the length of `tool_tags`.:
     - `exact_tools` (bool, default True): Must have exactly the right tools, any extra
       leads to failure.
     - `exact_tool_order` (bool, default False): Tools must be added in exactly the
@@ -357,6 +365,8 @@ class CraftingRecipe(CraftingRecipeBase):
 
     ### consumables
 
+    - `consumable_tag_category` (str): What tag-category consumables must use.
+      Default is 'crafting_material'.
     - `consumable_tags` (list): Tags for objects that will be consumed as part of
       running the recipe.
     - `consumable_names` (list): Human-readable names for consumables. Same as for tools.
@@ -368,7 +378,8 @@ class CraftingRecipe(CraftingRecipeBase):
       another order than given will lead to failing crafting.
     - `consume_on_fail` (bool, default False): Normally, consumables remain if
       crafting fails. With this flag, a failed crafting will still consume
-      ingredients.
+      consumables. Note that this will also consume any 'extra' consumables
+      added not part of the recipe!
 
     ### outputs (result of crafting)
 
@@ -380,9 +391,12 @@ class CraftingRecipe(CraftingRecipeBase):
 
     ### custom error messages
 
-    custom messages all have custom formatting markers (default strings are shown):
+    custom messages all have custom formatting markers. Many are empty strings
+    when not applicable.
+    ::
 
         {missing}: Comma-separated list of tool/consumable missing for missing/out of order errors.
+        {excess}: Comma-separated list of tool/consumable added in excess of recipe
         {inputs}: Comma-separated list of any inputs (tools + consumables) involved in error.
         {tools}: Comma-sepatated list of tools involved in error.
         {consumables}: Comma-separated list of consumables involved in error.
@@ -392,23 +406,29 @@ class CraftingRecipe(CraftingRecipeBase):
         {o0}..{oN-1}: Individual outputs, same order as `.output_names`.
 
     - `error_tool_missing_message`: "Could not craft {outputs} without {missing}."
-    - `error_tool_order_message`: "Could not craft {outputs} since
-      {missing} was added in the wrong order."
+    - `error_tool_order_message`:
+      "Could not craft {outputs} since {missing} was added in the wrong order."
+    - `error_tool_excess_message`: "Could not craft {outputs} (extra {excess})."
     - `error_consumable_missing_message`: "Could not craft {outputs} without {missing}."
-    - `error_consumable_order_message`: "Could not craft {outputs} since
-      {missing} was added in the wrong order."
+    - `error_consumable_order_message`:
+      "Could not craft {outputs} since {missing} was added in the wrong order."
+    - `error_consumable_excess_message`: "Could not craft {outputs} (excess {excess})."
     - `success_message`: "You successfuly craft {outputs}!"
-    - `failed_message`: "You failed to craft {outputs}."
+    - `failure_message`: ""  (this is handled by the other error messages by default)
 
     ## Hooks
 
-    1. Crafting starts by calling `.craft` on the parent class.
-    2. `.validate_inputs` is called. This returns all valid `(tools, consumables)`
-    3. `.pre_craft` is called with the valid `(tools, consumables)`.
-    4. `.do_craft` is called, it should return the final result, if any
-    5. `.post_craft` is called with both inputs and final result, if any. It should
-        return the final result or None. By default, this calls the
-        success/error messages and deletes consumables.
+    1. Crafting starts by calling `.craft(**kwargs)` on the parent class. The
+       `**kwargs` are optional, extends any `**kwargs` passed to the class
+       constructor and will be passed into all the following hooks.
+    3. `.pre_craft(**kwargs)` should handle validation of inputs. Results should
+       be stored in `validated_consumables/tools` respectively. Raises `CraftingValidationError`
+       otherwise.
+    4. `.do_craft(**kwargs)` will not be called if validation failed. Should return
+       a list of the things crafted.
+    5. `.post_craft(crafting_result, **kwargs)` is always called, also if validation
+       failed (`crafting_result` will then be falsy). It does any cleanup. By default
+       this deletes consumables.
 
     Use `.msg` to conveniently send messages to the crafter. Raise
     `evennia.contrib.crafting.crafting.CraftingError` exception to abort
@@ -440,6 +460,9 @@ class CraftingRecipe(CraftingRecipeBase):
     # tool out of order
     error_tool_order_message = \
         "Could not craft {outputs} since {missing} was added in the wrong order."
+    # if .exact_tools is set and there are more than needed
+    error_tool_excess_message = \
+        "Could not craft {outputs} without the exact tools (extra {excess})."
 
     # a list of tag-keys (of the `tag_category`). If more than one of each type
     # is needed, there should be multiple same-named entries in this list.
@@ -462,6 +485,9 @@ class CraftingRecipe(CraftingRecipeBase):
     # consumable out of order
     error_consumable_order_message = \
         "Could not craft {outputs} since {missing} was added in the wrong order."
+    # if .exact_consumables is set and there are more than needed
+    error_consumable_excess_message = \
+        "Could not craft {outputs} without the exact ingredients (extra {excess})."
 
     # this is a list of one or more prototypes (prototype_keys to existing
     # prototypes or full prototype-dicts) to use to build the result. All of
@@ -472,25 +498,35 @@ class CraftingRecipe(CraftingRecipeBase):
     # prototype's key or typeclass will be used. If given, this must have the same length
     # as `output_prototypes`.
     output_names = []
-
+    # general craft-failure msg to show after other error-messages.
+    failure_message = ""
+    # show after a successful craft
     success_message = "You successfully craft {outputs}!"
-    # custom craft-failure.
-    failed_message = "Failed to craft {outputs}."
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, crafter, *inputs,  **kwargs):
         """
-        Internally, this class stores validated data in
-        `.validated_consumables`  and `.validated_tools` respectively. The
-        `.validated_inputs` holds a list of all types in the order inserted
-        to the class constructor.
+        Args:
+            crafter (Object): The one doing the crafting.
+            *inputs (Object): The ingredients (+tools) of the recipe to use. The
+                The recipe will itself figure out (from tags) which is a tool and
+                which is a consumable.
+            **kwargs (any): Any other parameters that are relevant for
+                this recipe. These will be passed into the crafting hooks.
+
+        Notes:
+            Internally, this class stores validated data in
+            `.validated_consumables`  and `.validated_tools` respectively. The
+            `.validated_inputs` property (from parent) holds a list of everything
+            types in the order inserted to the class constructor.
 
         """
 
-        super().__init__(*args, **kwargs)
+        super().__init__(crafter, *inputs, **kwargs)
 
         self.validated_consumables = []
         self.validated_tools = []
 
+        # validate class properties
         if self.consumable_names:
             assert len(self.consumable_names) == len(self.consumable_tags), \
                 f"Crafting {self.__class__}.consumable_names list must " \
@@ -526,11 +562,12 @@ class CraftingRecipe(CraftingRecipeBase):
     def _format_message(self, message, **kwargs):
 
         missing = iter_to_str(kwargs.get("missing", ""))
+        excess = iter_to_str(kwargs.get("excess", ""))
         involved_tools = iter_to_str(kwargs.get("tools", ""))
         involved_cons = iter_to_str(kwargs.get("consumables", ""))
 
         # build template context
-        mapping = {"missing": iter_to_str(missing)}
+        mapping = {"missing": missing, "excess": excess}
         mapping.update({
             f"i{ind}": self.consumable_names[ind]
             for ind, name in enumerate(self.consumable_names or self.consumable_tags)
@@ -548,24 +585,32 @@ class CraftingRecipe(CraftingRecipeBase):
         # populate template and return
         return message.format(**mapping)
 
-    def seed(self, tool_kwargs=None, consumable_kwargs=None):
+    @classmethod
+    def seed(cls, tool_kwargs=None, consumable_kwargs=None):
         """
-        This is a helper method for easy testing and application of this
-        recipe. When called, it will create simple dummy ingredients with
-        names and tags needed by this recipe.
+        This is a helper class-method for easy testing and application of this
+        recipe. When called, it will create simple dummy ingredients with names
+        and tags needed by this recipe.
 
         Args:
             consumable_kwargs (dict, optional): This will be passed as
-                `**kwargs` into the `create_object` call for each consumable.
+                `**consumable_kwargs` into the `create_object` call for each consumable.
                 If not given, matching `consumable_name` or `consumable_tag`
                 will  be used for key.
-            tool_kwargs (dict, optional): Will be passed as `**kwargs` into the `create_object`
+            tool_kwargs (dict, optional): Will be passed as `**tool_kwargs` into the `create_object`
                 call for each tool.  If not given, the matching
                 `tool_name` or `tool_tag` will  be used for key.
 
         Returns:
             tuple: A tuple `(tools, consumables)` with newly created dummy
             objects matching the recipe ingredient list.
+
+        Example:
+        ::
+
+            tools, consumables = SwordRecipe.seed()
+            recipe = SwordRecipe(caller, *(tools + consumables))
+            result = recipe.craft()
 
         Notes:
             If `key` is given in `consumable/tool_kwargs` then _every_ created item
@@ -582,76 +627,103 @@ class CraftingRecipe(CraftingRecipeBase):
         cons_tags = consumable_kwargs.pop("tags", [])
 
         tools = []
-        for itag, tag in enumerate(self.tool_tags):
-            tools.extend(
+        for itag, tag in enumerate(cls.tool_tags):
+
+            tools.append(
                 create_object(
-                    key=tool_key or (self.tool_names[itag] if self.tool_names
-                                     else tag.capitalize()),
-                    tags=[(tag, self.tool_tag_category), *tool_tags],
+                    key=tool_key or (cls.tool_names[itag] if cls.tool_names else tag.capitalize()),
+                    tags=[(tag, cls.tool_tag_category), *tool_tags],
                     **tool_kwargs
                 )
             )
         consumables = []
-        for itag, tag in enumerate(self.consumable_tags):
-            consumables.extend(
+        for itag, tag in enumerate(cls.consumable_tags):
+            consumables.append(
                 create_object(
-                    key=cons_key or (self.consumable_names[itag] if
-                                     self.consumable_names else
+                    key=cons_key or (cls.consumable_names[itag] if
+                                     cls.consumable_names else
                                      tag.capitalize()),
-                    tags=[(tag, self.consumable_tag_category), *cons_tags]
-
+                    tags=[(tag, cls.consumable_tag_category), *cons_tags],
+                    **consumable_kwargs
                 )
             )
         return tools, consumables
 
-    def validate_inputs(self, **kwargs):
+    def pre_craft(self, **kwargs):
         """
-        Check so the given inputs are what is needed. This operates on `self.inputs` which
-        is set to the inputs added to the class constructor. Validated data is stored as
-        lists on `.validated_tools` and `.validated_consumables` respectively.
+        Do pre-craft checks, including input validation.
+
+        Check so the given inputs are what is needed. This operates on
+        `self.inputs` which is set to the inputs added to the class
+        constructor. Validated data is stored as lists on `.validated_tools`
+        and `.validated_consumables` respectively.
 
         Args:
             **kwargs: Any optional extra kwargs passed during initialization of
                 the recipe class.
 
+        Raises:
+            CraftingValidationError: If validation fails. At this point the crafter
+                is expected to have been informed of the problem already.
+
         """
 
         def _check_completeness(
                 tagmap, taglist, namelist, exact_match, exact_order,
-                error_missing_message, error_order_message):
-            """Compare tagmap to taglist"""
+                error_missing_message, error_order_message, error_excess_message):
+            """Compare tagmap (inputs) to taglist (required)"""
             valids = []
             for itag, tagkey in enumerate(taglist):
                 found_obj = None
-                for obj, taglist in tagmap.items():
-                    if tagkey in taglist:
+                for obj, objtags in tagmap.items():
+                    if tagkey in objtags:
                         found_obj = obj
                         break
-                    if exact_match:
-                        # if we get here, we have a no-match
-                        self.msg(self._format_message(
-                            error_missing_message,
-                            missing=namelist[itag] if namelist else tagkey.capitalize()))
-                        raise CraftingValidationError
                     if exact_order:
                         # if we get here order is wrong
-                        self.msg(self._format_message(
+                        err = self._format_message(
                             error_order_message,
-                            missing=namelist[itag] if namelist else tagkey.capitalize()))
-                        raise CraftingValidationError
+                            missing=obj.get_display_name(looker=self.crafter))
+                        self.msg(err)
+                        raise CraftingValidationError(err)
 
                 # since we pop from the mapping, it gets ever shorter
                 match = tagmap.pop(found_obj, None)
                 if match:
                     valids.append(found_obj)
+                elif exact_match:
+                    err = self._format_message(
+                        error_missing_message,
+                        missing=namelist[itag] if namelist else tagkey.capitalize())
+                    self.msg(err)
+                    raise CraftingValidationError(err)
+
+            if exact_match and tagmap:
+                # something is left in tagmap, that means it was never popped and
+                # thus this is not an exact match
+                err = self._format_message(
+                    error_excess_message,
+                    excess=[obj.get_display_name(looker=self.crafter) for obj in tagmap])
+                self.msg(err)
+                raise CraftingValidationError(err)
+
             return valids
 
         # get tools and consumables from self.inputs
         tool_map = {obj: obj.tags.get(category=self.tool_tag_category, return_list=True)
-                    for obj in self.inputs if obj and hasattr(obj, "tags")}
-        consumable_map = {obj: obj.tags.get(category=self.tag_category, return_list=True)
+                    for obj in self.inputs if obj and hasattr(obj, "tags") and
+                    inherits_from(obj, "evennia.objects.models.ObjectDB")}
+        tool_map = {obj: tags for obj, tags in tool_map.items() if tags}
+        consumable_map = {obj: obj.tags.get(category=self.consumable_tag_category, return_list=True)
                           for obj in self.inputs
-                          if obj and hasattr(obj, "tags") and obj not in tool_map}
+                          if obj and hasattr(obj, "tags") and obj not in tool_map and
+                          inherits_from(obj, "evennia.objects.models.ObjectDB")}
+        consumable_map = {obj: tags for obj, tags in consumable_map.items() if tags}
+
+        # we set these so they are available for error management at all times,
+        # they will be updated with the actual values at the end
+        self.validated_tools = [obj for obj in tool_map]
+        self.validated_consumables = [obj for obj in consumable_map]
 
         tools = _check_completeness(
             tool_map,
@@ -660,7 +732,8 @@ class CraftingRecipe(CraftingRecipeBase):
             self.exact_tools,
             self.exact_tool_order,
             self.error_tool_missing_message,
-            self.error_tool_order_message
+            self.error_tool_order_message,
+            self.error_tool_excess_message,
         )
         consumables = _check_completeness(
             consumable_map,
@@ -669,53 +742,38 @@ class CraftingRecipe(CraftingRecipeBase):
             self.exact_consumables,
             self.exact_consumable_order,
             self.error_consumable_missing_message,
-            self.error_consumable_order_message
+            self.error_consumable_order_message,
+            self.error_consumable_excess_message,
         )
+
         # regardless of flags, the tools/consumable lists much contain exactly
         # all the recipe needs now.
         if len(tools) != len(self.tool_tags):
-            raise CraftingValidationError
-        if len(consumables) == len(self.consumable_tags):
-            raise CraftingValidationError
+            raise CraftingValidationError(
+                f"Tools {tools}'s tags do not match expected tags {self.tool_tags}")
+        if len(consumables) != len(self.consumable_tags):
+            raise CraftingValidationError(
+                f"Consumables {consumables}'s tags do not match "
+                f"expected tags {self.consumable_tags}")
 
-        # all is ok!
         self.validated_tools = tools
-        self.validated_consumables = tools
-
-    # including also empty hooks here for easier reference
-
-    def pre_craft(self, **kwargs):
-        """
-        Hook to override.
-
-        This is called just before crafting operation, after inputs have
-        been validated.
-
-        Args:
-            *validated_inputs (any): Data previously returned from
-                `validate_inputs`. This is a tuple `(tools, consumables)`.
-            **kwargs (any): Passed from `self.craft`.
-
-        Returns:
-            any: The validated_inputs, modified or not.
-
-        """
-        pass
+        self.validated_consumables = consumables
 
     def do_craft(self, **kwargs):
         """
-        Hook to override.
+        Hook to override. This will not be called if validation in `pre_craft`
+        fails.
 
         This performs the actual crafting. At this point the inputs are
         expected to have been verified already.
 
-        Args:
-            validated_inputs (tuple): A tuple `(tools, consumables)`.
-
         Returns:
-            list: A list of spawned objects created from the inputs.
+            list: A list of spawned objects created from the inputs, or None
+                on a failure.
 
         Notes:
+            This method should use `self.msg` to inform the user about the
+            specific reason of failure immediately.
             We may want to analyze the tools in some way here to affect the
             crafting process.
 
@@ -725,22 +783,24 @@ class CraftingRecipe(CraftingRecipeBase):
     def post_craft(self, craft_result, **kwargs):
         """
         Hook to override.
-
         This is called just after crafting has finished. A common use of
         this method is to delete the inputs.
 
         Args:
-            craft_result (any): The crafted result, provided by `self.do_craft`.
-            validated_inputs (tuple): the validated inputs, a tuple `(tools, consumables)`.
+            craft_result (list): The crafted result, provided by `self.do_craft`.
             **kwargs (any): Passed from `self.craft`.
 
         Returns:
-            any: The return of the craft, possibly modified in this method.
+            list: The return(s) of the craft, possibly modified in this method.
+
+        Notes:
+            This is _always_ called, also if validation in `pre_craft` fails
+            (`craft_result` will then be `None`).
 
         """
         if craft_result:
             self.msg(self._format_message(self.success_message))
-        else:
+        elif self.failure_message:
             self.msg(self._format_message(self.failure_message))
 
         if craft_result or self.consume_on_fail:
@@ -751,10 +811,10 @@ class CraftingRecipe(CraftingRecipeBase):
         return craft_result
 
 
-# access functions
+# access function
 
 
-def craft(crafter, recipe_name, *inputs, return_list=True, raise_exception=False, **kwargs):
+def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
     """
     Craft a given recipe from a source recipe module. A recipe module is a
     Python module containing recipe classes. Note that this requires
@@ -763,10 +823,8 @@ def craft(crafter, recipe_name, *inputs, return_list=True, raise_exception=False
 
     Args:
         crafter (Object): The one doing the crafting.
-        recipe_name (str): This should match the `CraftRecipe.name` to use.
+        recipe_name (str): The `CraftRecipe.name` to use.
         *inputs: Suitable ingredients (Objects) to use in the crafting.
-        return_list (bool, optional): Always return a list, even if zero or one items were
-            cracted.
         raise_exception (bool, optional): If crafting failed for whatever
             reason, raise `CraftingError`. The user will still be informed by the recipe.
         **kwargs: Optional kwargs to pass into the recipe (will passed into recipe.craft).
@@ -792,3 +850,115 @@ def craft(crafter, recipe_name, *inputs, return_list=True, raise_exception=False
                        f"has a name matching {recipe_name}")
     recipe = RecipeClass(crafter, *inputs, **kwargs)
     return recipe.craft(raise_exception=raise_exception)
+
+
+# craft command/cmdset
+
+class CraftingCmdSet(CmdSet):
+    """
+    Store crafting command.
+    """
+    key = "Crafting cmdset"
+
+    def at_cmdset_creation(self):
+        self.add(CmdCraft())
+
+
+class CmdCraft(Command):
+    """
+    Craft an item using ingredients and tools
+
+    Usage:
+      craft <recipe> [from <ingredient>,...] [using <tool>, ...]
+
+    Examples:
+      craft snowball from snow
+      craft puppet from piece of wood using knife
+      craft bread from flour, butter, water, yeast using owen, bowl, roller
+      craft fireball using wand, spellbook
+
+    Notes:
+        Ingredients must be in the crafter's inventory. Tools can also be
+        things in the current location, like a furnace, windmill or anvil.
+
+    """
+
+    def parse(self):
+        """
+        Handle parsing of
+        ::
+
+            <recipe> [FROM <ingredients>] [USING <tools>]
+
+        """
+        self.args = args = self.args.strip().lower()
+        recipe, ingredients, tools = "", "", ""
+
+        if 'from' in args:
+            recipe, *rest = args.split(" from ", 1)
+            rest = rest[0] if rest else ""
+            ingredients, *tools = rest.split(" using ", 1)
+        elif 'using' in args:
+            recipe, *tools = args.split(" using ", 1)
+        tools = tools[0] if tools else ""
+
+        self.recipe = recipe.strip()
+        self.ingredients = [ingr.strip() for ingr in ingredients.split(",")]
+        self.tools = [tool.strip() for tool in tools.split(",")]
+
+    def func(self):
+        """
+        Perform crafting.
+
+        Will check the `craft` locktype. If a consumable/ingredient does not pass
+        this check, we will check for the 'crafting_consumable_err_msg'
+        Attribute, otherwise will use a default. If failing on a tool, will use
+        the `crafting_tool_err_msg` if available.
+
+        """
+        caller = self.caller
+
+        if not self.args or not self.recipe:
+            self.caller.msg("Usage: craft <recipe> from <ingredient>, ... [using <tool>,...]")
+            return
+
+        ingredients = []
+        for ingr_key in self.ingredients:
+            if not ingr_key:
+                continue
+            obj = caller.search(ingr_key, location=self.caller)
+            # since ingredients are consumed we need extra check so we don't
+            # try to include characters or accounts etc.
+            if not obj:
+                return
+            if (not inherits_from(obj, "evennia.objects.models.ObjectDB")
+                    or obj.sessions.all() or not obj.access(caller, "craft", default=True)):
+                # We don't allow to include puppeted objects nor those with the
+                # 'negative' permission 'nocraft'.
+                caller.msg(obj.attributes.get(
+                    "crafting_consumable_err_msg",
+                    default=f"{obj.get_display_name(looker=caller)} can't be used for this."))
+                return
+            ingredients.append(obj)
+
+        tools = []
+        for tool_key in self.tools:
+            if not tool_key:
+                continue
+            # tools are not consumed, can also exist in the current room
+            obj = caller.search(tool_key)
+            if not obj:
+                return None
+            if not obj.access(caller, "craft", default=True):
+                caller.msg(obj.attributes.get(
+                    "crafting_tool_err_msg",
+                    default=f"{obj.get_display_name(looker=caller)} can't be used for this."))
+                return
+            tools.append(obj)
+
+        # perform craft and make sure result is in inventory
+        # (the recipe handles all returns to caller)
+        result = craft(caller, self.recipe, *(tools + ingredients))
+        if result:
+            for obj in result:
+                obj.location = caller
