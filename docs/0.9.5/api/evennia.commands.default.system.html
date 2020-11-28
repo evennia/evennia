@@ -313,7 +313,7 @@ required since whole classes of scripts often have the same name.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['globalscript', 'listscripts']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['listscripts', 'globalscript']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -349,7 +349,7 @@ required since whole classes of scripts often have the same name.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'globalscript listscripts', 'category': 'system', 'key': 'scripts', 'tags': '', 'text': '\n    list and manage all running scripts\n\n    Usage:\n      scripts[/switches] [#dbref, key, script.path or &lt;obj&gt;]\n\n    Switches:\n      start - start a script (must supply a script path)\n      stop - stops an existing script\n      kill - kills a script - without running its cleanup hooks\n      validate - run a validation on the script(s)\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use script for managing commands on objects.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listscripts globalscript', 'category': 'system', 'key': 'scripts', 'tags': '', 'text': '\n    list and manage all running scripts\n\n    Usage:\n      scripts[/switches] [#dbref, key, script.path or &lt;obj&gt;]\n\n    Switches:\n      start - start a script (must supply a script path)\n      stop - stops an existing script\n      kill - kills a script - without running its cleanup hooks\n      validate - run a validation on the script(s)\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use script for managing commands on objects.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -373,7 +373,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['listobjs', 'listobjects', 'db', 'stats']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['listobjects', 'listobjs', 'stats', 'db']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -399,7 +399,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjs listobjects db stats', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjects listobjs stats db', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
