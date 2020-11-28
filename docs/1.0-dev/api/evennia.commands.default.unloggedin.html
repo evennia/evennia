@@ -59,7 +59,7 @@ connect “account name” “pass word”</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'conn', 'con']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['conn', 'co', 'con']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -94,7 +94,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co conn con', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'conn co con', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -223,7 +223,7 @@ All it does is display the connect screen.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['look', 'l']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'look']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -249,7 +249,7 @@ All it does is display the connect screen.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'look l', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': '\n    look when in unlogged-in state\n\n    Usage:\n      look\n\n    This is an unconnected version of the look command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l look', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': '\n    look when in unlogged-in state\n\n    Usage:\n      look\n\n    This is an unconnected version of the look command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -272,7 +272,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -298,7 +298,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'h ?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

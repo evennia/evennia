@@ -79,21 +79,22 @@ class WoodenPuppetRecipe(CraftingRecipe):
     output_prototypes = [
         {"key": "A carved wooden doll",
          "typeclass": "typeclasses.objects.decorations.Toys",
-         "desc": "A small carved doll",
+         "desc": "A small carved doll"}
     ]   
 
 ```
 
-This specifies what tags to look for in the inputs and a [Prototype](../Components/Prototypes) to spawn
-the result on the fly (a recipe could spawn more than one result if needed). Instead of specifying 
-the full prototype-dict, you could also just provide a list of `prototype_key`s to existing 
-prototypes you have.
+This specifies which tags to look for in the inputs. It defines a [Prototype](../Components/Prototypes) 
+for the recipe to use to spawn the result on the fly (a recipe could spawn more than one result if needed). 
+Instead of specifying the full prototype-dict, you could also just provide a list of `prototype_key`s to 
+existing prototypes you have.
 
 After reloading the server, this recipe would now be available to use. To try it we should 
-create materials and tools the recipe understands. 
+create materials and tools to insert into the recipe. 
 
-The recipe looks only for the [Tag](../Components/Tags) of the ingredients. The tag-category used 
-can be set per-recipe using the (`.consumable_tag_category` and 
+
+The recipe analyzes inputs, looking for [Tags](../Components/Tags) with specific tag-categories. 
+The tag-category used can be set per-recipe using the (`.consumable_tag_category` and 
 `.tool_tag_category` respectively). The defaults are `crafting_material` and `crafting_tool`. For 
 the puppet we need one object with the `wood` tag and another with the `knife` tag: 
 
@@ -108,6 +109,15 @@ Note that the objects can have any name, all that matters is the tag/tag-categor
 "bayonet" also had the "knife" crafting tag, it could also be used to carve a puppet. This is also 
 potentially interesting for use in puzzles and to allow users to experiment and find alternatives to 
 know ingredients.
+
+By the way, there is also a simple shortcut for doing this:
+
+```
+tools, consumables = WoodenPuppetRecipe.seed()
+```
+
+The `seed` class-method will create simple dummy objects that fulfills the recipe's requirements. This 
+is great for testing.
 
 Assuming these objects were put in our inventory, we could now craft using the in-game command: 
 
@@ -126,21 +136,19 @@ is which based on their tags.
 
 ## Deeper customization of recipes
 
-To understand how to customize recipes further, it helps to understand how they are used directly: 
+For customizing recipes further, it helps to understand how to use the recipe-class directly:
 
 ```python
 class MyRecipe(CraftingRecipe):
-    ...
+    # ...
 
-# convenient helper to get dummy objects with the right tags
 tools, consumables = MyRecipe.seed()
-
 recipe = MyRecipe(crafter, *(tools + consumables))
 result = recipe.craft()
 
 ```
 This is useful for testing and allows you to use the class directly without adding it to a module 
-in `settings.CRAFTING_RECIPE_MODULES`. The `seed` class method is useful e.g. for making unit tests.
+in `settings.CRAFTING_RECIPE_MODULES`. 
 
 Even without modifying more than the class properties, there are a lot of options to set on 
 the `CraftingRecipe` class. Easiest is to refer to the 
@@ -208,7 +216,7 @@ of a random skill-check being implemented in a parent and then inherited for mul
 
 ## Even more customization
 
-The base class `evennia.contrib.crafting.crafting.CraftingRecipeBase` implements just the minimum 
-needed to be a recipe. It doesn't know about Objects or tags. If you want to adopt the crafting system
-for something entirely different (maybe using different input or validation logic), starting from this 
-may be cleaner than overriding things in the more opinionated `CraftingRecipe`.
+If you want to build something even more custom (maybe using different input types of validation logic)
+you could also look at the `CraftingRecipe` parent class `CraftingRecipeBase`.
+It implements just the minimum needed to be a recipe and for big changes you may be better off starting 
+from this rather than the more opinionated `CraftingRecipe`.
