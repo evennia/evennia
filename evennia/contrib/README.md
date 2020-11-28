@@ -24,7 +24,6 @@ things you want from here into your game folder and change them there.
 * Clothing (FlutterSprite 2017) - A layered clothing system with
   slots for different types of garments auto-showing in description.
 * Color-markups (Griatch, 2017) - Alternative in-game color markups.
-* Crafting system (Griatch2020) - Full, extendable crafting system.
 * Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
   gametime module but for custom game world-specific calendars.
 * Dice (Griatch 2012) - A fully featured dice rolling system.
@@ -69,6 +68,7 @@ things you want from here into your game folder and change them there.
 
 ## Contrib packages
 
+* Crafting system (Griatch, 2020) - Full, extendable crafting system.
 * In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
   objects and events using Python from in-game.
 * Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
