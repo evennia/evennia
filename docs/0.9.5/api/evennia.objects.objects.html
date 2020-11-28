@@ -345,7 +345,9 @@ for a broader search.</p></li>
 to search. Note that this is used to query the <em>contents</em> of a
 location and will not match for the location itself -
 if you want that, don’t set this or use <strong>candidates</strong> to specify
-exactly which objects should be searched.</p></li>
+exactly which objects should be searched. If this nor candidates are
+given, candidates will include caller’s inventory, current location and
+all objects in the current location.</p></li>
 <li><p><strong>attribute_name</strong> (<em>str</em>) – Define which property to search. If set, no
 key+alias search will be performed. This can be used
 to search database fields (<a href="#id1"><span class="problematic" id="id2">db_</span></a> will be automatically

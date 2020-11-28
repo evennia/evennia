@@ -231,8 +231,8 @@ Defaults to client’s default width.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.utils.utils.iter_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.utils.iter_to_str">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -266,6 +266,39 @@ values with double quotes.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.utils.list_to_string">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>This pretty-formats an iterable list as string output, adding an optional
+alternative separator to the second to last entry.  If <strong>addquote</strong>
+is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initer</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
+present with a string. Note that if this is a generator, it will be
+consumed by this operation.</p></li>
+<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
+be replaced with this value.</p></li>
+<li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
+values with double quotes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The list represented as a string.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2, 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2 and 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.iter_to_string">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -924,7 +957,7 @@ importing directly from <strong>path</strong> doesn’t work.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.utils.class_from_module">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a class from a module, given the module’s path. This is
+<dd><p>Return a class from a module, given the class’ full python path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -946,7 +979,7 @@ try subsequent imports by prepending those paths to <strong>path</strong>.</p></
 <dl class="py function">
 <dt id="evennia.utils.utils.object_from_module">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a class from a module, given the module’s path. This is
+<dd><p>Return a class from a module, given the class’ full python path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

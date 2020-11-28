@@ -386,7 +386,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="iter_to_string"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.iter_to_string">[docs]</a><span class="k">def</span> <span class="nf">iter_to_string</span><span class="p">(</span><span class="n">initer</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="iter_to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.iter_to_str">[docs]</a><span class="k">def</span> <span class="nf">iter_to_str</span><span class="p">(</span><span class="n">initer</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This pretty-formats an iterable list as string output, adding an optional</span>
 <span class="sd">    alternative separator to the second to last entry.  If `addquote`</span>
@@ -433,8 +433,9 @@
         <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">initer</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endsep</span><span class="p">,</span> <span class="n">initer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 
 
-<span class="c1"># legacy alias</span>
-<span class="n">list_to_string</span> <span class="o">=</span> <span class="n">iter_to_string</span>
+<span class="c1"># legacy aliases</span>
+<span class="n">list_to_string</span> <span class="o">=</span> <span class="n">iter_to_str</span>
+<span class="n">iter_to_string</span> <span class="o">=</span> <span class="n">iter_to_str</span>
 
 
 <div class="viewcode-block" id="wildcard_to_regexp"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.wildcard_to_regexp">[docs]</a><span class="k">def</span> <span class="nf">wildcard_to_regexp</span><span class="p">(</span><span class="n">instring</span><span class="p">):</span>
@@ -1453,7 +1454,7 @@
 
 <div class="viewcode-block" id="class_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.class_from_module">[docs]</a><span class="k">def</span> <span class="nf">class_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a class from a module, given the module&#39;s path. This is</span>
+<span class="sd">    Return a class from a module, given the class&#39; full python path. This is</span>
 <span class="sd">    primarily used to convert db_typeclass_path:s to classes.</span>
 
 <span class="sd">    Args:</span>
