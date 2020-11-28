@@ -2,69 +2,88 @@
 Crafting - Griatch 2020
 
 This is a general crafting engine. The basic functionality of crafting is to
-combine any number of of items in a 'recipe' to produce a new result. This is
-useful not only for traditional crafting but also for puzzle-solving or
-similar.
+combine any number of of items or tools in a 'recipe' to produce a new result.
+
+    item + item + item + tool + tool  -> recipe -> new result
+
+This is useful not only for traditional crafting but the engine is flexible
+enough to also be useful for puzzles or similar.
 
 ## Installation
 
+- Add the `CmdCraft` Command from this module to your default cmdset. This
+  allows for crafting from in-game using a simple syntax.
 - Create a new module and add it to a new list in your settings file
-  (`server/conf/settings.py`) named `CRAFT_MODULE_RECIPES`.
-- In the new module, create one or more classes, each a child of
+  (`server/conf/settings.py`) named `CRAFT_RECIPES_MODULES`, such as
+  `CRAFT_RECIPE_MODULES = ["world.recipes_weapons"]`.
+- In the new module(s), create one or more classes, each a child of
   `CraftingRecipe` from this module. Each such class must have a unique `.name`
   property. It also defines what inputs are required and what is created using
   this recipe.
 - Objects to use for crafting should (by default) be tagged with tags using the
-  tag-category `crafting_material`. The name of the object doesn't matter, only
-  its tag.
-- Add the `CmdCraft` command from this module to your default cmdset. This is a
-  very simple example-command (your real command will most likely need to do
-  skill-checks etc!).
+  tag-category `crafting_material` or `crafting_tool`. The name of the object
+  doesn't matter, only its tag.
 
-## Usage
+## Crafting in game
 
-By default the crafter needs to specify which components
-should be used for the recipe:
+The default `craft` command handles all crafting needs.
+::
 
-    craft spiked club from club, nails
+    > craft spiked club from club, nails
 
 Here, `spiked club` specifies the recipe while `club` and `nails` are objects
 the crafter must have in their inventory. These will be consumed during
 crafting (by default only if crafting was successful).
 
-A recipe can also require _tools_. These must be either in inventory or in
-the current location. Tools are not consumed during the crafting.
+A recipe can also require *tools* (like the `hammer` above). These must be
+either in inventory *or* be in the current location. Tools are *not* consumed
+during the crafting process.
+::
 
-    craft wooden doll from wood with knife
+    > craft wooden doll from wood with knife
+
+## Crafting in code
 
 In code, you should use the helper function `craft` from this module. This
 specifies the name of the recipe to use and expects all suitable
 ingredients/tools as arguments (consumables and tools should be added together,
 tools will be identified before consumables).
 
-    spiked_club = craft(crafter, "spiked club", club, nails)
+```python
 
-A fail leads to an empty return. The crafter should already have been notified
-of any error in this case (this should be handle by the recipe itself).
+    from evennia.contrib.crafting import crafting
+
+    spiked_club = crafting.craft(crafter, "spiked club", club, nails)
+
+```
+
+The result is always a list with zero or more objects. A fail leads to an empty
+list. The crafter should already have been notified of any error in this case
+(this should be handle by the recipe itself).
 
 ## Recipes
 
-A _recipe_ works like an input/output blackbox: you put consumables (and/or
-tools) into it and if they match the recipe, a new result is spit out.
-Consumables are consumed in the process while tools are not.
+A *recipe* is a class that works like an input/output blackbox: you initialize
+it with consumables (and/or tools) if they match the recipe, a new
+result is spit out.  Consumables are consumed in the process while tools are not.
 
 This module contains a base class for making new ingredient types
 (`CraftingRecipeBase`) and an implementation of the most common form of
 crafting (`CraftingRecipe`) using objects and prototypes.
 
 Recipes are put in one or more modules added as a list to the
-`CRAFT_MODULE_RECIPES` setting, for example:
+`CRAFT_RECIPE_MODULES` setting, for example:
 
-    CRAFT_MODULE_RECIPES = ['world.recipes_weapons', 'world.recipes_potions']
+```python
 
-Below is an example of a crafting recipe. See the `CraftingRecipe` class for
-details of which properties and methods are available to override - the craft
-behavior can be modified substantially this way.
+    CRAFT_RECIPE_MODULES = ['world.recipes_weapons', 'world.recipes_potions']
+
+```
+
+Below is an example of a crafting recipe and how `craft` calls it under the
+hood. See the `CraftingRecipe` class for details of which properties and
+methods are available to override - the craft behavior can be modified
+substantially this way.
 
 ```python
 
@@ -73,7 +92,7 @@ behavior can be modified substantially this way.
     class PigIronRecipe(CraftingRecipe):
         # Pig iron is a high-carbon result of melting iron in a blast furnace.
 
-        name = "pig iron"
+        name = "pig iron"  # this is what crafting.craft and CmdCraft uses
         tool_tags = ["blast furnace"]
         consumable_tags = ["iron ore", "coal", "coal"]
         output_prototypes = [
@@ -82,18 +101,26 @@ behavior can be modified substantially this way.
              "tags": [("pig iron", "crafting_material")]}
         ]
 
+    # for testing, conveniently spawn all we need based on the tags on the class
+    tools, consumables = PigIronRecipe.seed()
+
+    recipe = PigIronRecipe(caller, *(tools + consumables))
+    result = recipe.craft()
+
 ```
 
-The `evennia/contrib/crafting/example_recipes.py` module has more examples of
-recipes.
+If the above class was added to a module in `CRAFT_RECIPE_MODULES`, it could be
+called using its `.name` property, as "pig iron".
+
+The [example_recipies](api:evennia.contrib.crafting.example_recipes) module has
+a full example of the components for creating a sword from base components.
 
 ----
 
 """
 
 from copy import copy
-from evennia.utils.utils import (
-    iter_to_str, callables_from_module, inherits_from, make_iter)
+from evennia.utils.utils import iter_to_str, callables_from_module, inherits_from, make_iter
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.prototypes.spawner import spawn
@@ -109,6 +136,7 @@ def _load_recipes():
 
     """
     from django.conf import settings
+
     global _RECIPE_CLASSES
     if not _RECIPE_CLASSES:
         paths = ["evennia.contrib.crafting.example_recipes"]
@@ -126,11 +154,13 @@ class CraftingError(RuntimeError):
 
     """
 
+
 class CraftingValidationError(CraftingError):
     """
     Error if crafting validation failed.
 
     """
+
 
 class CraftingRecipeBase:
     """
@@ -164,6 +194,7 @@ class CraftingRecipeBase:
 
 
     """
+
     name = "recipe base"
 
     # if set, allow running `.craft` more than once on the same instance.
@@ -436,6 +467,7 @@ class CraftingRecipe(CraftingRecipeBase):
     shown to the crafter automatically
 
     """
+
     name = "crafting recipe"
 
     # this define the overall category all material tags must have
@@ -458,11 +490,13 @@ class CraftingRecipe(CraftingRecipeBase):
     error_tool_missing_message = "Could not craft {outputs} without {missing}."
     # error to show if tool-order matters and it was wrong. Missing is the first
     # tool out of order
-    error_tool_order_message = \
+    error_tool_order_message = (
         "Could not craft {outputs} since {missing} was added in the wrong order."
+    )
     # if .exact_tools is set and there are more than needed
-    error_tool_excess_message = \
+    error_tool_excess_message = (
         "Could not craft {outputs} without the exact tools (extra {excess})."
+    )
 
     # a list of tag-keys (of the `tag_category`). If more than one of each type
     # is needed, there should be multiple same-named entries in this list.
@@ -483,11 +517,13 @@ class CraftingRecipe(CraftingRecipeBase):
     error_consumable_missing_message = "Could not craft {outputs} without {missing}."
     # error to show if consumable order matters and it was wrong. Missing is the first
     # consumable out of order
-    error_consumable_order_message = \
+    error_consumable_order_message = (
         "Could not craft {outputs} since {missing} was added in the wrong order."
+    )
     # if .exact_consumables is set and there are more than needed
-    error_consumable_excess_message = \
+    error_consumable_excess_message = (
         "Could not craft {outputs} without the exact ingredients (extra {excess})."
+    )
 
     # this is a list of one or more prototypes (prototype_keys to existing
     # prototypes or full prototype-dicts) to use to build the result. All of
@@ -503,7 +539,7 @@ class CraftingRecipe(CraftingRecipeBase):
     # show after a successful craft
     success_message = "You successfully craft {outputs}!"
 
-    def __init__(self, crafter, *inputs,  **kwargs):
+    def __init__(self, crafter, *inputs, **kwargs):
         """
         Args:
             crafter (Object): The one doing the crafting.
@@ -528,32 +564,37 @@ class CraftingRecipe(CraftingRecipeBase):
 
         # validate class properties
         if self.consumable_names:
-            assert len(self.consumable_names) == len(self.consumable_tags), \
-                f"Crafting {self.__class__}.consumable_names list must " \
+            assert len(self.consumable_names) == len(self.consumable_tags), (
+                f"Crafting {self.__class__}.consumable_names list must "
                 "have the same length as .consumable_tags."
+            )
         else:
             self.consumable_names = self.consumable_tags
 
         if self.tool_names:
-            assert len(self.tool_names) == len(self.tool_tags), \
-                f"Crafting {self.__class__}.tool_names list must " \
+            assert len(self.tool_names) == len(self.tool_tags), (
+                f"Crafting {self.__class__}.tool_names list must "
                 "have the same length as .tool_tags."
+            )
         else:
             self.tool_names = self.tool_tags
 
         if self.output_names:
-            assert len(self.consumable_names) == len(self.consumable_tags), \
-                f"Crafting {self.__class__}.output_names list must " \
+            assert len(self.consumable_names) == len(self.consumable_tags), (
+                f"Crafting {self.__class__}.output_names list must "
                 "have the same length as .output_prototypes."
+            )
         else:
             self.output_names = [
                 prot.get("key", prot.get("typeclass", "unnamed"))
-                if isinstance(prot, dict) else str(prot)
+                if isinstance(prot, dict)
+                else str(prot)
                 for prot in self.output_prototypes
             ]
 
-        assert isinstance(self.output_prototypes, (list, tuple)), \
-            "Crafting {self.__class__}.output_prototypes must be a list or tuple."
+        assert isinstance(
+            self.output_prototypes, (list, tuple)
+        ), "Crafting {self.__class__}.output_prototypes must be a list or tuple."
 
         # don't allow reuse if we have consumables. If only tools we can reuse
         # over and over since nothing changes.
@@ -568,14 +609,15 @@ class CraftingRecipe(CraftingRecipeBase):
 
         # build template context
         mapping = {"missing": missing, "excess": excess}
-        mapping.update({
-            f"i{ind}": self.consumable_names[ind]
-            for ind, name in enumerate(self.consumable_names or self.consumable_tags)
-        })
-        mapping.update({
-            f"o{ind}": self.output_names[ind]
-            for ind, name in enumerate(self.output_names)
-        })
+        mapping.update(
+            {
+                f"i{ind}": self.consumable_names[ind]
+                for ind, name in enumerate(self.consumable_names or self.consumable_tags)
+            }
+        )
+        mapping.update(
+            {f"o{ind}": self.output_names[ind] for ind, name in enumerate(self.output_names)}
+        )
         mapping["tools"] = involved_tools
         mapping["consumables"] = involved_cons
 
@@ -633,18 +675,17 @@ class CraftingRecipe(CraftingRecipeBase):
                 create_object(
                     key=tool_key or (cls.tool_names[itag] if cls.tool_names else tag.capitalize()),
                     tags=[(tag, cls.tool_tag_category), *tool_tags],
-                    **tool_kwargs
+                    **tool_kwargs,
                 )
             )
         consumables = []
         for itag, tag in enumerate(cls.consumable_tags):
             consumables.append(
                 create_object(
-                    key=cons_key or (cls.consumable_names[itag] if
-                                     cls.consumable_names else
-                                     tag.capitalize()),
+                    key=cons_key
+                    or (cls.consumable_names[itag] if cls.consumable_names else tag.capitalize()),
                     tags=[(tag, cls.consumable_tag_category), *cons_tags],
-                    **consumable_kwargs
+                    **consumable_kwargs,
                 )
             )
         return tools, consumables
@@ -669,8 +710,15 @@ class CraftingRecipe(CraftingRecipeBase):
         """
 
         def _check_completeness(
-                tagmap, taglist, namelist, exact_match, exact_order,
-                error_missing_message, error_order_message, error_excess_message):
+            tagmap,
+            taglist,
+            namelist,
+            exact_match,
+            exact_order,
+            error_missing_message,
+            error_order_message,
+            error_excess_message,
+        ):
             """Compare tagmap (inputs) to taglist (required)"""
             valids = []
             for itag, tagkey in enumerate(taglist):
@@ -682,8 +730,8 @@ class CraftingRecipe(CraftingRecipeBase):
                     if exact_order:
                         # if we get here order is wrong
                         err = self._format_message(
-                            error_order_message,
-                            missing=obj.get_display_name(looker=self.crafter))
+                            error_order_message, missing=obj.get_display_name(looker=self.crafter)
+                        )
                         self.msg(err)
                         raise CraftingValidationError(err)
 
@@ -694,7 +742,8 @@ class CraftingRecipe(CraftingRecipeBase):
                 elif exact_match:
                     err = self._format_message(
                         error_missing_message,
-                        missing=namelist[itag] if namelist else tagkey.capitalize())
+                        missing=namelist[itag] if namelist else tagkey.capitalize(),
+                    )
                     self.msg(err)
                     raise CraftingValidationError(err)
 
@@ -703,21 +752,30 @@ class CraftingRecipe(CraftingRecipeBase):
                 # thus this is not an exact match
                 err = self._format_message(
                     error_excess_message,
-                    excess=[obj.get_display_name(looker=self.crafter) for obj in tagmap])
+                    excess=[obj.get_display_name(looker=self.crafter) for obj in tagmap],
+                )
                 self.msg(err)
                 raise CraftingValidationError(err)
 
             return valids
 
         # get tools and consumables from self.inputs
-        tool_map = {obj: obj.tags.get(category=self.tool_tag_category, return_list=True)
-                    for obj in self.inputs if obj and hasattr(obj, "tags") and
-                    inherits_from(obj, "evennia.objects.models.ObjectDB")}
+        tool_map = {
+            obj: obj.tags.get(category=self.tool_tag_category, return_list=True)
+            for obj in self.inputs
+            if obj
+            and hasattr(obj, "tags")
+            and inherits_from(obj, "evennia.objects.models.ObjectDB")
+        }
         tool_map = {obj: tags for obj, tags in tool_map.items() if tags}
-        consumable_map = {obj: obj.tags.get(category=self.consumable_tag_category, return_list=True)
-                          for obj in self.inputs
-                          if obj and hasattr(obj, "tags") and obj not in tool_map and
-                          inherits_from(obj, "evennia.objects.models.ObjectDB")}
+        consumable_map = {
+            obj: obj.tags.get(category=self.consumable_tag_category, return_list=True)
+            for obj in self.inputs
+            if obj
+            and hasattr(obj, "tags")
+            and obj not in tool_map
+            and inherits_from(obj, "evennia.objects.models.ObjectDB")
+        }
         consumable_map = {obj: tags for obj, tags in consumable_map.items() if tags}
 
         # we set these so they are available for error management at all times,
@@ -750,11 +808,13 @@ class CraftingRecipe(CraftingRecipeBase):
         # all the recipe needs now.
         if len(tools) != len(self.tool_tags):
             raise CraftingValidationError(
-                f"Tools {tools}'s tags do not match expected tags {self.tool_tags}")
+                f"Tools {tools}'s tags do not match expected tags {self.tool_tags}"
+            )
         if len(consumables) != len(self.consumable_tags):
             raise CraftingValidationError(
                 f"Consumables {consumables}'s tags do not match "
-                f"expected tags {self.consumable_tags}")
+                f"expected tags {self.consumable_tags}"
+            )
 
         self.validated_tools = tools
         self.validated_consumables = consumables
@@ -816,25 +876,29 @@ class CraftingRecipe(CraftingRecipeBase):
 
 def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
     """
-    Craft a given recipe from a source recipe module. A recipe module is a
-    Python module containing recipe classes. Note that this requires
-    `settings.CRAFT_RECIPE_MODULES` to be added to a list of one or more
-    python-paths to modules holding Recipe-classes.
+    Access function. Craft a given recipe from a source recipe module. A
+    recipe module is a Python module containing recipe classes. Note that this
+    requires `settings.CRAFT_RECIPE_MODULES` to be added to a list of one or
+    more python-paths to modules holding Recipe-classes.
 
     Args:
         crafter (Object): The one doing the crafting.
-        recipe_name (str): The `CraftRecipe.name` to use.
-        *inputs: Suitable ingredients (Objects) to use in the crafting.
+        recipe_name (str): The `CraftRecipe.name` to use. This uses fuzzy-matching
+            if the result is unique.
+        *inputs: Suitable ingredients and/or tools (Objects) to use in the crafting.
         raise_exception (bool, optional): If crafting failed for whatever
-            reason, raise `CraftingError`. The user will still be informed by the recipe.
-        **kwargs: Optional kwargs to pass into the recipe (will passed into recipe.craft).
+            reason, raise `CraftingError`. The user will still be informed by the
+            recipe.
+        **kwargs: Optional kwargs to pass into the recipe (will passed into
+            recipe.craft).
 
     Returns:
         list: Crafted objects, if any.
 
     Raises:
-        CraftingError: If `raise_exception` is True and crafting failed to produce an output.
-        KeyError: If `recipe_name` failed to find a matching recipe class.
+        CraftingError: If `raise_exception` is True and crafting failed to
+        produce an output.  KeyError: If `recipe_name` failed to find a
+        matching recipe class (or the hit was not precise enough.)
 
     Notes:
         If no recipe_module is given, will look for a list `settings.CRAFT_RECIPE_MODULES` and
@@ -846,18 +910,30 @@ def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
 
     RecipeClass = _RECIPE_CLASSES.get(recipe_name, None)
     if not RecipeClass:
-        raise KeyError("No recipe in settings.CRAFT_RECIPE_MODULES "
-                       f"has a name matching {recipe_name}")
+        # try a startswith fuzzy match
+        matches = [key for key in _RECIPE_CLASSES if key.startswith(recipe_name)]
+        if not matches:
+            # try in-match
+            matches = [key for key in _RECIPE_CLASSES if recipe_name in key]
+        if len(matches) == 1:
+            RecipeClass = matches[0]
+
+    if not RecipeClass:
+        raise KeyError(
+            f"No recipe in settings.CRAFT_RECIPE_MODULES has a name matching {recipe_name}"
+        )
     recipe = RecipeClass(crafter, *inputs, **kwargs)
     return recipe.craft(raise_exception=raise_exception)
 
 
 # craft command/cmdset
 
+
 class CraftingCmdSet(CmdSet):
     """
     Store crafting command.
     """
+
     key = "Crafting cmdset"
 
     def at_cmdset_creation(self):
@@ -883,22 +959,35 @@ class CmdCraft(Command):
 
     """
 
+    key = "craft"
+    locks = "cmd:all()"
+    help_category = "General"
+    arg_regex = r"\s|$"
+
     def parse(self):
         """
-        Handle parsing of
+        Handle parsing of:
         ::
 
             <recipe> [FROM <ingredients>] [USING <tools>]
+
+        Examples:
+        ::
+
+            craft snowball from snow
+            craft puppet from piece of wood using knife
+            craft bread from flour, butter, water, yeast using owen, bowl, roller
+            craft fireball using wand, spellbook
 
         """
         self.args = args = self.args.strip().lower()
         recipe, ingredients, tools = "", "", ""
 
-        if 'from' in args:
+        if "from" in args:
             recipe, *rest = args.split(" from ", 1)
             rest = rest[0] if rest else ""
             ingredients, *tools = rest.split(" using ", 1)
-        elif 'using' in args:
+        elif "using" in args:
             recipe, *tools = args.split(" using ", 1)
         tools = tools[0] if tools else ""
 
@@ -931,13 +1020,19 @@ class CmdCraft(Command):
             # try to include characters or accounts etc.
             if not obj:
                 return
-            if (not inherits_from(obj, "evennia.objects.models.ObjectDB")
-                    or obj.sessions.all() or not obj.access(caller, "craft", default=True)):
+            if (
+                not inherits_from(obj, "evennia.objects.models.ObjectDB")
+                or obj.sessions.all()
+                or not obj.access(caller, "craft", default=True)
+            ):
                 # We don't allow to include puppeted objects nor those with the
                 # 'negative' permission 'nocraft'.
-                caller.msg(obj.attributes.get(
-                    "crafting_consumable_err_msg",
-                    default=f"{obj.get_display_name(looker=caller)} can't be used for this."))
+                caller.msg(
+                    obj.attributes.get(
+                        "crafting_consumable_err_msg",
+                        default=f"{obj.get_display_name(looker=caller)} can't be used for this.",
+                    )
+                )
                 return
             ingredients.append(obj)
 
@@ -950,9 +1045,12 @@ class CmdCraft(Command):
             if not obj:
                 return None
             if not obj.access(caller, "craft", default=True):
-                caller.msg(obj.attributes.get(
-                    "crafting_tool_err_msg",
-                    default=f"{obj.get_display_name(looker=caller)} can't be used for this."))
+                caller.msg(
+                    obj.attributes.get(
+                        "crafting_tool_err_msg",
+                        default=f"{obj.get_display_name(looker=caller)} can't be used for this.",
+                    )
+                )
                 return
             tools.append(obj)
 

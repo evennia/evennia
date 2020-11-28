@@ -24,10 +24,12 @@
 - Make IP throttle use Django-based cache system for optional persistence (PR by strikaco)
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
   "TutorialWeaponRack" to prevent collisions with classes in mygame
+- New `crafting` contrib, adding a full crafting subsystem (Griatch 2020)
 
-### Evennia 0.9.5
+### Evennia 0.9.5 (2019-2020)
 
-A transitional release, including new doc system
+Released 2020-11-14.
+A transitional release, including new doc system. 
 
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`

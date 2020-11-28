@@ -15,7 +15,7 @@ than, the doc-strings of each component in the [API](../Evennia-API).
 - [Attributes](./Attributes)
 - [Nicks](./Nicks)
 - [Tags](./Tags)
-- [Spawner and prototypes](./Spawner-and-Prototypes)
+- [Spawner and prototypes](./Prototypes)
 - [Help entries](./Help-System)
 
 ## Commands 

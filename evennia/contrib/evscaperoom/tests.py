@@ -174,12 +174,11 @@ class TestEvscaperoomCommands(CommandTest):
         self.call(commands.CmdSpeak(), "", "What do you want to say?", cmdstring="")
         self.call(commands.CmdSpeak(), "Hello!", "You say: Hello!", cmdstring="")
         self.call(commands.CmdSpeak(), "", "What do you want to whisper?", cmdstring="whisper")
-        self.call(commands.CmdSpeak(), "Hi.", "You whisper: Hi.", cmdstring="whisper")
-        self.call(commands.CmdSpeak(), "Hi.", "You whisper: Hi.", cmdstring="whisper")
+        self.call(commands.CmdSpeak(), "Hi.", "You whisper: (Hi.)", cmdstring="whisper")
         self.call(commands.CmdSpeak(), "HELLO!", "You shout: HELLO!", cmdstring="shout")
 
-        self.call(commands.CmdSpeak(), "Hello to obj", "You say: Hello", cmdstring="say")
-        self.call(commands.CmdSpeak(), "Hello to obj", "You shout: Hello", cmdstring="shout")
+        self.call(commands.CmdSpeak(), "Hello", "You say: Hello", cmdstring="say")
+        self.call(commands.CmdSpeak(), "Hello", "You shout: HELLO", cmdstring="shout")
 
     def test_emote(self):
         self.call(
@@ -272,7 +271,7 @@ class TestStates(EvenniaTest):
         dirname = path.join(path.dirname(__file__), "states")
         states = []
         for imp, module, ispackage in pkgutil.walk_packages(
-            path=[dirname], prefix="evscaperoom.states."
+            path=[dirname], prefix="evennia.contrib.evscaperoom.states."
         ):
             mod = mod_import(module)
             states.append(mod)

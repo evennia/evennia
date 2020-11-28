@@ -119,7 +119,7 @@ Deprecated as of Evennia 0.8:
  - `ndb_<name>` - sets the value of a non-persistent attribute (`"ndb_"` is stripped from the name).
    This is simply not useful in a prototype and is deprecated.
  - `exec` - This accepts a code snippet or a list of code snippets to run. This should not be used -
-   use callables or [$protfuncs](./Spawner-and-Prototypes#protfuncs) instead (see below).
+   use callables or [$protfuncs](./Prototypes#protfuncs) instead (see below).
 
 ### Prototype values
 

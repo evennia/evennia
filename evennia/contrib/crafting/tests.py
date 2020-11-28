@@ -18,6 +18,7 @@ class TestCraftUtils(TestCase):
     Test helper utils for crafting.
 
     """
+
     maxDiff = None
 
     @override_settings(CRAFT_RECIPE_MODULES=[])
@@ -28,17 +29,17 @@ class TestCraftUtils(TestCase):
         self.assertEqual(
             crafting._RECIPE_CLASSES,
             {
-                'crucible steel': example_recipes.CrucibleSteelRecipe,
-                'leather': example_recipes.LeatherRecipe,
-                'oak bark': example_recipes.OakBarkRecipe,
-                'pig iron': example_recipes.PigIronRecipe,
-                'rawhide': example_recipes.RawhideRecipe,
-                'sword': example_recipes.SwordRecipe,
-                'sword blade': example_recipes.SwordBladeRecipe,
-                'sword guard': example_recipes.SwordGuardRecipe,
-                'sword handle': example_recipes.SwordHandleRecipe,
-                'sword pommel': example_recipes.SwordPommelRecipe,
-            }
+                "crucible steel": example_recipes.CrucibleSteelRecipe,
+                "leather": example_recipes.LeatherRecipe,
+                "oak bark": example_recipes.OakBarkRecipe,
+                "pig iron": example_recipes.PigIronRecipe,
+                "rawhide": example_recipes.RawhideRecipe,
+                "sword": example_recipes.SwordRecipe,
+                "sword blade": example_recipes.SwordBladeRecipe,
+                "sword guard": example_recipes.SwordGuardRecipe,
+                "sword handle": example_recipes.SwordHandleRecipe,
+                "sword pommel": example_recipes.SwordPommelRecipe,
+            },
         )
 
 
@@ -54,6 +55,7 @@ class TestCraftingRecipeBase(TestCase):
     """
     Test the parent recipe class.
     """
+
     def setUp(self):
         self.crafter = mock.MagicMock()
         self.crafter.msg = mock.MagicMock()
@@ -65,7 +67,8 @@ class TestCraftingRecipeBase(TestCase):
         self.kwargs = {"kw1": 1, "kw2": 2}
 
         self.recipe = crafting.CraftingRecipeBase(
-            self.crafter, self.inp1, self.inp2, self.inp3, **self.kwargs)
+            self.crafter, self.inp1, self.inp2, self.inp3, **self.kwargs
+        )
 
     def test_msg(self):
         """Test messaging to crafter"""
@@ -76,9 +79,7 @@ class TestCraftingRecipeBase(TestCase):
     def test_pre_craft(self):
         """Test validating hook"""
         self.recipe.pre_craft()
-        self.assertEqual(
-            self.recipe.validated_inputs, (self.inp1, self.inp2, self.inp3)
-        )
+        self.assertEqual(self.recipe.validated_inputs, (self.inp1, self.inp2, self.inp3))
 
     def test_pre_craft_fail(self):
         """Should rase error if validation fails"""
@@ -126,9 +127,11 @@ class _MockRecipe(crafting.CraftingRecipe):
     tool_tags = ["tool1", "tool2"]
     consumable_tags = ["cons1", "cons2", "cons3"]
     output_prototypes = [
-        {"key": "Result1",
-         "prototype_key": "resultprot",
-         "tags": [("result1", "crafting_material")]}
+        {
+            "key": "Result1",
+            "prototype_key": "resultprot",
+            "tags": [("result1", "crafting_material")],
+        }
     ]
 
 
@@ -137,6 +140,7 @@ class TestCraftingRecipe(TestCase):
     """
     Test the CraftingRecipe class with one recipe
     """
+
     maxDiff = None
 
     def setUp(self):
@@ -162,19 +166,27 @@ class TestCraftingRecipe(TestCase):
     def test_error_format(self):
         """Test the automatic error formatter """
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3
         )
 
-        msg = ("{missing},{tools},{consumables},{inputs},{outputs}"
-               "{i0},{i1},{o0}")
-        kwargs = {"missing": "foo", "tools": ["bar", "bar2", "bar3"],
-                  "consumables": ["cons1", "cons2"]}
+        msg = "{missing},{tools},{consumables},{inputs},{outputs}" "{i0},{i1},{o0}"
+        kwargs = {
+            "missing": "foo",
+            "tools": ["bar", "bar2", "bar3"],
+            "consumables": ["cons1", "cons2"],
+        }
 
         expected = {
-            'missing': 'foo', 'i0': 'cons1', 'i1': 'cons2', 'i2': 'cons3', 'o0':
-            'Result1', 'tools': 'bar, bar2 and bar3', 'consumables': 'cons1 and cons2',
-            'inputs': 'cons1, cons2 and cons3', 'outputs': 'Result1'}
+            "missing": "foo",
+            "i0": "cons1",
+            "i1": "cons2",
+            "i2": "cons3",
+            "o0": "Result1",
+            "tools": "bar, bar2 and bar3",
+            "consumables": "cons1 and cons2",
+            "inputs": "cons1, cons2 and cons3",
+            "outputs": "Result1",
+        }
 
         result = recipe._format_message(msg, **kwargs)
         self.assertEqual(result, msg.format(**expected))
@@ -182,16 +194,16 @@ class TestCraftingRecipe(TestCase):
     def test_craft__success(self):
         """Test to create a result from the recipe"""
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3
         )
 
         result = recipe.craft()
 
         self.assertEqual(result[0].key, "Result1")
-        self.assertEqual(result[0].tags.all(), ['result1', 'resultprot'])
+        self.assertEqual(result[0].tags.all(), ["result1", "resultprot"])
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
+            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+        )
 
         # make sure consumables are gone
         self.assertIsNone(self.cons1.pk)
@@ -208,17 +220,15 @@ class TestCraftingRecipe(TestCase):
         tools, consumables = _MockRecipe.seed()
 
         # this should be a normal successful crafting
-        recipe = _MockRecipe(
-            self.crafter,
-            *(tools + consumables)
-        )
+        recipe = _MockRecipe(self.crafter, *(tools + consumables))
 
         result = recipe.craft()
 
         self.assertEqual(result[0].key, "Result1")
-        self.assertEqual(result[0].tags.all(), ['result1', 'resultprot'])
+        self.assertEqual(result[0].tags.all(), ["result1", "resultprot"])
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
+            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+        )
 
         # make sure consumables are gone
         for cons in consumables:
@@ -229,15 +239,13 @@ class TestCraftingRecipe(TestCase):
 
     def test_craft_missing_tool__fail(self):
         """Fail craft by missing tool2"""
-        recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.cons1, self.cons2, self.cons3
-        )
+        recipe = _MockRecipe(self.crafter, self.tool1, self.cons1, self.cons2, self.cons3)
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_tool_missing_message.format(outputs="Result1", missing='tool2'),
-            {"type": "crafting"})
+            recipe.error_tool_missing_message.format(outputs="Result1", missing="tool2"),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -249,16 +257,13 @@ class TestCraftingRecipe(TestCase):
 
     def test_craft_missing_cons__fail(self):
         """Fail craft by missing cons3"""
-        recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2
-        )
+        recipe = _MockRecipe(self.crafter, self.tool1, self.tool2, self.cons1, self.cons2)
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_missing_message.format(
-                outputs="Result1", missing='cons3'),
-            {"type": "crafting"})
+            recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -273,19 +278,16 @@ class TestCraftingRecipe(TestCase):
 
         cons4 = create_object(key="cons4", tags=[("cons4", "crafting_material")], nohome=True)
 
-        recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, cons4
-        )
+        recipe = _MockRecipe(self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, cons4)
         recipe.consume_on_fail = True
 
         result = recipe.craft()
 
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
-            recipe.error_consumable_missing_message.format(
-                outputs="Result1", missing='cons3'),
-            {"type": "crafting"})
+            recipe.error_consumable_missing_message.format(outputs="Result1", missing="cons3"),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are deleted even though we failed
         self.assertIsNone(self.cons1.pk)
@@ -303,16 +305,15 @@ class TestCraftingRecipe(TestCase):
 
         wrong = create_object(key="wrong", tags=[("wrongtool", "crafting_tool")], nohome=True)
 
-        recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, wrong
-        )
+        recipe = _MockRecipe(self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, wrong)
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
             recipe.error_tool_excess_message.format(
-                outputs="Result1", excess=wrong.get_display_name(looker=self.crafter)),
-            {"type": "crafting"})
+                outputs="Result1", excess=wrong.get_display_name(looker=self.crafter)
+            ),
+            {"type": "crafting"},
+        )
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
         self.assertIsNotNone(self.cons2.pk)
@@ -328,15 +329,16 @@ class TestCraftingRecipe(TestCase):
         tool3 = create_object(key="tool3", tags=[("tool2", "crafting_tool")], nohome=True)
 
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, tool3
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, tool3
         )
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
             recipe.error_tool_excess_message.format(
-                outputs="Result1", excess=tool3.get_display_name(looker=self.crafter)),
-            {"type": "crafting"})
+                outputs="Result1", excess=tool3.get_display_name(looker=self.crafter)
+            ),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -354,15 +356,16 @@ class TestCraftingRecipe(TestCase):
         cons4 = create_object(key="cons4", tags=[("cons3", "crafting_material")], nohome=True)
 
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, cons4
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, cons4
         )
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
             recipe.error_consumable_excess_message.format(
-                outputs="Result1", excess=cons4.get_display_name(looker=self.crafter)),
-            {"type": "crafting"})
+                outputs="Result1", excess=cons4.get_display_name(looker=self.crafter)
+            ),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -379,14 +382,14 @@ class TestCraftingRecipe(TestCase):
         tool3 = create_object(key="tool3", tags=[("tool2", "crafting_tool")], nohome=True)
 
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, tool3
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, tool3
         )
         recipe.exact_tools = False
         result = recipe.craft()
         self.assertTrue(result)
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
+            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+        )
 
         # make sure consumables are gone
         self.assertIsNone(self.cons1.pk)
@@ -402,14 +405,14 @@ class TestCraftingRecipe(TestCase):
         cons4 = create_object(key="cons4", tags=[("cons3", "crafting_material")], nohome=True)
 
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, cons4
+            self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3, cons4
         )
         recipe.exact_consumables = False
         result = recipe.craft()
         self.assertTrue(result)
         self.crafter.msg.assert_called_with(
-            recipe.success_message.format(outputs="Result1"), {"type": "crafting"})
+            recipe.success_message.format(outputs="Result1"), {"type": "crafting"}
+        )
 
         # make sure consumables are gone
         self.assertIsNone(self.cons1.pk)
@@ -422,16 +425,17 @@ class TestCraftingRecipe(TestCase):
     def test_craft_tool_order__fail(self):
         """Strict tool-order recipe fail """
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool2, self.tool1, self.cons1, self.cons2, self.cons3
+            self.crafter, self.tool2, self.tool1, self.cons1, self.cons2, self.cons3
         )
         recipe.exact_tool_order = True
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
             recipe.error_tool_order_message.format(
-                outputs="Result1", missing=self.tool2.get_display_name(looker=self.crafter)),
-            {"type": "crafting"})
+                outputs="Result1", missing=self.tool2.get_display_name(looker=self.crafter)
+            ),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -444,16 +448,17 @@ class TestCraftingRecipe(TestCase):
     def test_craft_cons_order__fail(self):
         """Strict tool-order recipe fail """
         recipe = _MockRecipe(
-            self.crafter,
-            self.tool1, self.tool2, self.cons3, self.cons2, self.cons1
+            self.crafter, self.tool1, self.tool2, self.cons3, self.cons2, self.cons1
         )
         recipe.exact_consumable_order = True
         result = recipe.craft()
         self.assertFalse(result)
         self.crafter.msg.assert_called_with(
             recipe.error_consumable_order_message.format(
-                outputs="Result1", missing=self.cons3.get_display_name(looker=self.crafter)),
-            {"type": "crafting"})
+                outputs="Result1", missing=self.cons3.get_display_name(looker=self.crafter)
+            ),
+            {"type": "crafting"},
+        )
 
         # make sure consumables are still there
         self.assertIsNotNone(self.cons1.pk)
@@ -469,6 +474,7 @@ class TestCraftSword(TestCase):
     Test the `craft` function by crafting the example sword.
 
     """
+
     def setUp(self):
         self.crafter = mock.MagicMock()
         self.crafter.msg = mock.MagicMock()
@@ -578,8 +584,16 @@ class TestCraftSword(TestCase):
         sword_handle = _craft("sword handle", *inputs)
 
         # sword (order matters)
-        inputs = [sword_blade, sword_guard, sword_pommel, sword_handle,
-                  leather, knife, hammer, furnace]
+        inputs = [
+            sword_blade,
+            sword_guard,
+            sword_pommel,
+            sword_handle,
+            leather,
+            knife,
+            hammer,
+            furnace,
+        ]
         sword = _craft("sword", *inputs)
 
         self.assertEqual(sword.key, "Sword")
@@ -633,10 +647,8 @@ class TestCraftSword(TestCase):
         self.assertIsNotNone(cauldron)
 
 
-@mock.patch("evennia.contrib.crafting.crafting._load_recipes",
-            new=mock.MagicMock())
-@mock.patch("evennia.contrib.crafting.crafting._RECIPE_CLASSES",
-            new={"testrecipe": _MockRecipe})
+@mock.patch("evennia.contrib.crafting.crafting._load_recipes", new=mock.MagicMock())
+@mock.patch("evennia.contrib.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
 @override_settings(CRAFT_RECIPE_MODULES=[], DEFAULT_HOME="#999999")
 class TestCraftCommand(CommandTest):
     """Test the crafting command"""
@@ -645,15 +657,15 @@ class TestCraftCommand(CommandTest):
         super().setUp()
 
         tools, consumables = _MockRecipe.seed(
-            tool_kwargs={"location": self.char1},
-            consumable_kwargs={"location": self.char1})
+            tool_kwargs={"location": self.char1}, consumable_kwargs={"location": self.char1}
+        )
 
     def test_craft__success(self):
         "Successfully craft using command"
         self.call(
             crafting.CmdCraft(),
             "testrecipe from cons1, cons2, cons3 using tool1, tool2",
-            _MockRecipe.success_message.format(outputs="Result1")
+            _MockRecipe.success_message.format(outputs="Result1"),
         )
 
     def test_craft__notools__failure(self):
@@ -661,12 +673,12 @@ class TestCraftCommand(CommandTest):
         self.call(
             crafting.CmdCraft(),
             "testrecipe from cons1, cons2, cons3",
-            _MockRecipe.error_tool_missing_message.format(outputs="Result1", missing="tool1")
+            _MockRecipe.error_tool_missing_message.format(outputs="Result1", missing="tool1"),
         )
 
     def test_craft__nocons__failure(self):
         self.call(
             crafting.CmdCraft(),
             "testrecipe using tool1, tool2",
-            _MockRecipe.error_consumable_missing_message.format(outputs="Result1", missing="cons1")
+            _MockRecipe.error_consumable_missing_message.format(outputs="Result1", missing="cons1"),
         )
