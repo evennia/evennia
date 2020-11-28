@@ -70,7 +70,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.gametime](api:evennia.utils.gametime) - server run- and game time ([docs](Components/Coding-Utils#gametime))
 - [evennia.logger](api:evennia.utils.logger) - logging tools
 - [evennia.ansi](api:evennia.utils.ansi) - ansi coloring tools
-- [evennia.spawn](api:evennia.prototypes.spawner#evennia.prototypes.spawner.Spawn) - spawn/prototype system ([docs](Components/Spawner-and-Prototypes))
+- [evennia.spawn](api:evennia.prototypes.spawner#evennia.prototypes.spawner.Spawn) - spawn/prototype system ([docs](Components/Prototypes))
 - [evennia.lockfuncs](api:evennia.locks.lockfuncs) - default lock functions for access control ([docs](Components/Locks))
 - [evennia.EvMenu](api:evennia.utils.evmenu#evennia.utils.evmenu.EvMenu) - menu system ([docs](Components/EvMenu))
 - [evennia.EvTable](api:evennia.utils.evtable#evennia.utils.evtable.EvTable) - text table creater

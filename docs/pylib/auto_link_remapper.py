@@ -46,7 +46,7 @@ URL_REMAPS = {
     "Starting/Adding-Command-Tutorial": "Adding-Commands",
     "Adding-Command-Tutorial": "Adding-Commands",
     "CmdSet": "Command-Sets",
-    "Spawner": "Spawner-and-Prototypes",
+    "Spawner": "Prototypes",
     "issue": "github:issue",
     "issues": "github:issue",
     "bug": "github:issue",

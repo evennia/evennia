@@ -45,6 +45,8 @@ evennia.contrib
    :maxdepth: 6
 
    evennia.contrib.awsstorage
+   evennia.contrib.crafting
+   evennia.contrib.evscaperoom
    evennia.contrib.ingame_python
    evennia.contrib.security
    evennia.contrib.turnbattle

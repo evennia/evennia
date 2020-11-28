@@ -1,18 +1,19 @@
 """
-Example recipes for the crafting system - how to make a sword.
+How to make a sword - example crafting tree for the crafting system.
 
-See the _SwordSmithingBaseRecipe for an example of extendng the recipe with a
-mocked 'skill' system (just random chance in our case). The skill system used
-is game-specific but likely to be needed for most 'real' crafting systems.
+See the `SwordSmithingBaseRecipe` in this module for an example of extendng the
+recipe with a mocked 'skill' system (just random chance in our case). The skill
+system used is game-specific but likely to be needed for most 'real' crafting
+systems.
 
 Note that 'tools' are references to the tools used - they don't need to be in
 the inventory of the crafter. So when 'blast furnace' is given below, it is a
 reference to a blast furnace used, not suggesting the crafter is carrying it
 around with them.
 
-::
+## Sword crafting tree
 
-    Sword crafting tree
+::
 
     # base materials (consumables)
 
@@ -40,6 +41,7 @@ around with them.
     sword = sword blade + sword guard + sword pommel
             + sword handle + leather + knife[T] + hammer[T] + furnace[T]
 
+----
 
 """
 
@@ -52,13 +54,16 @@ class PigIronRecipe(CraftingRecipe):
     Pig iron is a high-carbon result of melting iron in a blast furnace.
 
     """
+
     name = "pig iron"
     tool_tags = ["blast furnace"]
     consumable_tags = ["iron ore", "coal", "coal"]
     output_prototypes = [
-        {"key": "Pig Iron ingot",
-         "desc": "An ingot of crude pig iron.",
-         "tags": [("pig iron", "crafting_material")]}
+        {
+            "key": "Pig Iron ingot",
+            "desc": "An ingot of crude pig iron.",
+            "tags": [("pig iron", "crafting_material")],
+        }
     ]
 
 
@@ -68,13 +73,16 @@ class CrucibleSteelRecipe(CraftingRecipe):
     crucible produces a medieval level of steel (like damascus steel).
 
     """
+
     name = "crucible steel"
     tool_tags = ["crucible"]
     consumable_tags = ["pig iron", "ash", "sand", "coal", "coal"]
     output_prototypes = [
-        {"key": "Crucible steel ingot",
-         "desc": "An ingot of multi-colored crucible steel.",
-         "tags": [("crucible steel", "crafting_material")]}
+        {
+            "key": "Crucible steel ingot",
+            "desc": "An ingot of multi-colored crucible steel.",
+            "tags": [("crucible steel", "crafting_material")],
+        }
     ]
 
 
@@ -87,8 +95,9 @@ class _SwordSmithingBaseRecipe(CraftingRecipe):
     """
 
     success_message = "Your smithing work bears fruit and you craft {outputs}!"
-    failed_message = ("You work and work but you are not happy with the result. "
-                      "You need to start over.")
+    failed_message = (
+        "You work and work but you are not happy with the result. You need to start over."
+    )
 
     def do_craft(self, **kwargs):
         """
@@ -130,14 +139,18 @@ class SwordBladeRecipe(_SwordSmithingBaseRecipe):
     part of the sword you hold on to).
 
     """
+
     name = "sword blade"
     tool_tags = ["hammer", "anvil", "furnace"]
     consumable_tags = ["crucible steel"]
     output_prototypes = [
-        {"key": "Sword blade",
-         "desc": "A long blade that may one day become a sword.",
-         "tags": [("sword blade", "crafting_material")]}
+        {
+            "key": "Sword blade",
+            "desc": "A long blade that may one day become a sword.",
+            "tags": [("sword blade", "crafting_material")],
+        }
     ]
+
 
 class SwordPommelRecipe(_SwordSmithingBaseRecipe):
     """
@@ -145,13 +158,16 @@ class SwordPommelRecipe(_SwordSmithingBaseRecipe):
     it together.
 
     """
+
     name = "sword pommel"
     tool_tags = ["hammer", "anvil", "furnace"]
     consumable_tags = ["crucible steel"]
     output_prototypes = [
-        {"key": "Sword pommel",
-         "desc": "The pommel for a future sword.",
-         "tags": [("sword pommel", "crafting_material")]}
+        {
+            "key": "Sword pommel",
+            "desc": "The pommel for a future sword.",
+            "tags": [("sword pommel", "crafting_material")],
+        }
     ]
 
 
@@ -161,13 +177,16 @@ class SwordGuardRecipe(_SwordSmithingBaseRecipe):
     sword's blade and also protects the hand when parrying.
 
     """
+
     name = "sword guard"
     tool_tags = ["hammer", "anvil", "furnace"]
     consumable_tags = ["crucible steel"]
     output_prototypes = [
-        {"key": "Sword guard",
-         "desc": "The cross-guard for a future sword.",
-         "tags": [("sword guard", "crafting_material")]}
+        {
+            "key": "Sword guard",
+            "desc": "The cross-guard for a future sword.",
+            "tags": [("sword guard", "crafting_material")],
+        }
     ]
 
 
@@ -176,13 +195,16 @@ class RawhideRecipe(CraftingRecipe):
     Rawhide is animal skin cleaned and stripped of hair.
 
     """
+
     name = "rawhide"
     tool_tags = ["knife"]
     consumable_tags = ["fur"]
     output_prototypes = [
-        {"key": "Rawhide",
-         "desc": "Animal skin, cleaned and with hair removed.",
-         "tags": [("rawhide", "crafting_material")]}
+        {
+            "key": "Rawhide",
+            "desc": "Animal skin, cleaned and with hair removed.",
+            "tags": [("rawhide", "crafting_material")],
+        }
     ]
 
 
@@ -193,17 +215,21 @@ class OakBarkRecipe(CraftingRecipe):
 
     This produces two outputs - the bark and the cleaned wood.
     """
+
     name = "oak bark"
     tool_tags = ["knife"]
     consumable_tags = ["oak wood"]
     output_prototypes = [
-        {"key": "Oak bark",
-         "desc": "Bark of oak, stripped from the core wood.",
-         "tags": [("oak bark", "crafting_material")]},
-        {"key": "Oak Wood (cleaned)",
-         "desc": "Oakwood core, stripped of bark.",
-         "tags": [("cleaned oak wood", "crafting_material")]},
-
+        {
+            "key": "Oak bark",
+            "desc": "Bark of oak, stripped from the core wood.",
+            "tags": [("oak bark", "crafting_material")],
+        },
+        {
+            "key": "Oak Wood (cleaned)",
+            "desc": "Oakwood core, stripped of bark.",
+            "tags": [("cleaned oak wood", "crafting_material")],
+        },
     ]
 
 
@@ -214,13 +240,16 @@ class LeatherRecipe(CraftingRecipe):
     'tanning rack' tool should be required too ...
 
     """
+
     name = "leather"
     tool_tags = ["cauldron"]
     consumable_tags = ["rawhide", "oak bark", "water"]
     output_prototypes = [
-        {"key": "Piece of Leather",
-         "desc": "A piece of leather.",
-         "tags": [("leather", "crafting_material")]}
+        {
+            "key": "Piece of Leather",
+            "desc": "A piece of leather.",
+            "tags": [("leather", "crafting_material")],
+        }
     ]
 
 
@@ -231,13 +260,16 @@ class SwordHandleRecipe(CraftingRecipe):
     is wrapped in leather, but that will be added at the end.
 
     """
+
     name = "sword handle"
     tool_tags = ["knife"]
     consumable_tags = ["cleaned oak wood"]
     output_prototypes = [
-        {"key": "Sword handle",
-         "desc": "Two pieces of wood to be be fitted onto a sword's tang as its handle.",
-         "tags": [("sword handle", "crafting_material")]}
+        {
+            "key": "Sword handle",
+            "desc": "Two pieces of wood to be be fitted onto a sword's tang as its handle.",
+            "tags": [("sword handle", "crafting_material")],
+        }
     ]
 
 
@@ -252,17 +284,19 @@ class SwordRecipe(_SwordSmithingBaseRecipe):
     This covers only a single 'sword' type.
 
     """
+
     name = "sword"
     tool_tags = ["hammer", "furnace", "knife"]
-    consumable_tags = ["sword blade", "sword guard", "sword pommel", "sword handle",
-                       "leather"]
+    consumable_tags = ["sword blade", "sword guard", "sword pommel", "sword handle", "leather"]
     output_prototypes = [
-        {"key": "Sword",
-         "desc": "A bladed weapon.",
-         # setting the tag as well - who knows if one can make something from this too!
-         "tags": [("sword", "crafting_material")]}
-         # obviously there would be other properties of a 'sword' added here
-         # too, depending on how combat works in the your game!
+        {
+            "key": "Sword",
+            "desc": "A bladed weapon.",
+            # setting the tag as well - who knows if one can make something from this too!
+            "tags": [("sword", "crafting_material")],
+        }
+        # obviously there would be other properties of a 'sword' added here
+        # too, depending on how combat works in the your game!
     ]
     # this requires more precision
     exact_consumable_order = True

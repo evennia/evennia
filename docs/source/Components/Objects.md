@@ -53,7 +53,7 @@ like [Scripts](./Scripts)).
 This particular Rose class doesn't really do much, all it does it make sure the attribute
 `desc`(which is what the `look` command looks for) is pre-set, which is pretty pointless since you
 will usually want to change this at build time (using the `@desc` command or using the
-[Spawner](./Spawner-and-Prototypes)). The `Object` typeclass offers many more hooks that is available
+[Spawner](./Prototypes)). The `Object` typeclass offers many more hooks that is available
 to use though - see next section.
 
 ## Properties and functions on Objects

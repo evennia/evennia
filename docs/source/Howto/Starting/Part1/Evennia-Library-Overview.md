@@ -62,7 +62,7 @@ from here to `mygame/server/settings.py` file.
    - `locale/` - Language files ([i18n](../../../Concepts/Internationalization)).
    - [`locks/`](../../../Components/Locks) - Lock system for restricting access to in-game entities.
    - [`objects/`](../../../Components/Objects) - In-game entities (all types of items and Characters).
-   - [`prototypes/`](../../../Components/Spawner-and-Prototypes) - Object Prototype/spawning system and OLC menu
+   - [`prototypes/`](../../../Components/Prototypes) - Object Prototype/spawning system and OLC menu
    - [`accounts/`](../../../Components/Accounts) - Out-of-game Session-controlled entities (accounts, bots etc)
    - [`scripts/`](../../../Components/Scripts) - Out-of-game entities equivalence to Objects, also with timer support. 
    - [`server/`](../../../Components/Portal-And-Server) - Core server code and Session handling. 
