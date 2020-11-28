@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.evscaperoom.utils &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.utils</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.evscaperoom.utils">
+<span id="evennia-contrib-evscaperoom-utils"></span><h1>evennia.contrib.evscaperoom.utils<a class="headerlink" href="#module-evennia.contrib.evscaperoom.utils" title="Permalink to this headline">¶</a></h1>
+<p>Helper functions and classes for the evscaperoom contrib.</p>
+<p>Most of these are available directly from wrappers in state/object/room classes
+and does not need to be imported from here.</p>
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.create_evscaperoom_object">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">create_evscaperoom_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'testobj'</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">delete_duplicates</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#create_evscaperoom_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.create_evscaperoom_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a convenience-wrapper for quickly building EvscapeRoom objects. This
+is called from the helper-method create_object on states, but is also useful
+for the object-create admin command.</p>
+<p>Note that for the purpose of the Evscaperoom, we only allow one instance
+of each <em>name</em>, deleting the old version if it already exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>str</em>) – This can take just the class-name in the evscaperoom’s
+objects.py module. Otherwise, a full path is needed.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Name of object.</p></li>
+<li><p><strong>location</strong> (<em>Object</em>) – The location to create new object.</p></li>
+<li><p><strong>delete_duplicates</strong> (<em>bool</em>) – Delete old object with same key.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Will be passed into create_object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>new_obj (Object)</em> – The newly created object, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.create_fantasy_word">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">create_fantasy_word</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">length</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#create_fantasy_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.create_fantasy_word" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a random semi-pronouncable ‘word’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<em>int</em>) – The desired length of the ‘word’.</p></li>
+<li><p><strong>capitalize</strong> (<em>bool</em>) – If the return should be capitalized or not</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>word (str)</em> – The fictous word of given length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.parse_for_perspectives">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">parse_for_perspectives</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">you</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#parse_for_perspectives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.parse_for_perspectives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a string with special markers to produce versions both
+intended for the person doing the action (‘you’) and for those
+seeing the person doing that action. Also marks ‘things’
+according to style. See example below.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – String on 2nd person form with ~ markers (‘~you ~open …’)</p></li>
+<li><p><strong>you</strong> (<em>str</em>) – What others should see instead of you (Bob opens)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>second, third_person (tuple)</em> –</p>
+<dl class="simple">
+<dt>Strings replace to be shown in 2nd and 3rd person</dt><dd><p>perspective</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>“~You ~open”
+-&gt;  “You open”, “Bob opens”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.parse_for_things">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">parse_for_things</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">things_style</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">'|y'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#parse_for_things"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.parse_for_things" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse string for special <a href="#id1"><span class="problematic" id="id2">*</span></a>thing markers and decorate
+it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – The string to parse.</p></li>
+<li><p><strong>things_style</strong> (<em>int</em>) – The style to handle <strong>*things</strong> marked:
+0 - no marking (remove <strong>*</strong>)
+1 - mark with color
+2 - mark with color and [] (default)</p></li>
+<li><p><strong>clr</strong> (<em>str</em>) – Which color to use for marker..</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>You open <a href="#id3"><span class="problematic" id="id4">*</span></a>door -&gt; You open [door].</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.add_msg_borders">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">add_msg_borders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#add_msg_borders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.add_msg_borders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add borders above/below text block</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.evscaperoom.utils.msg_cinematic">
+<code class="sig-prename descclassname">evennia.contrib.evscaperoom.utils.</code><code class="sig-name descname">msg_cinematic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">borders</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/utils.html#msg_cinematic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.utils.msg_cinematic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a text as a ‘cinematic’ - centered and
+surrounded by borders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Text to format.</p></li>
+<li><p><strong>borders</strong> (<em>bool</em><em>, </em><em>optional</em>) – Put borders above and below text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>text (str)</em> – Pretty-formatted text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.evscaperoom.utils.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.evscaperoom.utils.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.utils</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

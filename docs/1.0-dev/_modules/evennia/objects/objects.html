@@ -447,7 +447,9 @@
 <span class="sd">                to search. Note that this is used to query the *contents* of a</span>
 <span class="sd">                location and will not match for the location itself -</span>
 <span class="sd">                if you want that, don&#39;t set this or use `candidates` to specify</span>
-<span class="sd">                exactly which objects should be searched.</span>
+<span class="sd">                exactly which objects should be searched. If this nor candidates are</span>
+<span class="sd">                given, candidates will include caller&#39;s inventory, current location and</span>
+<span class="sd">                all objects in the current location.</span>
 <span class="sd">            attribute_name (str): Define which property to search. If set, no</span>
 <span class="sd">                key+alias search will be performed. This can be used</span>
 <span class="sd">                to search database fields (db_ will be automatically</span>

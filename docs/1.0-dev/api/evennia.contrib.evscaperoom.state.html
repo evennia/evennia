@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.evscaperoom.state &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.state</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.evscaperoom.state">
+<span id="evennia-contrib-evscaperoom-state"></span><h1>evennia.contrib.evscaperoom.state<a class="headerlink" href="#module-evennia.contrib.evscaperoom.state" title="Permalink to this headline">¶</a></h1>
+<p>States represent the sequence of states the room goes through.</p>
+<p>This module includes the BaseState class and the StateHandler
+for managing states on the room.</p>
+<p>The state handler operates on an Evscaperoom and changes
+its state from one to another.</p>
+<p>A given state is given as a module in states/ package. The
+state is identified by its module name.</p>
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.state.StateHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.state.</code><code class="sig-name descname">StateHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#StateHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.StateHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This sits on the room and is used to progress through the states.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.StateHandler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#StateHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.StateHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.StateHandler.load_state">
+<code class="sig-name descname">load_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">statename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#StateHandler.load_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.StateHandler.load_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load state without initializing it</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.StateHandler.init_state">
+<code class="sig-name descname">init_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#StateHandler.init_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.StateHandler.init_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a new state</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.StateHandler.next_state">
+<code class="sig-name descname">next_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">next_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#StateHandler.next_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.StateHandler.next_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the current state is finished. This should be called whenever
+the players do actions that may affect the state of the room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>next_state</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, override the next_state given
+by the current state’s check() method with this - this allows
+for branching paths (but the current state must still first agree
+that the check passes).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>state_changed (bool)</em> – True if the state changed, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.state.BaseState">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.state.</code><code class="sig-name descname">BaseState</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base object holding all callables for a state. This is here to
+allow easy overriding for child states.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.next_state">
+<code class="sig-name descname">next_state</code><em class="property"> = 'unset'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.next_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.hints">
+<code class="sig-name descname">hints</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.hints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<a class="reference internal" href="evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom" title="evennia.contrib.evscaperoom.room.EvscapeRoom"><em>EvscapeRoom</em></a>) – The room tied to this state.</p></li>
+<li><p><strong>handler</strong> (<a class="reference internal" href="#evennia.contrib.evscaperoom.state.StateHandler" title="evennia.contrib.evscaperoom.state.StateHandler"><em>StateHandler</em></a>) – Back-reference to the handler
+storing this state.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.get_hint">
+<code class="sig-name descname">get_hint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.get_hint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.get_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a hint for how to solve this state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">borders</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cinematic</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display messsage to everyone in room, or given target.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.cinematic">
+<code class="sig-name descname">cinematic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.cinematic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.cinematic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a ‘cinematic’ sequence - centered, with borders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.create_object">
+<code class="sig-name descname">create_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'testobj'</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.create_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a convenience-wrapper for quickly building EvscapeRoom objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>str</em>) – This can take just the class-name in the evscaperoom’s
+objects.py module. Otherwise, a full path or the actual class
+is needed (for custom state objects, just give the class directly).</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Name of object.</p></li>
+<li><p><strong>location</strong> (<em>Object</em>) – If not given, this will be the current room.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Will be passed into create_object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>new_obj (Object)</em> – The newly created object, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a named <em>non-character</em> object for this state in this room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Object to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>obj (Object)</em> – Object in the room.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.init">
+<code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the state (usually by modifying the room in some way)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.clean">
+<code class="sig-name descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any cleanup operations after the state ends.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.next">
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">next_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the next state after this one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>next_state</strong> (<em>str</em><em>, </em><em>optional</em>) – This allows the calling code
+to redirect to a different state than the ‘default’ one
+(creating branching paths in the game). Override this method
+to customize (by default the input will always override default
+set on the class)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>state_name (str or None)</em> –</p>
+<dl class="simple">
+<dt>Name of next state to switch to. None</dt><dd><p>to remain in this state. By default we check the room for the
+“finished” flag be set.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.character_enters">
+<code class="sig-name descname">character_enters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.character_enters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.character_enters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when character enters the room in this state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.state.BaseState.character_leaves">
+<code class="sig-name descname">character_leaves</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/state.html#BaseState.character_leaves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.state.BaseState.character_leaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when character is whisked away (usually because of
+quitting). This method cannot influence the move itself; it
+happens just before room.character_cleanup()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.evscaperoom.state.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.evscaperoom.state.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.state</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

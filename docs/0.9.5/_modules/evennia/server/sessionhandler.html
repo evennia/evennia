@@ -59,7 +59,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_LOGINSTART</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_trace</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="p">(</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
     <span class="n">delay</span><span class="p">,</span>
@@ -116,8 +116,7 @@
     <span class="k">global</span> <span class="n">_ServerSession</span><span class="p">,</span> <span class="n">_AccountDB</span><span class="p">,</span> <span class="n">_ServerConfig</span><span class="p">,</span> <span class="n">_ScriptDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ServerSession</span><span class="p">:</span>
         <span class="c1"># we allow optional arbitrary serversession class for overloading</span>
-        <span class="n">modulename</span><span class="p">,</span> <span class="n">classname</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">_ServerSession</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">modulename</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
+        <span class="n">_ServerSession</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_AccountDB</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ServerConfig</span><span class="p">:</span>
@@ -125,10 +124,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ScriptDB</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
     <span class="c1"># including once to avoid warnings in Python syntax checkers</span>
-    <span class="k">assert</span> <span class="n">_ServerSession</span>
-    <span class="k">assert</span> <span class="n">_AccountDB</span>
-    <span class="k">assert</span> <span class="n">_ServerConfig</span>
-    <span class="k">assert</span> <span class="n">_ScriptDB</span></div>
+    <span class="k">assert</span> <span class="n">_ServerSession</span><span class="p">,</span> <span class="s2">&quot;ServerSession class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_AccountDB</span><span class="p">,</span> <span class="s2">&quot;AccountDB class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_ServerConfig</span><span class="p">,</span> <span class="s2">&quot;ServerConfig class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_ScriptDB</span><span class="p">,</span> <span class="s2">&quot;ScriptDB class c ould not load&quot;</span></div>
 
 
 <span class="c1"># -----------------------------------------------------------</span>

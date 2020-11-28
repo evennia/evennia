@@ -1,0 +1,1830 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.evscaperoom.objects &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.evscaperoom.objects">
+<span id="evennia-contrib-evscaperoom-objects"></span><h1>evennia.contrib.evscaperoom.objects<a class="headerlink" href="#module-evennia.contrib.evscaperoom.objects" title="Permalink to this headline">¶</a></h1>
+<p>Base objects for the Evscaperoom contrib.</p>
+<p>The object class itself provide the actions possible to use on that object.
+This makes these objects suitable for use with multi-inheritance. For example,
+to make an object both possible to smell and eat or drink, find the appropriate
+parents in this module and make an object like this:</p>
+<p>class Apple(Edible, Smellable):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>def at_drink(self, caller):</dt><dd><p># …</p>
+</dd>
+<dt>def at_smell(self, caller):</dt><dd><p># …</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Various object parents could be more complex, so read the class for more info.</p>
+<p>Available parents:</p>
+<ul class="simple">
+<li><p>EvscapeRoomObject - parent class for all Evscaperoom entities (also the room itself)</p></li>
+<li><p>Feelable</p></li>
+<li><p>Listenable</p></li>
+<li><p>Smellable</p></li>
+<li><p>Rotatable</p></li>
+<li><p>Openable</p></li>
+<li><p>Readable</p></li>
+<li><p>IndexReadable  (like a lexicon you have to give a search term in)</p></li>
+<li><p>Movable</p></li>
+<li><p>Edible</p></li>
+<li><p>Drinkable</p></li>
+<li><p>Usable</p></li>
+<li><p>Insertable  (can be inserted into a target)</p></li>
+<li><p>Combinable  (combines with another object to create a new one)</p></li>
+<li><p>Mixable     (used for mixing potions into it)</p></li>
+<li><p>HasButtons  (an object with buttons on it)</p></li>
+<li><p>CodeInput   (code locks)</p></li>
+<li><p>Sittable    (can be sat on)</p></li>
+<li><p>Liable      (can be lied down on)</p></li>
+<li><p>Kneeable    (can be kneed down on)</p></li>
+<li><p>Climbable   (can be climbed on)</p></li>
+<li><p>Positionable (supports sit/lie/knee/climb at once)</p></li>
+</ul>
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">EvscaperoomObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+<p>Default object base for all objects related to the contrib.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.action_prepositions">
+<code class="sig-name descname">action_prepositions</code><em class="property"> = ('in', 'with', 'on', 'into', 'to')</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.action_prepositions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.position_prep_map">
+<code class="sig-name descname">position_prep_map</code><em class="property"> = {'climb': 'standing', 'kneel': 'kneeling', 'lie': 'lying', 'sit': 'sitting'}</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.position_prep_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.tagcategory">
+<em class="property">property </em><code class="sig-name descname">tagcategory</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.tagcategory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.room">
+<em class="property">property </em><code class="sig-name descname">room</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.room" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.roomstate">
+<em class="property">property </em><code class="sig-name descname">roomstate</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.roomstate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.next_state">
+<code class="sig-name descname">next_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">statename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.next_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.next_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to have the object switch the room to next state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>statename</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, move to this
+state next. Otherwise use the default next-state
+of the current state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_flag">
+<code class="sig-name descname">set_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flagname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.set_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set flag on object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.unset_flag">
+<code class="sig-name descname">unset_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flagname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.unset_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.unset_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unset flag on object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.check_flag">
+<code class="sig-name descname">check_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flagname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.check_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.check_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if flag is set on this object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_character_flag">
+<code class="sig-name descname">set_character_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">char</span></em>, <em class="sig-param"><span class="n">flagname</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.set_character_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_character_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set flag on character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.unset_character_flag">
+<code class="sig-name descname">unset_character_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">char</span></em>, <em class="sig-param"><span class="n">flagname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.unset_character_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.unset_character_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set flag on character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.check_character_flag">
+<code class="sig-name descname">check_character_flag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">char</span></em>, <em class="sig-param"><span class="n">flagname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.check_character_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.check_character_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if flag is set on character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_room">
+<code class="sig-name descname">msg_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">skip_caller</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.msg_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Message everyone in the room with a message that is parsed for
+~first/third person grammar, as well as for <a href="#id1"><span class="problematic" id="id2">*</span></a>thing markers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>None</em>) – Sender of the message. If None, there
+is no sender.</p></li>
+<li><p><strong>string</strong> (<em>str</em>) – Message to parse and send to the room.</p></li>
+<li><p><strong>skip_caller</strong> (<em>bool</em>) – Send to everyone except caller.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Messages sent by this method will be tagged with a type of
+‘your_action’ and <strong>others_action</strong>. This is an experiment for
+allowing users of e.g. the webclient to redirect messages to
+differnt windows.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_char">
+<code class="sig-name descname">msg_char</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">client_type</span><span class="o">=</span><span class="default_value">'your_action'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.msg_char"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_char" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message only to caller (not to the room at large)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_system">
+<code class="sig-name descname">msg_system</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">borders</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.msg_system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.msg_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a ‘system message’ by using the State.msg function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_position">
+<code class="sig-name descname">get_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.get_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position of caller on this object (like lying, sitting, kneeling,
+standing). See the Positionable child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Object</em>) – The one position we seek.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>obj, pos (Object, str)</em> –</p>
+<dl class="simple">
+<dt>The object we have a position relative to,</dt><dd><p>as well as the name of that position (lying, sitting, kneeling,
+standing).  If these are None, it means we are standing on the
+floor.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_position">
+<code class="sig-name descname">set_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">new_position</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.set_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.set_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set position of caller (like lying, sitting, kneeling, standing)
+on this object. See Positionable child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – The one positioning themselves on this object.</p></li>
+<li><p><strong>new_position</strong> (<em>str</em><em>, </em><em>None</em>) – One of “lie”, “kneel”, “sit” or “stand”.
+If <strong>None</strong>, remove position (character stands normally on the
+floor).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_focus">
+<code class="sig-name descname">at_focus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.at_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_focus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when somone is focusing on this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Character</em>) – The one doing the focusing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_unfocus">
+<code class="sig-name descname">at_unfocus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.at_unfocus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_unfocus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when focus leaves this object. Note that more than one caller
+may be focusing on the object at the same time, so we should not change
+the state of the object itself here!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Character</em>) – The one doing the unfocusing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_speech">
+<code class="sig-name descname">at_speech</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speaker</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.at_speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.at_speech" title="Permalink to this definition">¶</a></dt>
+<dd><p>We don’t use the default at_say hook since we handle the send logic in
+the command. This is only meant to trigger eventual game-events when
+speaking to an object or the room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>speaker</strong> (<em>Character</em>) – The one speaking.</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – One of ‘say’, ‘whisper’ or ‘shout’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple parser of focus arguments starting with a preposition,
+like ‘combine with &lt;object&gt;’ &lt;- we want to strip out the preposition
+here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_short_desc">
+<code class="sig-name descname">get_short_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">full_desc</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.get_short_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_short_desc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the first sentence from the desc and use as the short desc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get help about this object. By default we return a
+listing of all actions you can do on this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.return_appearance">
+<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#EvscaperoomObject.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.return_appearance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Could be modified per state. We generally don’t worry about the
+contents of the object by default.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.EvscaperoomObject'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.EvscaperoomObject.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvscaperoomObject'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Feelable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Feelable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that you can feel the surface of.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable.at_focus_feel">
+<code class="sig-name descname">at_focus_feel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Feelable.at_focus_feel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable.at_focus_feel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Feelable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Feelable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Feelable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Feelable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Listenable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Listenable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object one can listen to.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable.at_focus_listen">
+<code class="sig-name descname">at_focus_listen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Listenable.at_focus_listen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable.at_focus_listen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Listenable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Listenable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Listenable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Listenable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Smellable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Smellable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object you can smell.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable.at_focus_smell">
+<code class="sig-name descname">at_focus_smell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Smellable.at_focus_smell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable.at_focus_smell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Smellable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Smellable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Smellable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Smellable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Rotatable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Rotatable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that you can lift up and look at from different angles</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.rotate_flag">
+<code class="sig-name descname">rotate_flag</code><em class="property"> = 'rotatable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.rotate_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.start_rotatable">
+<code class="sig-name descname">start_rotatable</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.start_rotatable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Rotatable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.at_focus_rotate">
+<code class="sig-name descname">at_focus_rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Rotatable.at_focus_rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.at_focus_rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.at_focus_turn">
+<code class="sig-name descname">at_focus_turn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.at_focus_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.at_rotate">
+<code class="sig-name descname">at_rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Rotatable.at_rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.at_rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.at_cannot_rotate">
+<code class="sig-name descname">at_cannot_rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Rotatable.at_cannot_rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.at_cannot_rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Rotatable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Rotatable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Rotatable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Rotatable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Openable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Openable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that you can open/close. It’s lockable with
+a flag.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.unlock_flag">
+<code class="sig-name descname">unlock_flag</code><em class="property"> = 'unlocked'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.unlock_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.open_flag">
+<code class="sig-name descname">open_flag</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.open_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.start_open">
+<code class="sig-name descname">start_open</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.start_open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_focus_open">
+<code class="sig-name descname">at_focus_open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_focus_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_focus_open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_focus_close">
+<code class="sig-name descname">at_focus_close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_focus_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_focus_close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_open">
+<code class="sig-name descname">at_open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_already_open">
+<code class="sig-name descname">at_already_open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_already_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_already_open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_locked">
+<code class="sig-name descname">at_locked</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_locked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_locked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_close">
+<code class="sig-name descname">at_close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.at_already_closed">
+<code class="sig-name descname">at_already_closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Openable.at_already_closed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.at_already_closed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Openable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Openable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Openable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Openable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Readable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Readable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Readable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that you can read from. This is controlled
+from a flag.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.read_flag">
+<code class="sig-name descname">read_flag</code><em class="property"> = 'readable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.read_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.start_readable">
+<code class="sig-name descname">start_readable</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.start_readable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Readable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.at_focus_read">
+<code class="sig-name descname">at_focus_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Readable.at_focus_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.at_focus_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.at_read">
+<code class="sig-name descname">at_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Readable.at_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.at_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.at_cannot_read">
+<code class="sig-name descname">at_cannot_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Readable.at_cannot_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.at_cannot_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Readable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Readable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Readable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Readable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">IndexReadable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#IndexReadable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Readable" title="evennia.contrib.evscaperoom.objects.Readable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Readable</span></code></a></p>
+<p>Any object for which you need to specify a key/index to get a given result
+back. For example a lexicon or book where you enter a topic or a page
+number to see what’s to be read on that page.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.index">
+<code class="sig-name descname">index</code><em class="property"> = {'page two': 'page2', 'page1': 'This is page1', 'page2': 'This is page2'}</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.at_focus_read">
+<code class="sig-name descname">at_focus_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#IndexReadable.at_focus_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.at_focus_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#IndexReadable.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.at_cannot_read">
+<code class="sig-name descname">at_cannot_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">topic</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#IndexReadable.at_cannot_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.at_cannot_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.at_read">
+<code class="sig-name descname">at_read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">topic</span></em>, <em class="sig-param"><span class="n">entry</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#IndexReadable.at_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.at_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Readable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.Readable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Readable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Readable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.Readable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Readable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.IndexReadable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.IndexReadable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'IndexReadable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.IndexReadable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Movable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Movable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that can be moved from one place to another
+or in one direction or another.</p>
+<p>Once moved to a given position, the object’s state will
+change.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.move_positions">
+<code class="sig-name descname">move_positions</code><em class="property"> = {'left': 'at_left', 'right': 'at_right'}</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.move_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.start_position">
+<code class="sig-name descname">start_position</code><em class="property"> = 'left'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.start_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_focus_move">
+<code class="sig-name descname">at_focus_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_focus_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_focus_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_focus_shove">
+<code class="sig-name descname">at_focus_shove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_focus_shove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_focus_push">
+<code class="sig-name descname">at_focus_push</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_focus_push" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_cannot_move">
+<code class="sig-name descname">at_cannot_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_cannot_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_cannot_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_already_moved">
+<code class="sig-name descname">at_already_moved</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_already_moved"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_already_moved" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_left">
+<code class="sig-name descname">at_left</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_left" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.at_right">
+<code class="sig-name descname">at_right</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Movable.at_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.at_right" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Movable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Movable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Movable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Movable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">BaseConsumable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseConsumable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that is consumable in some way. This acts as an
+abstract parent.</p>
+<p>This sets a flag that
+is unique for each person consuming, allowing it to e.g. only
+be consumed once (don’t support multi-uses here, that’s left for
+a custom object if needed).</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.consume_flag">
+<code class="sig-name descname">consume_flag</code><em class="property"> = 'consume'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.consume_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.one_consume_only">
+<code class="sig-name descname">one_consume_only</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.one_consume_only" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.handle_consume">
+<code class="sig-name descname">handle_consume</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseConsumable.handle_consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.handle_consume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap this by the at_focus method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.has_consumed">
+<code class="sig-name descname">has_consumed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">setflag</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseConsumable.has_consumed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.has_consumed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if caller already consumed at least once</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.at_consume">
+<code class="sig-name descname">at_consume</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseConsumable.at_consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.at_consume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.at_already_consumed">
+<code class="sig-name descname">at_already_consumed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseConsumable.at_already_consumed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.at_already_consumed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.BaseConsumable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseConsumable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'BaseConsumable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Edible">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Edible</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Edible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable" title="evennia.contrib.evscaperoom.objects.BaseConsumable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable</span></code></a></p>
+<p>Any object specifically possible to eat.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.consume_flag">
+<code class="sig-name descname">consume_flag</code><em class="property"> = 'eat'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.consume_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.at_focus_eat">
+<code class="sig-name descname">at_focus_eat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Edible.at_focus_eat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.at_focus_eat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Edible'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Edible.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Edible'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Edible.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Drinkable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Drinkable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable" title="evennia.contrib.evscaperoom.objects.BaseConsumable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable</span></code></a></p>
+<p>Any object specifically possible to drink.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.consume_flag">
+<code class="sig-name descname">consume_flag</code><em class="property"> = 'drink'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.consume_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.at_focus_drink">
+<code class="sig-name descname">at_focus_drink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Drinkable.at_focus_drink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.at_focus_drink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.at_focus_sip">
+<code class="sig-name descname">at_focus_sip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Drinkable.at_focus_sip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.at_focus_sip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.at_consume">
+<code class="sig-name descname">at_consume</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Drinkable.at_consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.at_consume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.at_already_consumed">
+<code class="sig-name descname">at_already_consumed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Drinkable.at_already_consumed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.at_already_consumed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseConsumable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Drinkable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Drinkable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Drinkable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Drinkable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">BaseApplicable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseApplicable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object that can be applied/inserted/used on another object in some way.
+This acts an an abstract base class.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.target_flag">
+<code class="sig-name descname">target_flag</code><em class="property"> = 'applicable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.target_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.handle_apply">
+<code class="sig-name descname">handle_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseApplicable.handle_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.handle_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap this with the at_focus methods in the child classes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.at_apply">
+<code class="sig-name descname">at_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseApplicable.at_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.at_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.at_cannot_apply">
+<code class="sig-name descname">at_cannot_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BaseApplicable.at_cannot_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.at_cannot_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.BaseApplicable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BaseApplicable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'BaseApplicable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Usable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Usable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Usable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable" title="evennia.contrib.evscaperoom.objects.BaseApplicable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable</span></code></a></p>
+<p>Any object that can be used with another object.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.target_flag">
+<code class="sig-name descname">target_flag</code><em class="property"> = 'usable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.target_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.at_focus_use">
+<code class="sig-name descname">at_focus_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Usable.at_focus_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.at_focus_use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.at_apply">
+<code class="sig-name descname">at_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Usable.at_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.at_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.at_cannot_apply">
+<code class="sig-name descname">at_cannot_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Usable.at_cannot_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.at_cannot_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Usable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Usable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Usable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Usable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Insertable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Insertable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable" title="evennia.contrib.evscaperoom.objects.BaseApplicable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable</span></code></a></p>
+<p>Any object that can be inserted into another object.</p>
+<p>This would cover a key, for example.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.target_flag">
+<code class="sig-name descname">target_flag</code><em class="property"> = 'insertable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.target_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.at_focus_insert">
+<code class="sig-name descname">at_focus_insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Insertable.at_focus_insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.at_focus_insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.at_apply">
+<code class="sig-name descname">at_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Insertable.at_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.at_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Insertable.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.at_cannot_apply">
+<code class="sig-name descname">at_cannot_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Insertable.at_cannot_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.at_cannot_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Insertable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Insertable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Insertable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Insertable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Combinable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Combinable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable" title="evennia.contrib.evscaperoom.objects.BaseApplicable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable</span></code></a></p>
+<p>Any object that combines with another object to create
+a new one.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.target_flag">
+<code class="sig-name descname">target_flag</code><em class="property"> = 'combinable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.target_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.new_create_dict">
+<code class="sig-name descname">new_create_dict</code><em class="property"> = {'aliases': ['combined'], 'key': 'sword', 'typeclass': 'evscaperoom.objects.Combinable'}</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.new_create_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.destroy_components">
+<code class="sig-name descname">destroy_components</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.destroy_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.at_focus_combine">
+<code class="sig-name descname">at_focus_combine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Combinable.at_focus_combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.at_focus_combine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Combinable.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.at_cannot_apply">
+<code class="sig-name descname">at_cannot_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Combinable.at_cannot_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.at_cannot_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.at_apply">
+<code class="sig-name descname">at_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">other_obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Combinable.at_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.at_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BaseApplicable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Combinable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Combinable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Combinable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Combinable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Mixable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object into which you can mix ingredients (such as when
+mixing a potion). This offers no actions on its own, instead
+the ingredients should be ‘used’ with this object in order
+mix, calling at_mix when they do.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.mixer_flag">
+<code class="sig-name descname">mixer_flag</code><em class="property"> = 'mixer'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.mixer_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.ingredient_recipe">
+<code class="sig-name descname">ingredient_recipe</code><em class="property"> = ['ingredient1', 'ingredient2', 'ingredient3']</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.ingredient_recipe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.check_mixture">
+<code class="sig-name descname">check_mixture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.check_mixture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.check_mixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>check so mixture is correct, returning True/False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.handle_mix">
+<code class="sig-name descname">handle_mix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">ingredient</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.handle_mix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.handle_mix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add ingredient object to mixture.</p>
+<p>Called by the mixing ingredient. We assume the ingredient has already
+checked to make sure they allow themselves to be mixed into an object
+with this mixer_flag.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.at_mix">
+<code class="sig-name descname">at_mix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">ingredient</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.at_mix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.at_mix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.at_mix_failure">
+<code class="sig-name descname">at_mix_failure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">ingredient</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.at_mix_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.at_mix_failure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.at_mix_success">
+<code class="sig-name descname">at_mix_success</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">ingredient</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Mixable.at_mix_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.at_mix_success" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Mixable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Mixable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Mixable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Mixable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">HasButtons</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object with buttons to push/press</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.buttons">
+<code class="sig-name descname">buttons</code><em class="property"> = {'green': 'at_green_button', 'green button': 'at_green_button', 'red': 'at_red_button', 'red button': 'at_red_button'}</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.buttons" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.at_focus_press">
+<code class="sig-name descname">at_focus_press</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons.at_focus_press"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.at_focus_press" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.at_focus_push">
+<code class="sig-name descname">at_focus_push</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.at_focus_push" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.at_nomatch">
+<code class="sig-name descname">at_nomatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons.at_nomatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.at_nomatch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.at_green_button">
+<code class="sig-name descname">at_green_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons.at_green_button"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.at_green_button" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.at_red_button">
+<code class="sig-name descname">at_red_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#HasButtons.at_red_button"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.at_red_button" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.HasButtons'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.HasButtons.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'HasButtons'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.HasButtons.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">CodeInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object where you can enter a code of some sort
+to have an effect happen.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.code">
+<code class="sig-name descname">code</code><em class="property"> = 'PASSWORD'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.code_hint">
+<code class="sig-name descname">code_hint</code><em class="property"> = 'eight letters A-Z'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.code_hint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.case_insensitive">
+<code class="sig-name descname">case_insensitive</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.case_insensitive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.infinitely_locked">
+<code class="sig-name descname">infinitely_locked</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.infinitely_locked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.at_focus_code">
+<code class="sig-name descname">at_focus_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput.at_focus_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.at_focus_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.at_no_code">
+<code class="sig-name descname">at_no_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput.at_no_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.at_no_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.at_code_correct">
+<code class="sig-name descname">at_code_correct</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">code_tried</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput.at_code_correct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.at_code_correct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.at_code_incorrect">
+<code class="sig-name descname">at_code_incorrect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">code_tried</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#CodeInput.at_code_incorrect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.at_code_incorrect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.CodeInput'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.CodeInput.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'CodeInput'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.CodeInput.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">BasePositionable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject</span></code></a></p>
+<p>Any object a character can be positioned on. This is meant as an
+abstract parent.</p>
+<p>This is a little special since a char can only have one position at a
+time and must therefore be aware of the other ‘positional’ actions
+any object may support (otherwise you may end up sitting/standing/etc on
+more than one object at once!)</p>
+<p>We set a Attribute (obj, position) on the caller to indicate that
+they have a position on an object. This is necessary so as to not have
+the caller sit on more than one sittable object at a time, for example. The
+‘positions’ Attribute on this object holds a mapping of who is sitting
+lying etc on this object.  We don’t add a limit to how many chars could
+have a position on an object - it’s not realistic, but this goes with the
+philosophy that one character should not be able to block others if they go
+inactive etc.</p>
+<p>This state is also tied to the general ‘stand’ command, which should return
+the player to the normal standing state regardless of if they focus on this
+object or not.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.handle_position">
+<code class="sig-name descname">handle_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">new_pos</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable.handle_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.handle_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap this with the <a href="#id3"><span class="problematic" id="id4">at_focus_</span></a> method of the child class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.at_cannot_position">
+<code class="sig-name descname">at_cannot_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">position</span></em>, <em class="sig-param"><span class="n">old_obj</span></em>, <em class="sig-param"><span class="n">old_pos</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable.at_cannot_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.at_cannot_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.at_again_position">
+<code class="sig-name descname">at_again_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable.at_again_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.at_again_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.at_position">
+<code class="sig-name descname">at_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#BasePositionable.at_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.at_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.EvscaperoomObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.BasePositionable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.BasePositionable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'BasePositionable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.BasePositionable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Sittable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Sittable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable" title="evennia.contrib.evscaperoom.objects.BasePositionable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable</span></code></a></p>
+<p>Any object you can sit on.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable.at_focus_sit">
+<code class="sig-name descname">at_focus_sit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Sittable.at_focus_sit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable.at_focus_sit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Sittable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Sittable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Sittable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Sittable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Liable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Liable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Liable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable" title="evennia.contrib.evscaperoom.objects.BasePositionable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable</span></code></a></p>
+<p>Any object you can lie down on.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Liable.at_focus_lie">
+<code class="sig-name descname">at_focus_lie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Liable.at_focus_lie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable.at_focus_lie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Liable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Liable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Liable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Liable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Liable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Liable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Liable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Kneelable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Kneelable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable" title="evennia.contrib.evscaperoom.objects.BasePositionable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable</span></code></a></p>
+<p>Any object you can kneel on.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable.at_focus_kneel">
+<code class="sig-name descname">at_focus_kneel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Kneelable.at_focus_kneel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable.at_focus_kneel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Kneelable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Kneelable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Kneelable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Kneelable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Climbable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Climbable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable" title="evennia.contrib.evscaperoom.objects.BasePositionable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable</span></code></a></p>
+<p>Any object you can climb up to stand on. We name this
+‘climb’ so as to not collide with the general ‘stand’
+command, which resets your position.</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable.at_focus_climb">
+<code class="sig-name descname">at_focus_climb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Climbable.at_focus_climb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable.at_focus_climb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.BasePositionable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Climbable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Climbable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Climbable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Climbable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.evscaperoom.objects.</code><code class="sig-name descname">Positionable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Positionable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Sittable" title="evennia.contrib.evscaperoom.objects.Sittable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Sittable</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Liable" title="evennia.contrib.evscaperoom.objects.Liable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Liable</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Kneelable" title="evennia.contrib.evscaperoom.objects.Kneelable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Kneelable</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Climbable" title="evennia.contrib.evscaperoom.objects.Climbable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Climbable</span></code></a></p>
+<p>An object on which you can position yourself in one of the
+supported ways (sit, lie, kneel or climb)</p>
+<dl class="py method">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable.get_cmd_signatures">
+<code class="sig-name descname">get_cmd_signatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/evscaperoom/objects.html#Positionable.get_cmd_signatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable.get_cmd_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the object to return more detailed call signs
+for each of their at_focus_* methods. This is useful for
+things like detailed arguments (only ‘move’ but ‘move left/right’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>callsigns (list, None)</em> –</p>
+<dl class="simple">
+<dt>List of strings to inject into the</dt><dd><p>available action list produced by <strong>self.get_help</strong>. If <strong>None</strong>,
+automatically find actions based on the method names.</p>
+</dd>
+<dt>custom_helpstr (str): This should be the help text for</dt><dd><p>the command with a marker <strong>{callsigns}</strong> for where to
+inject the list of callsigns.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Sittable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.Sittable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Sittable.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Liable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.Liable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Liable.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Kneelable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.Kneelable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Kneelable.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Climbable.DoesNotExist" title="evennia.contrib.evscaperoom.objects.Climbable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Climbable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Sittable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.Sittable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Sittable.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Liable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.Liable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Liable.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Kneelable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.Kneelable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Kneelable.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.evscaperoom.objects.Climbable.MultipleObjectsReturned" title="evennia.contrib.evscaperoom.objects.Climbable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.evscaperoom.objects.Climbable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.evscaperoom.objects.Positionable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.evscaperoom.objects.Positionable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Positionable'</em><a class="headerlink" href="#evennia.contrib.evscaperoom.objects.Positionable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.evscaperoom.objects.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.evscaperoom.objects.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -53,7 +53,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="k">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="k">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
@@ -67,13 +67,15 @@
 <span class="c1"># i18n</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
+<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
+
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1"># Server Session</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="ServerSession"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession">[docs]</a><span class="k">class</span> <span class="nc">ServerSession</span><span class="p">(</span><span class="n">Session</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerSession"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession">[docs]</a><span class="k">class</span> <span class="nc">ServerSession</span><span class="p">(</span><span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents an account&#39;s session and is a template for</span>
 <span class="sd">    individual protocols to communicate with Evennia.</span>
