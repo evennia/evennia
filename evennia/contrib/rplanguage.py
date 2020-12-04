@@ -64,7 +64,7 @@ Usage:
                "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k " \
                "ng g m n l r w",
     vowels = "eaoiuy"
-    grammar = "v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc " \
+    prammar = "v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc " \
               "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv",
     word_length_variance = 1
     noun_postfix = "'la"
@@ -280,7 +280,13 @@ class LanguageHandler(DefaultScript):
                     # use the corresponding length
                     structure = choice(grammar[wlen])
                 for match in _RE_GRAMMAR.finditer(structure):
-                    new_word += choice(grammar2phonemes[match.group()])
+                    try:
+                        new_word += choice(grammar2phonemes[match.group()])
+                    except IndexError:
+                        raise IndexError(
+                            "Could not find a matching phoneme for the grammar "
+                            f"'{match.group()}'. Make there is at least one phoneme matching this "
+                            "combination of consonants and vowels.")
                 translation[word.lower()] = new_word.lower()
 
         if manual_translations:
