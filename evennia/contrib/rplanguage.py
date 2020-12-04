@@ -60,12 +60,12 @@ Usage:
     Below is an example of "elvish", using "rounder" vowels and sounds:
 
     ```python
-    phonemes = "oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy " \
-               "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k " \
-               "ng g m n l r w",
+    phonemes = ("oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy "
+                "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k "
+                "ng g m n l r w")
     vowels = "eaoiuy"
-    prammar = "v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc " \
-              "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv",
+    grammar = ("v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc "
+               "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv")
     word_length_variance = 1
     noun_postfix = "'la"
     manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
@@ -74,7 +74,7 @@ Usage:
     rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
                              word_length_variance=word_length_variance,
                              noun_postfix=noun_postfix, vowels=vowels,
-                             manual_translations=manual_translations
+                             manual_translations=manual_translations,
                              auto_translations="my_word_file.txt")
 
     ```
