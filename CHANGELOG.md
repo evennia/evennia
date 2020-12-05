@@ -25,6 +25,8 @@
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
   "TutorialWeaponRack" to prevent collisions with classes in mygame
 - New `crafting` contrib, adding a full crafting subsystem (Griatch 2020)
+- The `rplanguage` contrib now auto-capitalizes sentences and retains ellipsis (...). This
+  change means that proper nouns at the start of sentences will not be treated as nouns.
 
 ### Evennia 0.9.5 (2019-2020)
 
