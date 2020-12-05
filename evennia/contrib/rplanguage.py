@@ -60,19 +60,44 @@ Usage:
     Below is an example of "elvish", using "rounder" vowels and sounds:
 
     ```python
+    # vowel/consonant grammar possibilities
+    grammar = ("v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc "
+               "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv")
+
+    # all not in this group is considered a consonant
+    vowels = "eaoiuy"
+
+    # you need a representative of all of the minimal grammars here, so if a
+    # grammar v exists, there must be atleast one phoneme available with only
+    # one vowel in it
     phonemes = ("oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy "
                 "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k "
                 "ng g m n l r w")
-    vowels = "eaoiuy"
-    grammar = ("v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc "
-               "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv")
+
+    # how much the translation varies in length compared to the original. 0 is
+    # smallest, higher values give ever bigger randomness (including removing
+    # short words entirely)
     word_length_variance = 1
+
+    # if a proper noun (word starting with capitalized letter) should be
+    # translated or not. If not (default) it means e.g. names will remain
+    # unchanged across languages.
+    noun_translate = False
+
+    # all proper nouns (words starting with a capital letter not at the beginning
+    # of a sentence) can have either a postfix or -prefix added at all times
     noun_postfix = "'la"
+
+    # words in dict will always be translated this way. The 'auto_translations'
+    # is instead a list or filename to file with words to use to help build a
+    # bigger dictionary by creating random translations of each word in the
+    # list *once* and saving the result for subsequent use.
     manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
                           "you": "do", 'me':'mi','i':'me', 'be':"hy'e", 'and':'y'}
 
     rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
                              word_length_variance=word_length_variance,
+                             noun_translate=noun_translate,
                              noun_postfix=noun_postfix, vowels=vowels,
                              manual_translations=manual_translations,
                              auto_translations="my_word_file.txt")
@@ -117,7 +142,8 @@ _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.DOTALL + re.UNICODE
 _RE_GRAMMAR = re.compile(r"vv|cc|v|c", _RE_FLAGS)
 _RE_WORD = re.compile(r"\w+", _RE_FLAGS)
-_RE_EXTRA_CHARS = re.compile(r"\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])", _RE_FLAGS)
+# superfluous chars, except ` ... `
+_RE_EXTRA_CHARS = re.compile(r"\s+(?!... )(?=\W)|[,.?;](?!.. )(?=[,?;]|\s+[,.?;])", _RE_FLAGS)
 
 
 class LanguageError(RuntimeError):
@@ -198,9 +224,13 @@ class LanguageHandler(DefaultScript):
                 0 means a minimal variance, higher variance may mean words
                 have wildly varying length; this strongly affects how the
                 language "looks".
-            noun_translate (bool, optional): If a proper noun, identified as a
-                capitalized word, should be translated or not. By default they
-                will not, allowing for e.g. the names of characters to be understandable.
+            noun_translate (bool, optional): If a proper noun should be translated or
+                not. By default they will not, allowing for e.g. the names of characters
+                to be understandable. A 'noun' is identified as a capitalized word
+                *not at the start of a sentence*. This simple metric means that names
+                starting a sentence always will be translated (- but hey, maybe
+                the fantasy language just never uses a noun at the beginning of
+                sentences, who knows?)
             noun_prefix (str, optional): A prefix to go before every noun
                 in this language (if any).
             noun_postfix (str, optuonal): A postfix to go after every noun
@@ -245,7 +275,7 @@ class LanguageHandler(DefaultScript):
         # {"vv": ["ea", "oh", ...], ...}
         grammar2phonemes = defaultdict(list)
         for phoneme in phonemes.split():
-            if re.search("\W", phoneme):
+            if re.search(r"\W", phoneme):
                 raise LanguageError("The phoneme '%s' contains an invalid character" % phoneme)
             gram = "".join(["v" if char in vowels else "c" for char in phoneme])
             grammar2phonemes[gram].append(phoneme)
@@ -253,7 +283,7 @@ class LanguageHandler(DefaultScript):
         # allowed grammar are grouped by length
         gramdict = defaultdict(list)
         for gram in grammar.split():
-            if re.search("\W|(!=[cv])", gram):
+            if re.search(r"\W|(!=[cv])", gram):
                 raise LanguageError(
                     "The grammar '%s' is invalid (only 'c' and 'v' are allowed)" % gram
                 )
@@ -325,6 +355,11 @@ class LanguageHandler(DefaultScript):
         word = match.group()
         lword = len(word)
 
+        # find out what preceeded this word
+        wpos = match.start()
+        preceeding = match.string[:wpos].strip()
+        start_sentence = preceeding.endswith((".", "!", "?")) or not preceeding
+
         if len(word) <= self.level:
             # below level. Don't translate
             new_word = word
@@ -333,11 +368,6 @@ class LanguageHandler(DefaultScript):
             new_word = self.language["translation"].get(word.lower(), "")
             if not new_word:
                 # no dictionary translation. Generate one
-
-                # find out what preceeded this word
-                wpos = match.start()
-                preceeding = match.string[:wpos].strip()
-                start_sentence = preceeding.endswith((".", "!", "?")) or not preceeding
 
                 # make up translation on the fly. Length can
                 # vary from un-translated word.
@@ -373,24 +403,30 @@ class LanguageHandler(DefaultScript):
                             break
 
                 if word.istitle():
-                    title_word = ""
-                    if not start_sentence and not self.language.get("noun_translate", False):
-                        # don't translate what we identify as proper nouns (names)
-                        title_word = word
-                    elif new_word:
-                        title_word = new_word
+                    if not start_sentence:
+                        # this is a noun. We miss nouns at the start of
+                        # sentences this way, but it's as good as we can get
+                        # with this simple analysis. Maybe the fantasy language
+                        # just don't consider nouns at the beginning of
+                        # sentences, who knows?
+                        if not self.language.get("noun_translate", False):
+                            # don't translate what we identify as proper nouns (names)
+                            new_word = word
 
-                    if title_word:
-                        # Regardless of if we translate or not, we will add the custom prefix/postfixes
-                        new_word = "%s%s%s" % (
-                            self.language["noun_prefix"],
-                            title_word.capitalize(),
-                            self.language["noun_postfix"],
+                        # add noun prefix and/or postfix
+                        new_word = "{prefix}{word}{postfix}".format(
+                            prefix=self.language["noun_prefix"],
+                            word=new_word.capitalize(),
+                            postfix=self.language["noun_postfix"],
                         )
 
             if len(word) > 1 and word.isupper():
                 # keep LOUD words loud also when translated
                 new_word = new_word.upper()
+
+            if start_sentence:
+                new_word = new_word.capitalize()
+
         return new_word
 
     def translate(self, text, level=0.0, language="default"):
@@ -497,19 +533,18 @@ def available_languages():
     return list(_LANGUAGE_HANDLER.attributes.get("language_storage", {}))
 
 
-# ------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # Whisper obscuration
 #
-# This obsucration table is designed by obscuring certain
-# vowels first, following by consonants that tend to be
-# more audible over long distances, like s. Finally it
-# does non-auditory replacements, like exclamation marks
-# and capitalized letters (assumed to be spoken louder) that may still
-# give a user some idea of the sentence structure. Then the  word
-# lengths are also obfuscated and finally the whisper # length itself.
+# This obsucration table is designed by obscuring certain vowels first,
+# following by consonants that tend to be more audible over long distances,
+# like s. Finally it does non-auditory replacements, like exclamation marks and
+# capitalized letters (assumed to be spoken louder) that may still give a user
+# some idea of the sentence structure. Then the  word lengths are also
+# obfuscated and finally the whisper length itself.
 #
-# ------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 _RE_WHISPER_OBSCURE = [
