@@ -1726,6 +1726,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
             os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
     else:
         os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS_DOTPATH
+    plugin_settings()
 
     # required since django1.7
     django.setup()
@@ -1984,6 +1985,39 @@ def run_menu():
         return
 
 
+_already_configured = False
+
+
+def plugin_settings():
+    """
+    Run when doing any kind of Django management. Just loads basic plugin settings.
+    """
+    global _already_configured
+    if _already_configured:
+        return
+    from django.conf import settings
+    _settings = importlib.import_module(SETTINGS_DOTPATH)
+
+    _plugins = dict()
+
+    for proto_plugin in set(_settings.PLUGIN_PATHS):
+        plugin_module = importlib.import_module(proto_plugin)
+        plugin_name = getattr(plugin_module, "PLUGIN_NAME", proto_plugin)
+        plugin_module.PLUGIN_REGISTERED_NAME = plugin_name
+        _plugins[plugin_name] = plugin_module
+
+    _plugins_sorted = sorted(_plugins.values(), key=lambda x: getattr(x, "PLUGIN_LOAD_ORDER", 0))
+
+    for _plugin in _plugins_sorted:
+        if hasattr(_plugin, "at_init_settings"):
+            # the dict of plugins is passed so that plugins can be aware of each other and
+            # possibly alter the settings they wish to use.
+            _plugin.at_init_settings(_settings, _plugins)
+
+    settings.configure(default_settings=_settings)
+    _already_configured = True
+
+
 def main():
     """
     Run the evennia launcher main program.
@@ -2175,6 +2209,7 @@ def main():
                 _file_names_compact(SERVER_LOGFILE, PORTAL_LOGFILE)
             )
         )
+
     if args.dummyrunner:
         # launch the dummy runner
         init_game_directory(CURRENT_DIR, check_db=True)
@@ -2278,8 +2313,11 @@ def main():
         # pass on to the core django manager - re-parse the entire input line
         # but keep 'evennia' as the name instead of django-admin. This is
         # an exit condition.
+
         sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-        sys.exit(execute_from_command_line(sys.argv))
+        #sys.exit(execute_from_command_line(sys.argv))
+        django.core.management.call_command(*([option] + unknown_args))
+        sys.exit(0)
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)

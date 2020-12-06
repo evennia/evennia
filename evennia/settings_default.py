@@ -18,6 +18,8 @@ from django.urls import reverse_lazy
 import os
 import sys
 
+from django.conf.global_settings import *
+
 ######################################################################
 # Evennia base server config
 ######################################################################
@@ -1100,6 +1102,14 @@ except ImportError:
     # Django extensions are not installed in all distros.
     pass
 
+######################################################################
+# Plugin System
+######################################################################
+# This is a list of Python Paths for plugins that will be loaded by
+# Evennia.
+PLUGIN_PATHS = []
+
+
 #######################################################################
 # SECRET_KEY
 #######################################################################
@@ -1110,3 +1120,6 @@ except ImportError:
 # is randomly seeded when settings.py is first created. If copying
 # from here, make sure to change it!
 SECRET_KEY = "changeme!(*#&*($&*(#*(&SDFKJJKLS*(@#KJAS"
+
+
+

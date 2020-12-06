@@ -17,17 +17,40 @@ from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 from twisted.python.log import ILogObserver
 
+import importlib
 import django
+from django.conf import settings
 
+# process to initialize plugins so they can affect Django Settings before Django loads.
+_settings = importlib.import_module(os.environ["DJANGO_SETTINGS_MODULE"])
+_plugins = dict()
+
+for proto_plugin in set(_settings.PLUGIN_PATHS):
+    plugin_module = importlib.import_module(proto_plugin)
+    plugin_name = getattr(plugin_module, "PLUGIN_NAME", proto_plugin)
+    plugin_module.PLUGIN_REGISTERED_NAME = plugin_name
+    _plugins[plugin_name] = plugin_module
+
+_plugins_sorted = sorted(_plugins.values(), key=lambda x: getattr(x, "PLUGIN_LOAD_ORDER", 0))
+
+for _plugin in _plugins_sorted:
+    if hasattr(_plugin, "at_init_settings"):
+        # the dict of plugins is passed so that plugins can be aware of each other and
+        # possibly alter the settings they wish to use.
+        _plugin.at_init_settings(_settings, _plugins)
+
+# Plugin setup complete. Feed Django our new settings.
+settings.configure(default_settings=_settings)
 django.setup()
 
 import evennia
-import importlib
+evennia.PLUGINS = _plugins
+evennia.PLUGINS_SORTED = _plugins_sorted
 
 evennia._init()
 
 from django.db import connection
-from django.conf import settings
+
 
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
@@ -492,6 +515,8 @@ class Evennia(object):
         This is called every time the server starts up, regardless of
         how it was shut down.
         """
+        for plugin in evennia.PLUGINS_SORTED:
+            plugin.at_server_start()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
@@ -500,6 +525,8 @@ class Evennia(object):
         This is called just before a server is shut down, regardless
         of it is fore a reload, reset or shutdown.
         """
+        for plugin in reversed(evennia.PLUGINS_SORTED):
+            plugin.at_server_stop()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
 
@@ -507,6 +534,8 @@ class Evennia(object):
         """
         This is called only when server starts back up after a reload.
         """
+        for plugin in evennia.PLUGINS_SORTED:
+            plugin.at_server_reload_start()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_start()
 
@@ -569,6 +598,8 @@ class Evennia(object):
         """
         This is called only time the server stops before a reload.
         """
+        for plugin in reversed(evennia.PLUGINS_SORTED):
+            plugin.at_server_reload_stop()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
 
@@ -597,6 +628,11 @@ class Evennia(object):
                     if character:
                         character.delete()
                 guest.delete()
+
+        for plugin in evennia.PLUGINS_SORTED:
+            plugin.at_server_cold_start()
+
+
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()
 
@@ -604,6 +640,9 @@ class Evennia(object):
         """
         This is called only when the server goes down due to a shutdown or reset.
         """
+        for plugin in reversed(evennia.PLUGINS_SORTED):
+            if hasattr(plugin, "at_server_cold_stop"):
+                plugin.at_server_cold_stop()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_stop()
 
