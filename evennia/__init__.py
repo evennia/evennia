@@ -111,12 +111,11 @@ BASE_CHANNEL_TYPECLASS = None
 BASE_SCRIPT_TYPECLASS = None
 BASE_GUEST_TYPECLASS = None
 
-# plugins - a dict of plugin_name->module
-PLUGINS = dict()
-# plugins sorted by their load-order
-PLUGINS_SORTED = list()
-# plugin_api - a dict of plugin_name->plugin_api objects.
-PLUGIN_API = dict()
+# plugins - the PluginManager
+# this must be available before evennia._init() is called.
+from evennia.plugin import PluginManager
+PLUGINS = PluginManager()
+del PluginManager
 
 def _create_version():
     """
@@ -149,11 +148,13 @@ __version__ = _create_version()
 del _create_version
 
 
-def _init():
+def _init(run_plugins=True):
     """
     This function is called automatically by the launcher only after
     Evennia has fully initialized all its models. It sets up the API
     in a safe environment where all models are available already.
+
+    the evennia_launcher doesn't load plugins, so that migrations can be carried out.
     """
     global DefaultAccount, DefaultObject, DefaultGuest, DefaultCharacter
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
@@ -170,7 +171,7 @@ def _init():
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
-    global PLUGINS, PLUGINS_SORTED, PLUGIN_API
+    global PLUGINS
 
     global BASE_ACCOUNT_TYPECLASS, BASE_OBJECT_TYPECLASS, BASE_CHARACTER_TYPECLASS
     global BASE_ROOM_TYPECLASS, BASE_EXIT_TYPECLASS, BASE_CHANNEL_TYPECLASS
@@ -407,19 +408,17 @@ def _init():
     del prototypes
 
     # plugin stuff
-    # first, call at_setup_plugin. the plugin can take stock of its own situation
-    # and perform initializations.
-    for plugin in PLUGINS_SORTED:
-        plugin.at_plugin_setup()
+    if run_plugins:
+        # first, call at_setup_plugin. the plugin can take stock of its own situation
+        # and perform initializations.
+        PLUGINS.at_plugin_setup()
 
-    # Finally, plugins have a chance to check each other out. By this point,
-    # the PLUGIN_API of all plugins is accessible to all other plugins.
-    for plugin in PLUGINS_SORTED:
-        plugin.at_plugin_collaborate()
+        # Finally, plugins have a chance to check each other out. By this point,
+        # the PLUGIN_API of all plugins is accessible to all other plugins.
+        PLUGINS.at_plugin_collaborate()
 
-    # One final hook because sometimes can be weird.
-    for plugin in PLUGINS_SORTED:
-        plugin.at_plugin_finalize()
+        # One final hook because sometimes can be weird.
+        PLUGINS.at_plugin_finalize()
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):
