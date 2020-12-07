@@ -1120,6 +1120,3 @@ PLUGIN_PATHS = []
 # is randomly seeded when settings.py is first created. If copying
 # from here, make sure to change it!
 SECRET_KEY = "changeme!(*#&*($&*(#*(&SDFKJJKLS*(@#KJAS"
-
-
-

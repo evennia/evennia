@@ -500,7 +500,7 @@ class Evennia(object):
         This is called every time the server starts up, regardless of
         how it was shut down.
         """
-        evennia.PLUGINS.at_server()
+        evennia.PLUGINS.at_server_start()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
