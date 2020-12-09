@@ -1095,7 +1095,7 @@ AMP_CLIENT_PROTOCOL_CLASS = "evennia.server.amp_client.AMPServerClientProtocol"
 try:
     import django_extensions  # noqa
 
-    INSTALLED_APPS = INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS += ["django_extensions"]
 except ImportError:
     # Django extensions are not installed in all distros.
     pass
