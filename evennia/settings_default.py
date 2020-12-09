@@ -980,7 +980,7 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 try:
     import django_extensions  # noqa
 
-    INSTALLED_APPS = INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS += ["django_extensions"]
 except ImportError:
     # Django extensions are not installed in all distros.
     pass
