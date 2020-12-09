@@ -21,13 +21,6 @@ import importlib
 import django
 from django.conf import settings
 
-from evennia.plugin import plugin_settings
-
-# This method assembles the final settings.py from the given one after applying
-# all plugins. it also calls django.conf.configure() on the final settings so we can
-# use django.setup()
-plugin_settings(os.environ["DJANGO_SETTINGS_MODULE"])
-
 django.setup()
 
 import evennia
@@ -500,7 +493,7 @@ class Evennia(object):
         This is called every time the server starts up, regardless of
         how it was shut down.
         """
-        evennia.PLUGINS.at_server_start()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_start')
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
@@ -509,7 +502,7 @@ class Evennia(object):
         This is called just before a server is shut down, regardless
         of it is fore a reload, reset or shutdown.
         """
-        evennia.PLUGINS.at_server_stop()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_stop')
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
 
@@ -517,7 +510,7 @@ class Evennia(object):
         """
         This is called only when server starts back up after a reload.
         """
-        evennia.PLUGINS.at_server_reload_start()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_reload_start')
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_start()
 
@@ -580,7 +573,7 @@ class Evennia(object):
         """
         This is called only time the server stops before a reload.
         """
-        evennia.PLUGINS.at_server_reload_stop()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_reload_stop')
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
 
@@ -610,7 +603,7 @@ class Evennia(object):
                         character.delete()
                 guest.delete()
 
-        evennia.PLUGINS.at_server_cold_start()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_cold_start')
 
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()
@@ -619,7 +612,7 @@ class Evennia(object):
         """
         This is called only when the server goes down due to a shutdown or reset.
         """
-        evennia.PLUGINS.at_server_cold_stop()
+        evennia.PLUGIN_MANAGER.dispatch('at_server_cold_stop')
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_stop()
 

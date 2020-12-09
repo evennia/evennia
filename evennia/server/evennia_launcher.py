@@ -28,7 +28,6 @@ from twisted.internet import reactor, endpoints
 import django
 from django.core.management import execute_from_command_line
 from django.db.utils import ProgrammingError
-from evennia.plugin import plugin_settings
 
 # Signal processing
 SIG = signal.SIGINT
@@ -1447,7 +1446,7 @@ def check_database(always_return=False):
         tables = [tableinfo.name for tableinfo in tables]
     if tables and "accounts_accountdb" in tables:
         # database exists and seems set up. Initialize evennia.
-        evennia._init(run_plugins=False)
+        evennia._init()
     # Try to get Account#1
     from evennia.accounts.models import AccountDB
 
@@ -1727,7 +1726,6 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
             os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
     else:
         os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS_DOTPATH
-    plugin_settings(SETTINGS_DOTPATH)
 
     # required since django1.7
     django.setup()
@@ -2283,8 +2281,7 @@ def main():
         # an exit condition.
 
         sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-        # sys.exit(execute_from_command_line(sys.argv))
-        django.core.management.call_command(*([option] + unknown_args))
+        sys.exit(execute_from_command_line(sys.argv))
         sys.exit(0)
 
     elif not args.tail_log:

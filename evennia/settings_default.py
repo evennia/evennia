@@ -18,6 +18,8 @@ from django.urls import reverse_lazy
 import os
 import sys
 
+from evennia.plugins import PLUGIN_MANAGER
+
 from django.conf.global_settings import *
 
 ######################################################################

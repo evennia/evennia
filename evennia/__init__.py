@@ -112,10 +112,7 @@ BASE_SCRIPT_TYPECLASS = None
 BASE_GUEST_TYPECLASS = None
 
 # plugins - the PluginManager
-# this must be available before evennia._init() is called.
-from evennia.plugin import PluginManager
-PLUGINS = PluginManager()
-del PluginManager
+PLUGIN_MANAGER = None
 
 def _create_version():
     """
@@ -148,7 +145,7 @@ __version__ = _create_version()
 del _create_version
 
 
-def _init(run_plugins=True):
+def _init():
     """
     This function is called automatically by the launcher only after
     Evennia has fully initialized all its models. It sets up the API
@@ -171,7 +168,7 @@ def _init(run_plugins=True):
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
-    global PLUGINS
+    global PLUGIN_MANAGER
 
     global BASE_ACCOUNT_TYPECLASS, BASE_OBJECT_TYPECLASS, BASE_CHARACTER_TYPECLASS
     global BASE_ROOM_TYPECLASS, BASE_EXIT_TYPECLASS, BASE_CHANNEL_TYPECLASS
@@ -241,6 +238,9 @@ def _init(run_plugins=True):
     # containers
     from .utils.containers import GLOBAL_SCRIPTS
     from .utils.containers import OPTION_CLASSES
+
+    # plugins
+    from .plugins import PLUGIN_MANAGER
 
     # API containers
 
@@ -407,18 +407,17 @@ def _init(run_plugins=True):
     prototypes.load_module_prototypes()
     del prototypes
 
-    # plugin stuff
-    if run_plugins:
-        # first, call at_setup_plugin. the plugin can take stock of its own situation
-        # and perform initializations.
-        PLUGINS.at_plugin_setup()
+    # first, call at_setup_plugin. the plugin can take stock of its own situation
+    # and begin initialization.
+    PLUGIN_MANAGER.dispatch('at_plugin_load_init')
 
-        # Finally, plugins have a chance to check each other out. By this point,
-        # the PLUGIN_API of all plugins is accessible to all other plugins.
-        PLUGINS.at_plugin_collaborate()
+    # Next, plugins have a chance to check each other out, argue, and try to override
+    # or replace settings on each other, on the off-chance this is necessary.
+    PLUGIN_MANAGER.dispatch('at_plugin_load_patch')
 
-        # One final hook because sometimes can be weird.
-        PLUGINS.at_plugin_finalize()
+    # After any of the potential arguing, plugins have one last chance to run some
+    # setup code in their load order.
+    PLUGIN_MANAGER.dispatch('at_plugin_load_finalize')
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):

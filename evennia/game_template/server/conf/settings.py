@@ -31,6 +31,12 @@ from evennia.settings_default import *
 # Evennia base server config
 ######################################################################
 
+# Calls the Plugin System by passing a reference to this module.
+# This can modify settings 'inline' so anything below this line will override
+# Plugin settings. Set your PLUGIN_PATHS to a list of class paths of EvPlugin
+# to use this.
+PLUGIN_MANAGER.setup(sys.modules[__name__])
+
 # This is the name of your game. Make it catchy!
 SERVERNAME = {servername}
 
