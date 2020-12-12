@@ -314,8 +314,6 @@ class PluginManager:
         # first, separate plugins based on those with and without dependeices.
         remaining = set()
         loaded = set()
-        print(self.plugin_requirements)
-        print(self.plugin_versions)
 
         for k, v in self.plugin_requirements.items():
             if v:
