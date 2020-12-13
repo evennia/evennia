@@ -832,6 +832,16 @@ class TypedObject(SharedMemoryModel):
         """
         pass
 
+    @classmethod
+    def get_concrete_content_type(cls):
+        """
+        Retrieve the Django ContentType concrete model reference. This is just a convenience wrapper.
+
+        Returns:
+            content_type (ContentType): The concrete model ContentType.
+        """
+        return ContentType.objects.get_for_model(cls, for_concrete_model=True)
+
     #
     # Web/Django methods
     #
