@@ -87,9 +87,12 @@ class EvPluginRequirement:
 
     def __init__(self, name: str, ver_eq: str = None, ver_min: str = None, ver_max: str = None):
         self.name = name
-        self.ver_eq = EvPluginRequirement(ver_eq) if ver_eq else None
-        self.ver_min = EvPluginRequirement(ver_min) if ver_min else None
-        self.ver_max = EvPluginRequirement(ver_max) if ver_max else None
+        self.ver_eq = EvPluginVersion(ver_eq) if ver_eq else None
+        self.ver_min = EvPluginVersion(ver_min) if ver_min else None
+        self.ver_max = EvPluginVersion(ver_max) if ver_max else None
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {self.name} - EQ: {self.ver_eq} - MIN: {self.ver_min} - MAX: {self.ver_max}>"
 
 
 class EvPlugin:
@@ -234,7 +237,6 @@ class PluginManager:
     """
 
     def __init__(self):
-        print("PLUGIN MANAGER CREATED")
         # each plugin has a name. this dictionary maps that name to the EvPlugin instance.
         self.plugins = {}
 
@@ -301,9 +303,9 @@ class PluginManager:
             found_ver = self.plugin_versions[req.name]
             if req.ver_eq and (found_ver != req.ver_eq):
                 return False
-            if req.ver_min and found_ver < req.ver_min:
+            if req.ver_min and (found_ver < req.ver_min):
                 return False
-            if req.ver_max and found_ver > req.ver_max:
+            if req.ver_max and (found_ver > req.ver_max):
                 return False
         return True
 
