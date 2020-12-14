@@ -17,10 +17,7 @@ from django.urls import reverse_lazy
 
 import os
 import sys
-
-from evennia.plugins import PLUGIN_MANAGER
-
-from django.conf.global_settings import *
+from evennia.server.plugins import PLUGIN_MANAGER
 
 ######################################################################
 # Evennia base server config

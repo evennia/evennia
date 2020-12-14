@@ -1446,7 +1446,7 @@ def check_database(always_return=False):
         tables = [tableinfo.name for tableinfo in tables]
     if tables and "accounts_accountdb" in tables:
         # database exists and seems set up. Initialize evennia.
-        evennia._init()
+        evennia._init(load_plugins=False)
     # Try to get Account#1
     from evennia.accounts.models import AccountDB
 

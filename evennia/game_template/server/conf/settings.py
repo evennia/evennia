@@ -28,14 +28,20 @@ put secret game- or server-specific settings in secret_settings.py.
 from evennia.settings_default import *
 
 ######################################################################
-# Evennia base server config
+# Evennia server Plugins Config
 ######################################################################
+# Fill this list with the dotpaths to different plugins you want to load.
+PLUGIN_PATHS = []
 
 # Calls the Plugin System by passing a reference to this module.
-# This can modify settings 'inline' so anything below this line will override
-# Plugin settings. Set your PLUGIN_PATHS to a list of class paths of EvPlugin
-# to use this.
+# This performs inline modifications, so keep this above all of your
+# custom settings in order to be able to override plugin settings.
 PLUGIN_MANAGER.setup(sys.modules[__name__])
+
+
+######################################################################
+# Evennia base server config
+######################################################################
 
 # This is the name of your game. Make it catchy!
 SERVERNAME = {servername}

@@ -145,7 +145,7 @@ __version__ = _create_version()
 del _create_version
 
 
-def _init():
+def _init(load_plugins=True):
     """
     This function is called automatically by the launcher only after
     Evennia has fully initialized all its models. It sets up the API
@@ -240,7 +240,7 @@ def _init():
     from .utils.containers import OPTION_CLASSES
 
     # plugins
-    from .plugins import PLUGIN_MANAGER
+    from evennia.server.plugins import PLUGIN_MANAGER
 
     # API containers
 
@@ -407,17 +407,18 @@ def _init():
     prototypes.load_module_prototypes()
     del prototypes
 
-    # first, call at_setup_plugin. the plugin can take stock of its own situation
-    # and begin initialization.
-    PLUGIN_MANAGER.dispatch('at_plugin_load_init')
+    if load_plugins:
+        # first, call at_setup_plugin. the plugin can take stock of its own situation
+        # and begin initialization.
+        PLUGIN_MANAGER.dispatch('at_plugin_load_init')
 
-    # Next, plugins have a chance to check each other out, argue, and try to override
-    # or replace settings on each other, on the off-chance this is necessary.
-    PLUGIN_MANAGER.dispatch('at_plugin_load_patch')
+        # Next, plugins have a chance to check each other out, argue, and try to override
+        # or replace settings on each other, on the off-chance this is necessary.
+        PLUGIN_MANAGER.dispatch('at_plugin_load_patch')
 
-    # After any of the potential arguing, plugins have one last chance to run some
-    # setup code in their load order.
-    PLUGIN_MANAGER.dispatch('at_plugin_load_finalize')
+        # After any of the potential arguing, plugins have one last chance to run some
+        # setup code in their load order.
+        PLUGIN_MANAGER.dispatch('at_plugin_load_finalize')
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):
