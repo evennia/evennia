@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions
+    url: https://github.com/evennia/evennia/discussions?discussions_q=category%3A%22Evennia+Questions%22
+    about: Ask usage questions here (Github Discussions)
+  - name: Feature discussions
+    url: https://github.com/evennia/evennia/discussions?discussions_q=category%3A%22Evennia+Engine+Development%22
+    about: If you want to discuss before making a formal feature request (Github Discussions)
