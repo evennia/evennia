@@ -8,12 +8,9 @@ pytz
 djangorestframework >= 3.10.3, < 3.12
 django-filter >= 2.2.0, < 2.3
 django-sekizai
-django-extensions >= 3.1.0
 inflect
 autobahn >= 17.9.3
 lunr == 0.5.6
-ipython >= 7.19.0
-jupyter == 1.0.0
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0
