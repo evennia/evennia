@@ -38,9 +38,37 @@ That is, enter `evennia.` and press the `<TAB>` key. This will show you all the 
 available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API) page for more
 info on how to explore it efficiently.
 
+#### Jupyter Notebook Support
+
+You can now explore evennia interactively with jupyter notebooks. There are a few extra steps that must be taken in order for this to work:
+
+    # [open a new console/terminal]
+    # [activate your evennia virtualenv in this console/terminal]
+    cd evennia
+    pip install -r requirements_extra.txt # this installs optional, but necessary modules for this to work.
+    cd mygame # make sure you are in root of your grame
+    evennia shell_plus --notebook& # this will start the notebook in the background
+
+Open an existing, or create, a notebook and in the first cell you must run:
+
+```python
+import evennia
+evennia._init()
+```
+
+This will initialize all module level variables located in `evennia.__init__`. 
+Now you have the same support as `evennia shell`, but in a more visual and persistent form.
+
+*It is important to remember, everytime the kernel restarts within a notebook you must first run
+`evennia._init()`*
+
+
 You can complement your exploration by peeking at the sections of the much more detailed 
 [Evennia Component overview](../Components/Components-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
 of system- or implementation-specific help.
+
+
+
 
 ### Use a python syntax checker
 
