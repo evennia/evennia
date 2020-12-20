@@ -373,7 +373,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             puppet (Object): The matching puppeted object, if any.
 
         """
-        return session.puppet
+        return session.puppet if session else None
 
     def get_all_puppets(self):
         """
