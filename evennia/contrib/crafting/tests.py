@@ -216,8 +216,12 @@ class TestCraftingRecipe(TestCase):
     def test_seed__succcess(self):
         """Test seed helper classmethod"""
 
+        # needed for other dbs to pass seed
+        homeroom = create_object(key="HomeRoom", nohome=True)
+
         # call classmethod directly
-        tools, consumables = _MockRecipe.seed()
+        with override_settings(DEFAULT_HOME=f"#{homeroom.id}"):
+            tools, consumables = _MockRecipe.seed()
 
         # this should be a normal successful crafting
         recipe = _MockRecipe(self.crafter, *(tools + consumables))
