@@ -61,7 +61,7 @@ to use <a class="reference external" href="http://ipython.org/">ipython</a> for 
 are some simple commands to get started:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># [open a new console/terminal]</span>
 <span class="c1"># [activate your evennia virtualenv in this console/terminal]</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">ipython</span>    <span class="c1"># [only needed the first time]</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements_extra</span><span class="o">.</span><span class="n">txt</span>  <span class="c1"># install ipython etc</span>
 <span class="n">cd</span> <span class="n">mygame</span>
 <span class="n">evennia</span> <span class="n">shell</span>
 </pre></div>
@@ -74,9 +74,42 @@ are some simple commands to get started:</p>
 <p>That is, enter <code class="docutils literal notranslate"><span class="pre">evennia.</span></code> and press the <code class="docutils literal notranslate"><span class="pre">&lt;TAB&gt;</span></code> key. This will show you all the resources made
 available at the top level of Evennia’s  “flat API”. See the <a class="reference internal" href="../Evennia-API.html"><span class="doc">flat API</span></a> page for more
 info on how to explore it efficiently.</p>
+<div class="section" id="jupyter-notebook-support">
+<h3>Jupyter Notebook Support<a class="headerlink" href="#jupyter-notebook-support" title="Permalink to this headline">¶</a></h3>
+<p>You can also explore evennia interactively in a <a class="reference external" href="https://jupyter.readthedocs.io/en/latest/index.html#">Jupyter notebook</a>. This offers
+an in-browser view of your code similar to Matlab or similar programs. There are
+a few extra steps that must be taken in order for this to work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># [open a new console/terminal]</span>
+<span class="c1"># [activate your evennia virtualenv in this console/terminal]</span>
+<span class="n">cd</span> <span class="n">evennia</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements_extra</span><span class="o">.</span><span class="n">txt</span>  <span class="c1"># if not done already above</span>
+</pre></div>
+</div>
+<p>Next, <code class="docutils literal notranslate"><span class="pre">cd</span></code> to your game folder. <em>It’s important that you are in the <em>root</em> of this folder for the next command</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">shell_plus</span> <span class="o">--</span><span class="n">notebook</span> <span class="o">&amp;</span> 
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> at the end starts the process as a background process on Linux/Unix.
+Skip it if your OS doesn’t support this syntax. Your browser should now open
+with the Jupyter interface. If not, open a browser to the link given on the
+command line.</p>
+<p>In the window, open the <code class="docutils literal notranslate"><span class="pre">new</span></code> menu in the top right and start a <code class="docutils literal notranslate"><span class="pre">Django</span> <span class="pre">Shell-Plus</span></code> notebook (or
+open an existing one if you had one from before). In the first cell you must initialize
+Evennia like so:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+<span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p><em>Note that the above initialization must be run every time a new new notebook/kernel is started or restarted.</em></p>
+<p>After this you can import and access all of the Evennia system, same as with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code>.</p>
+</div>
+<div class="section" id="more-exploration">
+<h3>More exploration<a class="headerlink" href="#more-exploration" title="Permalink to this headline">¶</a></h3>
 <p>You can complement your exploration by peeking at the sections of the much more detailed
 <a class="reference internal" href="../Components/Components-Overview.html"><span class="doc">Evennia Component overview</span></a>. The <a class="reference internal" href="../Howto/Howto-Overview.html"><span class="doc">Tutorials</span></a> section also contains a growing collection
 of system- or implementation-specific help.</p>
+</div>
 </div>
 <div class="section" id="use-a-python-syntax-checker">
 <h2>Use a python syntax checker<a class="headerlink" href="#use-a-python-syntax-checker" title="Permalink to this headline">¶</a></h2>
@@ -165,7 +198,11 @@ chat</a> are also there for you.</p>
 <li><a class="reference internal" href="#">Coding Introduction</a><ul>
 <li><a class="reference internal" href="#start-with-the-tutorial">Start with the tutorial</a></li>
 <li><a class="reference internal" href="#python">Python</a></li>
-<li><a class="reference internal" href="#explore-evennia-interactively">Explore Evennia interactively</a></li>
+<li><a class="reference internal" href="#explore-evennia-interactively">Explore Evennia interactively</a><ul>
+<li><a class="reference internal" href="#jupyter-notebook-support">Jupyter Notebook Support</a></li>
+<li><a class="reference internal" href="#more-exploration">More exploration</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#use-a-python-syntax-checker">Use a python syntax checker</a></li>
 <li><a class="reference internal" href="#plan-before-you-code">Plan before you code</a></li>
 <li><a class="reference internal" href="#code-in-your-game-folder-not-in-the-evennia-repository">Code in your game folder, not in the evennia/ repository</a></li>

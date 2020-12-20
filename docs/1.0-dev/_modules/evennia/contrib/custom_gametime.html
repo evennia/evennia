@@ -76,10 +76,10 @@
 
 <span class="c1"># change these to fit your game world</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">gametime</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
 
 <span class="c1"># The game time speedup  / slowdown relative real time</span>
 <span class="n">TIMEFACTOR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TIME_FACTOR</span>
@@ -341,7 +341,7 @@
 <div class="viewcode-block" id="GametimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.GametimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the callback and reset interval.&quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">calledby</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">calledby</span>
 
         <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callback</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>

@@ -55,16 +55,16 @@
 <span class="sd">the database object. Like everything else, they can be accessed</span>
 <span class="sd">transparently through the decorating TypeClass.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="k">import</span> <span class="n">validate_comma_separated_integer_list</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_comma_separated_integer_list</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">TypedObject</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="k">import</span> <span class="n">ObjectDBManager</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectDBManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">lazy_property</span>
 
 
 <div class="viewcode-block" id="ContentsHandler"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler">[docs]</a><span class="k">class</span> <span class="nc">ContentsHandler</span><span class="p">:</span>
@@ -75,7 +75,7 @@
 <span class="sd">    of the ObjectDB.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ContentsHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up the contents handler.</span>
 

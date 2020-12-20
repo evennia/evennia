@@ -137,7 +137,7 @@ communication.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned)&quot;</span>
-    <span class="n">auto_help</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
@@ -230,7 +230,7 @@ channel’s <code class="docutils literal notranslate"><span class="pre">connect
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned)&quot;</span>
-    <span class="n">auto_help</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
@@ -424,10 +424,10 @@ see why this import is important when diving in the command itself:</p>
     <span class="c1"># this flag is what identifies this cmd as a channel cmd</span>
     <span class="c1"># and branches off to the system send-to-channel command</span>
     <span class="c1"># (which is customizable by admin)</span>
-    <span class="n">is_channel</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">is_channel</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;general&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Channel Names&quot;</span>
-    <span class="n">obj</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 </pre></div>
 </td></tr></table></div>
@@ -489,7 +489,7 @@ parse arguments and in our case, we will analyze switches here.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># channel-handler sends channame:msg here.</span>
         <span class="n">channelname</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">switch</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switch</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">switch</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -591,17 +591,17 @@ handle switches and also the raw message to send if no switch was used.</p>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What do you want to do on this channel?&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;{} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
-                <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;{}: Invalid switch {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: Invalid switch </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch</span><span class="p">))</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Say what?&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">channel</span><span class="o">.</span><span class="n">mutelist</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You currently have </span><span class="si">%s</span><span class="s2"> muted.&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">

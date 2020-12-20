@@ -54,9 +54,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">parse_menu_template</span><span class="p">,</span> <span class="n">EvMenu</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">parse_menu_template</span><span class="p">,</span> <span class="n">EvMenu</span>
 
 <span class="c1"># Goto callbacks and helper resources for the menu</span>
 
@@ -77,7 +77,7 @@
         <span class="p">(</span>
             <span class="s2">&quot;This is a message tagged with &#39;testing&#39; and &quot;</span>
             <span class="s2">&quot;should appear in the pane you selected!</span><span class="se">\n</span><span class="s2"> &quot;</span>
-            <span class="n">f</span><span class="s2">&quot;You wrote: &#39;</span><span class="si">{raw_string}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;You wrote: &#39;</span><span class="si">{</span><span class="n">raw_string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
             <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;testing&quot;</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -96,7 +96,7 @@
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">2</span>
 
 <div class="viewcode-block" id="DemoCommandSetHelp.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.intro_menu.html#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">default_cmds</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">())</span></div></div>
 
@@ -124,7 +124,7 @@
     <span class="n">no_objs</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="DemoCommandSetComms.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.intro_menu.html#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">default_cmds</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdSay</span><span class="p">())</span>
@@ -313,7 +313,7 @@
     <span class="n">no_objs</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DemoCommandSetRoom.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.intro_menu.html#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">default_cmds</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">())</span>
@@ -802,8 +802,8 @@
         <span class="n">navigation</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">optionslist</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">navigation_keys</span><span class="p">:</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot; (</span><span class="si">{desc}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">desc</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-                <span class="n">navigation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|lc</span><span class="si">{key}</span><span class="s2">|lt|w</span><span class="si">{key}</span><span class="s2">|n|le</span><span class="si">{desc}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">desc</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">navigation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|lc</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|lt|w</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|n|le</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">other</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="p">))</span>
         <span class="n">navigation</span> <span class="o">=</span> <span class="p">(</span>
@@ -812,7 +812,7 @@
         <span class="n">other</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">options_formatter</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">navigation</span> <span class="ow">and</span> <span class="n">other</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{navigation}{sep}{other}</span><span class="s2">&quot;</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">navigation</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="n">other</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="init_menu"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.intro_menu.html#evennia.contrib.tutorial_world.intro_menu.init_menu">[docs]</a><span class="k">def</span> <span class="nf">init_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>

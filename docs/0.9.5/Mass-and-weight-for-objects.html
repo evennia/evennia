@@ -162,7 +162,7 @@ default_cmdsets.py file:</p>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
                 <span class="n">mass</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span>
                 <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|wYou are carrying:|n</span><span class="se">\n</span><span class="s2">{table}&quot;</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>

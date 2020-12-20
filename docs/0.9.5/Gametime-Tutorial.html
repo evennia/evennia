@@ -87,7 +87,7 @@ a standard calendar:</p>
 <span class="c1"># In Python a value of 0 means Jan 1 1970 (use negatives for earlier</span>
 <span class="c1"># start date). This will affect the returns from the utils.gametime</span>
 <span class="c1"># module.</span>
-<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </td></tr></table></div>
 <p>By default, the game time runs twice as fast as the real time.  You can set the time factor to be 1
@@ -186,12 +186,12 @@ to schedule.  If the parameter isn’t given, it assumes the current time value 
 
 <span class="k">def</span> <span class="nf">start_sunrise_event</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Schedule an sunrise event to happen every day at 6 AM.&quot;&quot;&quot;</span>
-    <span class="n">script</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">at_sunrise</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">at_sunrise</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">script</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;at sunrise&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>If you want to test this function, you can easily do something like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">world</span> <span class="k">import</span> <span class="n">ingame_time</span><span class="p">;</span> <span class="n">ingame_time</span><span class="o">.</span><span class="n">start_sunrise_event</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">ingame_time</span><span class="p">;</span> <span class="n">ingame_time</span><span class="o">.</span><span class="n">start_sunrise_event</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The script will be created silently. The <code class="docutils literal notranslate"><span class="pre">at_sunrise</span></code> function will now be called every in-game day
@@ -345,9 +345,9 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
         <span class="c1"># Get the absolute game time</span>
-        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;We are in year {year}, day {day}, month {month}.&quot;</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It&#39;s {hour:02}:{min:02}:{sec:02}.&quot;</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;We are in year </span><span class="si">{year}</span><span class="s2">, day </span><span class="si">{day}</span><span class="s2">, month </span><span class="si">{month}</span><span class="s2">.&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It&#39;s </span><span class="si">{hour:02}</span><span class="s2">:</span><span class="si">{min:02}</span><span class="s2">:</span><span class="si">{sec:02}</span><span class="s2">.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span>
                 <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>
 </pre></div>

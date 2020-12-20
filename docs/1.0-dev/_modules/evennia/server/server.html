@@ -53,11 +53,11 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">twisted.web</span> <span class="k">import</span> <span class="n">static</span>
-<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="k">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">defer</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="k">import</span> <span class="n">ILogObserver</span>
+<span class="kn">from</span> <span class="nn">twisted.web</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">defer</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="kn">import</span> <span class="n">ILogObserver</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
 
@@ -68,19 +68,19 @@
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="k">import</span> <span class="n">channelhandler</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="kn">import</span> <span class="n">channelhandler</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
@@ -159,9 +159,9 @@
     <span class="k">global</span> <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_FLUSH_CACHE</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="k">import</span> <span class="n">conditional_flush</span> <span class="k">as</span> <span class="n">_FLUSH_CACHE</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">conditional_flush</span> <span class="k">as</span> <span class="n">_FLUSH_CACHE</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_GAMETIME_MODULE</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">gametime</span> <span class="k">as</span> <span class="n">_GAMETIME_MODULE</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span> <span class="k">as</span> <span class="n">_GAMETIME_MODULE</span>
 
     <span class="n">_MAINTENANCE_COUNT</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -224,7 +224,7 @@
 <span class="sd">    evennia.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Evennia.__init__"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.__init__"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the server.</span>
 
@@ -254,7 +254,7 @@
         <span class="c1"># this is necessary over using Twisted&#39;s signal handler.</span>
         <span class="c1"># (see https://github.com/evennia/evennia/issues/1128)</span>
         <span class="k">def</span> <span class="nf">_wrap_sigint_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">Deferred</span>
+            <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;web_root&quot;</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">web_root</span><span class="o">.</span><span class="n">empty_threadpool</span><span class="p">()</span>
@@ -324,8 +324,8 @@
         <span class="p">):</span>  <span class="c1"># can&#39;t use any() since mismatches may be [0] which reads as False for any()</span>
             <span class="c1"># we have a changed default. Import relevant objects and</span>
             <span class="c1"># run the update</span>
-            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
+            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 
             <span class="c1"># from evennia.accounts.models import AccountDB</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">curr</span> <span class="ow">in</span> <span class="p">(</span>
@@ -408,7 +408,7 @@
 <span class="sd">            mode (str): One of shutdown, reload or reset</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 
         <span class="c1"># start server time and maintenance task</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="n">_server_maintenance</span><span class="p">)</span>
@@ -459,9 +459,9 @@
             <span class="c1"># once; we don&#39;t need to run the shutdown procedure again.</span>
             <span class="n">defer</span><span class="o">.</span><span class="n">returnValue</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-        <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">gametime</span> <span class="k">as</span> <span class="n">_GAMETIME_MODULE</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span> <span class="k">as</span> <span class="n">_GAMETIME_MODULE</span>
 
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">:</span>
             <span class="c1"># call restart hooks</span>
@@ -476,7 +476,7 @@
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span>
             <span class="c1"># only save monitor state on reload, not on shutdown/reset</span>
-            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
+            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
             <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -505,7 +505,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span>
 
         <span class="c1"># tickerhandler state should always be saved.</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="k">import</span> <span class="n">TICKER_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
@@ -562,11 +562,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
         <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="k">import</span> <span class="n">TICKER_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
@@ -575,15 +575,15 @@
         <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
 
         <span class="c1"># start the task handler</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="k">import</span> <span class="n">TASK_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
 
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">create_delays</span><span class="p">()</span>
 
         <span class="c1"># check so default channels exist</span>
-        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
-        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_channel</span>
+        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
 
         <span class="n">god_account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># mudinfo</span>
@@ -621,12 +621,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We need to do this just in case the server was killed in a way where</span>
         <span class="c1"># the normal cleanup operations did not have time to run.</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 
         <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span><span class="p">()</span>
 
         <span class="c1"># Remove non-persistent scripts</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -690,7 +690,7 @@
 
     <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;amp </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">AMP_PORT</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="k">import</span> <span class="n">amp_client</span>
+    <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">amp_client</span>
 
     <span class="n">factory</span> <span class="o">=</span> <span class="n">amp_client</span><span class="o">.</span><span class="n">AMPClientFactory</span><span class="p">(</span><span class="n">EVENNIA</span><span class="p">)</span>
     <span class="n">amp_service</span> <span class="o">=</span> <span class="n">internet</span><span class="o">.</span><span class="n">TCPClient</span><span class="p">(</span><span class="n">AMP_HOST</span><span class="p">,</span> <span class="n">AMP_PORT</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
@@ -701,7 +701,7 @@
 
     <span class="c1"># Start a django-compatible webserver.</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">DjangoWebRoot</span><span class="p">,</span>
         <span class="n">WSGIWebServer</span><span class="p">,</span>
         <span class="n">Website</span><span class="p">,</span>
@@ -753,7 +753,7 @@
     <span class="n">ENABLED</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;grapevine&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">GAME_INDEX_ENABLED</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">evennia.server.game_index_client.service</span> <span class="k">import</span> <span class="n">EvenniaGameIndexService</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.game_index_client.service</span> <span class="kn">import</span> <span class="n">EvenniaGameIndexService</span>
 
     <span class="n">egi_service</span> <span class="o">=</span> <span class="n">EvenniaGameIndexService</span><span class="p">()</span>
     <span class="n">EVENNIA</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">addService</span><span class="p">(</span><span class="n">egi_service</span><span class="p">)</span>
@@ -767,7 +767,7 @@
     <span class="k">if</span> <span class="n">plugin_module</span><span class="p">:</span>
         <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="n">EVENNIA</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not load plugin module </span><span class="si">{plugin_module}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load plugin module </span><span class="si">{</span><span class="n">plugin_module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># clear server startup mode</span>
 <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

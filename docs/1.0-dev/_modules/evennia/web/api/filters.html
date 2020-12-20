@@ -48,14 +48,14 @@
 
 <span class="sd">https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span>
-<span class="kn">from</span> <span class="nn">django_filters.rest_framework.filterset</span> <span class="k">import</span> <span class="n">FilterSet</span>
-<span class="kn">from</span> <span class="nn">django_filters.filters</span> <span class="k">import</span> <span class="n">CharFilter</span><span class="p">,</span> <span class="n">EMPTY_VALUES</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span> <span class="nn">django_filters.rest_framework.filterset</span> <span class="kn">import</span> <span class="n">FilterSet</span>
+<span class="kn">from</span> <span class="nn">django_filters.filters</span> <span class="kn">import</span> <span class="n">CharFilter</span><span class="p">,</span> <span class="n">EMPTY_VALUES</span>
 
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 
 
 <div class="viewcode-block" id="get_tag_query"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.get_tag_query">[docs]</a><span class="k">def</span> <span class="nf">get_tag_query</span><span class="p">(</span><span class="n">tag_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Q</span><span class="p">:</span>
@@ -120,7 +120,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The filtered queryset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">__iexact&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__iexact&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
         <span class="n">query</span> <span class="o">|=</span> <span class="n">get_tag_query</span><span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span></div></div>
 

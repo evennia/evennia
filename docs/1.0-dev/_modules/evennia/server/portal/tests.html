@@ -41,12 +41,12 @@
             
   <h1>Source code for evennia.server.portal.tests</h1><div class="highlight"><pre>
 <span></span><span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.utils.unittest</span> <span class="k">import</span> <span class="n">TestCase</span>
+    <span class="kn">from</span> <span class="nn">django.utils.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+    <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">unittest</span>
+    <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">unittest</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">unittest</span>
 
@@ -56,30 +56,30 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">MagicMock</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">irc</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">MagicMock</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">irc</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
 
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="k">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">WILL</span><span class="p">,</span> <span class="n">DONT</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span><span class="p">,</span> <span class="n">NAWS</span><span class="p">,</span> <span class="n">DO</span>
-<span class="kn">from</span> <span class="nn">twisted.test</span> <span class="k">import</span> <span class="n">proto_helpers</span>
-<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="k">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="k">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">WILL</span><span class="p">,</span> <span class="n">DONT</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span><span class="p">,</span> <span class="n">NAWS</span><span class="p">,</span> <span class="n">DO</span>
+<span class="kn">from</span> <span class="nn">twisted.test</span> <span class="kn">import</span> <span class="n">proto_helpers</span>
+<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="kn">import</span> <span class="n">DelayedCall</span>
 
-<span class="kn">from</span> <span class="nn">.telnet</span> <span class="k">import</span> <span class="n">TelnetServerFactory</span><span class="p">,</span> <span class="n">TelnetProtocol</span>
-<span class="kn">from</span> <span class="nn">.portal</span> <span class="k">import</span> <span class="n">PORTAL_SESSIONS</span>
-<span class="kn">from</span> <span class="nn">.suppress_ga</span> <span class="k">import</span> <span class="n">SUPPRESS_GA</span>
-<span class="kn">from</span> <span class="nn">.naws</span> <span class="k">import</span> <span class="n">DEFAULT_HEIGHT</span><span class="p">,</span> <span class="n">DEFAULT_WIDTH</span>
-<span class="kn">from</span> <span class="nn">.ttype</span> <span class="k">import</span> <span class="n">TTYPE</span><span class="p">,</span> <span class="n">IS</span>
-<span class="kn">from</span> <span class="nn">.mccp</span> <span class="k">import</span> <span class="n">MCCP</span>
-<span class="kn">from</span> <span class="nn">.mssp</span> <span class="k">import</span> <span class="n">MSSP</span>
-<span class="kn">from</span> <span class="nn">.mxp</span> <span class="k">import</span> <span class="n">MXP</span>
-<span class="kn">from</span> <span class="nn">.telnet_oob</span> <span class="k">import</span> <span class="n">MSDP</span><span class="p">,</span> <span class="n">MSDP_VAL</span><span class="p">,</span> <span class="n">MSDP_VAR</span>
+<span class="kn">from</span> <span class="nn">.telnet</span> <span class="kn">import</span> <span class="n">TelnetServerFactory</span><span class="p">,</span> <span class="n">TelnetProtocol</span>
+<span class="kn">from</span> <span class="nn">.portal</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
+<span class="kn">from</span> <span class="nn">.suppress_ga</span> <span class="kn">import</span> <span class="n">SUPPRESS_GA</span>
+<span class="kn">from</span> <span class="nn">.naws</span> <span class="kn">import</span> <span class="n">DEFAULT_HEIGHT</span><span class="p">,</span> <span class="n">DEFAULT_WIDTH</span>
+<span class="kn">from</span> <span class="nn">.ttype</span> <span class="kn">import</span> <span class="n">TTYPE</span><span class="p">,</span> <span class="n">IS</span>
+<span class="kn">from</span> <span class="nn">.mccp</span> <span class="kn">import</span> <span class="n">MCCP</span>
+<span class="kn">from</span> <span class="nn">.mssp</span> <span class="kn">import</span> <span class="n">MSSP</span>
+<span class="kn">from</span> <span class="nn">.mxp</span> <span class="kn">import</span> <span class="n">MXP</span>
+<span class="kn">from</span> <span class="nn">.telnet_oob</span> <span class="kn">import</span> <span class="n">MSDP</span><span class="p">,</span> <span class="n">MSDP_VAL</span><span class="p">,</span> <span class="n">MSDP_VAR</span>
 
-<span class="kn">from</span> <span class="nn">.amp</span> <span class="k">import</span> <span class="n">AMPMultiConnectionProtocol</span><span class="p">,</span> <span class="n">MsgServer2Portal</span><span class="p">,</span> <span class="n">MsgPortal2Server</span><span class="p">,</span> <span class="n">AMP_MAXLEN</span>
-<span class="kn">from</span> <span class="nn">.amp_server</span> <span class="k">import</span> <span class="n">AMPServerFactory</span>
+<span class="kn">from</span> <span class="nn">.amp</span> <span class="kn">import</span> <span class="n">AMPMultiConnectionProtocol</span><span class="p">,</span> <span class="n">MsgServer2Portal</span><span class="p">,</span> <span class="n">MsgPortal2Server</span><span class="p">,</span> <span class="n">AMP_MAXLEN</span>
+<span class="kn">from</span> <span class="nn">.amp_server</span> <span class="kn">import</span> <span class="n">AMPServerFactory</span>
 
-<span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="k">import</span> <span class="n">WebSocketServerFactory</span>
-<span class="kn">from</span> <span class="nn">.webclient</span> <span class="k">import</span> <span class="n">WebSocketClient</span>
+<span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketServerFactory</span>
+<span class="kn">from</span> <span class="nn">.webclient</span> <span class="kn">import</span> <span class="n">WebSocketClient</span>
 
 
 <div class="viewcode-block" id="TestAMPServer"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestAMPServer">[docs]</a><span class="k">class</span> <span class="nc">TestAMPServer</span><span class="p">(</span><span class="n">TwistedTestCase</span><span class="p">):</span>

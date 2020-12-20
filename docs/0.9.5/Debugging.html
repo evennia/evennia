@@ -124,7 +124,7 @@ default cmdset. Then restart Evennia in interactive mode with <code class="docut
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;ve found {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;ve found </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()))</span>
 </pre></div>
 </td></tr></table></div>
 <p>If you type <code class="docutils literal notranslate"><span class="pre">test</span></code> in your game, everything will freeze.  You won’t get any feedback from the game,
@@ -146,7 +146,7 @@ first one you should know is <code class="docutils literal notranslate"><span cl
  <span class="mi">44</span>         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
  <span class="mi">45</span>
  <span class="mi">46</span>         <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
- <span class="mi">47</span>             <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
+ <span class="mi">47</span>             <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span> <span class="n">set_trace</span><span class="p">()</span>   <span class="c1"># &lt;--- start of debugger</span>
  <span class="mi">48</span>  <span class="o">-&gt;</span>         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
  <span class="mi">49</span>             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;ve found </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()))</span>
  <span class="mi">50</span>

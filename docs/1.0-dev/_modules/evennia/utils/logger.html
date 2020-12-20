@@ -59,11 +59,11 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">logfile</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="k">import</span> <span class="n">deferToThread</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">logfile</span>
+<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="kn">import</span> <span class="n">deferToThread</span>
 
 
 <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="kc">None</span>
@@ -123,7 +123,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="WeeklyLogFile.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">defaultMode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_rotation</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">):</span>
+<div class="viewcode-block" id="WeeklyLogFile.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">defaultMode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_rotation</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): Name of log file.</span>
@@ -178,9 +178,9 @@
                 <span class="c1"># try taking a float unixtime</span>
                 <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">toDate</span><span class="p">(</span><span class="n">tupledate</span><span class="p">)])</span>
 
-            <span class="n">suffix</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;__</span><span class="si">{copy_suffix}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">copy_suffix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">suffix</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;__</span><span class="si">{</span><span class="n">copy_suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">copy_suffix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.path}</span><span class="s2">.</span><span class="si">{suffix}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
                 <span class="c1"># Append a higher copy_suffix to try to break the tie (starting from 2)</span>
                 <span class="n">copy_suffix</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
@@ -394,7 +394,7 @@
     <span class="c1"># from django as possible.</span>
     <span class="k">global</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span>
     <span class="k">if</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span>
     <span class="n">num_lines_to_append</span> <span class="o">=</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span>
@@ -457,7 +457,7 @@
     <span class="c1"># from django as possible.</span>
     <span class="k">global</span> <span class="n">_LOG_FILE_HANDLES</span><span class="p">,</span> <span class="n">_LOG_FILE_HANDLE_COUNTS</span><span class="p">,</span> <span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">_LOG_ROTATE_SIZE</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
         <span class="n">_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_ROTATE_SIZE</span>

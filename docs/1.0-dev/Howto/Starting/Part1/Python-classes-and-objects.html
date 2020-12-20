@@ -103,7 +103,7 @@ this module to get to the function you want:</p>
 </div>
 <p>Using <code class="docutils literal notranslate"><span class="pre">import</span></code> like this means that you have to specify the full <code class="docutils literal notranslate"><span class="pre">world.test</span></code> every time you want
 to get to your function. Here’s a more powerful form of import:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="k">import</span> <span class="n">hello_world</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="kn">import</span> <span class="n">hello_world</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span></code> is very, very common as long as you want to get something with a longer
@@ -114,7 +114,7 @@ python path. It imports <code class="docutils literal notranslate"><span class="
 </div>
 <p>Let’s say your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> module had a bunch of interesting functions. You could then import them
 all one by one:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="k">import</span> <span class="n">hello_world</span><span class="p">,</span> <span class="n">my_func</span><span class="p">,</span> <span class="n">awesome_func</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="kn">import</span> <span class="n">hello_world</span><span class="p">,</span> <span class="n">my_func</span><span class="p">,</span> <span class="n">awesome_func</span>
 </pre></div>
 </div>
 <p>If there were <em>a lot</em> of functions, you could instead just import <code class="docutils literal notranslate"><span class="pre">test</span></code> and get the function
@@ -125,7 +125,7 @@ Hello World!
 </div>
 <p>You can also <em>rename</em> stuff you import. Say for example that the module you import to already
 has a function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> but we also want to use the one from <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="k">import</span> <span class="n">hello_world</span> <span class="k">as</span> <span class="n">test_hello_world</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">world.test</span> <span class="kn">import</span> <span class="n">hello_world</span> <span class="k">as</span> <span class="n">test_hello_world</span>
 </pre></div>
 </div>
 <p>The form <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span> <span class="pre">as</span> <span class="pre">...</span></code> renames the import.</p>
@@ -226,7 +226,7 @@ from room to room.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Monster&quot;</span>
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} is moving!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Above we have defined a <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class with one variable <code class="docutils literal notranslate"><span class="pre">key</span></code> (that is, the name) and one
@@ -286,7 +286,7 @@ create, they will all show the same printout since <code class="docutils literal
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span> 
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} is moving!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> is a special method that Python recognizes. If given, this handles extra arguments
@@ -326,7 +326,7 @@ later used to print with the right name! Again, note that we didn’t include <c
 could just have made a function:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">def</span> <span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{key} is moving!&quot;</span><span class="p">)</span>      
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>      
 </pre></div>
 </td></tr></table></div>
 <p>The difference between the function and an instance of a class (the object), is that the
@@ -391,7 +391,7 @@ the child adds something with the same name as its parent, it will <em>override<
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span> 
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} is moving!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
@@ -400,13 +400,13 @@ the child adds something with the same name as its parent, it will <em>override<
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} flies through the air high above!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> flies through the air high above!&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} breathes fire!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We added some docstrings for clarity. It’s always a good idea to add doc strings; you can do so also for methods,
@@ -449,7 +449,7 @@ with the <code class="docutils literal notranslate"><span class="pre">super()</s
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
     
     <span class="c1"># ...</span>
 </pre></div>

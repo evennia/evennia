@@ -83,7 +83,7 @@ done by:</p>
 8
 9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span>
 
-<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="kt">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
+<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
     <span class="kt">int</span> <span class="n">dam</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ROOM_LAVA</span><span class="p">)){</span>
         <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span>
@@ -254,7 +254,7 @@ can be done like so:</p>
 5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
 
 <span class="n">mob_db</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.DefaultScript&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mobdb&quot;</span><span class="p">,</span>
-                       <span class="n">persistent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                       <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">mob_db</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">vnums</span> <span class="o">=</span> <span class="p">{}</span>
 </pre></div>
 </td></tr></table></div>

@@ -66,33 +66,33 @@
 <span class="sd">these to create custom managers.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">signals</span>
 
-<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="k">import</span> <span class="n">ModelBase</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="k">import</span> <span class="n">ContentType</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="k">import</span> <span class="n">smart_str</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="k">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="kn">import</span> <span class="n">ModelBase</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">smart_str</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Attribute</span><span class="p">,</span>
     <span class="n">AttributeHandler</span><span class="p">,</span>
     <span class="n">ModelAttributeBackend</span><span class="p">,</span>
     <span class="n">InMemoryAttributeBackend</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">DbHolder</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="k">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">DbHolder</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="k">import</span> <span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">SharedMemoryModelBase</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="k">import</span> <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">SharedMemoryModelBase</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses</span> <span class="k">import</span> <span class="n">managers</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">LockHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses</span> <span class="kn">import</span> <span class="n">managers</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;TypedObject&quot;</span><span class="p">,)</span>
 
@@ -141,7 +141,7 @@
 <span class="sd">    is the basis for the typeclassing system.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We must define our Typeclasses as proxies. We also store the</span>
 <span class="sd">        path directly on the class, this is required by managers.</span>
@@ -171,7 +171,7 @@
         <span class="n">dbmodel</span> <span class="o">=</span> <span class="n">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dbmodel</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> does not appear to inherit from a database model.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not appear to inherit from a database model.&quot;</span><span class="p">)</span>
 
         <span class="c1"># typeclass proxy setup</span>
         <span class="c1"># first check explicit __applabel__ on the typeclass, then figure</span>
@@ -322,7 +322,7 @@
                 <span class="o">%</span> <span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObject.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObject.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The `__init__` method of typeclasses is the core operational</span>
 <span class="sd">        code of the typeclass system, where it dynamically re-applies</span>
@@ -431,20 +431,20 @@
     <span class="c1">#</span>
     <span class="c1">#</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">dbid</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this is required to maintain hashing</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">smart_str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span>
 
     <span class="c1"># @property</span>

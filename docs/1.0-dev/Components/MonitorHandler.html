@@ -55,7 +55,7 @@ is in <code class="docutils literal notranslate"><span class="pre">evennia.scrip
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
 <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span>
-                    <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">
@@ -97,7 +97,7 @@ saving it.</p></li>
 20
 21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span> <span class="k">as</span> <span class="n">monitorhandler</span>
 
-<span class="k">def</span> <span class="nf">_monitor_callback</span><span class="p">(</span><span class="n">fieldname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">_monitor_callback</span><span class="p">(</span><span class="n">fieldname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>    
     <span class="c1"># reporting callback that works both</span>
     <span class="c1"># for db-fields and Attributes</span>
     <span class="k">if</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">):</span>

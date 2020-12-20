@@ -61,10 +61,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">codecs</span> <span class="k">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -197,9 +197,9 @@
             <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">charmax</span>
         <span class="p">):</span>
             <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">charmax</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You may only create a maximum of </span><span class="si">{charmax}</span><span class="s2"> character</span><span class="si">{plural}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only create a maximum of </span><span class="si">{</span><span class="n">charmax</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 
         <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
 
@@ -274,7 +274,7 @@
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># one match</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">get_input</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span>
 
             <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">callback_prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
@@ -911,7 +911,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">):</span>
             <span class="c1"># show ansi 16-color table</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 
             <span class="n">ap</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_PARSER</span>
             <span class="c1"># ansi colors</span>
@@ -1041,7 +1041,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Already quelling Account </span><span class="si">%s</span><span class="s2"> permissions.&quot;</span> <span class="o">%</span> <span class="n">permstr</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="n">puppet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
+            <span class="n">puppet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">puppet</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">puppet</span><span class="p">:</span>
                 <span class="n">cpermstr</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                 <span class="n">cpermstr</span> <span class="o">=</span> <span class="s2">&quot;Quelling to current puppet&#39;s permissions </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">cpermstr</span>

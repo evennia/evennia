@@ -49,15 +49,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">check_lockstring</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">list_to_string</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="k">import</span> <span class="n">EvscaperoomObject</span>
-<span class="kn">from</span> <span class="nn">.commands</span> <span class="k">import</span> <span class="n">CmdSetEvScapeRoom</span>
-<span class="kn">from</span> <span class="nn">.state</span> <span class="k">import</span> <span class="n">StateHandler</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_lockstring</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">list_to_string</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">EvscaperoomObject</span>
+<span class="kn">from</span> <span class="nn">.commands</span> <span class="kn">import</span> <span class="n">CmdSetEvScapeRoom</span>
+<span class="kn">from</span> <span class="nn">.state</span> <span class="kn">import</span> <span class="n">StateHandler</span>
 
 
 <div class="viewcode-block" id="EvscapeRoom"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom">[docs]</a><span class="k">class</span> <span class="nc">EvscapeRoom</span><span class="p">(</span><span class="n">EvscaperoomObject</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
@@ -108,10 +108,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Log to a file specificially for this room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">caller</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;[caller.key]: &quot;</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[caller.key]: &quot;</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span>
-            <span class="n">strip_ansi</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{caller}</span><span class="s2">{message.strip()}&quot;</span><span class="p">),</span> <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagcategory</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
+            <span class="n">strip_ansi</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="si">}{</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagcategory</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.score"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_score</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
@@ -119,12 +119,12 @@
 <span class="sd">        We don&#39;t score individually but for everyone in room together.</span>
 <span class="sd">        You can only be scored for a given reason once.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">reason</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;score: </span><span class="si">{reason}</span><span class="s2"> (</span><span class="si">{new_score}</span><span class="s2">pts)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;score: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">new_score</span><span class="si">}</span><span class="s2">pts)&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">][</span><span class="n">reason</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_score</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.progress"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_progress</span><span class="p">):</span>
         <span class="s2">&quot;Progress is what we set it to be (0-100%)&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;progress: </span><span class="si">{new_progress}</span><span class="s2">%&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;progress: </span><span class="si">{</span><span class="n">new_progress</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_progress</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.achievement"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.achievement">[docs]</a>    <span class="k">def</span> <span class="nf">achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">achievement</span><span class="p">,</span> <span class="n">subtext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
@@ -142,7 +142,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">achievements</span><span class="p">:</span>
             <span class="n">achievements</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">achievement</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">achievements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;achievement: </span><span class="si">{caller}</span><span class="s2"> earned &#39;</span><span class="si">{achievement}</span><span class="s2">&#39; - </span><span class="si">{subtext}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;achievement: </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2"> earned &#39;</span><span class="si">{</span><span class="n">achievement</span><span class="si">}</span><span class="s2">&#39; - </span><span class="si">{</span><span class="n">subtext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">achievements</span><span class="p">[</span><span class="n">achievement</span><span class="p">]</span> <span class="o">=</span> <span class="n">subtext</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="n">achievements</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span></div>
 
@@ -167,7 +167,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">flagname</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.check_perm"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.check_perm">[docs]</a>    <span class="k">def</span> <span class="nf">check_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">check_lockstring</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;dummy:perm(</span><span class="si">{permission}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">check_lockstring</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dummy:perm(</span><span class="si">{</span><span class="n">permission</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.tag_character"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.tag_character">[docs]</a>    <span class="k">def</span> <span class="nf">tag_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -212,8 +212,8 @@
 <span class="sd">        Have a character exit the room - return them to the room menu.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;EXIT: </span><span class="si">{char}</span><span class="s2"> left room&quot;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">.menu</span> <span class="k">import</span> <span class="n">run_evscaperoom_menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EXIT: </span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> left room&quot;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">.menu</span> <span class="kn">import</span> <span class="n">run_evscaperoom_menu</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">character_cleanup</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
         <span class="n">char</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">home</span>
@@ -234,7 +234,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;JOIN: </span><span class="si">{moved_obj}</span><span class="s2"> joined room&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JOIN: </span><span class="si">{</span><span class="n">moved_obj</span><span class="si">}</span><span class="s2"> joined room&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">character_enters</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.at_object_leave"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -266,7 +266,7 @@
 <div class="viewcode-block" id="EvscapeRoom.return_appearance"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.room.html#evennia.contrib.evscaperoom.room.EvscapeRoom.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">obj</span><span class="p">,</span> <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_position</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|x[</span><span class="si">{self.position_prep_map[pos]}</span><span class="s2"> on &quot;</span> <span class="n">f</span><span class="s2">&quot;{obj.get_display_name(looker)}]|n&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|x[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">position_prep_map</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="si">}</span><span class="s2"> on &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span><span class="si">}</span><span class="s2">]|n&quot;</span>
             <span class="k">if</span> <span class="n">obj</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
@@ -279,7 +279,7 @@
                 <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.db.desc}{pos}{admin_only}</span><span class="s2">&quot;</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="si">}{</span><span class="n">pos</span><span class="si">}{</span><span class="n">admin_only</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

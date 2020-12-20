@@ -159,7 +159,7 @@ when the function was called.</p>
 </div>
 <p>For our first test, let’s type something like:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;{character} shrugs and says: &#39;well, yes, hello to you!&#39;&quot;</span><span class="p">,</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> shrugs and says: &#39;well, yes, hello to you!&#39;&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
@@ -196,7 +196,7 @@ keywords.</p>
 </div>
 <p>And in the editor that opens:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;{character} says: &#39;Ho well, trade&#39;s fine as long as roads are</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Ho well, trade&#39;s fine as long as roads are</span>
 <span class="n">safe</span><span class="o">.</span><span class="s1">&#39;&quot;, mapping=dict(character=character))</span>
 </pre></div>
 </td></tr></table></div>
@@ -226,16 +226,16 @@ an entire dialogue, you might want to do a bit more than that.</p>
  8
  9
 10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;{character} says: &#39;Bandits he?&#39;&quot;</span><span class="p">,</span>
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Bandits he?&#39;&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
-<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;{character} scratches his head, considering.&quot;</span><span class="p">,</span>
+<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> scratches his head, considering.&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
-<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;{character} whispers: &#39;Aye, saw some of them, north from here.  No</span>
+<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> whispers: &#39;Aye, saw some of them, north from here.  No</span>
 <span class="n">trouble</span> <span class="n">o</span><span class="s1">&#39; mine, but...&#39;</span><span class="s2">&quot;, mapping=dict(character=character))</span>
-<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;{character} looks at you more</span>
+<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> looks at you more</span>
 <span class="n">closely</span><span class="o">.</span><span class="s2">&quot;.format(character=character.get_display_name(speaker)))</span>
-<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;{character} continues in a low voice: &#39;Ain&#39;t my place to say, but if you need to find</span>
-<span class="s1">&#39;em, they&#39;</span><span class="n">re</span> <span class="n">encamped</span> <span class="n">some</span> <span class="n">distance</span> <span class="n">away</span> <span class="kn">from</span> <span class="nn">the</span> <span class="nn">road</span><span class="p">,</span> <span class="n">I</span> <span class="n">guess</span> <span class="n">near</span> <span class="n">a</span> <span class="n">cave</span> <span class="ow">or</span>
+<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> continues in a low voice: &#39;Ain&#39;t my place to say, but if you need to find</span>
+<span class="s1">&#39;em, they&#39;</span><span class="n">re</span> <span class="n">encamped</span> <span class="n">some</span> <span class="n">distance</span> <span class="n">away</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">road</span><span class="p">,</span> <span class="n">I</span> <span class="n">guess</span> <span class="n">near</span> <span class="n">a</span> <span class="n">cave</span> <span class="ow">or</span>
 <span class="n">something</span><span class="o">.</span><span class="s1">&#39;.&quot;.format(character=character.get_display_name(speaker)))</span>
 </pre></div>
 </td></tr></table></div>

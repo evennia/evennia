@@ -67,8 +67,8 @@ if you want to help with Evennia’s development itself. See the
 <h2>Where is it?<a class="headerlink" href="#where-is-it" title="Permalink to this headline">¶</a></h2>
 <p>If Evennia is installed, you can import from it simply with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">some_module</span>
-<span class="kn">from</span> <span class="nn">evennia.some_module.other_module</span> <span class="k">import</span> <span class="n">SomeClass</span> 
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">some_module</span>
+<span class="kn">from</span> <span class="nn">evennia.some_module.other_module</span> <span class="kn">import</span> <span class="n">SomeClass</span> 
 </pre></div>
 </div>
 <p>and so on.</p>
@@ -139,13 +139,13 @@ are listed if you <a class="reference internal" href="../../../Evennia-API.html"
 <p>In the previous lesson we took a brief look at <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects</span></code> as an example of a Python module. Let’s
 open it again. Inside is the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class, which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>.
 Near the top of the module is this line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultObject</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 </pre></div>
 </div>
 <p>We want to figure out just what this DefaultObject offers. Since this is imported directly from <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, we
 are actually importing from <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>.</p>
 <p><a class="reference external" href="Howto/Starting/Part1/evennia/__init__.py#L189">Look at Line 189</a> of <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> and you’ll find this line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultObject</span>    
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>    
 </pre></div>
 </div>
 <div class="sidebar">

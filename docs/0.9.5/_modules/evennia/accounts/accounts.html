@@ -53,33 +53,33 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="k">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="k">import</span> <span class="n">import_string</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="k">import</span> <span class="n">AccountManager</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
-<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
-<span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="k">import</span> <span class="n">Throttle</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="kn">import</span> <span class="n">Throttle</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SIGNAL_ACCOUNT_POST_CREATE</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">NickHandler</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="k">import</span> <span class="n">ScriptHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="k">import</span> <span class="n">CmdSetHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="k">import</span> <span class="n">OptionHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickHandler</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
 
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">getrandbits</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
 
@@ -106,7 +106,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the handler.</span>
 
@@ -131,7 +131,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="n">sessid</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">_SESSIONS</span><span class="o">.</span><span class="n">session_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">sessid</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -289,7 +289,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
     <span class="c1"># puppeting operations</span>
@@ -329,13 +329,13 @@
                     <span class="c1"># we may take over another of our sessions</span>
                     <span class="c1"># output messages to the affected sessions</span>
                     <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Sharing |c</span><span class="si">{obj.name}</span><span class="s2">|n with another of your sessions.&quot;</span>
-                        <span class="n">txt2</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|c</span><span class="si">{obj.name}</span><span class="s2">|n|G is now shared from another of your sessions.|n&quot;</span>
+                        <span class="n">txt1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sharing |c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n with another of your sessions.&quot;</span>
+                        <span class="n">txt2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n|G is now shared from another of your sessions.|n&quot;</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt2</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">txt1</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Taking over |c</span><span class="si">{obj.name}</span><span class="s2">|n from another of your sessions.&quot;</span>
-                        <span class="n">txt2</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|c</span><span class="si">{obj.name}</span><span class="s2">|n|R is now acted from another of your sessions.|n&quot;</span>
+                        <span class="n">txt1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Taking over |c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n from another of your sessions.&quot;</span>
+                        <span class="n">txt2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n|R is now acted from another of your sessions.|n&quot;</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">txt1</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">txt2</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
@@ -414,7 +414,7 @@
 <span class="sd">            puppet (Object): The matching puppeted object, if any.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span></div>
+        <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.get_all_puppets"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_all_puppets">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_puppets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -494,7 +494,7 @@
                 <span class="n">klass</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">validator</span><span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;The module in NAME could not be imported: </span><span class="si">{validator[&#39;NAME&#39;]}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The module in NAME could not be imported: </span><span class="si">{</span><span class="n">validator</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. &quot;</span>
                     <span class="s2">&quot;Check your AUTH_USERNAME_VALIDATORS setting.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -554,7 +554,7 @@
                     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">If you feel this ban is in error, please email an admin.|x&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Authentication Denied (Banned): </span><span class="si">{username}</span><span class="s2"> (IP: </span><span class="si">{ip}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication Denied (Banned): </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
             <span class="n">LOGIN_THROTTLE</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="s2">&quot;Too many sightings of banned artifact.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
 
@@ -565,7 +565,7 @@
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Username and/or password is incorrect.&quot;</span><span class="p">))</span>
 
             <span class="c1"># Log auth failures while throttle is inactive</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Authentication Failure: </span><span class="si">{username}</span><span class="s2"> (IP: </span><span class="si">{ip}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication Failure: </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
 
             <span class="c1"># Update throttle</span>
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
@@ -581,7 +581,7 @@
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
 
         <span class="c1"># Account successfully authenticated</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Authentication Success: </span><span class="si">{account}</span><span class="s2"> (IP: </span><span class="si">{ip}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication Success: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">account</span><span class="p">,</span> <span class="n">errors</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.normalize_username"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.normalize_username">[docs]</a>    <span class="nd">@classmethod</span>
@@ -689,7 +689,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Password successfully changed for </span><span class="si">{self}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Password successfully changed for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_password_change</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.create_character"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.create_character">[docs]</a>    <span class="k">def</span> <span class="nf">create_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -819,7 +819,7 @@
                 <span class="n">account</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span>
                     <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
                 <span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Account Created: </span><span class="si">{account}</span><span class="s2"> (IP: </span><span class="si">{ip}</span><span class="s2">).&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account Created: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -842,7 +842,7 @@
             <span class="c1"># join the new account to the public channel</span>
             <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;New account &#39;</span><span class="si">{account.key}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;New account &#39;</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
@@ -1184,7 +1184,7 @@
             <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;#</span><span class="si">{self.dbid}</span><span class="s2">&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">):</span>
                 <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
@@ -1309,9 +1309,9 @@
             <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">now</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02i</span><span class="s2">-</span><span class="si">%02i</span><span class="s2">-</span><span class="si">%02i</span><span class="s2">(</span><span class="si">%02i</span><span class="s2">:</span><span class="si">%02i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_MUDINFO_CHANNEL</span><span class="p">:</span>
-            <span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">tempmsg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;[</span><span class="si">{_MUDINFO_CHANNEL.key}</span><span class="s2">, </span><span class="si">{now}</span><span class="s2">]: </span><span class="si">{message}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">tempmsg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;[</span><span class="si">{now}</span><span class="s2">]: </span><span class="si">{message}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DefaultAccount.at_post_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1389,7 +1389,7 @@
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">reason</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot; ({reason if reason else &#39;&#39;})&quot;</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">reason</span> <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_to_connect_channel</span><span class="p">(</span>
             <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">{key}</span><span class="s2"> disconnected</span><span class="si">{reason}</span><span class="s2">|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
         <span class="p">)</span></div>
@@ -1509,13 +1509,13 @@
             <span class="n">is_su</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span>
 
             <span class="c1"># text shown when looking in the ooc area</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="s2">&quot;Account |g</span><span class="si">{self.key}</span><span class="s2">|n (you are Out-of-Character)&quot;</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Account |g</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n (you are Out-of-Character)&quot;</span><span class="p">]</span>
 
             <span class="n">nsess</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">nsess</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="ow">and</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wConnected session:|n&quot;</span>
-                <span class="ow">or</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wConnected sessions (</span><span class="si">{nsess}</span><span class="s2">):|n&quot;</span>
+                <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wConnected sessions (</span><span class="si">{</span><span class="n">nsess</span><span class="si">}</span><span class="s2">):|n&quot;</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">isess</span><span class="p">,</span> <span class="n">sess</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sessions</span><span class="p">):</span>
                 <span class="n">csessid</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span>
@@ -1556,7 +1556,7 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |w@ic &lt;character&gt;|n - enter the game (|w@ooc|n to get back here)&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">is_su</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Available character</span><span class="si">{string_s_ending}</span><span class="s2"> ({len(characters)}/unlimited):&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Available character</span><span class="si">{</span><span class="n">string_s_ending</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span><span class="si">}</span><span class="s2">/unlimited):&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1575,15 +1575,15 @@
                             <span class="n">sid</span> <span class="o">=</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span> <span class="ow">and</span> <span class="n">sessions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
                             <span class="k">if</span> <span class="n">sess</span> <span class="ow">and</span> <span class="n">sid</span><span class="p">:</span>
                                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |G</span><span class="si">{char.key}</span><span class="s2">|n [{&#39;, &#39;.join(char.permissions.all())}] (played by you in session </span><span class="si">{sid}</span><span class="s2">)&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |G</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] (played by you in session </span><span class="si">{</span><span class="n">sid</span><span class="si">}</span><span class="s2">)&quot;</span>
                                 <span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |R</span><span class="si">{char.key}</span><span class="s2">|n [{&#39;, &#39;.join(char.permissions.all())}] (played by someone else)&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |R</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] (played by someone else)&quot;</span>
                                 <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># character is &quot;free to puppet&quot;</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - </span><span class="si">{char.key}</span><span class="s2"> [{&#39;, &#39;.join(char.permissions.all())}]&quot;</span><span class="p">)</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
             <span class="n">look_string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">look_string</span></div></div>
 

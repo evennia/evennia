@@ -96,9 +96,9 @@ Evennia defaults to using this (it inherits directly from <code class="docutils 
     <span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span> <span class="c1"># [...]</span>
 
         <span class="n">at_account_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="s2">&quot;this is called only once, when account is first created&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">real_name</span> <span class="o">=</span> <span class="bp">None</span>      <span class="c1"># this is set later self.db.real_address = None   #</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">real_name</span> <span class="o">=</span> <span class="kc">None</span>      <span class="c1"># this is set later self.db.real_address = None   #</span>
 <span class="s2">&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_1</span> <span class="o">=</span> <span class="bp">True</span>       <span class="c1"># default config self.db.config_2 = False      #       &quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_1</span> <span class="o">=</span> <span class="kc">True</span>       <span class="c1"># default config self.db.config_2 = False      #       &quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_3</span> <span class="o">=</span> <span class="mi">1</span>          <span class="c1">#       &quot;</span>
 
             <span class="c1"># ... whatever else our game needs to know ``` Reload the server with `reload`.</span>

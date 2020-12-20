@@ -40,9 +40,9 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.server.profiling.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">mock_open</span>
-<span class="kn">from</span> <span class="nn">.dummyrunner_settings</span> <span class="k">import</span> <span class="p">(</span>
+<span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">mock_open</span>
+<span class="kn">from</span> <span class="nn">.dummyrunner_settings</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">c_creates_button</span><span class="p">,</span>
     <span class="n">c_creates_obj</span><span class="p">,</span>
     <span class="n">c_digs</span><span class="p">,</span>
@@ -191,7 +191,7 @@
     <span class="k">def</span> <span class="nf">test_memplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_time</span><span class="p">,</span> <span class="n">mocked_open</span><span class="p">,</span> <span class="n">mocked_os</span><span class="p">,</span> <span class="n">mocked_idmapper</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="n">Mock</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
 
         <span class="n">mocked_idmapper</span><span class="o">.</span><span class="n">cache_size</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
         <span class="n">mock_time</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">6000.0</span><span class="p">)</span>

@@ -120,7 +120,7 @@ NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></c
 
     <span class="c1"># [at_heard_say() goes here]</span>
 
-    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Custom msg() method reacting to say.&quot;</span>
 
         <span class="k">if</span> <span class="n">from_obj</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
@@ -129,12 +129,12 @@ NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></c
                 <span class="c1"># if text comes from a say, `text` is `(&#39;say_text&#39;, {&#39;type&#39;: &#39;say&#39;})`</span>
                 <span class="n">say_text</span><span class="p">,</span> <span class="n">is_say</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;say&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">is_say</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">is_say</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">is_say</span><span class="p">:</span>
                 <span class="c1"># First get the response (if any)</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_heard_say</span><span class="p">(</span><span class="n">say_text</span><span class="p">,</span> <span class="n">from_obj</span><span class="p">)</span>
                 <span class="c1"># If there is a response</span>
-                <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># speak ourselves, using the return</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;say </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">response</span><span class="p">)</span>   
     

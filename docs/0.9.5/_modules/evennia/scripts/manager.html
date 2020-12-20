@@ -43,9 +43,9 @@
 <span class="sd">The custom manager for Scripts.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="k">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ScriptManager&quot;</span><span class="p">,)</span>
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
@@ -315,7 +315,7 @@
         <span class="n">new_obj</span> <span class="o">=</span> <span class="n">new_obj</span> <span class="k">if</span> <span class="n">new_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">original_script</span><span class="o">.</span><span class="n">obj</span>
         <span class="n">new_locks</span> <span class="o">=</span> <span class="n">new_locks</span> <span class="k">if</span> <span class="n">new_locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">original_script</span><span class="o">.</span><span class="n">db_lock_storage</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 
         <span class="n">new_script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
             <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">new_key</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">new_obj</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">new_locks</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span>

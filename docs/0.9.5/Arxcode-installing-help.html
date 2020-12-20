@@ -102,14 +102,14 @@ way but remove the secret-handling and replace it with the normal Evennia method
 <p>Cd into <code class="docutils literal notranslate"><span class="pre">myarx/server/conf/</span></code> and open the file <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> in a text editor. The top part (within
 <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;...&quot;&quot;&quot;</span></code>) is just help text. Wipe everything underneath that and make it look like this instead
 (don’t forget to save):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">base_settings</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">base_settings</span> <span class="kn">import</span> <span class="o">*</span>
     
 <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
 <span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;MyArx&quot;</span>
 <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="s2">&quot;The cool game&quot;</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">server.conf.secret_settings</span> <span class="k">import</span> <span class="o">*</span>
+    <span class="kn">from</span> <span class="nn">server.conf.secret_settings</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
 </pre></div>

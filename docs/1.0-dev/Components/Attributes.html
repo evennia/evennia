@@ -61,7 +61,7 @@ try to save some data to a <em>Rose</em> (an <a class="reference internal" href=
 2
 3
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># saving</span>
-    <span class="n">rose</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">has_thorns</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">rose</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">has_thorns</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="c1"># getting it back</span>
     <span class="n">is_ouch</span> <span class="o">=</span> <span class="n">rose</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">has_thorns</span>
 </pre></div>
@@ -75,7 +75,7 @@ throughout the life of the server now, until you deliberately remove them.</p>
 2
 3
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># saving</span>
-    <span class="n">rose</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">has_thorns</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">rose</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">has_thorns</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="c1"># getting it back</span>
     <span class="n">is_ouch</span> <span class="o">=</span> <span class="n">rose</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">has_thorns</span>
 </pre></div>
@@ -137,9 +137,9 @@ access and editing. The <code class="docutils literal notranslate"><span class="
     <span class="n">obj</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;MyObject&quot;</span><span class="p">)</span>
 
     <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;testvalue&quot;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>                 <span class="c1"># prints &quot;testvalue&quot;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>  <span class="c1">#       &quot;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>        <span class="c1"># prints [&lt;AttributeObject&gt;]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>                 <span class="c1"># prints &quot;testvalue&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>  <span class="c1">#       &quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>        <span class="c1"># prints [&lt;AttributeObject&gt;]</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -257,7 +257,7 @@ such hidden database objects is <em>not</em> supported and will lead to errors!<
 12
 13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Examples of valid single-value  attribute data:</span>
 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="mi">23</span>
-<span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="c1"># a database object (will be stored as an internal representation)</span>
 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test2</span> <span class="o">=</span> <span class="n">myobj</span>
 
@@ -352,8 +352,8 @@ variable, e.g. <code class="docutils literal notranslate"><span class="pre">myli
 5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
      <span class="n">mylist</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span>
      <span class="n">mylist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># this will also update database</span>
-     <span class="k">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is now [1,2,3,5]</span>
-     <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is also [1,2,3,5]</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is now [1,2,3,5]</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is also [1,2,3,5]</span>
 </pre></div>
 </td></tr></table></div>
 <p>To “disconnect” your extracted mutable variable from the database you simply need to convert the
@@ -366,8 +366,8 @@ variable, e.g. <code class="docutils literal notranslate"><span class="pre">myli
 5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
      <span class="n">mylist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># convert to normal list</span>
      <span class="n">mylist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
-     <span class="k">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is now [1,2,3,5]</span>
-     <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is still [1,2,3,4]</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is now [1,2,3,5]</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span> <span class="c1"># this is still [1,2,3,4]</span>
 </pre></div>
 </td></tr></table></div>
 <p>A further problem comes with <em>nested mutables</em>, like a dict containing lists of dicts or something
@@ -375,7 +375,7 @@ like that. Each of these nested mutables would be <code class="docutils literal 
 disconnecting the outermost one of them would not disconnect those nested within. To make really
 sure you disonnect a nested structure entirely from the database, Evennia provides a special
 function <code class="docutils literal notranslate"><span class="pre">evennia.utils.dbserialize.deserialize</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">deserialize</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">deserialize</span>
 
 <span class="n">decoupled_mutables</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">nested_mutables</span><span class="p">)</span>
 </pre></div>
@@ -399,7 +399,7 @@ already disconnected from the database from the onset.</p>
 
      <span class="c1"># this works but will NOT update database since outermost is a tuple</span>
      <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mytup</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
-     <span class="k">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mytup</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># this still returns 4, not 5</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mytup</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># this still returns 4, not 5</span>
 
      <span class="n">mytup1</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mytup</span> <span class="c1"># mytup1 is already disconnected from database since outermost</span>
                            <span class="c1"># iterable is a tuple, so we can edit the internal list as we want</span>
@@ -430,7 +430,7 @@ The relevant lock types are</p>
 the AttributeHandler and set it to return the object instead of the value:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;attread:all();attredit:perm(Admins)&quot;</span>
-     <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;myattr&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+     <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;myattr&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Note the <code class="docutils literal notranslate"><span class="pre">return_obj</span></code> keyword which makes sure to return the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> object so its LockHandler
@@ -451,10 +451,10 @@ Attribute).</p>
 11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># in some command code where we want to limit</span>
     <span class="c1"># setting of a given attribute name on an object</span>
     <span class="n">attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span>
-                              <span class="n">return_obj</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                              <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                               <span class="n">accessing_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                              <span class="n">default_access</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                              <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">default_access</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot edit that Attribute!&quot;</span><span class="p">)</span>
         <span class="k">return</span>

@@ -318,7 +318,7 @@ Evennia’s default “mux-like” commands here.</p>
                 <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is now a GM.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="p">)</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are now a GM (changed by </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="p">)</span>
-                <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># @ungm was entered - revoke GM status from someone</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">):</span>
@@ -435,7 +435,7 @@ rectangular.</p>
 11
 12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">table_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">table_string</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">table_string</span><span class="p">)</span>
 
  <span class="n">Attr</span> <span class="o">|</span> <span class="n">Value</span>
 <span class="o">~~~~~~+~~~~~~~</span>
@@ -577,7 +577,7 @@ directly into the <code class="docutils literal notranslate"><span class="pre">E
 above. Note however that the very first line of the <code class="docutils literal notranslate"><span class="pre">FORM</span></code> string is ignored, so start with a <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
 </div></blockquote>
 <p>We then map those to the cells of the form:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.--------------------------------------.</span>
@@ -659,7 +659,7 @@ it can be modified. For this we will modify our <code class="docutils literal no
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;called only once, when object is first created&quot;</span>
         <span class="c1"># we will use this to stop account from changing sheet</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># we store these so we can build these on demand</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chardata</span>  <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                              <span class="s2">&quot;con&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -781,11 +781,11 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
     <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_FIELDNAMES</span><span class="p">:</span>
         <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Allowed field names: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_FIELDNAMES</span><span class="p">))</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">ALLOWED_ATTRS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> must receive a number.&quot;</span> <span class="o">%</span> <span class="n">fieldname</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">False</span>
-    <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 <span class="k">class</span> <span class="nc">CmdSheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -828,7 +828,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
             <span class="k">return</span>
 
         <span class="c1"># split input by whitespace, once</span>
-        <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">fieldname</span> <span class="o">=</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="c1"># ignore case</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_fieldnames</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
@@ -958,17 +958,17 @@ do it on other players than themselves. They are also not stopped by any <code c
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must specify both a fieldname and value.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">fieldname</span> <span class="o">=</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_fieldname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
                 <span class="k">return</span>
             <span class="n">charname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># no &#39;=&#39;, so we must be aiming to look at a charsheet</span>
-            <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+            <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
             <span class="n">charname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-        <span class="n">character</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">charname</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">character</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">charname</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -976,13 +976,13 @@ do it on other players than themselves. They are also not stopped by any <code c
             <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The character sheet is already locked.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> can no longer edit their character sheet.&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s2">&quot;unlock&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The character sheet is already unlocked.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> can now edit their character sheet.&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fieldname</span><span class="p">:</span>

@@ -44,12 +44,12 @@
 <span class="sd">Custom manager for Objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="k">import</span> <span class="n">exceptions</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="k">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ObjectManager&quot;</span><span class="p">,)</span>
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
@@ -279,7 +279,7 @@
         <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FieldError</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
                 <span class="s2">&quot;The property &#39;</span><span class="si">%s</span><span class="s2">&#39; does not support search criteria of the type </span><span class="si">%s</span><span class="s2">.&quot;</span>
@@ -588,8 +588,8 @@
             <span class="n">new_destination</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">destination</span>
 
         <span class="c1"># create new object</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 
         <span class="n">new_object</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
             <span class="n">typeclass_path</span><span class="p">,</span>

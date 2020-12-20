@@ -373,7 +373,7 @@ when enough time has passed unless they keep trying.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You swing big! You are off balance now.&quot;</span><span class="p">)</span>
 
         <span class="c1"># set the off-balance flag</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span> <span class="o">=</span> <span class="kc">True</span>
             
         <span class="c1"># wait 8 seconds before we can recover. During this time</span>
         <span class="c1"># we won&#39;t be able to swing again due to the check at the top.</span>
@@ -517,7 +517,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
         <span class="c1"># [Crafting code, checking of components, skills etc]</span>
 
         <span class="c1"># Start crafting</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You start crafting ...&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step1</span><span class="p">)</span>
     
@@ -525,7 +525,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
         <span class="s2">&quot;checks if we are in a fight.&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span>
-            <span class="k">return</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="kc">True</span>
       
     <span class="k">def</span> <span class="nf">step1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;first step of armour construction&quot;</span>
@@ -571,7 +571,7 @@ Below is an example of a crafting command that can be aborted by starting a figh
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implements the command&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span> <span class="o">=</span> <span class="kc">True</span>
     
         <span class="c1"># [...]</span>
 </pre></div>
@@ -646,7 +646,7 @@ must make sure Evennia can properly store things to the database.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39; and wait for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="c1"># this waits non-blocking for 10 seconds, then calls echo(self.caller, self.args)</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># changes!</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># changes!</span>
     
 </pre></div>
 </td></tr></table></div>

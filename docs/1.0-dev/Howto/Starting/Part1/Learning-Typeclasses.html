@@ -89,7 +89,7 @@ the server or <code class="docutils literal notranslate"><span class="pre">quit(
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span> 
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} is moving!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
@@ -99,13 +99,13 @@ the server or <code class="docutils literal notranslate"><span class="pre">quit(
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} breathes fire!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <div class="section" id="our-first-persistent-object">
@@ -178,7 +178,7 @@ you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let
 <span class="sd">    This is a base class for Monsters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} is moving!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
@@ -188,13 +188,13 @@ you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let
 
     <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.key} breathes fire!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Don’t forget to save. We removed <code class="docutils literal notranslate"><span class="pre">Monster.__init__</span></code> and made <code class="docutils literal notranslate"><span class="pre">Monster</span></code> inherit from Evennia’s <code class="docutils literal notranslate"><span class="pre">Object</span></code> (which in turn
@@ -515,7 +515,7 @@ So if we modify this class we’ll also modify ourselves.</p>
 <p>We made a new method, gave it a docstring and had it <code class="docutils literal notranslate"><span class="pre">return</span></code> the RP-esque values we set. It comes back as a
 <em>tuple</em> <code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">12,</span> <span class="pre">15)</span></code>. To get a specific value you could specify the <em>index</em> of the value you want,
 starting from zero:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Strength is </span><span class="si">{stats[0]}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strength is </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="n">Strength</span> <span class="ow">is</span> <span class="mf">10.</span>
 </pre></div>
 </div>
@@ -710,7 +710,7 @@ try out Python <em>loops</em>. We try them out in multi-line Python mode:</p>
 every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
 <p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how
 this is done (still in python multi-line mode):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="k">import</span> <span class="n">Character</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
 <span class="o">&gt;</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="o">&gt;</span>     <span class="n">char</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
 </pre></div>

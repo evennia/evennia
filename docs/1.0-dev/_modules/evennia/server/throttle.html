@@ -40,9 +40,9 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.server.throttle</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="k">import</span> <span class="n">caches</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span></span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">caches</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 
@@ -61,7 +61,7 @@
 
     <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Too many failed attempts; you must wait a few minutes before trying again.&quot;</span>
 
-<div class="viewcode-block" id="Throttle.__init__"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle.__init__"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows setting of throttle parameters.</span>
 
@@ -165,7 +165,7 @@
 
         <span class="c1"># If this makes it engage, log a single activation event</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">previously_throttled</span> <span class="ow">and</span> <span class="n">currently_throttled</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Throttle Activated: </span><span class="si">{failmsg}</span><span class="s2"> (IP: </span><span class="si">{ip}</span><span class="s2">, </span><span class="si">{self.limit}</span><span class="s2"> hits in </span><span class="si">{self.timeout}</span><span class="s2"> seconds.)&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Throttle Activated: </span><span class="si">{</span><span class="n">failmsg</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="si">}</span><span class="s2"> hits in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds.)&quot;</span><span class="p">)</span>
             
         <span class="bp">self</span><span class="o">.</span><span class="n">record_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span></div>
         

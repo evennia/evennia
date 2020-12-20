@@ -43,13 +43,13 @@
 <span class="sd">Building and world design commands</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Max</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">LockException</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">get_and_merge_cmdsets</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Max</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">get_and_merge_cmdsets</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">inherits_from</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
     <span class="n">get_all_typeclasses</span><span class="p">,</span>
@@ -59,11 +59,11 @@
     <span class="n">list_to_string</span><span class="p">,</span>
     <span class="n">display_len</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="k">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="k">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">inlinefunc_raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">inlinefunc_raw</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -98,7 +98,7 @@
 <span class="p">)</span>
 
 <span class="c1"># used by set</span>
-<span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span> <span class="k">as</span> <span class="n">_LITERAL_EVAL</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span> <span class="k">as</span> <span class="n">_LITERAL_EVAL</span>
 
 <span class="n">LIST_APPEND_CHAR</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
 
@@ -1861,7 +1861,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A typeclassed object, or None if nothing is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
 
         <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -2428,9 +2428,9 @@
             <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">inlinefunc_raw</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{attr}</span><span class="s2">[</span><span class="si">{category}</span><span class="s2">] = </span><span class="si">{value}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{attr}</span><span class="s2"> = </span><span class="si">{value}</span><span class="s2">&quot;</span></div>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_attributes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">format_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attrname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2448,7 +2448,7 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">ndb_attr</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">db_attr</span> <span class="ow">or</span> <span class="n">ndb_attr</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Attribue(s)&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  No Attribute &#39;</span><span class="si">{attrname}</span><span class="s2">&#39; found on </span><span class="si">{obj.name}</span><span class="s2">&quot;</span><span class="p">}</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Attribue(s)&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  No Attribute &#39;</span><span class="si">{</span><span class="n">attrname</span><span class="si">}</span><span class="s2">&#39; found on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">db_attr</span> <span class="o">=</span> <span class="p">[(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
             <span class="k">try</span><span class="p">:</span>
@@ -2488,23 +2488,23 @@
 
         <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># main key</span>
-        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Name/key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.name}</span><span class="s2">|n (</span><span class="si">{obj.dbref}</span><span class="s2">)&quot;</span>
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Name/key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dclr</span><span class="si">}{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="c1"># aliases</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;aliases&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Aliases&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="p">)))</span>
         <span class="c1"># typeclass</span>
-        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.typename}</span><span class="s2"> (</span><span class="si">{obj.typeclass_path}</span><span class="s2">)&quot;</span>
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="c1"># sessions</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sessions&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Session id(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;#</span><span class="si">{sess.sessid}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Session id(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">sess</span><span class="o">.</span><span class="n">sessid</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="c1"># email, if any</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">email</span><span class="p">:</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.email}</span><span class="s2">|n&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dclr</span><span class="si">}{</span><span class="n">obj</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">|n&quot;</span>
         <span class="c1"># account, for puppeted objects</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;has_account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.account.name}</span><span class="s2">|n (</span><span class="si">{obj.account.dbref}</span><span class="s2">)&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dclr</span><span class="si">}{</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="c1"># account typeclass</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;  Account Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.account.typename}</span><span class="s2"> (</span><span class="si">{obj.account.typeclass_path}</span><span class="s2">)&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;  Account Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="c1"># account permissions</span>
             <span class="n">perms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
@@ -2513,25 +2513,25 @@
                 <span class="n">perms</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;None&gt;&quot;</span><span class="p">]</span>
             <span class="n">perms</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">):</span>
-                <span class="n">perms</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; </span><span class="si">{qclr}</span><span class="s2">(quelled)|n&quot;</span>
+                <span class="n">perms</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">qclr</span><span class="si">}</span><span class="s2">(quelled)|n&quot;</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;  Account Permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">perms</span>
         <span class="c1"># location</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
             <span class="n">loc</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-                <span class="n">loc</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.location.id}</span><span class="s2">)&quot;</span>
+                <span class="n">loc</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
         <span class="c1"># home</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">):</span>
             <span class="n">home</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="p">:</span>
-                <span class="n">home</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.home.id}</span><span class="s2">)&quot;</span>
+                <span class="n">home</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home</span>
         <span class="c1"># destination, for exits</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
             <span class="n">dest</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">dest</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.destination.id}</span><span class="s2">)&quot;</span>
+                <span class="n">dest</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dest</span>
         <span class="c1"># main permissions</span>
         <span class="n">perms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -2561,8 +2561,8 @@
                     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
                     <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{string}</span><span class="s2">: T&quot;</span>
-                    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{string}</span><span class="s2">: F&quot;</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: T&quot;</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: F&quot;</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">_truefalse</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">opt</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
@@ -2579,7 +2579,7 @@
                     <span class="k">continue</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">stored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2">, prio </span><span class="si">{cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored</span><span class="p">)</span>
 
             <span class="c1"># this gets all components of the currently merged set</span>
@@ -2617,29 +2617,29 @@
             <span class="c1"># the resulting merged cmdset</span>
             <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">)</span>
             <span class="n">merged</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{current_cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{current_cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">]</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
 
             <span class="c1"># the merge stack</span>
             <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span><span class="p">:</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
 
             <span class="c1"># list the commands available to this object</span>
             <span class="n">current_commands</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">current_cmdset</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)])</span>
             <span class="n">cmdsetstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_commands</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">output</span><span class="p">[</span><span class="n">f</span><span class="s2">&quot;Commands available to </span><span class="si">{obj.key}</span><span class="s2"> (result of Merged CmdSets)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmdsetstr</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Commands available to </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (result of Merged CmdSets)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmdsetstr</span><span class="p">)</span>
 
         <span class="c1"># scripts</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Scripts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.scripts}</span><span class="s2">&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Scripts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="c1"># add the attributes</span>
         <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
         <span class="c1"># Tags</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">tags_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
-            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{tag}</span><span class="s2">[</span><span class="si">{category}</span><span class="s2">]&quot;</span> <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">)),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">)),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Tags[category]&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags_string</span>
@@ -2657,15 +2657,15 @@
                     <span class="n">things</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
                 <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Exits (has .destination)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{exit.name}</span><span class="s2">(</span><span class="si">{exit.dbref}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">exits</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">exits</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">pobjs</span><span class="p">:</span>
                 <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Characters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{pobj.name}</span><span class="s2">|n(</span><span class="si">{pobj.dbref}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">pobj</span> <span class="ow">in</span> <span class="n">pobjs</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dclr</span><span class="si">}{</span><span class="n">pobj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n(</span><span class="si">{</span><span class="n">pobj</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">pobj</span> <span class="ow">in</span> <span class="n">pobjs</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">things</span><span class="p">:</span>
                 <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Contents&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cont.name}</span><span class="s2">(</span><span class="si">{cont.dbref}</span><span class="s2">)&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cont</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">cont</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="k">for</span> <span class="n">cont</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
                     <span class="k">if</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exits</span> <span class="ow">and</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pobjs</span>
                 <span class="p">)</span>
@@ -2676,8 +2676,8 @@
         <span class="n">max_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">(),</span> <span class="n">max_width</span><span class="p">))</span>
 
         <span class="n">sep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">*</span> <span class="n">max_width</span>
-        <span class="n">mainstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{hclr}{header}</span><span class="s2">|n: </span><span class="si">{block}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{sep}</span><span class="se">\n</span><span class="si">{mainstr}</span><span class="se">\n</span><span class="si">{sep}</span><span class="s2">&quot;</span></div>
+        <span class="n">mainstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hclr</span><span class="si">}{</span><span class="n">header</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">mainstr</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Process command&quot;&quot;&quot;</span>
@@ -2747,7 +2747,7 @@
                 <span class="k">for</span> <span class="n">attrname</span> <span class="ow">in</span> <span class="n">obj_attrs</span><span class="p">:</span>
                     <span class="c1"># we are only interested in specific attributes</span>
                     <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.header_color}{header}</span><span class="s2">|n:</span><span class="si">{value}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">header_color</span><span class="si">}{</span><span class="n">header</span><span class="si">}</span><span class="s2">|n:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span>
                             <span class="n">obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">False</span>
                         <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -2826,7 +2826,7 @@
             <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">qs</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">low</span> <span class="ow">and</span> <span class="n">high</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">: Min and max ID not returned by aggregation; falling back to queryset slicing.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: Min and max ID not returned by aggregation; falling back to queryset slicing.&quot;</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -2855,7 +2855,7 @@
                 <span class="k">return</span>
             <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">: Error parsing upper and lower bounds of query.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: Error parsing upper and lower bounds of query.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
@@ -2954,24 +2954,24 @@
             <span class="c1"># still results after type filtering?</span>
             <span class="k">if</span> <span class="n">nresults</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">nresults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">header</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{nresults}</span><span class="s2"> Matches&quot;</span>
+                    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nresults</span><span class="si">}</span><span class="s2"> Matches&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;One Match&quot;</span>
 
-                <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|w</span><span class="si">{header}</span><span class="s2">|n(#</span><span class="si">{low}</span><span class="s2">-#</span><span class="si">{high}{restrictions}</span><span class="s2">):&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="s2">|n(#</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2">-#</span><span class="si">{</span><span class="n">high</span><span class="si">}{</span><span class="n">restrictions</span><span class="si">}</span><span class="s2">):&quot;</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |g{res.get_display_name(caller)} - </span><span class="si">{res.path}</span><span class="s2">|n&quot;</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |g</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">|n&quot;</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
                     <span class="ow">and</span> <span class="n">nresults</span> <span class="o">==</span> <span class="mi">1</span>
                     <span class="ow">and</span> <span class="n">res</span>
                     <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="p">):</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (|wlocation|n: |g{res.location.get_display_name(caller)}|n)&quot;</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (|wlocation|n: |g</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">|n)&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|wNo Matches|n(#</span><span class="si">{low}</span><span class="s2">-#</span><span class="si">{high}{restrictions}</span><span class="s2">):&quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |RNo matches found for &#39;</span><span class="si">{searchstring}</span><span class="s2">&#39;|n&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wNo Matches|n(#</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2">-#</span><span class="si">{</span><span class="n">high</span><span class="si">}{</span><span class="n">restrictions</span><span class="si">}</span><span class="s2">):&quot;</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |RNo matches found for &#39;</span><span class="si">{</span><span class="n">searchstring</span><span class="si">}</span><span class="s2">&#39;|n&quot;</span>
 
         <span class="c1"># send result</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
@@ -3147,7 +3147,7 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;No scripts defined on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="c1"># view all scripts</span>
-                <span class="kn">from</span> <span class="nn">evennia.commands.default.system</span> <span class="k">import</span> <span class="n">ScriptEvMore</span>
+                <span class="kn">from</span> <span class="nn">evennia.commands.default.system</span> <span class="kn">import</span> <span class="n">ScriptEvMore</span>
 
                 <span class="n">ScriptEvMore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
                 <span class="k">return</span>
@@ -3447,7 +3447,7 @@
         <span class="c1"># handle the search result</span>
         <span class="n">err</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">prototypes</span><span class="p">:</span>
-            <span class="n">err</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;No prototype named &#39;</span><span class="si">{prototype_key}</span><span class="s2">&#39; was found.&quot;</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No prototype named &#39;</span><span class="si">{</span><span class="n">prototype_key</span><span class="si">}</span><span class="s2">&#39; was found.&quot;</span>
         <span class="k">elif</span> <span class="n">nprots</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2"> prototypes matching &#39;</span><span class="si">{}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">nprots</span><span class="p">,</span>
@@ -3496,7 +3496,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">expect</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">eval_err</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">f</span><span class="s2">&quot;</span><span class="si">{inp}</span><span class="se">\n</span><span class="si">{eval_err}</span><span class="se">\n</span><span class="s2">|RCritical Python syntax error in argument. Only primitive &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">eval_err</span><span class="si">}</span><span class="se">\n</span><span class="s2">|RCritical Python syntax error in argument. Only primitive &quot;</span>
                         <span class="s2">&quot;Python structures are allowed. </span><span class="se">\n</span><span class="s2">Make sure to use correct &quot;</span>
                         <span class="s2">&quot;Python syntax. Remember especially to put quotes around all &quot;</span>
                         <span class="s2">&quot;strings inside lists and dicts.|n For more advanced uses, embed &quot;</span>
@@ -3547,7 +3547,7 @@
         <span class="k">if</span> <span class="n">prototypes</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">prototype_to_str</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">query</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No prototype named &#39;</span><span class="si">{query}</span><span class="s2">&#39; was found.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No prototype named &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39; was found.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No prototypes found.&quot;</span><span class="p">)</span>
 
@@ -3584,8 +3584,8 @@
             <span class="n">n_existing</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">existing_objects</span><span class="p">)</span>
             <span class="n">slow</span> <span class="o">=</span> <span class="s2">&quot; (note that this may be slow)&quot;</span> <span class="k">if</span> <span class="n">n_existing</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
             <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;There are </span><span class="si">{n_existing}</span><span class="s2"> existing object(s) with an older version &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;of prototype &#39;</span><span class="si">{prototype_key}</span><span class="s2">&#39;. Should it be re-applied to them</span><span class="si">{slow}</span><span class="s2">? [Y]/N&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;There are </span><span class="si">{</span><span class="n">n_existing</span><span class="si">}</span><span class="s2"> existing object(s) with an older version &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;of prototype &#39;</span><span class="si">{</span><span class="n">prototype_key</span><span class="si">}</span><span class="s2">&#39;. Should it be re-applied to them</span><span class="si">{</span><span class="n">slow</span><span class="si">}</span><span class="s2">? [Y]/N&quot;</span>
             <span class="p">)</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">]:</span>
@@ -3600,7 +3600,7 @@
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{n_updated}</span><span class="s2"> objects were updated.&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_updated</span><span class="si">}</span><span class="s2"> objects were updated.&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">_parse_key_desc_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argstring</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -3749,20 +3749,20 @@
 
             <span class="k">if</span> <span class="n">old_prototype</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">diffstr</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|yAlready existing Prototype:|n</span><span class="se">\n</span><span class="si">{new_prototype_detail}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|yAlready existing Prototype:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">new_prototype_detail</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="n">question</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">There seems to be no changes. Do you still want to (re)save? [Y]/N&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">f</span><span class="s1">&#39;|yExisting prototype &quot;</span><span class="si">{prototype_key}</span><span class="s1">&quot; found. Change:|n</span><span class="se">\n</span><span class="si">{diffstr}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                        <span class="n">f</span><span class="s2">&quot;|yNew changed prototype:|n</span><span class="se">\n</span><span class="si">{new_prototype_detail}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s1">&#39;|yExisting prototype &quot;</span><span class="si">{</span><span class="n">prototype_key</span><span class="si">}</span><span class="s1">&quot; found. Change:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">diffstr</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="sa">f</span><span class="s2">&quot;|yNew changed prototype:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">new_prototype_detail</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
                     <span class="n">question</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|yDo you want to apply the change to the existing prototype?|n [Y]/N&quot;</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|yCreating new prototype:|n</span><span class="se">\n</span><span class="si">{new_prototype_detail}</span><span class="s2">&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|yCreating new prototype:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">new_prototype_detail</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Do you want to continue saving? [Y]/N&quot;</span>
 
             <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">question</span><span class="p">)</span>
@@ -3791,7 +3791,7 @@
             <span class="n">ncount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">())</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="s2">&quot;Usage: spawn &lt;prototype-key&gt; or {{key: value, ...}}&quot;</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> (</span><span class="si">{ncount}</span><span class="s2"> existing prototypes. Use /list to inspect)&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> (</span><span class="si">{</span><span class="n">ncount</span><span class="si">}</span><span class="s2"> existing prototypes. Use /list to inspect)&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -3801,7 +3801,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_detail</span><span class="p">:</span>
                 <span class="k">return</span>
 
-            <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|rDeleting prototype:|n</span><span class="se">\n</span><span class="si">{prototype_detail}</span><span class="s2">&quot;</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|rDeleting prototype:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">prototype_detail</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Do you want to continue deleting? [Y]/N&quot;</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">question</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">]:</span>
@@ -3811,7 +3811,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">success</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">delete_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">protlib</span><span class="o">.</span><span class="n">PermissionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">retmsg</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|rError deleting:|R </span><span class="si">{err}</span><span class="s2">|n&quot;</span>
+                <span class="n">retmsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|rError deleting:|R </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">|n&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">retmsg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;Deletion successful&quot;</span>

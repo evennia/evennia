@@ -47,12 +47,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultAccount</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_IDLE_TIMEOUT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span>
 
@@ -105,7 +105,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">):</span>
             <span class="n">session</span><span class="o">.</span><span class="n">update_session_counters</span><span class="p">(</span><span class="n">idle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -230,7 +230,7 @@
 
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
 
         <span class="c1"># if keywords are given, store (the BotStarter script</span>
         <span class="c1"># will not give any keywords, so this should normally only</span>
@@ -243,7 +243,7 @@
             <span class="c1"># connect to Evennia channel</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">ev_channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{ev_channel}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{</span><span class="n">ev_channel</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span> <span class="o">=</span> <span class="n">channel</span>
@@ -368,7 +368,7 @@
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;nicklist&quot;</span><span class="p">:</span>
             <span class="c1"># the return of a nicklist request</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_nicklist_callers&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nicklist_callers</span><span class="p">:</span>
-                <span class="n">chstr</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.db.irc_channel}</span><span class="s2"> (</span><span class="si">{self.db.irc_network}</span><span class="s2">:</span><span class="si">{self.db.irc_port}</span><span class="s2">)&quot;</span>
+                <span class="n">chstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_channel</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_network</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_port</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="n">nicklist</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;nicklist&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nicklist_callers</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -380,7 +380,7 @@
         <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ping&quot;</span><span class="p">:</span>
             <span class="c1"># the return of a ping</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_ping_callers&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ping_callers</span><span class="p">:</span>
-                <span class="n">chstr</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.db.irc_channel}</span><span class="s2"> (</span><span class="si">{self.db.irc_network}</span><span class="s2">:</span><span class="si">{self.db.irc_port}</span><span class="s2">)&quot;</span>
+                <span class="n">chstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_channel</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_network</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_port</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ping_callers</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="n">_</span><span class="p">(</span><span class="s2">&quot;IRC ping return from </span><span class="si">{chstr}</span><span class="s2"> took </span><span class="si">{time}</span><span class="s2">s.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -398,7 +398,7 @@
                 <span class="c1"># return server WHO list (abbreviated for IRC)</span>
                 <span class="k">global</span> <span class="n">_SESSIONS</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+                    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
                 <span class="n">whos</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">():</span>
@@ -413,10 +413,10 @@
                             <span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="n">delta_cmd</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Who list (online/idle): {&#39;, &#39;.join(sorted(whos, key=lambda w: w.lower()))}&quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Who list (online/idle): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">whos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">elif</span> <span class="n">txt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;about&quot;</span><span class="p">):</span>
                 <span class="c1"># some bot info</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;This is an Evennia IRC bot connecting from &#39;</span><span class="si">{settings.SERVERNAME}</span><span class="s2">&#39;.&quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;This is an Evennia IRC bot connecting from &#39;</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;I understand &#39;who&#39; and &#39;about&#39;.&quot;</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">privmsg</span><span class="o">=</span><span class="p">((</span><span class="n">text</span><span class="p">,),</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">}))</span>
@@ -424,10 +424,10 @@
             <span class="c1"># something to send to the main channel</span>
             <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span>
                 <span class="c1"># An action (irc pose)</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{kwargs[&#39;user&#39;]}</span><span class="s2">@</span><span class="si">{kwargs[&#39;channel&#39;]}</span><span class="s2"> </span><span class="si">{txt}</span><span class="s2">&quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># msg - A normal channel message</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{kwargs[&#39;user&#39;]}</span><span class="s2">@</span><span class="si">{kwargs[&#39;channel&#39;]}</span><span class="s2">: </span><span class="si">{txt}</span><span class="s2">&quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channel</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span><span class="p">:</span>
                 <span class="c1"># cache channel lookup</span>
@@ -468,13 +468,13 @@
 
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
 
         <span class="k">if</span> <span class="n">ev_channel</span><span class="p">:</span>
             <span class="c1"># connect to Evennia channel</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">ev_channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{ev_channel}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{</span><span class="n">ev_channel</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span> <span class="o">=</span> <span class="n">channel</span>
         <span class="k">if</span> <span class="n">rss_url</span><span class="p">:</span>
@@ -529,14 +529,14 @@
 
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
 
         <span class="c1"># connect to Evennia channel</span>
         <span class="k">if</span> <span class="n">ev_channel</span><span class="p">:</span>
             <span class="c1"># connect to Evennia channel</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">ev_channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{ev_channel}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evennia Channel &#39;</span><span class="si">{</span><span class="n">ev_channel</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span> <span class="o">=</span> <span class="n">channel</span>
@@ -612,7 +612,7 @@
         <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&quot;channels/broadcast&quot;</span><span class="p">:</span>
             <span class="c1"># A private message to the bot - a command.</span>
 
-            <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{sender}</span><span class="s2">@</span><span class="si">{game}</span><span class="s2">: </span><span class="si">{txt}</span><span class="s2">&quot;</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">game</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channel</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span><span class="p">:</span>
                 <span class="c1"># simple cache of channel lookup</span>

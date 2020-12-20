@@ -49,12 +49,12 @@
 <span class="sd">new room (to start from scratch) or join an existing room (with other players).</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvMenu</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">list_node</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">list_to_string</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">.room</span> <span class="k">import</span> <span class="n">EvscapeRoom</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">create_fantasy_word</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">list_node</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">list_to_string</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">.room</span> <span class="kn">import</span> <span class="n">EvscapeRoom</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_fantasy_word</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Main menu</span>
@@ -98,8 +98,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;room&quot;</span><span class="p">]</span>
-    <span class="n">room</span><span class="o">.</span><span class="n">msg_char</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;Entering room |c&#39;</span><span class="si">{room.name}</span><span class="s2">&#39;|n ...&quot;</span><span class="p">)</span>
-    <span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;~You |c~were just tricked in here too!|n&quot;</span><span class="p">)</span>
+    <span class="n">room</span><span class="o">.</span><span class="n">msg_char</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Entering room |c&#39;</span><span class="si">{</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;|n ...&quot;</span><span class="p">)</span>
+    <span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;~You |c~were just tricked in here too!|n&quot;</span><span class="p">)</span>
     <span class="c1"># we do a manual move since we don&#39;t want all hooks to fire.</span>
     <span class="n">old_location</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
@@ -121,10 +121,10 @@
 
     <span class="n">nrooms</span> <span class="o">=</span> <span class="n">EvscapeRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span>
-        <span class="n">f</span><span class="s2">&quot;Evscaperoom: </span><span class="si">{caller.key}</span><span class="s2"> created room &#39;</span><span class="si">{key}</span><span class="s2">&#39; (#</span><span class="si">{room.id}</span><span class="s2">). Now </span><span class="si">{nrooms}</span><span class="s2"> room(s) active.&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Evscaperoom: </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> created room &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; (#</span><span class="si">{</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">). Now </span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> room(s) active.&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">room</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;JOIN: </span><span class="si">{caller.key}</span><span class="s2"> created and joined room&quot;</span><span class="p">)</span>
+    <span class="n">room</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JOIN: </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> created and joined room&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;node_quit&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;quiet&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
 
@@ -143,8 +143,8 @@
         <span class="n">progress</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">])</span>
         <span class="n">nplayers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">get_all_characters</span><span class="p">())</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">f</span><span class="s2">&quot;Join room |c&#39;{room.get_display_name(caller)}&#39;|n &quot;</span>
-            <span class="n">f</span><span class="s2">&quot;(complete: </span><span class="si">{progress}</span><span class="s2">%, players: </span><span class="si">{nplayers}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Join room |c&#39;</span><span class="si">{</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;|n &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(complete: </span><span class="si">{</span><span class="n">progress</span><span class="si">}</span><span class="s2">%, players: </span><span class="si">{</span><span class="n">nplayers</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
         <span class="n">room_map</span><span class="p">[</span><span class="n">desc</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
         <span class="n">room_option_descs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
@@ -193,7 +193,7 @@
     <span class="n">current_desc</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Your current description is</span><span class="se">\n\n</span><span class="s2"> &quot;</span> <span class="n">f</span><span class="s1">&#39;   &quot;</span><span class="si">{current_desc}</span><span class="s1">&quot;&#39;</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Enter your new description!&quot;</span>
+        <span class="s2">&quot;Your current description is</span><span class="se">\n\n</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s1">&#39;   &quot;</span><span class="si">{</span><span class="n">current_desc</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Enter your new description!&quot;</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_temp_description</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -259,8 +259,8 @@
         <span class="c1"># we check an Attribute on the caller to see if we should</span>
         <span class="c1"># leave the game entirely when leaving</span>
         <span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">evscaperoom_standalone</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
-            <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">default_cmds</span>
+            <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+            <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
             <span class="n">cmdhandler</span><span class="o">.</span><span class="n">cmdhandler</span><span class="p">(</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">cmdobj</span><span class="o">=</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdQuit</span><span class="p">(),</span> <span class="n">cmdobj_key</span><span class="o">=</span><span class="s2">&quot;@quit&quot;</span>
@@ -376,7 +376,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="OptionsMenu.node_formatter"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.menu.html#evennia.contrib.evscaperoom.menu.OptionsMenu.node_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{nodetext}</span><span class="se">\n\n</span><span class="si">{optionstext}</span><span class="s2">&quot;</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nodetext</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">optionstext</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 
 
 <span class="c1"># access function</span>

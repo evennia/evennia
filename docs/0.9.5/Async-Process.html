@@ -57,9 +57,9 @@ defined in a previous statement.</p>
 <p>Consider this piece of code in a traditional Python program:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
     <span class="n">long_running_function</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>When run, this will print <code class="docutils literal notranslate"><span class="pre">&quot;before</span> <span class="pre">call</span> <span class="pre">...&quot;</span></code>, after which the <code class="docutils literal notranslate"><span class="pre">long_running_function</span></code> gets to work
@@ -85,9 +85,9 @@ you can run it <em>asynchronously</em>. This makes use of the <code class="docut
 2
 3
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span><span class="n">long_running_function</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Now, when running this you will find that the program will not wait around for
@@ -109,7 +109,7 @@ above) finishes successfully. The argument <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_return</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 </li>
@@ -122,7 +122,7 @@ log. An example of an errback is found below:</p></li>
 </ul>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="k">def</span> <span class="nf">at_err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;There was an error:&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There was an error:&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">
@@ -202,7 +202,7 @@ sleep.</p>
 <p>This will delay the execution of the callback for 10 seconds. This function is explored much more in
 the <a class="reference internal" href="Command-Duration.html"><span class="doc">Command Duration Tutorial</span></a>.</p>
 <p>You can also try the following snippet just see how it works:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">delay</span><span class="p">;</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">who</span><span class="p">:</span> <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Test!&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span><span class="p">;</span> <span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">who</span><span class="p">:</span> <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Test!&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Wait 10 seconds and ‘Test!’ should be echoed back to you.</p>
@@ -231,7 +231,7 @@ in an interactive way.</p>
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
         
-      <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+      <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
           <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Getting ready to wait ...&quot;</span><span class="p">)</span>
           <span class="k">yield</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
           <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Now 5 seconds have passed.&quot;</span><span class="p">)</span>

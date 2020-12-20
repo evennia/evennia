@@ -91,8 +91,8 @@ This requires a change to our Character typeclass. Open <code class="docutils li
 <span class="sd">       &quot;&quot;&quot;</span>
        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span><span class="p">:</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t go anywhere while resting.&quot;</span><span class="p">)</span>
-           <span class="k">return</span> <span class="bp">False</span>
-       <span class="k">return</span> <span class="bp">True</span>
+           <span class="k">return</span> <span class="kc">False</span>
+       <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </td></tr></table></div>
 <p>When moving somewhere, <a class="reference external" href="Howto/Starting/Part3/api.objects.objects#Object.move_to">character.move_to</a> is called. This in turn
@@ -152,7 +152,7 @@ a new, custom Typeclass. Create a new module <code class="docutils literal notra
 <span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -165,14 +165,14 @@ a new, custom Typeclass. Create a new module <code class="docutils literal notra
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
         <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
-                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already sitting on {self.key}.&quot;</span><span class="p">)</span> 
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already sitting on </span><span class="si">{self.key}</span><span class="s2">.&quot;</span><span class="p">)</span> 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You can&#39;t sit on {self.key} &quot;</span>
-                        <span class="n">f</span><span class="s2">&quot;- {current.key} is already sitting there!&quot;</span><span class="p">)</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can&#39;t sit on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
             <span class="k">return</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
-        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You sit on {self.key}&quot;</span><span class="p">)</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -184,11 +184,11 @@ a new, custom Typeclass. Create a new module <code class="docutils literal notra
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
-            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You are not sitting on {self.key}.&quot;</span><span class="p">)</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">False</span>            
-            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You stand up from {self.key}&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>            
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Here we have a small Typeclass that handles someone trying to sit on it. It has two methods that we can simply
@@ -253,7 +253,7 @@ modify this per-instance:</p>
 <span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object? </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
 
@@ -269,15 +269,15 @@ modify this per-instance:</p>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
         <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
-                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You are already sitting {adjective} {self.key}.&quot;</span><span class="p">)</span> 
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span> 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;You can&#39;t sit {adjective} {self.key} &quot;</span>
-                    <span class="n">f</span><span class="s2">&quot;- {current.key} is already sitting there!&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;You can&#39;t sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
             <span class="k">return</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
-        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You sit {adjective} {self.key}&quot;</span><span class="p">)</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -289,11 +289,11 @@ modify this per-instance:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
-            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You are not sitting {self.db.adjective} {self.key}.&quot;</span><span class="p">)</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">False</span>            
-            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You stand up from {self.key}&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>            
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We added a new Attribute <code class="docutils literal notranslate"><span class="pre">adjective</span></code> which will probably usually be <code class="docutils literal notranslate"><span class="pre">in</span></code> or <code class="docutils literal notranslate"><span class="pre">on</span></code> but could also be <code class="docutils literal notranslate"><span class="pre">at</span></code> if you
@@ -414,7 +414,7 @@ we can replace.</p>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object? </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
 
@@ -435,21 +435,21 @@ we can replace.</p>
                         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_already_sitting</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You are already sitting {adjective} {self.key}.&quot;</span><span class="p">)</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_other_sitting</span><span class="p">:</span>
                     <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_already_sitting</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">other</span><span class="o">=</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You can&#39;t sit {adjective} {self.key} &quot;</span>
-                               <span class="n">f</span><span class="s2">&quot;- {current.key} is already sitting there!&quot;</span><span class="p">)</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can&#39;t sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
             <span class="k">return</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
-        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_sitting_down</span><span class="p">:</span>
             <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_sitting_down</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">adjective</span><span class="o">=</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You sit {adjective} {self.key}&quot;</span><span class="p">)</span>
+            <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -465,15 +465,15 @@ we can replace.</p>
                 <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_fail</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You are not sitting {self.db.adjective} {self.key}&quot;</span><span class="p">)</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="bp">False</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>            
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_up</span><span class="p">:</span>
                 <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_up</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                 <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You stand up from {self.key}&quot;</span><span class="p">)</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Here we really went all out with flexibility. If you need this much is up to you.
@@ -620,7 +620,7 @@ priority than Commands from the Character-cmdset. Why this is a good idea will b
 <span class="sd">    &quot;&quot;&quot;</span>   
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object? </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetSit</span><span class="p">)</span>  <span class="c1"># &lt;- new</span>
@@ -633,7 +633,7 @@ since <code class="docutils literal notranslate"><span class="pre">at_object_cre
 </pre></div>
 </div>
 <p>We could also update all existing sittables (all on one line):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">from</span> <span class="nn">typeclasses.sittables</span> <span class="k">import</span> <span class="n">Sittable</span> <span class="p">;</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">from</span> <span class="nn">typeclasses.sittables</span> <span class="kn">import</span> <span class="n">Sittable</span> <span class="p">;</span> 
        <span class="p">[</span><span class="n">sittable</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span> <span class="k">for</span> <span class="n">sittable</span> <span class="ow">in</span> <span class="n">Sittable</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
 </pre></div>
 </div>
