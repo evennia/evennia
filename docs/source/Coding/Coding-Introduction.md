@@ -25,7 +25,7 @@ are some simple commands to get started:
 
     # [open a new console/terminal]
     # [activate your evennia virtualenv in this console/terminal]
-    pip install ipython    # [only needed the first time]
+    pip install -r requirements_extra.txt  # install ipython etc
     cd mygame
     evennia shell
 
@@ -40,35 +40,42 @@ info on how to explore it efficiently.
 
 #### Jupyter Notebook Support
 
-You can now explore evennia interactively with jupyter notebooks. There are a few extra steps that must be taken in order for this to work:
+You can also explore evennia interactively in a [Jupyter notebook](https://jupyter.readthedocs.io/en/latest/index.html#). This offers
+an in-browser view of your code similar to Matlab or similar programs. There are 
+a few extra steps that must be taken in order for this to work:
 
     # [open a new console/terminal]
     # [activate your evennia virtualenv in this console/terminal]
     cd evennia
-    pip install -r requirements_extra.txt # this installs optional, but necessary modules for this to work.
-    cd mygame # make sure you are in root of your grame
-    evennia shell_plus --notebook& # this will start the notebook in the background
+    pip install -r requirements_extra.txt  # if not done already above
 
-Open an existing, or create, a notebook and in the first cell you must run:
+Next, `cd` to your game folder. _It's important that you are in the _root_ of this folder for the next command_:
+
+    evennia shell_plus --notebook & 
+
+The `&` at the end starts the process as a background process on Linux/Unix.
+Skip it if your OS doesn't support this syntax. Your browser should now open
+with the Jupyter interface. If not, open a browser to the link given on the
+command line.
+
+In the window, open the `new` menu in the top right and start a `Django Shell-Plus` notebook (or
+open an existing one if you had one from before). In the first cell you must initialize 
+Evennia like so:
 
 ```python
 import evennia
 evennia._init()
 ```
 
-This will initialize all module level variables located in `evennia.__init__`. 
-Now you have the same support as `evennia shell`, but in a more visual and persistent form.
+_Note that the above initialization must be run every time a new new notebook/kernel is started or restarted._
 
-*It is important to remember, everytime the kernel restarts within a notebook you must first run
-`evennia._init()`*
+After this you can import and access all of the Evennia system, same as with `evennia shell`.
 
+#### More exploration
 
 You can complement your exploration by peeking at the sections of the much more detailed 
 [Evennia Component overview](../Components/Components-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
 of system- or implementation-specific help.
-
-
-
 
 ### Use a python syntax checker
 
