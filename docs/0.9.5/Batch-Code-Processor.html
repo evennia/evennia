@@ -219,7 +219,7 @@ file. Observe that the block has <em>not</em> actually been executed at this poi
     <span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button</span>
     <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
     
-    <span class="n">limbo</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;Limbo&#39;</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">limbo</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;Limbo&#39;</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">red_button</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Red button&quot;</span><span class="p">,</span>
                                       <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;button&quot;</span><span class="p">])</span>
@@ -286,7 +286,7 @@ dictionary of room references in an <code class="docutils literal notranslate"><
 10
 11
 12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#HEADER</span>
-<span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="c1">#CODE</span>

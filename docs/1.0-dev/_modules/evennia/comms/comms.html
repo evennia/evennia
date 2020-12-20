@@ -44,15 +44,15 @@
 <span class="sd">Base typeclass for in-game Channels.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="k">import</span> <span class="n">ContentType</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="k">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">TempMsg</span><span class="p">,</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="k">import</span> <span class="n">ChannelManager</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">TempMsg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 
 <span class="n">_CHANNEL_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -100,7 +100,7 @@
         <span class="c1"># delayed import of the channelhandler</span>
         <span class="k">global</span> <span class="n">_CHANNEL_HANDLER</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNEL_HANDLER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="k">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNEL_HANDLER</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNEL_HANDLER</span>
         <span class="c1"># register ourselves with the channelhandler.</span>
         <span class="n">_CHANNEL_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -340,7 +340,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="k">import</span> <span class="n">CHANNELHANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNELHANDLER</span>
 
         <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 

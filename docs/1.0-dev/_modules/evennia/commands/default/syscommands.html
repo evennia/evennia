@@ -60,19 +60,19 @@
 <span class="sd">the line is just added to the editor buffer).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">at_search_result</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">at_search_result</span>
 
 <span class="c1"># The command keys the engine is calling</span>
 <span class="c1"># (the actual names all start with __)</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_NOINPUT</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_NOMATCH</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_MULTIMATCH</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_CHANNEL</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_NOINPUT</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_NOMATCH</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_MULTIMATCH</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_CHANNEL</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 

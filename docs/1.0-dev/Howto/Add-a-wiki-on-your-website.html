@@ -165,8 +165,8 @@ section):</p>
 <span class="p">)</span>
 
 <span class="c1"># Disable wiki handling of login/signup</span>
-<span class="n">WIKI_ACCOUNT_HANDLING</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">WIKI_ACCOUNT_SIGNUP_ALLOWED</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">WIKI_ACCOUNT_HANDLING</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">WIKI_ACCOUNT_SIGNUP_ALLOWED</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Settings given in secret_settings.py override those in this file.</span>
@@ -174,7 +174,7 @@ section):</p>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">server.conf.secret_settings</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -287,7 +287,7 @@ non-logged in users) can read it.  The superuser has some additional privileges.
 
 <span class="k">def</span> <span class="nf">is_anyone</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return True even if the user is anonymous.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># Who can create new groups and users from the wiki?</span>
 <span class="n">WIKI_CAN_ADMIN</span> <span class="o">=</span> <span class="n">is_superuser</span>

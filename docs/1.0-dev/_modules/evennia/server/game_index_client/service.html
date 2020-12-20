@@ -44,12 +44,12 @@
 <span class="sd">Service for integrating the Evennia Game Index client into Evennia.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="k">import</span> <span class="n">Service</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="kn">import</span> <span class="n">Service</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">.client</span> <span class="k">import</span> <span class="n">EvenniaGameIndexClient</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">EvenniaGameIndexClient</span>
 
 <span class="c1"># How many seconds to wait before triggering the first EGI check-in.</span>
 <span class="n">_FIRST_UPDATE_DELAY</span> <span class="o">=</span> <span class="mi">10</span>
@@ -68,7 +68,7 @@
     <span class="c1"># a core system service.</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;GameIndexClient&quot;</span>
 
-<div class="viewcode-block" id="EvenniaGameIndexService.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.EvenniaGameIndexService.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaGameIndexService.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.EvenniaGameIndexService.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">EvenniaGameIndexClient</span><span class="p">(</span><span class="n">on_bad_request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_die_on_bad_request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send_game_details</span><span class="p">)</span></div>
 

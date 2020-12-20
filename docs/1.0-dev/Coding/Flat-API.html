@@ -49,13 +49,13 @@ notation to <code class="docutils literal notranslate"><span class="pre">import<
 <code class="docutils literal notranslate"><span class="pre">import</span></code> for more than one level down. Hence you can do</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">evennia</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>or import one level down</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>but you <em>cannot</em> import two levels down</p>

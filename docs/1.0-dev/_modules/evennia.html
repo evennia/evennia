@@ -158,7 +158,7 @@
 <span class="sd">    Helper function for building the version string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">os</span>
-    <span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
+    <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
 
     <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
@@ -211,69 +211,69 @@
     <span class="k">global</span> <span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_GUEST_TYPECLASS</span>
 
     <span class="c1"># Parent typeclasses</span>
-    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultAccount</span>
-    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultGuest</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultObject</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultCharacter</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultRoom</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultExit</span>
-    <span class="kn">from</span> <span class="nn">.comms.comms</span> <span class="k">import</span> <span class="n">DefaultChannel</span>
-    <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
+    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
+    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultGuest</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultExit</span>
+    <span class="kn">from</span> <span class="nn">.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
+    <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 
     <span class="c1"># Database models</span>
-    <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-    <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
-    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
-    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">Msg</span>
+    <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+    <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
 
     <span class="c1"># commands</span>
-    <span class="kn">from</span> <span class="nn">.commands.command</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-    <span class="kn">from</span> <span class="nn">.commands.cmdset</span> <span class="k">import</span> <span class="n">CmdSet</span>
+    <span class="kn">from</span> <span class="nn">.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+    <span class="kn">from</span> <span class="nn">.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
     <span class="c1"># search functions</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_object</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_script</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_account</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_message</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_channel</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_help</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_tag</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_object</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_script</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_account</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_message</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_channel</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_help</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_tag</span>
 
     <span class="c1"># create functions</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_object</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_account</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_channel</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_message</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_help_entry</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_account</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_message</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
 
     <span class="c1"># utilities</span>
-    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-    <span class="kn">from</span> <span class="nn">.locks</span> <span class="k">import</span> <span class="n">lockfuncs</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">logger</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">gametime</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ansi</span>
-    <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="k">import</span> <span class="n">spawn</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">contrib</span>
-    <span class="kn">from</span> <span class="nn">.utils.evmenu</span> <span class="k">import</span> <span class="n">EvMenu</span>
-    <span class="kn">from</span> <span class="nn">.utils.evtable</span> <span class="k">import</span> <span class="n">EvTable</span>
-    <span class="kn">from</span> <span class="nn">.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
-    <span class="kn">from</span> <span class="nn">.utils.evform</span> <span class="k">import</span> <span class="n">EvForm</span>
-    <span class="kn">from</span> <span class="nn">.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
-    <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
-    <span class="kn">from</span> <span class="nn">.server</span> <span class="k">import</span> <span class="n">signals</span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+    <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">contrib</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+    <span class="kn">from</span> <span class="nn">.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+    <span class="kn">from</span> <span class="nn">.utils.evform</span> <span class="kn">import</span> <span class="n">EvForm</span>
+    <span class="kn">from</span> <span class="nn">.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+    <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
+    <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">signals</span>
 
     <span class="c1"># handlers</span>
-    <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="k">import</span> <span class="n">TICKER_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="k">import</span> <span class="n">TASK_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSION_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.comms.channelhandler</span> <span class="k">import</span> <span class="n">CHANNEL_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
     <span class="c1"># containers</span>
-    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">GLOBAL_SCRIPTS</span>
-    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">OPTION_CLASSES</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">OPTION_CLASSES</span>
 
     <span class="c1"># API containers</span>
 
@@ -309,14 +309,14 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">.help.models</span> <span class="k">import</span> <span class="n">HelpEntry</span>
-        <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-        <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
-        <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
-        <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-        <span class="kn">from</span> <span class="nn">.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
-        <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="k">import</span> <span class="n">Attribute</span>
-        <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="k">import</span> <span class="n">Tag</span>
+        <span class="kn">from</span> <span class="nn">.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+        <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+        <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+        <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+        <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
+        <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
 
         <span class="c1"># create container&#39;s properties</span>
         <span class="n">helpentries</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span>
@@ -345,23 +345,23 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_character</span> <span class="k">import</span> <span class="n">CharacterCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_account</span> <span class="k">import</span> <span class="n">AccountCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_unloggedin</span> <span class="k">import</span> <span class="n">UnloggedinCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_session</span> <span class="k">import</span> <span class="n">SessionCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.muxcommand</span> <span class="k">import</span> <span class="n">MuxCommand</span><span class="p">,</span> <span class="n">MuxAccountCommand</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_account</span> <span class="kn">import</span> <span class="n">AccountCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_unloggedin</span> <span class="kn">import</span> <span class="n">UnloggedinCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_session</span> <span class="kn">import</span> <span class="n">SessionCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span><span class="p">,</span> <span class="n">MuxAccountCommand</span>
 
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;populate the object with commands&quot;</span>
 
             <span class="k">def</span> <span class="nf">add_cmds</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
                 <span class="s2">&quot;helper method for populating this object with cmds&quot;</span>
-                <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
+                <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
                 <span class="n">cmdlist</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">__all__</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmdlist</span><span class="p">]))</span>
 
-            <span class="kn">from</span> <span class="nn">.commands.default</span> <span class="k">import</span> <span class="p">(</span>
+            <span class="kn">from</span> <span class="nn">.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
                 <span class="n">admin</span><span class="p">,</span>
                 <span class="n">batchprocess</span><span class="p">,</span>
                 <span class="n">building</span><span class="p">,</span>
@@ -407,7 +407,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
+        <span class="kn">from</span> <span class="nn">.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 
         <span class="n">CMD_NOINPUT</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOINPUT</span>
         <span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOMATCH</span>
@@ -421,7 +421,7 @@
     <span class="k">del</span> <span class="n">_EvContainer</span>
 
     <span class="c1"># typeclases</span>
-    <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="k">import</span> <span class="n">class_from_module</span>
+    <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
     <span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
     <span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
@@ -436,7 +436,7 @@
     <span class="c1"># delayed starts - important so as to not back-access evennia before it has</span>
     <span class="c1"># finished initializing</span>
     <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="kn">from</span> <span class="nn">.prototypes</span> <span class="k">import</span> <span class="n">prototypes</span>
+    <span class="kn">from</span> <span class="nn">.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span>
     <span class="n">prototypes</span><span class="o">.</span><span class="n">load_module_prototypes</span><span class="p">()</span>
     <span class="k">del</span> <span class="n">prototypes</span>
 
@@ -474,7 +474,7 @@
 
     <span class="k">if</span> <span class="n">debugger</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;pudb&quot;</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pudb</span> <span class="k">import</span> <span class="n">debugger</span>
+            <span class="kn">from</span> <span class="nn">pudb</span> <span class="kn">import</span> <span class="n">debugger</span>
 
             <span class="n">dbg</span> <span class="o">=</span> <span class="n">debugger</span><span class="o">.</span><span class="n">Debugger</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">,</span> <span class="n">term_size</span><span class="o">=</span><span class="n">term_size</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -501,7 +501,7 @@
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">DOCSTRING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span>
     <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">f</span><span class="s2">&quot;evennia.</span><span class="si">{key}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;evennia.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DOCSTRING&quot;</span><span class="p">,)</span>
     <span class="p">)</span>

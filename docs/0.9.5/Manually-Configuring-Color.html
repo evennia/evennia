@@ -83,7 +83,7 @@ can simply add a new class to ‘mygamegame/typeclasses/characters.py’.</p>
     <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
         <span class="n">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># set a color config value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </td></tr></table></div>
 <p>Above we set a simple config value as an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a>.</p>
@@ -107,7 +107,7 @@ object despite the actual typeclass name not having changed.</p>
 <p>Next we need to overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. What we want is to check the configuration value before
 calling the main function.  The original <code class="docutils literal notranslate"><span class="pre">msg</span></code> method call is seen in <code class="docutils literal notranslate"><span class="pre">evennia/objects/objects.py</span></code>
 and is called like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 </pre></div>
 </td></tr></table></div>
 <p>As long as we define a method on our custom object with the same name and keep the same number of
@@ -124,10 +124,10 @@ arguments/keywords we will overload the original. Here’s how it could look:</p
 10
 11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
         <span class="c1"># [...]</span>
-        <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="s2">&quot;our custom msg()&quot;</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> <span class="c1"># this would mean it was not set</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># this would mean it was not set</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span><span class="p">:</span>
                     <span class="c1"># remove the ANSI from the text</span>
                     <span class="n">text</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
@@ -205,11 +205,11 @@ command template.</p>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: @setcolor on|off&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;on&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="c1"># send a message with a tiny bit of formatting, just for fun</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Color was turned |won|W.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Color was turned off.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>

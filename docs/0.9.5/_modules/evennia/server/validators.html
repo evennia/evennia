@@ -39,10 +39,10 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.server.validators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+<span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 
@@ -51,7 +51,7 @@
 <span class="sd">    Checks to make sure a given username is not taken or otherwise reserved.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates a username to make sure it is not in use or reserved.</span>
 
@@ -81,7 +81,7 @@
 
 
 <div class="viewcode-block" id="EvenniaPasswordValidator"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator">[docs]</a><span class="k">class</span> <span class="nc">EvenniaPasswordValidator</span><span class="p">:</span>
-<div class="viewcode-block" id="EvenniaPasswordValidator.__init__"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="EvenniaPasswordValidator.__init__"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[\w. @+\-&#39;,]+$&quot;</span><span class="p">,</span>
         <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;Password should contain a mix of letters, &quot;</span>

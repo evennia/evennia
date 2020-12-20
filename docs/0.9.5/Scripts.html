@@ -164,7 +164,7 @@ Here’s an example:</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;weather_script&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Gives random weather messages.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># every 5 minutes</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c1"># will survive reload</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># will survive reload</span>
 
         <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;called every self.interval seconds.&quot;</span>
@@ -213,7 +213,7 @@ of the weather script that runs every 10 minutes instead (and also not survive
 a server reload):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.weather.Weather&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">myroom</span><span class="p">,</span>
-                   <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+                   <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>From in-game you can use the <code class="docutils literal notranslate"><span class="pre">&#64;script</span></code> command to launch the Script on things:</p>
@@ -314,7 +314,7 @@ it on:</p>
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="c1"># adding a global script</span>
      <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
      <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.globals.MyGlobalEconomy&quot;</span><span class="p">,</span>
-                    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Henceforth you can then get it back by searching for its key or other identifier with
@@ -374,11 +374,11 @@ named <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPT
         <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Weather script&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="bp">True</span>
+        <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="kc">True</span>
     <span class="p">},</span>
     <span class="s2">&quot;storagescript&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;typeclasses.scripts.Storage&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="bp">True</span>
+        <span class="s2">&quot;persistent&quot;</span><span class="p">:</span> <span class="kc">True</span>
     <span class="p">},</span>
     <span class="p">{</span>
     <span class="s2">&quot;another_script&quot;</span><span class="p">:</span> <span class="p">{</span>

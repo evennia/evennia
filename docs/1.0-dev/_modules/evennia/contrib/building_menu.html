@@ -161,16 +161,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">getargspec</span>
-<span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">dedent</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getargspec</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">dedent</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
 
 <span class="c1"># Constants</span>
@@ -375,7 +375,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOINPUT</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdNoInput.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.CmdNoInput.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoInput.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.CmdNoInput.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;building_menu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Command</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -396,7 +396,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdNoMatch.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.CmdNoMatch.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNoMatch.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.CmdNoMatch.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;building_menu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Command</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -461,7 +461,7 @@
 
     <span class="sd">&quot;&quot;&quot;A choice object, created by `add_choice`.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Choice.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.Choice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Choice.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.Choice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -514,7 +514,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span></div>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Choice (title=</span><span class="si">{}</span><span class="s2">, key=</span><span class="si">{}</span><span class="s2">)&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -621,7 +621,7 @@
     <span class="n">joker_key</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>  <span class="c1"># The special key meaning &quot;anything&quot; in a choice key</span>
     <span class="n">min_shortcut</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># The minimum length of shorcuts when `key` is not set</span>
 
-<div class="viewcode-block" id="BuildingMenu.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.BuildingMenu.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BuildingMenu.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.building_menu.html#evennia.contrib.building_menu.BuildingMenu.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

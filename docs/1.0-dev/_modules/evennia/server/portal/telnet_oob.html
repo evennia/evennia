@@ -67,11 +67,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">is_iter</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="k">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
 <span class="c1"># General Telnet</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="k">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span>
 
 <span class="c1"># MSDP-relevant telnet cmd/opt-codes</span>
 <span class="n">MSDP</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">69</span><span class="p">)</span>
@@ -116,7 +116,7 @@
 <span class="sd">    Implements the MSDP and GMCP protocols.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TelnetOOB.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initiates by storing the protocol on itself and trying to</span>
 <span class="sd">        determine if the client supports MSDP.</span>

@@ -41,11 +41,11 @@
             
   <h1>Source code for evennia.utils.optionclasses</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.validatorfuncs</span> <span class="k">import</span> <span class="n">_TZ_DICT</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">crop</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">validatorfuncs</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.validatorfuncs</span> <span class="kn">import</span> <span class="n">_TZ_DICT</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">validatorfuncs</span>
 
 
 <div class="viewcode-block" id="BaseOption"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption">[docs]</a><span class="k">class</span> <span class="nc">BaseOption</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -63,13 +63,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Option </span><span class="si">{key}</span><span class="s2">: </span><span class="si">{value}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">crop</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BaseOption.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseOption.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Args:</span>
@@ -234,7 +234,7 @@
 <div class="viewcode-block" id="Text.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Text.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="n">got_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">got_data</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Text data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Text data, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">got_data</span></div></div>
 
 
@@ -245,7 +245,7 @@
 <div class="viewcode-block" id="Email.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Email.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="n">got_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">got_data</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected String data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected String data, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">got_data</span></div></div>
 
 
@@ -263,7 +263,7 @@
 
 <div class="viewcode-block" id="Boolean.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Boolean, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Boolean, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">save_data</span></div></div>
 
 
@@ -272,11 +272,11 @@
         <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Color.display"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.value}</span><span class="s2"> - |</span><span class="si">{self.value}</span><span class="s2">this|n&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> - |</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">this|n&quot;</span></div>
 
 <div class="viewcode-block" id="Color.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_data</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{save_data}</span><span class="s2">|n&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Color Code, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_data</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">strip_ansi</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Color Code, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">save_data</span></div></div>
 
 
@@ -290,7 +290,7 @@
 
 <div class="viewcode-block" id="Timezone.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">save_data</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_TZ_DICT</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Timezone Data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Timezone Data, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_TZ_DICT</span><span class="p">[</span><span class="n">save_data</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Timezone.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -306,7 +306,7 @@
 <div class="viewcode-block" id="UnsignedInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.UnsignedInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">save_data</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">save_data</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number 0+, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Whole Number 0+, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="SignedInteger"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.SignedInteger">[docs]</a><span class="k">class</span> <span class="nc">SignedInteger</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
@@ -316,7 +316,7 @@
 <div class="viewcode-block" id="SignedInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.SignedInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">save_data</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Whole Number, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="PositiveInteger"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.PositiveInteger">[docs]</a><span class="k">class</span> <span class="nc">PositiveInteger</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
@@ -326,7 +326,7 @@
 <div class="viewcode-block" id="PositiveInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.PositiveInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">save_data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">save_data</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number 1+, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Whole Number 1+, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Duration"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration">[docs]</a><span class="k">class</span> <span class="nc">Duration</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
@@ -336,7 +336,7 @@
 <div class="viewcode-block" id="Duration.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Timedelta in seconds, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected Timedelta in seconds, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Duration.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span><span class="o">.</span><span class="n">seconds</span></div></div>
@@ -349,7 +349,7 @@
 <div class="viewcode-block" id="Datetime.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected UTC Datetime in EPOCH format, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> expected UTC Datetime in EPOCH format, got &#39;</span><span class="si">{</span><span class="n">save_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Datetime.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">))</span></div></div>

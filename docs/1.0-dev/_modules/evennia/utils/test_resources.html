@@ -45,17 +45,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">Deferred</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="k">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultAccount</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="k">import</span> <span class="n">ServerSession</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="k">import</span> <span class="n">flush_cache</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
 
 
 <span class="c1"># mocking of evennia.utils.utils.delay</span>

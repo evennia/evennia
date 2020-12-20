@@ -109,13 +109,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">inlineCallbacks</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="k">import</span> <span class="n">ExtendedLoopingCall</span>
-<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_trace</span><span class="p">,</span> <span class="n">log_err</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span><span class="p">,</span> <span class="n">pack_dbobj</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">inherits_from</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">ExtendedLoopingCall</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span><span class="p">,</span> <span class="n">log_err</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span><span class="p">,</span> <span class="n">pack_dbobj</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">inherits_from</span>
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
@@ -192,7 +192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Ticker.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the ticker</span>
 
@@ -281,7 +281,7 @@
 
     <span class="n">ticker_class</span> <span class="o">=</span> <span class="n">Ticker</span>
 
-<div class="viewcode-block" id="TickerPool.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the pool.</span>
 
@@ -347,7 +347,7 @@
 
     <span class="n">ticker_pool_class</span> <span class="o">=</span> <span class="n">TickerPool</span>
 
-<div class="viewcode-block" id="TickerHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s2">&quot;ticker_storage&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s2">&quot;ticker_storage&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize handler</span>
 
@@ -387,13 +387,13 @@
                 <span class="n">outpath</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                 <span class="n">outcallfunc</span> <span class="o">=</span> <span class="n">callback</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is not a method or function.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not a method or function.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is not a callable function or method.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not a callable function or method.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">outobj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">outobj</span><span class="p">,</span> <span class="s2">&quot;evennia.typeclasses.models.TypedObject&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is a method on a normal object - it must &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is a method on a normal object - it must &quot;</span>
                 <span class="s2">&quot;be either a method on a typeclass, or a stand-alone function.&quot;</span>
             <span class="p">)</span>
 
@@ -609,7 +609,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No Ticker was found matching the store-key </span><span class="si">{store_key}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Ticker was found matching the store-key </span><span class="si">{</span><span class="n">store_key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TickerHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

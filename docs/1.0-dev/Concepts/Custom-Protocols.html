@@ -121,7 +121,7 @@ function should not return anything.</p>
        <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 
     <span class="c1"># some configs</span>
-    <span class="n">MYPROC_ENABLED</span> <span class="o">=</span> <span class="bp">True</span> <span class="c1"># convenient off-flag to avoid having to edit settings all the time</span>
+    <span class="n">MYPROC_ENABLED</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># convenient off-flag to avoid having to edit settings all the time</span>
     <span class="n">MY_PORT</span> <span class="o">=</span> <span class="mi">6666</span>
 
     <span class="k">def</span> <span class="nf">start_plugin_services</span><span class="p">(</span><span class="n">portal</span><span class="p">):</span>
@@ -129,7 +129,7 @@ function should not return anything.</p>
          <span class="k">if</span> <span class="ow">not</span> <span class="n">MYPROC_ENABLED</span><span class="p">:</span>
              <span class="k">return</span>
          <span class="c1"># output to list this with the other services at startup</span>
-         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  myproc: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">MY_PORT</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  myproc: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">MY_PORT</span><span class="p">)</span>
 
          <span class="c1"># some setup (simple example)</span>
          <span class="n">factory</span> <span class="o">=</span> <span class="n">MyOwnFactory</span><span class="p">()</span>
@@ -291,7 +291,7 @@ Evennia-specific inputs.</p>
      <span class="c1"># The above twisted-methods call them and vice-versa. This connects the protocol</span>
      <span class="c1"># the Evennia internals.  </span>
      
-     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> 
+     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
          <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Called when connection closes. </span>
 <span class="sd">         This can also be called directly by Evennia when manually closing the connection.</span>

@@ -179,7 +179,7 @@ pretty-printing whatever is given to it.</p>
 <p>Using <code class="docutils literal notranslate"><span class="pre">.format()</span></code> is convenient (and there is a <a class="reference external" href="https://www.w3schools.com/python/ref_string_format.asp">lot more</a>
 you can do with it). But the <em>f-string</em> can be even more convenient. An
 f-string looks like a normal string … except there is an <code class="docutils literal notranslate"><span class="pre">f</span></code> front of it, like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="s2">&quot;this is now an f-string.&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">f</span><span class="s2">&quot;this is now an f-string.&quot;</span>
 </pre></div>
 </div>
 <p>An f-string on its own is just like any other string. But let’s redo the example we did before, using an f-string:</p>
@@ -189,7 +189,7 @@ This is awesome sauce!
 </div>
 <p>We could just insert that <code class="docutils literal notranslate"><span class="pre">a</span></code> variable directly into the f-string using <code class="docutils literal notranslate"><span class="pre">{a}</span></code>. Fewer parentheses to
 remember and arguable easier to read as well.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">8</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;STR: </span><span class="si">{str}</span><span class="s2">, DEX: </span><span class="si">{dex}</span><span class="s2">, INT: </span><span class="si">{int}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">8</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;STR: </span><span class="si">{</span><span class="nb">str</span><span class="si">}</span><span class="s2">, DEX: </span><span class="si">{</span><span class="n">dex</span><span class="si">}</span><span class="s2">, INT: </span><span class="si">{</span><span class="nb">int</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">STR</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="n">DEX</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="n">INT</span><span class="p">:</span> <span class="mi">8</span>
 </pre></div>
 </div>
@@ -225,7 +225,7 @@ structure should look:</p>
 </pre></div>
 </div>
 <p>For now, only add one line to <code class="docutils literal notranslate"><span class="pre">test.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <div class="sidebar">
@@ -281,7 +281,7 @@ important topic. But for now, let’s press on and resolve this particular probl
 reload. Change your <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file to look like this:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>As we are moving to multi-line Python code, there are some important things to remember:</p>
@@ -545,7 +545,7 @@ the <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</s
 </div>
 <p>We can now enter multi-line Python code:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;Test&quot;</span>
-<span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;This is a </span><span class="si">{a}</span><span class="s2">.&quot;</span><span class="p">}</span>
+<span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This is a </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">}</span>
 <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">Test</span><span class="o">.</span>
 </pre></div>
 </div>

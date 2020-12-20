@@ -48,16 +48,16 @@
 
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Subquery</span>
-<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">Attribute</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Subquery</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">all_from_module</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
@@ -69,10 +69,10 @@
     <span class="n">justify</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">validate_lockstring</span><span class="p">,</span> <span class="n">check_lockstring</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">inlinefuncs</span><span class="p">,</span> <span class="n">dbserialize</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="k">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">validate_lockstring</span><span class="p">,</span> <span class="n">check_lockstring</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inlinefuncs</span><span class="p">,</span> <span class="n">dbserialize</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 
 
 <span class="n">_MODULE_PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="p">{}</span>
@@ -464,7 +464,7 @@
         <span class="n">nmodules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_prototypes</span><span class="p">)</span>
         <span class="n">ndbprots</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found {nmodules + ndbprots} matching prototypes.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="si">}</span><span class="s2"> matching prototypes.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_iterators</span><span class="p">:</span>
         <span class="c1"># trying to get the entire set of prototypes - we must paginate</span>
@@ -496,7 +496,7 @@
 <span class="sd">    EvTable for the entire dataset and then paginate it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PrototypeEvMore.__init__"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PrototypeEvMore.__init__"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Store some extra properties on the EvMore class&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_non_use</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_non_use&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_non_edit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_non_edit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>

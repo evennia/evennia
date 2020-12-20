@@ -150,8 +150,8 @@ the following message in the elevator’s appearance: <code class="docutils lite
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not carrying anything.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">table</span> <span class="o">=</span> <span class="n">prettytable</span><span class="o">.</span><span class="n">PrettyTable</span><span class="p">([</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">])</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">False</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
                 <span class="n">second</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span> \
                         <span class="k">if</span> <span class="s1">&#39;weight&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>

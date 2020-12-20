@@ -297,7 +297,7 @@ It’s cleaner to put it on a room, so it’s only available when players are in
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;this is called only at first creation&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ChargenCmdset</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ChargenCmdset</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Note how new rooms created with this typeclass will always start with <code class="docutils literal notranslate"><span class="pre">ChargenCmdset</span></code> on themselves.
@@ -736,7 +736,7 @@ principle re-work our old <code class="docutils literal notranslate"><span class
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;We need to do some parsing here&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
-        <span class="n">propname</span><span class="p">,</span> <span class="n">propval</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="n">propname</span><span class="p">,</span> <span class="n">propval</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">args</span><span class="p">,</span> <span class="n">propval</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
@@ -745,7 +745,7 @@ principle re-work our old <code class="docutils literal notranslate"><span class
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propname</span> <span class="o">=</span> <span class="n">propname</span>
         <span class="c1"># a propval without a propname is meaningless</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">propval</span> <span class="o">=</span> <span class="n">propval</span> <span class="k">if</span> <span class="n">propname</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">propval</span> <span class="o">=</span> <span class="n">propval</span> <span class="k">if</span> <span class="n">propname</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;do the editing&quot;</span>
@@ -764,22 +764,22 @@ principle re-work our old <code class="docutils literal notranslate"><span class
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">:</span>
             <span class="c1"># this means we just list the values</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Properties of {npc.key}:&quot;</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Properties of </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:&quot;</span>
             <span class="k">for</span> <span class="n">propname</span> <span class="ow">in</span> <span class="n">allowed_propnames</span><span class="p">:</span>
-                <span class="n">output</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> {propname} = {npc.attributes.get(propname, default=&#39;N/A&#39;)}&quot;</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_propnames</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You may only change {&#39;, &#39;.join(allowed_propnames)}.&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only change </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed_propnames</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">propval</span><span class="p">:</span>
             <span class="c1"># assigning a new propvalue</span>
             <span class="c1"># in this example, the properties are all integers...</span>
             <span class="n">intpropval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">propval</span><span class="p">)</span>
             <span class="n">npc</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">,</span> <span class="n">intpropval</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Set {npc.key}&#39;s property {self.propname} to {self.propval}&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;s property </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">propval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># propname set, but not propval - show current value</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{npc.key} has property {self.propname} = {npc.attributes.get(self.propname,</span>
-<span class="n">default</span><span class="o">=</span><span class="s1">&#39;N/A&#39;</span><span class="p">)}</span><span class="s2">&quot;)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> has property </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">,</span>
+<span class="n">default</span><span class="o">=</span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This command example shows off the use of more advanced parsing but otherwise it’s mostly error
@@ -859,7 +859,7 @@ Anna says, &#39;Hello!&#39;
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Simple split of the = sign&quot;</span>
-        <span class="n">name</span><span class="p">,</span> <span class="n">cmdname</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">cmdname</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">name</span><span class="p">,</span> <span class="n">cmdname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -880,7 +880,7 @@ Anna says, &#39;Hello!&#39;
             <span class="k">return</span>
         <span class="c1"># send the command order</span>
         <span class="n">npc</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You told {npc.key} to do &#39;{self.cmdname}&#39;.&quot;</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You told </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to do &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Note that if you give an erroneous command, you will not see any error message, since that error

@@ -141,7 +141,7 @@ optionally do cleanup after each test.</p>
        <span class="k">def</span> <span class="nf">test_alternative_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
            <span class="s2">&quot;test method. Calls with a keyword argument.&quot;</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is me being baaaad.&quot;</span>
-           <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="n">bad</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+           <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="n">bad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
            <span class="c1"># test</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>    
 </pre></div>
@@ -301,7 +301,7 @@ testing#503435) is currently untested! Please report your findings.</p>
 
         <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
         <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
-        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
          
     <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -310,7 +310,7 @@ testing#503435) is currently untested! Please report your findings.</p>
 
         <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
         <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
-        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># test cases below ...</span>

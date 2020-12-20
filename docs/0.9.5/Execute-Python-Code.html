@@ -73,7 +73,7 @@ objects).</p>
 <h2>Returning output<a class="headerlink" href="#returning-output" title="Permalink to this headline">¶</a></h2>
 <p>This is an example where we import and test one of Evennia’s utilities found in
 <code class="docutils literal notranslate"><span class="pre">src/utils/utils.py</span></code>, but also accessible through <code class="docutils literal notranslate"><span class="pre">ev.utils</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">ev</span> <span class="k">import</span> <span class="n">utils</span><span class="p">;</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="mi">33333</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">ev</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">;</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="mi">33333</span><span class="p">)</span>
 <span class="o">&lt;&lt;&lt;</span> <span class="n">Done</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -81,7 +81,7 @@ objects).</p>
 without error. This is often the case in more complex pieces of code which has no single obvious
 return value.  To see the output from the <code class="docutils literal notranslate"><span class="pre">time_format()</span></code> function we need to tell the system to
 echo it to us explicitly with <code class="docutils literal notranslate"><span class="pre">self.msg()</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">ev</span> <span class="k">import</span> <span class="n">utils</span><span class="p">;</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="mi">33333</span><span class="p">)))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">ev</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">;</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="mi">33333</span><span class="p">)))</span>
 <span class="mi">09</span><span class="p">:</span><span class="mi">15</span>
 <span class="o">&lt;&lt;&lt;</span> <span class="n">Done</span><span class="o">.</span>
 </pre></div>

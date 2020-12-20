@@ -308,8 +308,8 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_handler_</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;handles combat&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># two minute timeout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="bp">True</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>   
 
         <span class="c1"># store all combatants</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span> <span class="o">=</span> <span class="p">{}</span>
@@ -378,8 +378,8 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
         <span class="n">dbref</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
-                                       <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                       <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
         <span class="c1"># set up back-reference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
        
@@ -414,9 +414,9 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">][</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>        
             <span class="c1"># report if we already used too many actions</span>
-            <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">check_end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -427,7 +427,7 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
 <span class="sd">        `self.at_repeat()` while resetting all timers). </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span> 
 
     <span class="k">def</span> <span class="nf">end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -447,8 +447,8 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
             <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
-                                                  <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                                  <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Next turn begins ...&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -570,7 +570,7 @@ do.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_cmdset&quot;</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">10</span> 
-    <span class="n">no_exits</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHit</span><span class="p">())</span>

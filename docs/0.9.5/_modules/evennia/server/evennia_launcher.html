@@ -59,16 +59,16 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="k">import</span> <span class="n">LooseVersion</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span>
+<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
 
-<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="k">import</span> <span class="n">amp</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">endpoints</span>
+<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">endpoints</span>
 <span class="kn">import</span> <span class="nn">django</span>
-<span class="kn">from</span> <span class="nn">django.core.management</span> <span class="k">import</span> <span class="n">execute_from_command_line</span>
-<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="k">import</span> <span class="n">ProgrammingError</span>
+<span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">execute_from_command_line</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">ProgrammingError</span>
 
 <span class="c1"># Signal processing</span>
 <span class="n">SIG</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span>
@@ -624,7 +624,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_status</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="AMPLauncherProtocol.wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
@@ -1480,7 +1480,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check so a database exists and is accessible</span>
-    <span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
+    <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 
     <span class="n">tables</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">introspection</span><span class="o">.</span><span class="n">get_table_list</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">())</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tables</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># django 1.8+</span>
@@ -1489,7 +1489,7 @@
         <span class="c1"># database exists and seems set up. Initialize evennia.</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
     <span class="c1"># Try to get Account#1</span>
-    <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -1522,7 +1522,7 @@
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="c1"># continue with the</span>
-            <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+            <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
             <span class="n">new</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
             <span class="n">other</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
@@ -1604,7 +1604,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">_is_windows</span><span class="p">():</span>
         <span class="c1"># Windows signal sending is very limited.</span>
-        <span class="kn">from</span> <span class="nn">win32api</span> <span class="k">import</span> <span class="n">GenerateConsoleCtrlEvent</span><span class="p">,</span> <span class="n">SetConsoleCtrlHandler</span>
+        <span class="kn">from</span> <span class="nn">win32api</span> <span class="kn">import</span> <span class="n">GenerateConsoleCtrlEvent</span><span class="p">,</span> <span class="n">SetConsoleCtrlHandler</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Windows can only send a SIGINT-like signal to</span>
@@ -1685,7 +1685,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
     <span class="k">def</span> <span class="nf">_imp</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="s2">&quot;helper method&quot;</span>
@@ -1695,7 +1695,7 @@
         <span class="nb">__import__</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">fromlist</span><span class="p">])</span>
 
     <span class="c1"># check the historical deprecations</span>
-    <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="k">import</span> <span class="n">deprecations</span>
+    <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">deprecations</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">deprecations</span><span class="o">.</span><span class="n">check_errors</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
@@ -1714,7 +1714,7 @@
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOCK_FUNC_MODULES</span><span class="p">:</span>
         <span class="n">_imp</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdsethandler</span>
+    <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdsethandler</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdsethandler</span><span class="o">.</span><span class="n">import_cmdset</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_UNLOGGEDIN</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: CMDSET_UNLOGGED failed to load!&quot;</span><span class="p">)</span>
@@ -1773,7 +1773,7 @@
 
     <span class="c1"># test existence of the settings module</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No module named&quot;</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">traceback</span>
@@ -1907,7 +1907,7 @@
 <span class="sd">    Run the linking wizard, for adding new external connections.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">.connection_wizard</span> <span class="k">import</span> <span class="n">ConnectionWizard</span><span class="p">,</span> <span class="n">node_start</span>
+    <span class="kn">from</span> <span class="nn">.connection_wizard</span> <span class="kn">import</span> <span class="n">ConnectionWizard</span><span class="p">,</span> <span class="n">node_start</span>
 
     <span class="n">wizard</span> <span class="o">=</span> <span class="n">ConnectionWizard</span><span class="p">()</span>
     <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
@@ -1922,8 +1922,8 @@
 <span class="sd">        keys (str or list): Setting key or keys to inspect.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
-    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">evtable</span>
+    <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
 
     <span class="n">evsettings</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">SETTINGS_DOTPATH</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span><span class="p">:</span>
@@ -2181,13 +2181,13 @@
             <span class="n">log_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SERVERDIR</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;    ... Created missing log dir </span><span class="si">{log_path}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    ... Created missing log dir </span><span class="si">{</span><span class="n">log_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="n">created</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="n">settings_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFDIR</span><span class="p">,</span> <span class="s2">&quot;secret_settings.py&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_path</span><span class="p">):</span>
                 <span class="n">create_settings_file</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">secret_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;    ... Created missing secret_settings.py file as </span><span class="si">{settings_path}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    ... Created missing secret_settings.py file as </span><span class="si">{</span><span class="n">settings_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="n">created</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
@@ -2300,7 +2300,7 @@
         <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;makemessages&quot;</span><span class="p">,</span> <span class="s2">&quot;compilemessages&quot;</span><span class="p">):</span>
             <span class="c1"># some commands don&#39;t require the presence of a game directory to work</span>
             <span class="n">need_gamedir</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="s2">&quot;check&quot;</span><span class="p">,</span> <span class="s2">&quot;makemigrations&quot;</span><span class="p">,</span> <span class="s2">&quot;createsuperuser&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="s2">&quot;check&quot;</span><span class="p">,</span> <span class="s2">&quot;makemigrations&quot;</span><span class="p">,</span> <span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="s2">&quot;shell_plus&quot;</span><span class="p">):</span>
             <span class="c1"># some django commands requires the database to exist,</span>
             <span class="c1"># or evennia._init to have run before they work right.</span>
             <span class="n">check_db</span> <span class="o">=</span> <span class="kc">True</span>

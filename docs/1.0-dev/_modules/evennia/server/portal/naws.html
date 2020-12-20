@@ -51,9 +51,9 @@
 <span class="sd">client and update it when the size changes</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">codecs</span> <span class="k">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="k">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
+<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
 <span class="n">NAWS</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>  <span class="c1"># b&quot;\x1f&quot;</span>
 <span class="n">IS</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># b&quot;\x00&quot;</span>
@@ -71,7 +71,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize NAWS by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports NAWS.</span>

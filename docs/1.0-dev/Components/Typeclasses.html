@@ -179,7 +179,7 @@ and can thus only hold a string. This is one way of making sure to update the <c
 5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">chair</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;Table&quot;</span>
 <span class="n">chair</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">chair</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chair</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
 <span class="o">&lt;&lt;&lt;</span> <span class="n">Table</span>
 </pre></div>
 </td></tr></table></div>
@@ -191,7 +191,7 @@ fields. These are named the same as the field, but without the <code class="docu
 3
 4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">chair</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Table&quot;</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">chair</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chair</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 <span class="o">&lt;&lt;&lt;</span> <span class="n">Table</span>
 </pre></div>
 </td></tr></table></div>
@@ -311,7 +311,7 @@ it all in-game using <code class="docutils literal notranslate"><span class="pre
 single line using <code class="docutils literal notranslate"><span class="pre">;</span></code> and <a class="reference external" href="http://www.secnetix.de/olli/Python/list_comprehensions.hawk">list
 comprehensions</a>, like this (ignore the
 line break, that’s only for readability in the wiki):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.furniture</span> <span class="k">import</span> <span class="n">Furniture</span><span class="p">;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.furniture</span> <span class="kn">import</span> <span class="n">Furniture</span><span class="p">;</span>
 <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">Furniture</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worth</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -336,8 +336,8 @@ to re-run the creation hook on an existing class.</p></li>
 </ul>
 <p>In code you instead use the <code class="docutils literal notranslate"><span class="pre">swap_typeclass</span></code> method which you can find on all typeclassed entities:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">obj_to_change</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">new_typeclass_path</span><span class="p">,</span> <span class="n">clean_attributes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                   <span class="n">run_start_hooks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">no_default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">clean_cmdsets</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">obj_to_change</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">new_typeclass_path</span><span class="p">,</span> <span class="n">clean_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">run_start_hooks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">no_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_cmdsets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The arguments to this method are described <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.typeclasses.models#typedobjectswap_typeclass">in the API docs

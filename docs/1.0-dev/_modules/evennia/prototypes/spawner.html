@@ -179,14 +179,14 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="k">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">value_to_obj</span><span class="p">,</span>
     <span class="n">value_to_obj_or_any</span><span class="p">,</span>
     <span class="n">init_spawn_value</span><span class="p">,</span>
@@ -217,10 +217,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Unset&gt;&quot;</span></div>
 
 
@@ -795,7 +795,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to apply prototype &#39;</span><span class="si">{prototype_key}</span><span class="s2">&#39; to </span><span class="si">{obj}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to apply prototype &#39;</span><span class="si">{</span><span class="n">prototype_key</span><span class="si">}</span><span class="s2">&#39; to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># we must always make sure to re-add the prototype tag</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span>

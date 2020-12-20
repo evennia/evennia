@@ -56,17 +56,17 @@
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="k">import</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -237,7 +237,7 @@
         <span class="n">old_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
 
         <span class="k">class</span> <span class="nc">FakeStd</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
 
             <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
@@ -305,7 +305,7 @@
 
     <span class="sd">&quot;&quot;&quot;Evennia wrapper around a Python interactive console.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">evennia_local_vars</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
 
@@ -319,7 +319,7 @@
         <span class="n">old_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
 
         <span class="k">class</span> <span class="nc">FakeStd</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
 
             <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
@@ -435,7 +435,7 @@
                         <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span> <span class="k">if</span> <span class="n">console</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">main_prompt</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{line}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="n">prompt</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="n">console</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">main_prompt</span>
                 <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
                     <span class="k">break</span>
@@ -502,7 +502,7 @@
 
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="n">script</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{script.obj.key}</span><span class="s2">(</span><span class="si">{script.obj.dbref}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
                 <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span><span class="p">,</span>
                 <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
@@ -899,11 +899,11 @@
                 <span class="n">service_collection</span><span class="o">.</span><span class="n">removeService</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gStopped and removed service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stopping service &#39;</span><span class="si">{self.args}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopping service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|rErrors were reported when stopping this service</span><span class="si">{err}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rErrors were reported when stopping this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                                <span class="s2">&quot;If there are remaining problems, try reloading &quot;</span>
                                <span class="s2">&quot;or rebooting the server.&quot;</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g... Stopped service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
@@ -914,11 +914,11 @@
             <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That service is already running.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Starting service &#39;</span><span class="si">{self.args}</span><span class="s2">&#39; ...&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39; ...&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|rErrors were reported when starting this service</span><span class="si">{err}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rErrors were reported when starting this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                            <span class="s2">&quot;If there are remaining problems, try reloading the server, changing the &quot;</span>
                            <span class="s2">&quot;settings if it&#39;s a non-standard service.|n&quot;</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gService started.|n&quot;</span><span class="p">)</span></div></div>
@@ -1058,7 +1058,7 @@
 
         <span class="k">global</span> <span class="n">_IDMAPPER</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_IDMAPPER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils.idmapper</span> <span class="k">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">_IDMAPPER</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.idmapper</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">_IDMAPPER</span>
 
         <span class="k">if</span> <span class="s2">&quot;flushmem&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="c1"># flush the cache</span>
@@ -1201,7 +1201,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(tickers) or perm(Builder)&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">TICKER_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">all_subs</span> <span class="o">=</span> <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">all_display</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">all_subs</span><span class="p">:</span>

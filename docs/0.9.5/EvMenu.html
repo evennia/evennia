@@ -160,12 +160,12 @@ section</a>.</p>
 10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_data</span><span class="p">,</span>
        <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
        <span class="n">cmdset_mergetype</span><span class="o">=</span><span class="s2">&quot;Replace&quot;</span><span class="p">,</span> <span class="n">cmdset_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-       <span class="n">auto_quit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">auto_look</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">auto_help</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+       <span class="n">auto_quit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_look</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_help</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
        <span class="n">cmd_on_exit</span><span class="o">=</span><span class="s2">&quot;look&quot;</span><span class="p">,</span>
-       <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+       <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
        <span class="n">startnode_input</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-       <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-       <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+       <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+       <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -1079,7 +1079,7 @@ which node it should go to next:</p>
 <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Get which attribute to modify and set it&quot;</span>
 
-    <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attr&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+    <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attr&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="n">next_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next_node&quot;</span><span class="p">)</span>
 
     <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">attrvalue</span><span class="p">)</span>
@@ -1096,11 +1096,11 @@ which node it should go to next:</p>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;death&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A violent death in the family&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_set_attribute</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;experienced_violence&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span>
+                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_set_attribute</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;experienced_violence&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
                                           <span class="s2">&quot;next_node&quot;</span><span class="p">:</span> <span class="s2">&quot;node_violent_background&quot;</span><span class="p">})},</span>
                <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;betrayal&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The betrayal of a trusted grown-up&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_set_attribute</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;experienced_betrayal&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span>
+                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_set_attribute</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;experienced_betrayal&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
                                           <span class="s2">&quot;next_node&quot;</span><span class="p">:</span> <span class="s2">&quot;node_betrayal_background&quot;</span><span class="p">})})</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
@@ -1166,14 +1166,14 @@ We could also imagine the helper function analyzing what other choices</p>
         <span class="c1"># a blank input either means OK or Abort</span>
         <span class="k">if</span> <span class="n">prev_entry</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">prev_entry</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Set name to {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prev_entry</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Set name to </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prev_entry</span><span class="p">))</span>
             <span class="k">return</span> <span class="s2">&quot;node_background&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;node_exit&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># re-run old node, but pass in the name given</span>
-        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;prev_entry&quot;</span><span class="p">:</span> <span class="n">inp</span><span class="p">}</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;prev_entry&quot;</span><span class="p">:</span> <span class="n">inp</span><span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">enter_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1182,7 +1182,7 @@ We could also imagine the helper function analyzing what other choices</p>
     <span class="n">prev_entry</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prev_entry&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">prev_entry</span><span class="p">:</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Current name: {}.</span><span class="se">\n</span><span class="s2">Enter another name or &lt;return&gt; to accept.&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Current name: </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Enter another name or &lt;return&gt; to accept.&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Enter your character&#39;s name or &lt;return&gt; to abort.&quot;</span>
 
@@ -1248,7 +1248,7 @@ automatically when you exit the menu.</p>
 
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_string</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your name to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your name to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;background&quot;</span>
 
 <span class="k">def</span> <span class="nf">node_set_name</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -1262,7 +1262,7 @@ automatically when you exit the menu.</p>
 
 
 <span class="k">def</span> <span class="nf">node_view_sheet</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">)</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Accept&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;finish_chargen&quot;</span><span class="p">},</span>
@@ -1331,7 +1331,7 @@ node is ok. A common example is a login menu:</p>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">lookup_username</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
         <span class="c1"># re-run current node by returning `None`</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rUsername not found. Try again.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># username ok - continue to next node</span>
         <span class="k">return</span> <span class="s2">&quot;node_password&quot;</span>
@@ -1352,7 +1352,7 @@ node is ok. A common example is a login menu:</p>
         <span class="k">return</span> <span class="s2">&quot;node_abort&quot;</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">validate_password</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Password error. Try again.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;nattempts&quot;</span><span class="p">,</span> <span class="n">nattempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;nattempts&quot;</span><span class="p">,</span> <span class="n">nattempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># password accepted</span>
         <span class="k">return</span> <span class="s2">&quot;node_login&quot;</span>
@@ -1477,9 +1477,9 @@ execution will continue and you can do stuff with the <code class="docutils lite
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Please enter something:&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You entered {result}.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You entered </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="n">result2</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Now enter something else:&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You now entered {result2}.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You now entered </span><span class="si">{</span><span class="n">result2</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Using <code class="docutils literal notranslate"><span class="pre">yield</span></code> is simple and intuitive, but it will only access input from <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and you
@@ -1548,7 +1548,7 @@ enter will be sent into the callback for whatever processing you want.</p>
 <span class="sd">          True, stay in the prompt, which means this callback</span>
 <span class="sd">          will be called again with the next user input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;When asked &#39;{prompt}&#39;, you answered &#39;{user_input}&#39;.&quot;</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When asked &#39;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&#39;, you answered &#39;</span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 
 <span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Write something! &quot;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
 </pre></div>
@@ -1593,9 +1593,9 @@ list</a>.</p>
         <span class="c1"># will quit after this</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># the answer is not on the right yes/no form</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Please answer Yes or No. </span><span class="se">\n</span><span class="s2">{prompt}&quot;</span><span class="p">)</span>
-<span class="err">@</span>        <span class="c1"># returning True will make sure the prompt state is not exited</span>
-        <span class="k">return</span> <span class="bp">True</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Please answer Yes or No. </span><span class="se">\n</span><span class="si">{prompt}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="o">@</span>        <span class="c1"># returning True will make sure the prompt state is not exited</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># ask the question</span>
 <span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Is Evennia great (Yes/No)?&quot;</span><span class="p">,</span> <span class="n">yesno</span><span class="p">)</span>

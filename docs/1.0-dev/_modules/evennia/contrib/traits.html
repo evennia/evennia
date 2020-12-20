@@ -375,12 +375,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">total_ordering</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">_SaverDict</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">percent</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">_SaverDict</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">percent</span>
 
 
 <span class="c1"># Available Trait classes.</span>
@@ -417,7 +417,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">cls</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not import Trait from </span><span class="si">{classpath}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import Trait from </span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">):</span>
                     <span class="n">trait_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">trait_type</span>
@@ -443,7 +443,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TraitException.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitException.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitException.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitException.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span></div></div>
 
 
@@ -461,7 +461,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TraitHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">db_attribute_key</span><span class="o">=</span><span class="s2">&quot;traits&quot;</span><span class="p">,</span> <span class="n">db_attribute_category</span><span class="o">=</span><span class="s2">&quot;traits&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">db_attribute_key</span><span class="o">=</span><span class="s2">&quot;traits&quot;</span><span class="p">,</span> <span class="n">db_attribute_category</span><span class="o">=</span><span class="s2">&quot;traits&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler and set up its internal Attribute-based storage.</span>
 
@@ -483,11 +483,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return number of Traits registered with the handler&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns error message if trait objects are assigned directly.</span>
 
@@ -501,22 +501,22 @@
             <span class="n">trait_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trait_class</span><span class="p">(</span><span class="n">trait_key</span><span class="o">=</span><span class="n">trait_key</span><span class="p">)</span>
             <span class="n">valid_keys</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">trait_cls</span><span class="o">.</span><span class="n">default_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
-                <span class="s2">&quot;Trait object not settable directly. &quot;</span> <span class="n">f</span><span class="s2">&quot;Assign to </span><span class="si">{trait_key}</span><span class="s2">.</span><span class="si">{valid_keys}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;Trait object not settable directly. &quot;</span> <span class="sa">f</span><span class="s2">&quot;Assign to </span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">valid_keys</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns error message if trait objects are assigned directly.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">trait_key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns Trait instances accessed as attributes.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns `Trait` instances accessed as dict keys.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;TraitHandler (</span><span class="si">{num}</span><span class="s2"> Trait(s) stored): </span><span class="si">{keys}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">keys</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
         <span class="p">)</span>
@@ -531,11 +531,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">trait_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">[</span><span class="n">trait_key</span><span class="p">][</span><span class="s2">&quot;trait_type&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trait class for Trait </span><span class="si">{trait_key}</span><span class="s2"> could not be found.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait class for Trait </span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_TRAIT_CLASSES</span><span class="p">[</span><span class="n">trait_type</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trait class for </span><span class="si">{trait_type}</span><span class="s2"> could not be found.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait class for </span><span class="si">{</span><span class="n">trait_type</span><span class="si">}</span><span class="s2"> could not be found.&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -595,11 +595,11 @@
             <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trait &#39;</span><span class="si">{trait_key}</span><span class="s2">&#39; already exists.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait &#39;</span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2">&#39; already exists.&quot;</span><span class="p">)</span>
 
         <span class="n">trait_class</span> <span class="o">=</span> <span class="n">_TRAIT_CLASSES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trait_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">trait_class</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trait-type &#39;</span><span class="si">{trait_type}</span><span class="s2">&#39; is invalid.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait-type &#39;</span><span class="si">{</span><span class="n">trait_type</span><span class="si">}</span><span class="s2">&#39; is invalid.&quot;</span><span class="p">)</span>
 
         <span class="n">trait_properties</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_key</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="k">else</span> <span class="n">name</span>
         <span class="n">trait_properties</span><span class="p">[</span><span class="s2">&quot;trait_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait_type</span>
@@ -618,7 +618,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">trait_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trait &#39;</span><span class="si">{trait_key}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trait &#39;</span><span class="si">{</span><span class="n">trait_key</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">trait_key</span><span class="p">]</span>
@@ -664,7 +664,7 @@
     <span class="c1"># and have them treated like data to store.</span>
     <span class="n">allow_extra_properties</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="Trait.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.Trait.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_data</span><span class="p">):</span>
+<div class="viewcode-block" id="Trait.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.Trait.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This both initializes and validates the Trait on creation. It must</span>
 <span class="sd">        raise exception if validation fails. The TraitHandler will call this</span>
@@ -686,8 +686,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait_data</span><span class="p">,</span> <span class="n">_SaverDict</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;Non-persistent Trait data (type(trait_data)) &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;loaded for {type(self).__name__}.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Non-persistent Trait data (type(trait_data)) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;loaded for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Trait.validate_input"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.Trait.validate_input">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -742,22 +742,22 @@
 
     <span class="c1"># Grant access to properties on this Trait.</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Access extra parameters as dict keys.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set extra parameters as dict keys.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete extra parameters as dict keys.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Access extra parameters as attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;default_keys&quot;</span><span class="p">,</span> <span class="s2">&quot;data_default&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">,</span> <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -770,7 +770,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set extra parameters as attributes.</span>
 
 <span class="sd">        Arbitrary attributes set on a Trait object will be</span>
@@ -794,9 +794,9 @@
             <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">):</span>
                 <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">)[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="k">return</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Can&#39;t set attribute </span><span class="si">{key}</span><span class="s2"> on &quot;</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.trait_type}</span><span class="s2"> Trait.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t set attribute </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> on &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trait_type</span><span class="si">}</span><span class="s2"> Trait.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete or reset parameters.</span>
 
@@ -834,7 +834,7 @@
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Debug-friendly representation of this Trait.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">({{</span><span class="si">{}</span><span class="s2">}})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
@@ -847,8 +847,8 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;&lt;Trait </span><span class="si">{self.name}</span><span class="s2">: </span><span class="si">{self._data[&#39;value&#39;]}</span><span class="s2">&gt;&quot;</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Trait </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="c1"># access properties</span>
 
@@ -861,7 +861,7 @@
 
     <span class="c1"># Numeric operations</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support equality comparison between Traits or Trait and numeric.</span>
 
 <span class="sd">        Note:</span>
@@ -876,7 +876,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support less than comparison between `Trait`s or `Trait` and numeric.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
@@ -885,11 +885,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Access `value` property through unary `+` operator.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support addition between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
@@ -898,7 +898,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support subtraction between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
@@ -907,7 +907,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support multiplication between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
@@ -916,7 +916,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support floor division between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">//</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span>
@@ -929,7 +929,7 @@
     <span class="fm">__radd__</span> <span class="o">=</span> <span class="fm">__add__</span>
     <span class="fm">__rmul__</span> <span class="o">=</span> <span class="fm">__mul__</span>
 
-    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support subtraction between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
@@ -938,7 +938,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Support floor division between `Trait`s or `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trait</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
@@ -976,7 +976,7 @@
 
     <span class="n">default_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;mod&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{value:11}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
 
@@ -1057,8 +1057,8 @@
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">descs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s2">&quot;Trait descs must be defined on the &quot;</span>
-                    <span class="n">f</span><span class="s2">&quot;form {{number:str}} (instead found </span><span class="si">{descs}</span><span class="s2">).&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Trait descs must be defined on the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;form </span><span class="se">{{</span><span class="s2">number:str</span><span class="se">}}</span><span class="s2"> (instead found </span><span class="si">{</span><span class="n">descs</span><span class="si">}</span><span class="s2">).&quot;</span>
                 <span class="p">)</span>
         <span class="c1"># set up rate</span>
         <span class="k">if</span> <span class="n">trait_data</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -1342,7 +1342,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{value:4}</span><span class="s2"> / </span><span class="si">{base:4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
 

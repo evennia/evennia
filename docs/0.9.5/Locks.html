@@ -242,7 +242,7 @@ arguments explicitly given in the lock definition will appear as extra arguments
         <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">wanted_id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">wanted_id</span>
-        <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 </td></tr></table></div>
 <p>The above could for example be used in a lock function like this:</p>
@@ -545,11 +545,11 @@ strength above 50 however and you’ll pick it up no problem. Done! A very heavy
  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
     
     <span class="c1"># create, then set the lock</span>
-    <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
     <span class="n">box</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;get:attr_gt(strength, 50)&quot;</span><span class="p">)</span>
     
     <span class="c1"># or we can assign locks in one go right away</span>
-    <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;get:attr_gt(strength, 50)&quot;</span><span class="p">)</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;get:attr_gt(strength, 50)&quot;</span><span class="p">)</span>
     
     <span class="c1"># set the attributes</span>
     <span class="n">box</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a very big and heavy box.&quot;</span>

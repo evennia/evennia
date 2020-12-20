@@ -55,12 +55,12 @@
 <span class="sd">objects already existing in the database.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">IntegrityError</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="k">import</span> <span class="n">signals</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
 
 <span class="c1"># delayed imports</span>
 <span class="n">_User</span> <span class="o">=</span> <span class="kc">None</span>
@@ -143,7 +143,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_ObjectDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ObjectDB</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_ObjectDB</span>
 
     <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
 
@@ -274,7 +274,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_ScriptDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ScriptDB</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
 
     <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
 
@@ -368,7 +368,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_HelpEntry</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_HelpEntry</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="k">import</span> <span class="n">HelpEntry</span> <span class="k">as</span> <span class="n">_HelpEntry</span>
+        <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span> <span class="k">as</span> <span class="n">_HelpEntry</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">new_help</span> <span class="o">=</span> <span class="n">_HelpEntry</span><span class="p">()</span>
@@ -432,7 +432,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_Msg</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_Msg</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">Msg</span> <span class="k">as</span> <span class="n">_Msg</span>
+        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span> <span class="k">as</span> <span class="n">_Msg</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
         <span class="c1"># we don&#39;t allow empty messages.</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -564,7 +564,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_AccountDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_AccountDB</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
 
     <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">if</span> <span class="n">locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>

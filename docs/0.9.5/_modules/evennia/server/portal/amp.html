@@ -46,17 +46,17 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="k">import</span> <span class="n">amp</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">BytesIO</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
 <span class="kn">import</span> <span class="nn">zlib</span>  <span class="c1"># Used in Compressed class</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">DeferredList</span><span class="p">,</span> <span class="n">Deferred</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">DeferredList</span><span class="p">,</span> <span class="n">Deferred</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
 
 <span class="c1"># delayed import</span>
 <span class="n">_LOGGER</span> <span class="o">=</span> <span class="kc">None</span>
@@ -137,7 +137,7 @@
     <span class="s2">&quot;Delay import of logger until absolutely necessary&quot;</span>
     <span class="k">global</span> <span class="n">_LOGGER</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGGER</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">_LOGGER</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">_LOGGER</span>
     <span class="k">return</span> <span class="n">_LOGGER</span>
 
 
@@ -336,7 +336,7 @@
 
     <span class="c1"># helper methods</span>
 
-<div class="viewcode-block" id="AMPMultiConnectionProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize protocol with some things that need to be in place</span>
 <span class="sd">        already before connecting both on portal and server.</span>
@@ -368,7 +368,7 @@
 
                 <span class="c1"># Evennia extra logging</span>
                 <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot; (error logged on other side)&quot;</span>
-                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;AMP caught exception (</span><span class="si">{desc}</span><span class="s2">):</span><span class="se">\n</span><span class="si">{error.value}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AMP caught exception (</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                     <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">)</span>

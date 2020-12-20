@@ -43,7 +43,7 @@
 <p>This is a pager for displaying long texts and allows stepping up and down in
 the text (the name comes from the traditional ‘more’ unix command).</p>
 <p>To use, simply pass the text through the EvMore object:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
 
 <span class="n">text</span> <span class="o">=</span> <span class="n">some_long_text_output</span><span class="p">()</span>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -51,7 +51,7 @@ the text (the name comes from the traditional ‘more’ unix command).</p>
 </div>
 <p>One can also use the convenience function <strong>msg</strong> from this module to avoid
 having to set up the <strong>EvMenu</strong> object manually:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">evmore</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
 
 <span class="n">text</span> <span class="o">=</span> <span class="n">some_long_text_output</span><span class="p">()</span>
 <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -75,7 +75,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'a', 't', 'abort', 'top', 'quit', 'b', 'next', 'n', 'back', 'end', 'e']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['quit', 'a', 'b', 'end', 'next', 't', 'e', 'n', 'abort', 'q', 'back', 'top']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -101,7 +101,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q a t abort top quit b next n back end e', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'quit a b end next t e n abort q back top', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -238,14 +238,14 @@ the evmore commands will be available when this is run).</p></li>
 </pre></div>
 </div>
 <p>Paginator</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="n">pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 10 objs per page</span>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Every page an EvTable</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvTable</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvTable</span>
 <span class="k">def</span> <span class="nf">_to_evtable</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="n">table</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># convert page to a table</span>
     <span class="k">return</span> <span class="n">EvTable</span><span class="p">(</span><span class="o">*</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
@@ -481,14 +481,14 @@ the evmore commands will be available when this is run).</p></li>
 </pre></div>
 </div>
 <p>Paginator</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="n">pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 10 objs per page</span>
 <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Every page an EvTable</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvTable</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvTable</span>
 <span class="k">def</span> <span class="nf">_to_evtable</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="n">table</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># convert page to a table</span>
     <span class="k">return</span> <span class="n">EvTable</span><span class="p">(</span><span class="o">*</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>

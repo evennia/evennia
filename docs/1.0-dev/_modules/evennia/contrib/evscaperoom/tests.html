@@ -46,15 +46,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">pkgutil</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="k">import</span> <span class="n">CommandTest</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">mod_import</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">commands</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">state</span> <span class="k">as</span> <span class="n">basestate</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">objects</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">mod_import</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">commands</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">state</span> <span class="k">as</span> <span class="n">basestate</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">objects</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
 
 
 <div class="viewcode-block" id="TestEvscaperoomCommands"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.tests.html#evennia.contrib.evscaperoom.tests.TestEvscaperoomCommands">[docs]</a><span class="k">class</span> <span class="nc">TestEvscaperoomCommands</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
@@ -226,7 +226,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">commands</span><span class="o">.</span><span class="n">CmdEmote</span><span class="p">(),</span>
             <span class="s2">&quot;/me smiles to /obj&quot;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s2">&quot;Char(#</span><span class="si">{self.char1.id}</span><span class="s2">) smiles to Obj(#</span><span class="si">{self.obj1.id}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Char(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) smiles to Obj(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEvscaperoomCommands.test_focus_interaction"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.tests.html#evennia.contrib.evscaperoom.tests.TestEvscaperoomCommands.test_focus_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">test_focus_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

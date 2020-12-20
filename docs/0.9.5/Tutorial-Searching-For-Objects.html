@@ -155,8 +155,8 @@ typeclasses. In a command, the <code class="docutils literal notranslate"><span 
             <span class="c1"># caller know. We&#39;ll just return, since we&#39;re done</span>
             <span class="k">return</span>
         <span class="c1"># we found a target! we&#39;ll do stuff to them.</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.caller} pokes you.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You poke {target}.&quot;</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2"> pokes you.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You poke </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>By default, the search method of a Character will attempt to find a unique object match for the
@@ -202,7 +202,7 @@ Command to do this:</p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Executes &#39;hangouts&#39; command&quot;&quot;&quot;</span>
         <span class="n">hangouts</span> <span class="o">=</span> <span class="n">search_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hangout&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;location tags&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Hangouts available: {&#39;, &#39;.join(str(ob) for ob in hangouts)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hangouts available: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ob</span><span class="p">)</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">hangouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This uses the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> function to find all objects previously tagged with <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>

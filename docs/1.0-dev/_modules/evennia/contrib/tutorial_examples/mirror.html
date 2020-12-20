@@ -47,9 +47,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
 
 
 <div class="viewcode-block" id="TutorialMirror"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.mirror.html#evennia.contrib.tutorial_examples.mirror.TutorialMirror">[docs]</a><span class="k">class</span> <span class="nc">TutorialMirror</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -74,7 +74,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="c1"># avoid infinite recursion by having two mirrors look at each other</span>
             <span class="k">return</span> <span class="s2">&quot;The image of yourself stretches into infinity.&quot;</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> shows your reflection:</span><span class="se">\n</span><span class="si">{looker.db.desc}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> shows your reflection:</span><span class="se">\n</span><span class="si">{</span><span class="n">looker</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="TutorialMirror.msg"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.mirror.html#evennia.contrib.tutorial_examples.mirror.TutorialMirror.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -96,12 +96,12 @@
         <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">else</span> <span class="n">text</span>
         <span class="k">if</span> <span class="n">from_obj</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">from_obj</span><span class="p">):</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{self.key}</span><span class="s1"> echoes back to you:</span><span class="se">\n</span><span class="s1">&quot;</span><span class="si">{text}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s1"> echoes back to you:</span><span class="se">\n</span><span class="s1">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{self.key}</span><span class="s1"> echoes back:</span><span class="se">\n</span><span class="s1">&quot;</span><span class="si">{text}</span><span class="s1">&quot;.&#39;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s1"> echoes back:</span><span class="se">\n</span><span class="s1">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># no from_obj and no location, just log</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2">.msg was called without from_obj and .location is None.&quot;</span><span class="p">)</span></div></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.msg was called without from_obj and .location is None.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

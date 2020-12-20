@@ -144,12 +144,12 @@ attributes and so on.</p>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 <span class="k">class</span> <span class="nc">CharApp</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">app_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">AutoField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">app_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">AutoField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">char_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Character Name&#39;</span><span class="p">)</span>
     <span class="n">date_applied</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Date Applied&#39;</span><span class="p">)</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Background&#39;</span><span class="p">)</span>
     <span class="n">account_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Account ID&#39;</span><span class="p">)</span>
-    <span class="n">submitted</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">submitted</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>You should consider how you are going to link your application to your account. For this tutorial,
@@ -201,7 +201,7 @@ given Character.</p></li>
     <span class="n">current_user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="c1"># current user logged in</span>
     <span class="n">p_id</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span> <span class="c1"># the account id</span>
     <span class="c1"># submitted Characters by this account</span>
-    <span class="n">sub_apps</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="n">p_id</span><span class="p">,</span> <span class="n">submitted</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">sub_apps</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="n">p_id</span><span class="p">,</span> <span class="n">submitted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sub_apps&#39;</span><span class="p">:</span> <span class="n">sub_apps</span><span class="p">}</span>
     <span class="c1"># make the variables in &#39;context&#39; available to the web page template</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/index.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
@@ -327,9 +327,9 @@ name and background. This form we create in <code class="docutils literal notran
             <span class="n">name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
             <span class="n">background</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]</span>
             <span class="n">applied_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-            <span class="n">submitted</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">submitted</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="s1">&#39;save&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
-                <span class="n">submitted</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">submitted</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">app</span> <span class="o">=</span> <span class="n">CharApp</span><span class="p">(</span><span class="n">char_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span> 
             <span class="n">date_applied</span><span class="o">=</span><span class="n">applied_date</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> 
             <span class="n">submitted</span><span class="o">=</span><span class="n">submitted</span><span class="p">)</span>
@@ -451,7 +451,7 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
     <span class="n">current_user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="c1"># current user logged in</span>
     <span class="n">p_id</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span> <span class="c1"># the account id</span>
     <span class="c1"># submitted apps under this account</span>
-    <span class="n">sub_apps</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="n">p_id</span><span class="p">,</span> <span class="n">submitted</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">sub_apps</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="n">p_id</span><span class="p">,</span> <span class="n">submitted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sub_apps&#39;</span><span class="p">:</span> <span class="n">sub_apps</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/index.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
@@ -473,9 +473,9 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
             <span class="n">name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
             <span class="n">background</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]</span>
             <span class="n">applied_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-            <span class="n">submitted</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">submitted</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="s1">&#39;save&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
-                <span class="n">submitted</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">submitted</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">app</span> <span class="o">=</span> <span class="n">CharApp</span><span class="p">(</span><span class="n">char_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span> 
             <span class="n">date_applied</span><span class="o">=</span><span class="n">applied_date</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> 
             <span class="n">submitted</span><span class="o">=</span><span class="n">submitted</span><span class="p">)</span>

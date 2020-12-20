@@ -50,7 +50,7 @@ that will edit any default object offering to change its key and description.</p
 <ol class="arabic">
 <li><p>Import the <strong>GenericBuildingCmd</strong> class from this contrib in your <strong>mygame/commands/default_cmdset.py</strong> file:</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="k">import</span> <span class="n">GenericBuildingCmd</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="kn">import</span> <span class="n">GenericBuildingCmd</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -96,7 +96,7 @@ change the room title by simply entering text, and go back to the
 main menu entering &#64; (all this is customizable).  Press q to quit this menu.</p>
 <p>The first thing to do is to create a new module and place a class
 inheriting from <strong>BuildingMenu</strong> in it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="k">import</span> <span class="n">BuildingMenu</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
     <span class="c1"># ...</span>

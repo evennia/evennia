@@ -56,10 +56,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_LOGINSTART</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
@@ -67,11 +67,11 @@
     <span class="n">callables_from_module</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">amp</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="k">import</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGOUT</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="k">import</span> <span class="n">SIGNAL_ACCOUNT_POST_FIRST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LAST_LOGOUT</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="k">import</span> <span class="n">parse_inlinefunc</span>
-<span class="kn">from</span> <span class="nn">codecs</span> <span class="k">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">codecs_decode</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGOUT</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_FIRST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LAST_LOGOUT</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="kn">import</span> <span class="n">parse_inlinefunc</span>
+<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">codecs_decode</span>
 
 <span class="n">_INLINEFUNC_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INLINEFUNC_ENABLED</span>
 
@@ -92,7 +92,7 @@
 <span class="n">DUMMYSESSION</span> <span class="o">=</span> <span class="n">DummySession</span><span class="p">()</span>
 
 <span class="c1"># i18n</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_SERVERNAME</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span>
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
@@ -119,11 +119,11 @@
         <span class="c1"># we allow optional arbitrary serversession class for overloading</span>
         <span class="n">_ServerSession</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_AccountDB</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ServerConfig</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span> <span class="k">as</span> <span class="n">_ServerConfig</span>
+        <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span> <span class="k">as</span> <span class="n">_ServerConfig</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ScriptDB</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
     <span class="c1"># including once to avoid warnings in Python syntax checkers</span>
     <span class="k">assert</span> <span class="n">_ServerSession</span><span class="p">,</span> <span class="s2">&quot;ServerSession class could not load&quot;</span>
     <span class="k">assert</span> <span class="n">_AccountDB</span><span class="p">,</span> <span class="s2">&quot;AccountDB class could not load&quot;</span>
@@ -142,7 +142,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="s2">&quot;Clean out None-sessions automatically.&quot;</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
@@ -154,12 +154,12 @@
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="s2">&quot;Don&#39;t assign None sessions&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="s2">&quot;None-keys are not accepted.&quot;</span>
         <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
@@ -307,7 +307,7 @@
 
     <span class="c1"># AMP communication methods</span>
 
-<div class="viewcode-block" id="ServerSessionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerSessionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Init the handler.</span>
 

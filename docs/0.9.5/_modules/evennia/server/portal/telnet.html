@@ -49,10 +49,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">protocol</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="k">import</span> <span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">IAC</span><span class="p">,</span>
     <span class="n">NOP</span><span class="p">,</span>
     <span class="n">LINEMODE</span><span class="p">,</span>
@@ -65,12 +65,12 @@
     <span class="n">LINEMODE_EDIT</span><span class="p">,</span>
     <span class="n">LINEMODE_TRAPSIG</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">ttype</span><span class="p">,</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="k">import</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span><span class="p">,</span> <span class="n">MCCP</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.mxp</span> <span class="k">import</span> <span class="n">Mxp</span><span class="p">,</span> <span class="n">mxp_parse</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ttype</span><span class="p">,</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="kn">import</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span><span class="p">,</span> <span class="n">MCCP</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.mxp</span> <span class="kn">import</span> <span class="n">Mxp</span><span class="p">,</span> <span class="n">mxp_parse</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
@@ -114,7 +114,7 @@
 <span class="sd">    communication between game and player goes through here.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TelnetProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;telnet&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -127,8 +127,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Malformed telnet input: </span><span class="si">{err}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Malformed telnet input: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TelnetProtocol.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -168,7 +168,7 @@
         <span class="c1"># mxp support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mxp</span> <span class="o">=</span> <span class="n">Mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">delay</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">delay</span>
 
         <span class="c1"># timeout the handshakes in case the client doesn&#39;t reply at all</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handshake_delay</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -303,7 +303,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">disableLocal</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+                <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span></div>
 

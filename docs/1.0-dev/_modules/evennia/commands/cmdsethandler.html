@@ -106,15 +106,15 @@
 <span class="sd">the &#39;Fishing&#39; set. Fishing from a boat? No problem!</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">trace</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="k">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">trace</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;import_cmdset&quot;</span><span class="p">,</span> <span class="s2">&quot;CmdSetHandler&quot;</span><span class="p">)</span>
 
@@ -320,7 +320,7 @@
 <span class="sd">    will re-calculate the &#39;current&#39; cmdset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called whenever an object is recreated.</span>
 
@@ -351,7 +351,7 @@
         <span class="k">if</span> <span class="n">init_true</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># is then called from the object __init__.</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display current commands</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -362,7 +362,7 @@
             <span class="c1"># We have more than one cmdset in stack; list them all</span>
             <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">):</span>
                 <span class="n">mergelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; {snum + 1}: </span><span class="si">{cmdset}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">snum</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cmdset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Display the currently active cmdset, limited by self.obj&#39;s permissions</span>
         <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -374,7 +374,7 @@
         <span class="k">if</span> <span class="n">mergelist</span><span class="p">:</span>
             <span class="c1"># current is a result of mergers</span>
             <span class="n">mergelist</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mergelist</span><span class="p">)</span>
-            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; &lt;Merged </span><span class="si">{mergelist}</span><span class="s2">&gt;: </span><span class="si">{self.current}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; &lt;Merged </span><span class="si">{</span><span class="n">mergelist</span><span class="si">}</span><span class="s2">&gt;: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># current is a single cmdset</span>
             <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">))</span>

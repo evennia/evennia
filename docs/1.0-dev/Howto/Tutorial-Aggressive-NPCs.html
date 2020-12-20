@@ -81,9 +81,9 @@ folder and name it <code class="docutils literal notranslate"><span class="pre">
 <span class="sd">         Can be expanded upon later.</span>
 <span class="sd">        &quot;&quot;&quot;</span>       
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_aggressive</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;say Graaah, die {character}!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say Graaah, die </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;say Greetings, {character}!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say Greetings, </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We will define our custom <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass below. As for the new <code class="docutils literal notranslate"><span class="pre">at_char_entered</span></code> method we’ve

@@ -53,17 +53,17 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakValueDictionary</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="k">import</span> <span class="n">callFromThread</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span>
-<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">post_save</span>
-<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="k">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelBase</span>
-<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">post_migrate</span>
-<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="k">import</span> <span class="n">DatabaseError</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">get_evennia_pids</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="kn">import</span> <span class="n">callFromThread</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span>
+<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelBase</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">post_migrate</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">DatabaseError</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">get_evennia_pids</span><span class="p">,</span> <span class="n">to_str</span>
 
-<span class="kn">from</span> <span class="nn">.manager</span> <span class="k">import</span> <span class="n">SharedMemoryManager</span>
+<span class="kn">from</span> <span class="nn">.manager</span> <span class="kn">import</span> <span class="n">SharedMemoryManager</span>
 
 <span class="n">AUTO_FLUSH_MIN_INTERVAL</span> <span class="o">=</span> <span class="mf">60.0</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># at least 5 mins between cache flushes</span>
 
@@ -92,7 +92,7 @@
     <span class="c1"># clear what was the intended purpose, but skipping ModelBase.__new__</span>
     <span class="c1"># broke things; in particular, default manager inheritance.</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        this method will either create an instance (by calling the default implementation)</span>
 <span class="sd">        or try to retrieve one from the class-wide cache by inferring the pk value from</span>
@@ -128,7 +128,7 @@
             <span class="n">dbmodel</span><span class="o">.</span><span class="n">__instance_cache__</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_prepare</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Field shortcut creation:</span>
 
@@ -417,10 +417,10 @@
 
     <span class="c1"># per-instance methods</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this is required to maintain hashing</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
 
@@ -469,7 +469,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_MONITOR_HANDLER</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_MONITOR_HANDLER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span> <span class="k">as</span> <span class="n">_MONITOR_HANDLER</span>
+            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span> <span class="k">as</span> <span class="n">_MONITOR_HANDLER</span>
 
         <span class="k">if</span> <span class="n">_IS_SUBPROCESS</span><span class="p">:</span>
             <span class="c1"># we keep a store of objects modified in subprocesses so</span>

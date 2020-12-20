@@ -53,27 +53,27 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">abspath</span>
-<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="k">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="k">import</span> <span class="n">ILogObserver</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">abspath</span>
+<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="kn">import</span> <span class="n">ILogObserver</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
 
 <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 
 <span class="kn">import</span> <span class="nn">evennia</span>
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="k">import</span> <span class="n">PORTAL_SESSIONS</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="k">import</span> <span class="n">EvenniaReverseProxyResource</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 
 
 <span class="c1"># we don&#39;t need a connection to the database so close it right away</span>
@@ -182,7 +182,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Portal.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
+<div class="viewcode-block" id="Portal.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the server.</span>
 
@@ -309,7 +309,7 @@
     <span class="c1"># the portal and the mud server. Only reason to ever deactivate</span>
     <span class="c1"># it would be during testing and debugging.</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">amp_server</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp_server</span>
 
     <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;amp: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">AMP_PORT</span>
 
@@ -326,7 +326,7 @@
 
     <span class="c1"># Start telnet game connections</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">telnet</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet</span>
 
     <span class="n">_telnet_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -351,7 +351,7 @@
 
     <span class="c1"># Start Telnet+SSL game connection (requires PyOpenSSL).</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">telnet_ssl</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet_ssl</span>
 
     <span class="n">_ssl_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SSL_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -386,7 +386,7 @@
     <span class="c1"># Start SSH game connections. Will create a keypair in</span>
     <span class="c1"># evennia/game if necessary.</span>
 
-    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">ssh</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ssh</span>
 
     <span class="n">_ssh_protocol</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SSH_PROTOCOL_CLASS</span><span class="p">)</span>
 
@@ -408,7 +408,7 @@
 
 
 <span class="k">if</span> <span class="n">WEBSERVER_ENABLED</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="k">import</span> <span class="n">Website</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">Website</span>
 
     <span class="c1"># Start a reverse proxy to relay data to the Server-side webserver</span>
 
@@ -423,7 +423,7 @@
             <span class="n">webclientstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">WEBCLIENT_ENABLED</span><span class="p">:</span>
                 <span class="c1"># create ajax client processes at /webclientdata</span>
-                <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">webclient_ajax</span>
+                <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient_ajax</span>
 
                 <span class="n">ajax_webclient</span> <span class="o">=</span> <span class="n">webclient_ajax</span><span class="o">.</span><span class="n">AjaxWebClient</span><span class="p">()</span>
                 <span class="n">ajax_webclient</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">PORTAL_SESSIONS</span>
@@ -433,8 +433,8 @@
                 <span class="k">if</span> <span class="n">WEBSOCKET_CLIENT_ENABLED</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">websocket_started</span><span class="p">:</span>
                     <span class="c1"># start websocket client port for the webclient</span>
                     <span class="c1"># we only support one websocket client</span>
-                    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="k">import</span> <span class="n">webclient</span>
-                    <span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="k">import</span> <span class="n">WebSocketServerFactory</span>
+                    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient</span>
+                    <span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketServerFactory</span>
 
                     <span class="n">w_interface</span> <span class="o">=</span> <span class="n">WEBSOCKET_CLIENT_INTERFACE</span>
                     <span class="n">w_ifacestr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>

@@ -49,12 +49,12 @@
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">LockHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="k">import</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
 
 <span class="k">def</span> <span class="nf">_init_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -140,7 +140,7 @@
 <span class="sd">    The metaclass cleans up all properties on the class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CommandMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CommandMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">_init_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
@@ -225,7 +225,7 @@
     <span class="c1">#   session - which session is responsible for triggering this command. Only set</span>
     <span class="c1">#             if triggered by an account.</span>
 
-<div class="viewcode-block" id="Command.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Command.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The lockhandler works the same as for objects.</span>
 <span class="sd">        optional kwargs will be set as properties on the Command at runtime,</span>
@@ -239,13 +239,13 @@
     <span class="k">def</span> <span class="nf">lockhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the command key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare two command instances to each other by matching their</span>
 <span class="sd">        key and aliases.</span>
@@ -265,7 +265,7 @@
             <span class="c1"># probably got a string</span>
             <span class="k">return</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Python 3 requires that any class which implements __eq__ must also</span>
 <span class="sd">        implement __hash__ and that the corresponding hashes for equivalent</span>
@@ -278,7 +278,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The logical negation of __eq__. Since this is one of the most</span>
 <span class="sd">        called methods in Evennia (along with __eq__) we do some</span>
@@ -290,7 +290,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
 
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This implements searches like &#39;if query in cmd&#39;. It&#39;s a fuzzy</span>
 <span class="sd">        matching used by the help system, returning True if query can</span>
@@ -472,9 +472,9 @@
         <span class="n">variables</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s2">&quot; |w</span><span class="si">{}</span><span class="s2">|n (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Command </span><span class="si">{self}</span><span class="s2"> has no defined `func()` - showing on-command variables:</span>
-<span class="si">{variables}</span><span class="s2"></span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables:</span>
+<span class="si">{</span><span class="n">variables</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="c1"># a simple test command to show the available properties</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
@@ -581,21 +581,21 @@
         <span class="n">colornames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column_color</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
 
         <span class="n">h_line_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;header_line_char&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
-        <span class="n">header_line_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{h_line_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">header_line_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">h_line_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
         <span class="n">c_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;corner_char&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
-        <span class="n">corner_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{c_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">corner_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">c_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
 
         <span class="n">b_left_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_left_char&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span>
-        <span class="n">border_left_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{b_left_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">border_left_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_left_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
 
         <span class="n">b_right_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_right_char&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span>
-        <span class="n">border_right_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{b_right_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">border_right_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_right_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
 
         <span class="n">b_bottom_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_bottom_char&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
-        <span class="n">border_bottom_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{b_bottom_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">border_bottom_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_bottom_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
 
         <span class="n">b_top_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_top_char&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
-        <span class="n">border_top_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{border_color}{b_top_char}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">border_top_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_top_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
             <span class="o">*</span><span class="n">colornames</span><span class="p">,</span>

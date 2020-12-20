@@ -45,14 +45,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">unittest</span> <span class="k">import</span> <span class="n">mock</span>
-<span class="kn">from</span> <span class="nn">anything</span> <span class="k">import</span> <span class="n">Something</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="k">import</span> <span class="n">CommandTest</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">EvenniaTest</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">crafting</span><span class="p">,</span> <span class="n">example_recipes</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">crafting</span><span class="p">,</span> <span class="n">example_recipes</span>
 
 
 <div class="viewcode-block" id="TestCraftUtils"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.tests.html#evennia.contrib.crafting.tests.TestCraftUtils">[docs]</a><span class="k">class</span> <span class="nc">TestCraftUtils</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
@@ -86,10 +86,10 @@
 
 
 <span class="k">class</span> <span class="nc">_TestMaterial</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 
@@ -258,8 +258,12 @@
 <div class="viewcode-block" id="TestCraftingRecipe.test_seed__succcess"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.tests.html#evennia.contrib.crafting.tests.TestCraftingRecipe.test_seed__succcess">[docs]</a>    <span class="k">def</span> <span class="nf">test_seed__succcess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test seed helper classmethod&quot;&quot;&quot;</span>
 
+        <span class="c1"># needed for other dbs to pass seed</span>
+        <span class="n">homeroom</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;HomeRoom&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="c1"># call classmethod directly</span>
-        <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">override_settings</span><span class="p">(</span><span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">homeroom</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
 
         <span class="c1"># this should be a normal successful crafting</span>
         <span class="n">recipe</span> <span class="o">=</span> <span class="n">_MockRecipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">tools</span> <span class="o">+</span> <span class="n">consumables</span><span class="p">))</span>

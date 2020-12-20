@@ -581,7 +581,7 @@ again</p>
                  <span class="s2">&quot;looms a mighty castle. To the south the glow of &quot;</span> \
                  <span class="s2">&quot;a campfire can be seen. To the east lie a wall of &quot;</span> \
                  <span class="s2">&quot;mountains and to the west the dull roar of the open sea.&quot;</span><span class="p">,</span>
-                 <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                 <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="c1"># EvTable allows formatting individual columns and cells. We use that here</span>
 <span class="c1"># to set a maximum width for our description, but letting the map fill</span>
 <span class="c1"># whatever space it needs.</span>
@@ -593,7 +593,7 @@ again</p>
 <span class="n">north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
                 <span class="s2">&quot;An impressive castle surrounds you. There might be &quot;</span> \
                 <span class="s2">&quot;a princess in one of these towers.&quot;</span><span class="p">,</span>
-                <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 
 <span class="c1"># [...]</span>
@@ -602,7 +602,7 @@ again</p>
 <span class="n">east</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
                <span class="s2">&quot;A cosy cottage nestled among mountains stretching &quot;</span> \
                <span class="s2">&quot;east as far as the eye can see.&quot;</span><span class="p">,</span>
-               <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+               <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">east</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 
 <span class="c1"># [...]</span>
@@ -611,7 +611,7 @@ again</p>
 <span class="n">south</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
                 <span class="s2">&quot;Surrounding a clearing are a number of tribal tents &quot;</span> \
                 <span class="s2">&quot;and at their centre a roaring fire.&quot;</span><span class="p">,</span>
-                <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">south</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 
 <span class="c1"># [...]</span>
@@ -620,7 +620,7 @@ again</p>
 <span class="n">west</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
                <span class="s2">&quot;The dark forest halts to a sandy beach. The sound of &quot;</span> \
                <span class="s2">&quot;crashing waves calms the soul.&quot;</span><span class="p">,</span>
-               <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+               <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">west</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>

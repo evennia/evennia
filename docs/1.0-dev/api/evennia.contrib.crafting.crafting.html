@@ -95,7 +95,7 @@ during the crafting process.</p>
 specifies the name of the recipe to use and expects all suitable
 ingredients/tools as arguments (consumables and tools should be added together,
 tools will be identified before consumables).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting</span> <span class="k">import</span> <span class="n">crafting</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting</span> <span class="kn">import</span> <span class="n">crafting</span>
 
 <span class="n">spiked_club</span> <span class="o">=</span> <span class="n">crafting</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;spiked club&quot;</span><span class="p">,</span> <span class="n">club</span><span class="p">,</span> <span class="n">nails</span><span class="p">)</span>
 </pre></div>
@@ -121,7 +121,7 @@ crafting (<strong>CraftingRecipe</strong>) using objects and prototypes.</p>
 hood. See the <strong>CraftingRecipe</strong> class for details of which properties and
 methods are available to override - the craft behavior can be modified
 substantially this way.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="k">import</span> <span class="n">CraftingRecipe</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="c1"># Pig iron is a high-carbon result of melting iron in a blast furnace.</span>

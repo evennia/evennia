@@ -45,10 +45,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="k">import</span> <span class="n">AttributeInline</span><span class="p">,</span> <span class="n">TagInline</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="kn">import</span> <span class="n">AttributeInline</span><span class="p">,</span> <span class="n">TagInline</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 
 <div class="viewcode-block" id="ChannelAttributeInline"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ChannelAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
@@ -156,8 +156,8 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ChannelAdmin.response_add"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAdmin.response_add">[docs]</a>    <span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponseRedirect</span>
-        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
+        <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 
         <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:comms_channeldb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span></div></div>
 

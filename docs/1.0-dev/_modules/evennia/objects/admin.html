@@ -44,13 +44,13 @@
 <span class="c1"># This sets up how models are displayed</span>
 <span class="c1"># in the web admin interface.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">django</span> <span class="k">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="k">import</span> <span class="n">AttributeInline</span><span class="p">,</span> <span class="n">TagInline</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">django.contrib.admin.utils</span> <span class="k">import</span> <span class="n">flatten_fieldsets</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="kn">import</span> <span class="n">AttributeInline</span><span class="p">,</span> <span class="n">TagInline</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin.utils</span> <span class="kn">import</span> <span class="n">flatten_fieldsets</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 
 <div class="viewcode-block" id="ObjectAttributeInline"><a class="viewcode-back" href="../../../api/evennia.objects.admin.html#evennia.objects.admin.ObjectAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
@@ -230,8 +230,8 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ObjectDBAdmin.response_add"><a class="viewcode-back" href="../../../api/evennia.objects.admin.html#evennia.objects.admin.ObjectDBAdmin.response_add">[docs]</a>    <span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponseRedirect</span>
-        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
+        <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 
         <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span></div></div>
 

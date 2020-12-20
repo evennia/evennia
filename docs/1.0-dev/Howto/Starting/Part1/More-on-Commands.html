@@ -141,16 +141,16 @@ a little, in a new method <code class="docutils literal notranslate"><span class
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
             <span class="k">return</span> 
         <span class="c1"># get and handle the weapon </span>
-        <span class="n">weapon</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">weapon</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">:</span>
             <span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span> 
-            <span class="n">weaponstr</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{weapon.key}&quot;</span>
+            <span class="n">weaponstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weapon</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">weaponstr</span> <span class="o">=</span> <span class="s2">&quot;bare fists&quot;</span>
                
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You hit {target.key} with {weaponstr}!&quot;</span><span class="p">)</span> 
-        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You got hit by {self.caller.key} with {weaponstr}!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> 
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>

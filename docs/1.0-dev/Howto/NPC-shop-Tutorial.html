@@ -219,7 +219,7 @@ circumstances. Let’s create it now.</p>
             <span class="n">rtext</span> <span class="o">=</span> <span class="s2">&quot;You pay </span><span class="si">%i</span><span class="s2"> gold and purchase </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> \
                          <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold</span> <span class="o">-=</span> <span class="n">value</span>
-            <span class="n">ware</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ware</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">rtext</span> <span class="o">=</span> <span class="s2">&quot;You cannot afford </span><span class="si">%i</span><span class="s2"> gold for </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> \
                           <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
@@ -407,7 +407,7 @@ storeroom at once.</p>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we could also use add(ShopCmdSet, permanent=True)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">ShopCmdSet</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">storeroom</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">storeroom</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># command to build a complete shop (the Command base class</span>
 <span class="c1"># should already have been imported earlier in this file)</span>
@@ -438,10 +438,10 @@ storeroom at once.</p>
         <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">shop</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">NPCShop</span><span class="p">,</span>
                              <span class="n">key</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span>
-                             <span class="n">location</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                             <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">storeroom</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span>
                              <span class="n">key</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-storage&quot;</span> <span class="o">%</span> <span class="n">shopname</span><span class="p">,</span>
-                             <span class="n">location</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                             <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">shop</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">storeroom</span> <span class="o">=</span> <span class="n">storeroom</span>
         <span class="c1"># create a door between the two</span>
         <span class="n">shop_exit</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">,</span>

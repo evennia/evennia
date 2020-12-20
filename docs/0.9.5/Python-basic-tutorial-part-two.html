@@ -321,7 +321,7 @@ search function. Once you find it, you’ll find that the class starts like this
                                  <span class="s2">&quot;call:false()&quot;</span><span class="p">]))</span>  <span class="c1"># no commands can be called on character from</span>
 <span class="n">outside</span>
         <span class="c1"># add the default cmdset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -330,7 +330,7 @@ search function. Once you find it, you’ll find that the class starts like this
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the character from storage in None location in `at_post_unpuppet`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -460,7 +460,7 @@ class and modify it as such:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Called before say, allows for tweaking message&quot;</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{message} ...&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> ...&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>So we add our own version of <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code>, duplicating the <code class="docutils literal notranslate"><span class="pre">def</span></code> line from the parent but putting

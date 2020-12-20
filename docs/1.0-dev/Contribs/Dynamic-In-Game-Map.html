@@ -116,7 +116,7 @@ in <code class="docutils literal notranslate"><span class="pre">mygame/world/map
 
 <span class="c1"># the symbol is identified with a key &quot;sector_type&quot; on the </span>
 <span class="c1"># Room. Keys None and &quot;you&quot; must always exist. </span>
-<span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">None</span> <span class="p">:</span> <span class="s1">&#39; . &#39;</span><span class="p">,</span> <span class="c1"># for rooms without sector_type Attribute </span>
+<span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">{</span> <span class="kc">None</span> <span class="p">:</span> <span class="s1">&#39; . &#39;</span><span class="p">,</span> <span class="c1"># for rooms without sector_type Attribute </span>
             <span class="s1">&#39;you&#39;</span> <span class="p">:</span> <span class="s1">&#39;[@]&#39;</span><span class="p">,</span>
             <span class="s1">&#39;SECT_INSIDE&#39;</span><span class="p">:</span> <span class="s1">&#39;[.]&#39;</span> <span class="p">}</span>
 </pre></div>
@@ -143,8 +143,8 @@ methods we need.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="n">max_width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">
@@ -197,8 +197,8 @@ sanity checks on it by using the following methods.</p>
     <span class="k">def</span> <span class="nf">check_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this method simply checks the grid to make sure </span>
         <span class="c1"># that both max_l and max_w are odd numbers.</span>
-        <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span>\
-            <span class="k">else</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span>\
+            <span class="k">else</span> <span class="kc">False</span>
 </pre></div>
 </td></tr></table></div>
 <p>Before we can set our worm on its way, we need to know some of the computer science behind all this
@@ -225,13 +225,13 @@ called ‘Graph Traversing’. In Pseudo code what we are trying to accomplish i
     <span class="k">if</span> <span class="n">max_distance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="k">for</span> <span class="nb">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span>             
+    <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span>             
             <span class="c1"># skip drawing if we already visited the destination</span>
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># first time here!</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The beauty of Python is that our actual code of doing this doesn’t differ much if at all from this
@@ -297,8 +297,8 @@ conditional statements and set it up to start building the display.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="n">max_width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_grid</span><span class="p">():</span>
             <span class="c1"># we have to store the grid into a variable</span>
@@ -338,17 +338,17 @@ code. The method is shown below:</p>
     <span class="k">if</span> <span class="n">max_distance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="k">for</span> <span class="nb">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">exit</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;south&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;south&quot;</span><span class="p">):</span>
             <span class="c1"># we only map in the cardinal directions. Mapping up/down would be</span>
             <span class="c1"># an interesting learning project for someone who wanted to try it.</span>
             <span class="k">continue</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span> 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span> 
             <span class="c1"># we&#39;ve been to the destination already, skip ahead.</span>
             <span class="k">continue</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_pos</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="nb">exit</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pos</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">exit</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The first thing the “worm” does is to draw your current location in <code class="docutils literal notranslate"><span class="pre">self.draw</span></code>. Lets define that…</p>
@@ -413,7 +413,7 @@ in the room. The first thing it does is check if the room the Worm is in has bee
 lets define that…</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">has_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
-    <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
 </pre></div>
 </td></tr></table></div>
 <p>If <code class="docutils literal notranslate"><span class="pre">has_drawn</span></code> returns <code class="docutils literal notranslate"><span class="pre">False</span></code> that means the worm has found a room that hasn’t been mapped yet. It
@@ -640,7 +640,7 @@ rooms to have a given sector symbol, you could change the default in the <code c
 
 <span class="c1"># These are keys set with the Attribute sector_type on the room.</span>
 <span class="c1"># The keys None and &quot;you&quot; must always exist.</span>
-<span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">None</span> <span class="p">:</span> <span class="s1">&#39; . &#39;</span><span class="p">,</span>  <span class="c1"># for rooms without a sector_type attr</span>
+<span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">{</span> <span class="kc">None</span> <span class="p">:</span> <span class="s1">&#39; . &#39;</span><span class="p">,</span>  <span class="c1"># for rooms without a sector_type attr</span>
             <span class="s1">&#39;you&#39;</span> <span class="p">:</span> <span class="s1">&#39;[@]&#39;</span><span class="p">,</span> 
             <span class="s1">&#39;SECT_INSIDE&#39;</span><span class="p">:</span> <span class="s1">&#39;[.]&#39;</span> <span class="p">}</span>
 
@@ -651,8 +651,8 @@ rooms to have a given sector symbol, you could change the default in the <code c
         <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="n">max_width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_grid</span><span class="p">():</span>
             <span class="c1"># we actually have to store the grid into a variable</span>
@@ -683,17 +683,17 @@ rooms to have a given sector symbol, you could change the default in the <code c
         <span class="k">if</span> <span class="n">max_distance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         
-        <span class="k">for</span> <span class="nb">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">exit</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;south&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;south&quot;</span><span class="p">):</span>
                 <span class="c1"># we only map in the cardinal directions. Mapping up/down would be</span>
                 <span class="c1"># an interesting learning project for someone who wanted to try it.</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span> 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span> 
                 <span class="c1"># we&#39;ve been to the destination already, skip ahead.</span>
                 <span class="k">continue</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_pos</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="nb">exit</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="nb">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_pos</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">exit</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="c1"># draw initial caller location on map first!</span>
@@ -723,7 +723,7 @@ rooms to have a given sector symbol, you could change the default in the <code c
      
 
     <span class="k">def</span> <span class="nf">has_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
 
 
     <span class="k">def</span> <span class="nf">create_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -739,8 +739,8 @@ rooms to have a given sector symbol, you could change the default in the <code c
     <span class="k">def</span> <span class="nf">check_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this method simply checks the grid to make sure </span>
         <span class="c1"># both max_l and max_w are odd numbers</span>
-        <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">show_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">map_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>

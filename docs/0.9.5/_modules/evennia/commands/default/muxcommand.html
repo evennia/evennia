@@ -44,8 +44,8 @@
 <span class="sd">is also an Account/OOC version that makes sure caller is an Account object.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="k">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MuxCommand&quot;</span><span class="p">,</span> <span class="s2">&quot;MuxAccountCommand&quot;</span><span class="p">)</span>
@@ -250,9 +250,9 @@
         <span class="n">variables</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s2">&quot; |w</span><span class="si">{}</span><span class="s2">|n (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Command </span><span class="si">{self}</span><span class="s2"> has no defined `func()` - showing on-command variables: No child func() defined for </span><span class="si">{self}</span><span class="s2"> - available variables:</span>
-<span class="si">{variables}</span><span class="s2"></span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables: No child func() defined for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> - available variables:</span>
+<span class="si">{</span><span class="n">variables</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="c1"># a simple test command to show the available properties</span>

@@ -188,7 +188,7 @@ shortcut:</p>
 <span class="n">gametime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">()</span>
 <span class="c1"># in-game time plus game epoch (i.e. the current in-game</span>
 <span class="c1"># time stamp)</span>
-<span class="n">gametime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">gametime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># reset the game time (back to game epoch)</span>
 <span class="n">gametime</span><span class="o">.</span><span class="n">reset_gametime</span><span class="p">()</span>
 </pre></div>
@@ -243,7 +243,7 @@ something is. It converts to four different styles of output using the <em>style
     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 <span class="c1"># wait 10 seconds before sending &quot;Echo!&quot; to obj (which we assume is defined)</span>
-<span class="n">deferred</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">_callback</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;Echo!&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">deferred</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">_callback</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;Echo!&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># code here will run immediately, not waiting for the delay to fire!</span>
 </pre></div>

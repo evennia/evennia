@@ -62,20 +62,20 @@
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
-<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="k">import</span> <span class="n">east_asian_width</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">deferLater</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">threads</span><span class="p">,</span> <span class="n">reactor</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">django.apps</span> <span class="k">import</span> <span class="n">apps</span>
-<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="k">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">threads</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>
@@ -624,10 +624,10 @@
 
     <span class="k">if</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
         <span class="c1"># another year (Apr 5, 2019)</span>
-        <span class="n">timestring</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;%b </span><span class="si">{dtobj.day}</span><span class="s2">, %Y&quot;</span><span class="p">)</span>
+        <span class="n">timestring</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;%b </span><span class="si">{</span><span class="n">dtobj</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">, %Y&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">now</span><span class="o">.</span><span class="n">date</span><span class="p">():</span>
         <span class="c1"># another date, same year  (Apr 5)</span>
-        <span class="n">timestring</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;%b </span><span class="si">{dtobj.day}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">timestring</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;%b </span><span class="si">{</span><span class="n">dtobj</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="n">now</span><span class="o">.</span><span class="n">hour</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># same day, more than 1 hour ago (10:45)</span>
         <span class="n">timestring</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
@@ -673,7 +673,7 @@
         <span class="k">return</span> <span class="n">vers</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pretty&quot;</span><span class="p">:</span>
         <span class="n">vers</span> <span class="o">=</span> <span class="n">vers</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;Evennia </span><span class="si">{vers}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Evennia </span><span class="si">{</span><span class="n">vers</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># mode &quot;long&quot;:</span>
         <span class="k">return</span> <span class="n">vers</span></div>
 
@@ -843,7 +843,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="k">import</span> <span class="n">name</span>
+    <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">name</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
         <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
@@ -1028,7 +1028,7 @@
 <span class="sd">        services (dict): A dict of available services.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">SESSIONS</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">SESSIONS</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="s2">&quot;services&quot;</span><span class="p">):</span>
         <span class="n">server</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">namedServices</span>
@@ -1094,7 +1094,7 @@
     <span class="k">global</span> <span class="n">_TASK_HANDLER</span>
     <span class="c1"># Do some imports here to avoid circular import and speed things up</span>
     <span class="k">if</span> <span class="n">_TASK_HANDLER</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="k">import</span> <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
     <span class="k">return</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -1173,7 +1173,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># check main dependencies</span>
-    <span class="kn">from</span> <span class="nn">evennia.server.evennia_launcher</span> <span class="k">import</span> <span class="n">check_main_evennia_dependencies</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.evennia_launcher</span> <span class="kn">import</span> <span class="n">check_main_evennia_dependencies</span>
 
     <span class="n">not_error</span> <span class="o">=</span> <span class="n">check_main_evennia_dependencies</span><span class="p">()</span>
 
@@ -1249,7 +1249,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">machinery</span><span class="o">.</span><span class="n">SourceFileLoader</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">load_module</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not find module &#39;</span><span class="si">{modname}</span><span class="s2">&#39; (</span><span class="si">{modname}</span><span class="s2">.py) at path &#39;</span><span class="si">{dirpath}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find module &#39;</span><span class="si">{</span><span class="n">modname</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">modname</span><span class="si">}</span><span class="s2">.py) at path &#39;</span><span class="si">{</span><span class="n">dirpath</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -1489,12 +1489,12 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="n">testpath</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;evennia&quot;</span><span class="p">):</span>
                 <span class="k">continue</span>
-        <span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
             <span class="k">continue</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">testpath</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;evennia&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
             <span class="n">err</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
             <span class="k">break</span>
 
@@ -1526,7 +1526,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;evennia.utils.utils.init_new_account is DEPRECATED and should not be used.&quot;</span><span class="p">)</span></div>
 
@@ -1975,14 +1975,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="lazy_property.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.lazy_property.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="lazy_property.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.lazy_property.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Store all properties for now&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span> <span class="ow">or</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span></div>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Triggers initialization&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -2012,7 +2012,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_STRIP_ANSI</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_STRIP_ANSI</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_raw_ansi</span> <span class="k">as</span> <span class="n">_STRIP_ANSI</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_raw_ansi</span> <span class="k">as</span> <span class="n">_STRIP_ANSI</span>
     <span class="k">return</span> <span class="n">_RE_CONTROL_CHAR</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_STRIP_ANSI</span><span class="p">(</span><span class="n">string</span><span class="p">))</span></div>
 
 
@@ -2055,7 +2055,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Would create circular import if in module root.</span>
-    <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSI_PARSER</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSI_PARSER</span>
 
     <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;|lt&quot;</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSI_PARSER</span><span class="o">.</span><span class="n">strip_mxp</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
@@ -2077,7 +2077,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Would create circular import if in module root.</span>
-    <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSI_PARSER</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSI_PARSER</span>
 
     <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># str or ANSIString</span>
@@ -2174,7 +2174,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LimitedSizeOrderedDict.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.LimitedSizeOrderedDict.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="LimitedSizeOrderedDict.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.LimitedSizeOrderedDict.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Limited-size ordered dict.</span>
 
@@ -2191,7 +2191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filo</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fifo&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># FIFO inverse of FILO</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_size</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
@@ -2203,7 +2203,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2212,7 +2212,7 @@
             <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_limit</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="n">filo</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_size</span><span class="p">()</span>
 
@@ -2258,7 +2258,7 @@
 <span class="sd">        classes being added.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">TypedObject</span>
+    <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
 
     <span class="n">typeclasses</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="p">):</span> <span class="n">model</span>
@@ -2306,7 +2306,7 @@
 <span class="sd">       This turns the decorated function or method into a generator.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">get_input</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span>
 
     <span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
         <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">_iterate</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>

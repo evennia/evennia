@@ -170,9 +170,9 @@ basically the unchanged strings you enter to the <code class="docutils literal n
 <p>If you need to access the tuple for some reason, here’s how:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># or, alternatively</span>
-<span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+<span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </td></tr></table></div>
 </div>

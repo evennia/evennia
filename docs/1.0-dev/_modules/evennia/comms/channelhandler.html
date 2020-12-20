@@ -65,11 +65,11 @@
 <span class="sd">does this for you.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">command</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">tail_log_file</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">command</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">tail_log_file</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="c1"># we must late-import these since any overloads are likely to</span>
 <span class="c1"># themselves be using these classes leading to a circular import.</span>
@@ -137,7 +137,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_CHANNELDB</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELDB</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span> <span class="k">as</span> <span class="n">_CHANNELDB</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span> <span class="k">as</span> <span class="n">_CHANNELDB</span>
 
         <span class="n">channelkey</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -215,7 +215,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ChannelHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the channel handler&#39;s internal state.</span>
 
@@ -224,7 +224,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_cmdsets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_channels</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the string representation of the handler</span>
 
@@ -301,7 +301,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">_CHANNELDB</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELDB</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span> <span class="k">as</span> <span class="n">_CHANNELDB</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span> <span class="k">as</span> <span class="n">_CHANNELDB</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_channel_cmds</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_cmdsets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_channels</span> <span class="o">=</span> <span class="p">{}</span>

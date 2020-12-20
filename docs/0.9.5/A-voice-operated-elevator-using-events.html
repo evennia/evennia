@@ -177,7 +177,7 @@ all, the list of variables that are available in this callback:</p>
 </div>
 <p>This is important, in order to know what variables we can use in our callback out-of-the-box.  Let’s
 write a single line to be sure our callback is called when we expect it to:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You just said {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You just said </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
 <p>You can paste this line in-game, then type the <code class="docutils literal notranslate"><span class="pre">:wq</span></code> command to exit the editor and save your
@@ -202,7 +202,7 @@ it.</p>
 </pre></div>
 </div>
 <p>And turn off automatic indentation, which will help us:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="o">=</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">:=</span>
 </pre></div>
 </div>
 <blockquote>
@@ -254,7 +254,7 @@ solution right now.  Here’s a possible code that you could paste in the code e
 
 <span class="c1"># Now we check that the elevator isn&#39;t already at this floor</span>
 <span class="n">floor</span> <span class="o">=</span> <span class="n">FLOORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">floor</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">floor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Which floor do you want?&quot;</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="n">floor</span><span class="p">:</span>
     <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The elevator already is at this floor.&quot;</span><span class="p">)</span>
@@ -263,7 +263,7 @@ solution right now.  Here’s a possible code that you could paste in the code e
     <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator close with a clank.&quot;</span><span class="p">)</span>
     <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">floor</span>
     <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">floor</span>
-    <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator open to {floor}.&quot;</span><span class="p">,</span>
+    <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator open to </span><span class="si">{floor}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">floor</span><span class="o">=</span><span class="n">floor</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
@@ -325,7 +325,7 @@ new floor.  You can notice a few differences:</p>
 <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">ELEVATOR</span>
 <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">ELEVATOR</span>
 <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">floor</span>
-<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator open to {floor}.&quot;</span><span class="p">,</span>
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator open to </span><span class="si">{floor}</span><span class="s2">.&quot;</span><span class="p">,</span>
         <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">floor</span><span class="o">=</span><span class="n">floor</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
@@ -342,7 +342,7 @@ new floor.  You can notice a few differences:</p>
 </div>
 <p>Remove the current code and disable auto-indentation again:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">DD</span>
-<span class="p">:</span><span class="o">=</span>
+<span class="o">:=</span>
 </pre></div>
 </div>
 <p>And you can paste instead the following code.  Notice the differences with our first attempt:</p>
@@ -381,17 +381,17 @@ new floor.  You can notice a few differences:</p>
 
 <span class="c1"># Now we check that the elevator isn&#39;t already at this floor</span>
 <span class="n">floor</span> <span class="o">=</span> <span class="n">FLOORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">floor</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">floor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Which floor do you want?&quot;</span><span class="p">)</span>
-<span class="k">elif</span> <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+<span class="k">elif</span> <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The elevator is between floors.&quot;</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="n">floor</span><span class="p">:</span>
     <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The elevator already is at this floor.&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># &#39;floor&#39; contains the new room where the elevator should be</span>
     <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The doors of the elevator close with a clank.&quot;</span><span class="p">)</span>
-    <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">call_event</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="s2">&quot;chain_1&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -447,7 +447,7 @@ Let’s do that:</p>
 <p>Take the time to read the help.  It gives you all the information you should need.  We’ll need to
 change the “message” variable, and use custom mapping (between braces) to alter the message.  We’re
 given an example, let’s use it.  In the code editor, you can paste the following line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;{character} walks out of the elevator.&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks out of the elevator.&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Again, save and quit the editor by entering <code class="docutils literal notranslate"><span class="pre">:wq</span></code>.  You can create a new character to see it leave.</p>
@@ -469,7 +469,7 @@ then edit “msg_leave” of “north”:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">call</span><span class="o">/</span><span class="n">add</span> <span class="n">north</span> <span class="o">=</span> <span class="n">msg_leave</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;{character} walks into the elevator.&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks into the elevator.&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Again, you can force our beggar to move and see the message we have just set.  This modification
