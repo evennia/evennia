@@ -687,6 +687,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             ip=character_ip,
             typeclass=character_typeclass,
             permissions=character_permissions,
+            location=ObjectDB.objects.get_id(settings.START_LOCATION),
             **kwargs,
         )
         if character:
