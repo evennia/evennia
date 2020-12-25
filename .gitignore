@@ -50,6 +50,3 @@ twistd.bat
 
 # never commit docs/build
 docs/build
-pip-wheel-metadata/evennia.dist-info/LICENSE.txt
-pip-wheel-metadata/evennia.dist-info/METADATA
-pip-wheel-metadata/evennia.dist-info/top_level.txt
