@@ -24,6 +24,7 @@ from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils import ansi
 from evennia.utils.utils import (
+    class_from_module,
     variable_from_module,
     lazy_property,
     make_iter,
@@ -40,6 +41,7 @@ _ScriptDB = None
 _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
+_COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
@@ -2344,8 +2346,7 @@ class DefaultRoom(DefaultObject):
 # Default Exit command, used by the base exit object
 #
 
-
-class ExitCommand(command.Command):
+class ExitCommand(_COMMAND_DEFAULT_CLASS):
     """
     This is a command that simply cause the caller to traverse
     the object it is attached to.
