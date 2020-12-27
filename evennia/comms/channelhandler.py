@@ -24,7 +24,7 @@ does this for you.
 
 """
 from django.conf import settings
-from evennia.commands import cmdset, command
+from evennia.commands import cmdset
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
 from django.utils.translation import gettext as _
@@ -35,9 +35,9 @@ from django.utils.translation import gettext as _
 _CHANNEL_HANDLER_CLASS = None
 _CHANNEL_COMMAND_CLASS = None
 _CHANNELDB = None
+_COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
-
-class ChannelCommand(command.Command):
+class ChannelCommand(_COMMAND_DEFAULT_CLASS):
     """
     {channelkey} channel
 
