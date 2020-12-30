@@ -8,7 +8,7 @@ total runtime of the server and the current uptime.
 
 import time
 from calendar import monthrange
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django.conf import settings
 from evennia import DefaultScript
@@ -180,14 +180,14 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year
 
 
     """
-    current = datetime.fromtimestamp(gametime(absolute=True))
+    current = datetime.fromtimestamp(gametime(absolute=True), timezone.utc)
     s_sec = sec if sec is not None else current.second
     s_min = min if min is not None else current.minute
     s_hour = hour if hour is not None else current.hour
     s_day = day if day is not None else current.day
     s_month = month if month is not None else current.month
     s_year = year if year is not None else current.year
-    projected = datetime(s_year, s_month, s_day, s_hour, s_min, s_sec)
+    projected = datetime(s_year, s_month, s_day, s_hour, s_min, s_sec, tzinfo=timezone.utc)
 
     if projected <= current:
         # We increase one unit of time depending on parameters
