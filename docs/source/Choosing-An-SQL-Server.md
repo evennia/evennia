@@ -215,7 +215,7 @@ Now, restart your cluster:
 ```
 
 Finally, update the database settings in your Evennia secret_settings.py (as
-described [above](#postgresql-database-configuration) modifying `SERVER` and
+described [above](#evennia-postgresql-configuration) modifying `SERVER` and
 `PORT` to match your server.
 
 Now your Evennia installation should be able to connect and talk with a remote
