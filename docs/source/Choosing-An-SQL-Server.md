@@ -196,8 +196,8 @@ on any interface.
 > :warning: **Warning:** Setting `listen_addresses` to `'*'` opens a port on
 all interfaces.  If your server has access to the Internet, ensure your
 firewall is configured appropriately to limit access to this port as necessary.
-(You may also list explicit addresses and subnet to listen.  See the postgresql 
-documentation for more details.)
+(You may also list explicit addresses and subnets to listen.  See the
+postgresql documentation for more details.)
 
 Finally, modify the `pg_hba.conf` (in the same directory as `postgresql.conf`).
 Look for a line with:
