@@ -195,7 +195,7 @@ on any interface.
 
 > :warning: **Warning:** Setting `listen_addresses` to `'*'` opens a port on
 all interfaces.  If your server has access to the Internet, ensure your
-firewall is configured appropriately to limit access to this port as necessary.[1]
+firewall is configured appropriately to limit access to this port as necessary.:footnote[You may also list explicit addresses and subnet to listen.  See the postgresql documentation for more details.]
 
 Finally, modify the `pg_hba.conf` (in the same directory as `postgresql.conf`).
 Look for a line with:
@@ -220,8 +220,6 @@ described [above](#evennia-postgresql-configuration) modifying `SERVER` and
 
 Now your Evennia installation should be able to connect and talk with a remote
 server.
-
-[1]: You may also list explicit addresses and subnet to listen.  See the postgresql documentation for more details.
 
 ## MySQL / MariaDB
 
