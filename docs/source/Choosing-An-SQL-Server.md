@@ -62,13 +62,13 @@ To inspect the default Evennia database (once it's been created), go to your gam
 This will bring you into the sqlite command line. Use `.help` for instructions and `.quit` to exit.
 See [here](https://gist.github.com/vincent178/10889334) for a cheat-sheet of commands.
 
-## PostgreSQL (#postgresql}
+## PostgreSQL
 
 [PostgreSQL](https://www.postgresql.org/) is an open-source database engine, recommended by Django.
 While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
 game has an very large database and/or extensive web presence through a separate server process.
 
-### Install and initial setup of PostgreSQL {#postgresql-install}
+### Install and initial setup of PostgreSQL
 
 First, install the posgresql server. Version `9.6` is tested with Evennia. Packages are readily
 available for all distributions. You need to also get the `psql` client (this is called `postgresql-
@@ -123,7 +123,7 @@ Edit `mygame/server/conf/secret_settings.py and add the following section:
 
 ```python
 #
-# PostgreSQL Database Configuration {#postgresql-evennia-config}
+# PostgreSQL Database Configuration
 #
 DATABASES = {
         'default': {
@@ -162,9 +162,10 @@ this configuration, a local data base (such as SQLite3) is not feasible
 since all the machines and developers do not have access to the file.
 
 Choose a remote machine to host the database and PostgreSQl server.  Follow
-the instructions [above](#postgresql-setup) on that server.  Depending on
-distribution, PostgreSQL will only accept connections on the local machine
-(localhost).  In order to enable remote access two files need to be changed.
+the instructions [above](#install-and-initial-setup-of-postgresql) on that
+server.  Depending on distribution, PostgreSQL will only accept connections on
+the local machine (localhost).  In order to enable remote access two files
+need to be changed.
 
 First, determine which cluster is running your database.  Use `pg_lscluster`:
 ```bash
@@ -214,8 +215,8 @@ Now, restart your cluster:
 ```
 
 Finally, update the database settings in your Evennia secret_settings.py (as
-described [above](#postgresql-evennia-config) modifying `SERVER` and `PORT`
-to match your server.
+described [above](#postgresql-database-configuration) modifying `SERVER` and
+`PORT` to match your server.
 
 Now your Evennia installation should be able to connect and talk with a remote
 server.
