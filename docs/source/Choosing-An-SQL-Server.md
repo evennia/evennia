@@ -62,13 +62,13 @@ To inspect the default Evennia database (once it's been created), go to your gam
 This will bring you into the sqlite command line. Use `.help` for instructions and `.quit` to exit.
 See [here](https://gist.github.com/vincent178/10889334) for a cheat-sheet of commands.
 
-## PostgreSQL
+## PostgreSQL (#postgresql}
 
 [PostgreSQL](https://www.postgresql.org/) is an open-source database engine, recommended by Django.
 While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
 game has an very large database and/or extensive web presence through a separate server process.
 
-### Install and initial setup of PostgreSQL
+### Install and initial setup of PostgreSQL {#postgresql-install}
 
 First, install the posgresql server. Version `9.6` is tested with Evennia. Packages are readily
 available for all distributions. You need to also get the `psql` client (this is called `postgresql-
@@ -123,7 +123,7 @@ Edit `mygame/server/conf/secret_settings.py and add the following section:
 
 ```python
 #
-# PostgreSQL Database Configuration
+# PostgreSQL Database Configuration {#postgresql-evennia-config}
 #
 DATABASES = {
         'default': {
@@ -149,6 +149,78 @@ as a shortcut to get into the postgres command line for the right database and u
 
 With the database setup you should now be able to start start Evennia normally with your new
 database.
+
+### Advanced Usage (Remote Server)
+> :warning: **Warning:** The example below is for a server within a private
+network that is not open to the Internet.  Be sure to understand the details
+before making any changes to an Internet accessible server.
+
+The above discussion is for hosting a local server.  In certain configurations
+it may make sense host the database on a remote server.  One example case is
+where code development may be done on multiple machines by multiple users.  In
+this configuration, a local data base (such as SQLite3) is not feasible
+since all the machines and developers do not have access to the file.
+
+Choose a remote machine to host the database and PostgreSQl server.  Follow
+the instructions [above](#postgresql-setup) on that server.  Depending on
+distribution, PostgreSQL will only accept connections on the local machine
+(localhost).  In order to enable remote access two files need to be changed.
+
+First, determine which cluster is running your database.  Use `pg_lscluster`:
+```bash
+> pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+12  main    5432 online postgres /var/lib/postgresql/12/main /var/log/postgresql/postgresql-12-main.log
+```
+
+Next, edit the database's `postgresql.conf`.  This is found on Ubuntu systems
+in `/etc/postgresql/<ver>/<cluster>`, where `<ver>` and `<cluster>` are
+what are reported in the `pg_lscluster` output.  So, for the above example,
+the file is `/etc/postgresql/12/main/postgresql.conf`.
+
+In this file, look for the line with `listen_addresses`.  For example:
+```
+listen_address = 'localhost'    # What IP address(es) to listen on;
+                                # comma-separated list of addresses;
+                                # defaults to 'localhost'; use '*' for all
+```
+> :warning: **Warning:** Misconfiguring the wrong cluster may cause problems
+with existing clusters.
+
+Also, note the line with `port =` and keep the port number in mind.
+
+Set `listen_addresses` to `'*'`.  This permits postgresql to accept connections
+on any interface.
+
+> :warning: **Warning:** Setting `listen_addresses` to `'*'` opens a port on
+all interfaces.  If your server has access to the Internet, ensure your
+firewall is configured appropriately to limit access to this port as necessary.[^1]
+
+Finally, modify the `pg_hba.conf` (in the same directory as `postgresql.conf`).
+Look for a line with:
+```
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+```
+Add a line with:
+```
+host    all             all             0.0.0.0/0               md5
+```
+> :warning: **Warning:** This permits incoming connections from *all* IPs.  See the PosgreSQL documentation on how to limit this.
+
+Now, restart your cluster:
+```bash
+> pg_ctlcluster 12 main restart
+```
+
+Finally, update the database settings in your Evennia secret_settings.py (as
+described [above](#postgresql-evennia-config) modifying `SERVER` and `PORT`
+to match your server.
+
+Now your Evennia installation should be able to connect and talk with a remote
+server.
+
+[^1]: You may also list explicit addresses and subnet to listen.  See the postgresql documentation for more details.
 
 ## MySQL / MariaDB
 
