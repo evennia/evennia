@@ -169,7 +169,7 @@ need to be changed.
 
 First, determine which cluster is running your database.  Use `pg_lscluster`:
 ```bash
-> pg_lsclusters
+$ pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
 12  main    5432 online postgres /var/lib/postgresql/12/main /var/log/postgresql/postgresql-12-main.log
 ```
@@ -195,7 +195,7 @@ on any interface.
 
 > :warning: **Warning:** Setting `listen_addresses` to `'*'` opens a port on
 all interfaces.  If your server has access to the Internet, ensure your
-firewall is configured appropriately to limit access to this port as necessary.[^1]
+firewall is configured appropriately to limit access to this port as necessary.[1]
 
 Finally, modify the `pg_hba.conf` (in the same directory as `postgresql.conf`).
 Look for a line with:
@@ -211,7 +211,7 @@ host    all             all             0.0.0.0/0               md5
 
 Now, restart your cluster:
 ```bash
-> pg_ctlcluster 12 main restart
+$ pg_ctlcluster 12 main restart
 ```
 
 Finally, update the database settings in your Evennia secret_settings.py (as
@@ -221,7 +221,7 @@ described [above](#evennia-postgresql-configuration) modifying `SERVER` and
 Now your Evennia installation should be able to connect and talk with a remote
 server.
 
-[^1]: You may also list explicit addresses and subnet to listen.  See the postgresql documentation for more details.
+[1]: You may also list explicit addresses and subnet to listen.  See the postgresql documentation for more details.
 
 ## MySQL / MariaDB
 
