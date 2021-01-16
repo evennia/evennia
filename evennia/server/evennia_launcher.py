@@ -1423,7 +1423,21 @@ def create_superuser():
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
     )
-    django.core.management.call_command("createsuperuser", interactive=True)
+
+    from os import environ
+    if ("DJANGO_SUPERUSER_USERNAME" in environ) and ("DJANGO_SUPERUSER_EMAIL" in environ):
+        username, email = environ["DJANGO_SUPERUSER_USERNAME"], environ["DJANGO_SUPERUSER_EMAIL"]
+        django.core.management.call_command("createsuperuser", "--noinput",
+                                            "--username=" + username,
+                                            "--email=" + email, interactive=False)
+        if "DJANGO_SUPERUSER_PASSWORD" in environ:
+            password = environ["DJANGO_SUPERUSER_PASSWORD"]
+            from evennia.accounts.models import AccountDB
+            u = AccountDB.objects.get(username=username)
+            u.set_password(password)
+            u.save()
+    else:
+        django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database(always_return=False):
