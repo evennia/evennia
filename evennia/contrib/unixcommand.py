@@ -123,7 +123,7 @@ class UnixCommandParser(argparse.ArgumentParser):
 
         # Replace the -h/--help
         self.add_argument(
-            "-h", "--hel", nargs=0, action=HelpAction, help="display the command help"
+            "-h", "--help", nargs=0, action=HelpAction, help="display the command help"
         )
 
     def format_usage(self):
