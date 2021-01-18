@@ -202,7 +202,7 @@ class SaveYesNoCmdSet(CmdSet):
     """Stores the yesno question"""
 
     key = "quitsave_yesno"
-    priority = 1
+    priority = 150  # override other cmdsets.
     mergetype = "Replace"
 
     def at_cmdset_creation(self):
