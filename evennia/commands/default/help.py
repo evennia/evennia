@@ -25,7 +25,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SEP = "|C" + "-" * _DEFAULT_WIDTH + "|n"
 
 
-class CmdHelp(Command):
+class CmdHelp(COMMAND_DEFAULT_CLASS):
     """
     View help or a list of topics
 
