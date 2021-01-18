@@ -96,7 +96,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
     )
 
 
-class CmdHelp(Command):
+class CmdHelp(COMMAND_DEFAULT_CLASS):
     """
     View help or a list of topics
 

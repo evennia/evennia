@@ -5,7 +5,7 @@ Commands describe the input the account can do to the game.
 
 """
 
-from evennia import Command as BaseCommand
+from evennia.commands.command import Command as BaseCommand
 
 # from evennia import default_cmds
 
