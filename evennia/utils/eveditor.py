@@ -48,7 +48,7 @@ import re
 
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent, logger, justify, to_str
+from evennia.utils import is_iter, fill, dedent, logger, justify, to_str, utils
 from evennia.utils.ansi import raw
 from evennia.commands import cmdhandler
 
@@ -58,6 +58,7 @@ _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
 _RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
+_COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # use NAWS in the future?
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -171,7 +172,7 @@ _MSG_REDO = "Redid one step."
 # -------------------------------------------------------------
 
 
-class CmdSaveYesNo(Command):
+class CmdSaveYesNo(_COMMAND_DEFAULT_CLASS):
     """
     Save the editor state on quit. This catches
     nomatches (defaults to Yes), and avoid saves only if
@@ -217,7 +218,7 @@ class SaveYesNoCmdSet(CmdSet):
 # -------------------------------------------------------------
 
 
-class CmdEditorBase(Command):
+class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
     """
     Base parent for editor commands
     """
