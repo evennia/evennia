@@ -27,6 +27,8 @@
 - New `crafting` contrib, adding a full crafting subsystem (Griatch 2020)
 - The `rplanguage` contrib now auto-capitalizes sentences and retains ellipsis (...). This
   change means that proper nouns at the start of sentences will not be treated as nouns.
+- Make MuxCommand `lhs/rhslist` always be lists, also if empty (used to be the empty string)
+- Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
 
 ### Evennia 0.9.5 (2019-2020)
 
