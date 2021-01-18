@@ -84,9 +84,13 @@ Next, start the postgres client:
 ```bash
     psql -U postgres --password
 ```
-> :warning: **Warning:** With the `--password` argument, Postgres should prompt you for a password.
-If it won't, replace that with `-p yourpassword` instead. Do not use the `-p` argument unless you
-have to since the resulting command, and your password, will be logged in the shell history.
+
+```warning::
+
+  With the `--password` argument, Postgres should prompt you for a password.
+  If it won't, replace that with `-p yourpassword` instead. Do not use the `-p` argument unless you
+  have to since the resulting command, and your password, will be logged in the shell history.
+```
 
 This will open a console to the postgres service using the psql client. 
 
@@ -150,24 +154,30 @@ as a shortcut to get into the postgres command line for the right database and u
 With the database setup you should now be able to start start Evennia normally with your new
 database.
 
-### Advanced Usage (Remote Server)
-> :warning: **Warning:** The example below is for a server within a private
-network that is not open to the Internet.  Be sure to understand the details
-before making any changes to an Internet accessible server.
+### Advanced Postgresql Usage (Remote Server)
 
-The above discussion is for hosting a local server.  In certain configurations
-it may make sense host the database on a remote server.  One example case is
-where code development may be done on multiple machines by multiple users.  In
-this configuration, a local data base (such as SQLite3) is not feasible
-since all the machines and developers do not have access to the file.
+```warning::
 
-Choose a remote machine to host the database and PostgreSQl server.  Follow
-the instructions [above](#install-and-initial-setup-of-postgresql) on that
-server.  Depending on distribution, PostgreSQL will only accept connections on
-the local machine (localhost).  In order to enable remote access two files
-need to be changed.
+  The example below is for a server within a private network that is not open to
+  the Internet.  Be sure to understand the details before making any changes to
+  an Internet-accessible server.
+```
 
-First, determine which cluster is running your database.  Use `pg_lscluster`:
+The above discussion is for hosting a local server. In certain configurations
+it may make sense host the database on a server remote to the one Evennia is
+running on. One example case is where code development may be done on multiple
+machines by multiple users. In this configuration, a local data base (such as
+SQLite3) is not feasible since all the machines and developers do not have
+access to the file.
+
+Choose a remote machine to host the database and PostgreSQl server. Follow the
+instructions [above](#install-and-initial-setup-of-postgresql) on that server to set up the database.
+Depending on distribution, PostgreSQL will only accept connections on the local
+machine (localhost).  In order to enable remote access, two files need to be
+changed.
+
+First, determine which cluster is running your database. Use `pg_lscluster`:
+
 ```bash
 $ pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
@@ -180,24 +190,30 @@ what are reported in the `pg_lscluster` output.  So, for the above example,
 the file is `/etc/postgresql/12/main/postgresql.conf`.
 
 In this file, look for the line with `listen_addresses`.  For example:
+
 ```
 listen_address = 'localhost'    # What IP address(es) to listen on;
                                 # comma-separated list of addresses;
                                 # defaults to 'localhost'; use '*' for all
 ```
-> :warning: **Warning:** Misconfiguring the wrong cluster may cause problems
-with existing clusters.
+
+```warning::
+  Misconfiguring the wrong cluster may cause problems
+  with existing clusters.
+```
 
 Also, note the line with `port =` and keep the port number in mind.
 
 Set `listen_addresses` to `'*'`.  This permits postgresql to accept connections
 on any interface.
 
-> :warning: **Warning:** Setting `listen_addresses` to `'*'` opens a port on
-all interfaces.  If your server has access to the Internet, ensure your
-firewall is configured appropriately to limit access to this port as necessary.
-(You may also list explicit addresses and subnets to listen.  See the
-postgresql documentation for more details.)
+```warning::
+  Setting `listen_addresses` to `'*'` opens a port on all interfaces.  If your
+  server has access to the Internet, ensure your firewall is configured
+  appropriately to limit access to this port as necessary.  (You may also list
+  explicit addresses and subnets to listen.  See the postgresql documentation
+  for more details.)
+```
 
 Finally, modify the `pg_hba.conf` (in the same directory as `postgresql.conf`).
 Look for a line with:
@@ -209,7 +225,11 @@ Add a line with:
 ```
 host    all             all             0.0.0.0/0               md5
 ```
-> :warning: **Warning:** This permits incoming connections from *all* IPs.  See the PosgreSQL documentation on how to limit this.
+
+```warning::
+  This permits incoming connections from *all* IPs.  See
+  the PosgreSQL documentation on how to limit this.
+```
 
 Now, restart your cluster:
 ```bash
