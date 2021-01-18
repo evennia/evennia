@@ -184,7 +184,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - at_server_reload()
      - at_server_shutdown()
 
-     """
+    """
 
     objects = AccountManager()
 
@@ -680,6 +680,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         )
         Character = class_from_module(character_typeclass)
 
+        if "location" not in kwargs:
+            kwargs["location"] = ObjectDB.objects.get_id(settings.START_LOCATION)
+
         # Create the character
         character, errs = Character.create(
             character_key,
@@ -687,7 +690,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             ip=character_ip,
             typeclass=character_typeclass,
             permissions=character_permissions,
-            location=ObjectDB.objects.get_id(settings.START_LOCATION),
             **kwargs,
         )
         if character:
