@@ -71,7 +71,7 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
                         for cmdname in [cmd.key] + cmd.aliases
                         if cmdname
                         and l_raw_string.startswith(cmdname.lower())
-                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname) :]))
+                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):]))
                     ]
                 )
         else:
@@ -90,7 +90,7 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
                     if (
                         cmdname
                         and l_raw_string.startswith(cmdname.lower())
-                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname) :]))
+                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):]))
                     ):
                         matches.append(create_match(cmdname, raw_string, cmd, raw_cmdname))
     except Exception:
@@ -98,7 +98,7 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
     return matches
 
 
-def try_num_prefixes(raw_string):
+def try_num_differentiators(raw_string):
     """
     Test if user tried to separate multi-matches with a number separator
     (default 1-name, 2-name etc). This is usually called last, if no other
@@ -126,7 +126,7 @@ def try_num_prefixes(raw_string):
         # with a #num-command style syntax. We expect the regex to
         # contain the groups "number" and "name".
         mindex, new_raw_string = (num_ref_match.group("number"), num_ref_match.group("name"))
-        return mindex, new_raw_string
+        return int(mindex), new_raw_string
     else:
         return None, None
 
@@ -170,19 +170,22 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     if not raw_string:
         return []
 
-    # find mathces, first using the full name
+    # find matches, first using the full name
     matches = build_matches(raw_string, cmdset, include_prefixes=True)
-    if not matches:
-        # try to match a number 1-cmdname, 2-cmdname etc
-        mindex, new_raw_string = try_num_prefixes(raw_string)
-        if mindex is not None:
-            return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
-        if _CMD_IGNORE_PREFIXES:
-            # still no match. Try to strip prefixes
-            raw_string = (
-                raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
-            )
-            matches = build_matches(raw_string, cmdset, include_prefixes=False)
+
+    if not matches or len(matches) > 1:
+        # no single match, try parsing for optional numerical tags like 1-cmd
+        # or cmd-2, cmd.2 etc
+        match_index, new_raw_string = try_num_differentiators(raw_string)
+        if match_index is not None:
+            matches.extend(build_matches(new_raw_string, cmdset, include_prefixes=True))
+
+    if not matches and _CMD_IGNORE_PREFIXES:
+        # still no match. Try to strip prefixes
+        raw_string = (
+            raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+        )
+        matches = build_matches(raw_string, cmdset, include_prefixes=False)
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, "cmd")]
