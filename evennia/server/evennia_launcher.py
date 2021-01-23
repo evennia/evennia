@@ -1424,7 +1424,7 @@ def create_superuser():
         "account of the server. Email is optional and can be empty.\n"
     )
     from os import environ
-    if "EVENNIA_SUPERUSER_USERNAME" in environ:
+    if ("EVENNIA_SUPERUSER_USERNAME" in environ) and ("EVENNIA_SUPERUSER_PASSWORD" in environ):
         from evennia.accounts.models import AccountDB
         superuser = AccountDB.objects.create_superuser(os.environ.get('EVENNIA_SUPERUSER_USERNAME'),
                                                        os.environ.get('EVENNIA_SUPERUSER_EMAIL'),
