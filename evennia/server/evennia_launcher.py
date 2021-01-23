@@ -1426,9 +1426,9 @@ def create_superuser():
     from os import environ
     if ("EVENNIA_SUPERUSER_USERNAME" in environ) and ("EVENNIA_SUPERUSER_PASSWORD" in environ):
         from evennia.accounts.models import AccountDB
-        superuser = AccountDB.objects.create_superuser(os.environ.get('EVENNIA_SUPERUSER_USERNAME'),
-                                                       os.environ.get('EVENNIA_SUPERUSER_EMAIL'),
-                                                       os.environ.get('EVENNIA_SUPERUSER_PASSWORD'))
+        superuser = AccountDB.objects.create_superuser(os.environ.get("EVENNIA_SUPERUSER_USERNAME"),
+                                                       os.environ.get("EVENNIA_SUPERUSER_EMAIL"),
+                                                       os.environ.get("EVENNIA_SUPERUSER_PASSWORD"))
         superuser.save()
     else:
         django.core.management.call_command("createsuperuser", interactive=True)
