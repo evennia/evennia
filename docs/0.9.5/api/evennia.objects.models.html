@@ -70,17 +70,6 @@ handler is defined</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.objects.models.ContentsHandler.load">
-<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/models.html#ContentsHandler.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.models.ContentsHandler.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves all objects from database. Used for initializing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Objects (list of ObjectDB)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.objects.models.ContentsHandler.init">
 <code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/models.html#ContentsHandler.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.models.ContentsHandler.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-initialize the content cache</p>
@@ -88,14 +77,11 @@ handler is defined</p>
 
 <dl class="py method">
 <dt id="evennia.objects.models.ContentsHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">content_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/models.html#ContentsHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.models.ContentsHandler.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/models.html#ContentsHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.models.ContentsHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the contents of the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>exclude</strong> (<em>Object</em><em> or </em><em>list of Object</em>) – object(s) to ignore</p></li>
-<li><p><strong>content_type</strong> (<em>str</em><em> or </em><em>None</em>) – Filter list by a content-type. If None, don’t filter.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>exclude</strong> (<em>Object</em><em> or </em><em>list of Object</em>) – object(s) to ignore</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>objects (list)</em> – the Objects inside this location</p>
@@ -560,6 +546,7 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
   <li><a href="../../1.0-dev/api/evennia.objects.models.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.objects.models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

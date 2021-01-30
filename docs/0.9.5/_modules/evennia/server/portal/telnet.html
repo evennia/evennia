@@ -66,11 +66,12 @@
     <span class="n">LINEMODE_TRAPSIG</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ttype</span><span class="p">,</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="kn">import</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span><span class="p">,</span> <span class="n">MCCP</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.mxp</span> <span class="kn">import</span> <span class="n">Mxp</span><span class="p">,</span> <span class="n">mxp_parse</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
@@ -96,9 +97,6 @@
 <span class="p">)</span>
 
 
-<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="TelnetServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetServerFactory">[docs]</a><span class="k">class</span> <span class="nc">TelnetServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
     <span class="s2">&quot;This is only to name this better in logs&quot;</span>
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
@@ -107,7 +105,7 @@
         <span class="k">return</span> <span class="s2">&quot;Telnet&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="TelnetProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol">[docs]</a><span class="k">class</span> <span class="nc">TelnetProtocol</span><span class="p">(</span><span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol">[docs]</a><span class="k">class</span> <span class="nc">TelnetProtocol</span><span class="p">(</span><span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Each player connecting over telnet (ie using most traditional mud</span>
 <span class="sd">    clients) gets a telnet protocol instance assigned to them.  All</span>
@@ -430,19 +428,19 @@
 <span class="sd">            text (str): The first argument is always the text string to send. No other arguments</span>
 <span class="sd">                are considered.</span>
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            options (dict): Send-option flags</span>
+<span class="sd">            options (dict): Send-option flags:</span>
 
-<span class="sd">               - mxp: Enforce MXP link support.</span>
-<span class="sd">               - ansi: Enforce no ANSI colors.</span>
-<span class="sd">               - xterm256: Enforce xterm256 colors, regardless of TTYPE.</span>
-<span class="sd">               - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.</span>
-<span class="sd">               - nocolor: Strip all Color, regardless of ansi/xterm256 setting.</span>
-<span class="sd">               - raw: Pass string through without any ansi processing</span>
-<span class="sd">                    (i.e. include Evennia ansi markers but do not</span>
-<span class="sd">                    convert them into ansi tokens)</span>
-<span class="sd">               - echo: Turn on/off line echo on the client. Turn</span>
-<span class="sd">                    off line echo for client, for example for password.</span>
-<span class="sd">                    Note that it must be actively turned back on again!</span>
+<span class="sd">                - mxp: Enforce MXP link support.</span>
+<span class="sd">                - ansi: Enforce no ANSI colors.</span>
+<span class="sd">                - xterm256: Enforce xterm256 colors, regardless of TTYPE.</span>
+<span class="sd">                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.</span>
+<span class="sd">                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.</span>
+<span class="sd">                - raw: Pass string through without any ansi processing</span>
+<span class="sd">                  (i.e. include Evennia ansi markers but do not</span>
+<span class="sd">                  convert them into ansi tokens)</span>
+<span class="sd">                - echo: Turn on/off line echo on the client. Turn</span>
+<span class="sd">                  off line echo for client, for example for password.</span>
+<span class="sd">                  Note that it must be actively turned back on again!</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -556,6 +554,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="telnet.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

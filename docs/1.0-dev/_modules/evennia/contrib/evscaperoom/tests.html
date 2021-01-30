@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -216,11 +215,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;What do you want to say?&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">,</span> <span class="s2">&quot;You say: Hello!&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;What do you want to whisper?&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;whisper&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hi.&quot;</span><span class="p">,</span> <span class="s2">&quot;You whisper: (Hi.)&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;whisper&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hi.&quot;</span><span class="p">,</span> <span class="s2">&quot;You whisper: Hi.&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;whisper&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hi.&quot;</span><span class="p">,</span> <span class="s2">&quot;You whisper: Hi.&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;whisper&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;HELLO!&quot;</span><span class="p">,</span> <span class="s2">&quot;You shout: HELLO!&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;shout&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;You say: Hello&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;say&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;You shout: HELLO&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;shout&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hello to obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You say: Hello&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;say&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdSpeak</span><span class="p">(),</span> <span class="s2">&quot;Hello to obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You shout: Hello&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;shout&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEvscaperoomCommands.test_emote"><a class="viewcode-back" href="../../../../api/evennia.contrib.evscaperoom.tests.html#evennia.contrib.evscaperoom.tests.TestEvscaperoomCommands.test_emote">[docs]</a>    <span class="k">def</span> <span class="nf">test_emote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -313,7 +313,7 @@
         <span class="n">dirname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;states&quot;</span><span class="p">)</span>
         <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">imp</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">ispackage</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">walk_packages</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="p">[</span><span class="n">dirname</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;evennia.contrib.evscaperoom.states.&quot;</span>
+            <span class="n">path</span><span class="o">=</span><span class="p">[</span><span class="n">dirname</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;evscaperoom.states.&quot;</span>
         <span class="p">):</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
             <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
@@ -372,6 +372,7 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -390,7 +391,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.evscaperoom.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

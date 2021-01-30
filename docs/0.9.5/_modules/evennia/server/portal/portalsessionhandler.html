@@ -48,10 +48,8 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SessionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.amp</span> <span class="kn">import</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SessionHandler</span><span class="p">,</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
 <span class="c1"># module import</span>
 <span class="n">_MOD_IMPORT</span> <span class="o">=</span> <span class="kc">None</span>
@@ -111,19 +109,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PortalSessionHandler.generate_sessid"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.generate_sessid">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sessid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Simply generates a sessid that&#39;s guaranteed to be unique for this Portal run.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            sessid</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sessid</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span></div>
-
 <div class="viewcode-block" id="PortalSessionHandler.connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by protocol at first connect. This adds a not-yet</span>
@@ -147,7 +132,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">:</span>
                 <span class="c1"># if the session already has a sessid (e.g. being inherited in the</span>
                 <span class="c1"># case of a webclient auto-reconnect), keep it</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sessid</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span>
             <span class="n">session</span><span class="o">.</span><span class="n">server_connected</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">_CONNECTION_QUEUE</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -518,9 +504,7 @@
                         <span class="n">log_trace</span><span class="p">()</span></div></div>
 
 
-<span class="n">_PORTAL_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER_CLASS</span><span class="p">)</span>
-
-<span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">_PORTAL_SESSION_HANDLER_CLASS</span><span class="p">()</span>
+<span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">PortalSessionHandler</span><span class="p">()</span>
 </pre></div>
 
             <div class="clearer"></div>
@@ -547,6 +531,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="portalsessionhandler.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

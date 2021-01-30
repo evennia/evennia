@@ -939,94 +939,6 @@ overriding the call (unused by default).</p></li>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="evennia.accounts.accounts.DefaultGuest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.accounts.</code><code class="sig-name descname">DefaultGuest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
-<p>This class is used for guest logins. Unlike Accounts, Guests and
-their characters are deleted after disconnection.</p>
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultGuest.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Forwards request to cls.authenticate(); returns a DefaultGuest object
-if one is available for use.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultGuest.authenticate">
-<em class="property">classmethod </em><code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets or creates a Guest account object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requestor; used for ban checking,
-throttling and logging</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>account (Object)</em> – Guest account object, if available
-errors (list): List of error messages accrued during this request.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultGuest.at_post_login">
-<code class="sig-name descname">at_post_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>In theory, guests only have one character regardless of which
-MULTISESSION_MODE we’re in. They don’t get a choice.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session connecting.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultGuest.at_server_shutdown">
-<code class="sig-name descname">at_server_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_server_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_server_shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>We repeat the functionality of <strong>at_disconnect()</strong> here just to
-be on the safe side.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultGuest.at_post_disconnect">
-<code class="sig-name descname">at_post_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Once having disconnected, destroy the guest’s characters and</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.accounts.accounts.DefaultGuest.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.DoesNotExist" title="evennia.accounts.accounts.DefaultAccount.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.DoesNotExist</span></code></a></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned" title="evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultGuest.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.accounts.accounts.DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultGuest.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.typename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -1061,6 +973,7 @@ overriding the call (unused by default).</p>
   <li><a href="../../1.0-dev/api/evennia.accounts.accounts.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.accounts.accounts.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

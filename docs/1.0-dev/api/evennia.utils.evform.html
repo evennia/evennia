@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -73,7 +72,6 @@ object when displaying the form.</p>
 <span class="s1">| cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
 <span class="s1">|          |                                     |</span>
 <span class="s1">-------------------------------------------------</span>
-<span class="s1">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <p>The first line of the <strong>FORM</strong> string is ignored. The forms and table
@@ -164,16 +162,16 @@ EvCell or Tables.</p>
 <dl class="py method">
 <dt id="evennia.utils.evform.EvForm.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initiate the form</p>
+<dd><p>Initiate the form.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<em>str</em>) – Path to template file.</p></li>
-<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: text}</strong></p></li>
-<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: EvTable}</strong>.</p></li>
-<li><p><strong>form</strong> (<em>dict</em>) – A dictionary
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping of <strong>{id:text}</strong>.</p></li>
+<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary mapping of <strong>{id:EvTable}</strong>.</p></li>
+<li><p><strong>form</strong> (<em>dict</em>) – A dictionary of
 <strong>{“FORMCHAR”:char, “TABLECHAR”:char, “FORM”:templatestring}</strong>.
-If this is given, filename is not read.</p></li>
+if this is given, filename is not read.</p></li>
 </ul>
 </dd>
 </dl>
@@ -252,6 +250,7 @@ If this is given, filename is not read.</p></li>
   <li><a href="../../0.9.5/api/evennia.utils.evform.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -268,7 +267,6 @@ If this is given, filename is not read.</p></li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

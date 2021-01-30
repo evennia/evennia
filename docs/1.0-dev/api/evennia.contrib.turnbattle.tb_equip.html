@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_equip</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -618,11 +617,6 @@ When it’s your turn, you can attack other characters.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdFight.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdFight.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'fight', 'tags': '', 'text': &quot;\n    Starts a fight with everyone in the same room as you.\n\n    Usage:\n      fight\n\n    When you start a fight, everyone in the room who is able to\n    fight is added to combat, and a turn order is randomly rolled.\n    When it's your turn, you can attack other characters.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdFight.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -662,11 +656,6 @@ a chance to hit, and if successful, will deal damage.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdAttack.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'attack', 'tags': '', 'text': '\n    Attacks another character.\n\n    Usage:\n      attack &lt;target&gt;\n\n    When in a fight, you may attack another character. The attack has\n    a chance to hit, and if successful, will deal damage.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -704,11 +693,6 @@ if there are still any actions you can take.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdPass.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -751,11 +735,6 @@ fight ends.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDisengage.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdDisengage.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'spare', 'category': 'combat', 'key': 'disengage', 'tags': '', 'text': &quot;\n    Passes your turn and attempts to end combat.\n\n    Usage:\n      disengage\n\n    Ends your turn early and signals that you're trying to end\n    the fight. If all participants in a fight disengage, the\n    fight ends.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDisengage.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -793,11 +772,6 @@ rest if you’re not in a fight.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdRest.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdRest.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdRest.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'rest', 'tags': '', 'text': &quot;\n    Recovers damage.\n\n    Usage:\n      rest\n\n    Resting recovers your HP to its maximum, but you can only\n    rest if you're not in a fight.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdRest.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -839,11 +813,6 @@ topics related to the game.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdCombatHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdCombatHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdCombatHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdCombatHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -889,11 +858,6 @@ currently wielding.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdWield.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdWield.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'wield', 'tags': '', 'text': '\n    Wield a weapon you are carrying\n\n    Usage:\n      wield &lt;weapon&gt;\n\n    Select a weapon you are carrying to wield in combat. If\n    you are already wielding another weapon, you will switch\n    to the weapon you specify instead. Using this command in\n    combat will spend your action for your turn. Use the\n    &quot;unwield&quot; command to stop wielding any weapon you are\n    currently wielding.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdWield.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -931,11 +895,6 @@ weapon you are currently wielding and become unarmed.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdUnwield.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdUnwield.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdUnwield.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'unwield', 'tags': '', 'text': '\n    Stop wielding a weapon.\n\n    Usage:\n      unwield\n\n    After using this command, you will stop wielding any\n    weapon you are currently wielding and become unarmed.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdUnwield.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -978,11 +937,6 @@ command to remove any armor you are wearing.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDon.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdDon.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'don', 'tags': '', 'text': '\n    Don armor that you are carrying\n\n    Usage:\n      don &lt;armor&gt;\n\n    Select armor to wear in combat. You can\'t use this\n    command in the middle of a fight. Use the &quot;doff&quot;\n    command to remove any armor you are wearing.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDon.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1021,11 +975,6 @@ You can’t use this command in combat.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdDoff.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDoff.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.turnbattle.tb_equip.CmdDoff.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'doff', 'tags': '', 'text': &quot;\n    Stop wearing armor.\n\n    Usage:\n      doff\n\n    After using this command, you will stop wearing any\n    armor you are currently using and become unarmored.\n    You can't use this command in combat.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDoff.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1088,6 +1037,7 @@ You can’t use this command in combat.</p>
   <li><a href="../../0.9.5/api/evennia.contrib.turnbattle.tb_equip.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -1104,7 +1054,6 @@ You can’t use this command in combat.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_equip</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

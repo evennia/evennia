@@ -89,10 +89,12 @@
 <span class="sd">        account (AccountDB): The Account performing this lookup. Unless `from_tz` is provided,</span>
 <span class="sd">            the account&#39;s timezone option will be used.</span>
 <span class="sd">        from_tz (pytz.timezone): An instance of a pytz timezone object from the</span>
-<span class="sd">            user. If not provided, tries to use the timezone option of `account`.</span>
+<span class="sd">            user. If not provided, tries to use the timezone option of the `account`.</span>
 <span class="sd">            If neither one is provided, defaults to UTC.</span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        datetime in UTC.</span>
+
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If encountering a malformed timezone, date string or other format error.</span>
 
@@ -299,6 +301,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="validatorfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

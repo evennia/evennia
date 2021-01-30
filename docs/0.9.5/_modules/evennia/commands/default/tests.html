@@ -314,21 +314,8 @@
 
 
 <div class="viewcode-block" id="TestHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp">[docs]</a><span class="k">class</span> <span class="nc">TestHelp</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestHelp.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="c1"># we need to set up a logger here since lunr takes over the logger otherwise</span>
-        <span class="kn">import</span> <span class="nn">logging</span>
-
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestHelp.tearDown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
-        <span class="kn">import</span> <span class="nn">logging</span>
-
-        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="TestHelp.test_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp.test_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">help</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Admin&quot;</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">CharacterCmdSet</span><span class="p">())</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">help</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Command help entries&quot;</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">CharacterCmdSet</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestHelp.test_set_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp.test_set_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1025,8 +1012,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetHome</span><span class="p">(),</span> <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span> <span class="s2">&quot;Home location of Obj was set to Room&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_list_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_list_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">test_list_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;&lt;CmdSetHandler&gt; stack:</span><span class="se">\n</span><span class="s2"> &lt;CmdSet DefaultCharacter, Union, perm, prio 0&gt;:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;CmdSetHandler&gt; stack:</span><span class="se">\n</span><span class="s2"> &lt;CmdSet DefaultCharacter, Union, perm, prio 0&gt;:&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_typeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">test_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1663,6 +1653,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="tests.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -41,19 +40,27 @@
             
   <h1>Source code for evennia.utils.create</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module gathers all the essential database-creation functions for the game</span>
-<span class="sd">engine&#39;s various object types.</span>
+<span class="sd">This module gathers all the essential database-creation</span>
+<span class="sd">functions for the game engine&#39;s various object types.</span>
 
-<span class="sd">Only objects created &#39;stand-alone&#39; are in here. E.g. object Attributes are</span>
-<span class="sd">always created through their respective objects handlers.</span>
+<span class="sd">Only objects created &#39;stand-alone&#39; are in here, e.g. object Attributes</span>
+<span class="sd">are always created directly through their respective objects.</span>
 
-<span class="sd">Each `creation_*` function also has an alias named for the entity being created,</span>
-<span class="sd">such as create_object() and object(). This is for consistency with the</span>
-<span class="sd">utils.search module and allows you to do the shorter `create.object()`.</span>
+<span class="sd">Each creation_* function also has an alias named for the entity being</span>
+<span class="sd">created, such as create_object() and object().  This is for</span>
+<span class="sd">consistency with the utils.search module and allows you to do the</span>
+<span class="sd">shorter &quot;create.object()&quot;.</span>
 
-<span class="sd">The respective object managers hold more methods for manipulating and searching</span>
-<span class="sd">objects already existing in the database.</span>
+<span class="sd">The respective object managers hold more methods for manipulating and</span>
+<span class="sd">searching objects already existing in the database.</span>
 
+<span class="sd">Models covered:</span>
+<span class="sd"> Objects</span>
+<span class="sd"> Scripts</span>
+<span class="sd"> Help</span>
+<span class="sd"> Message</span>
+<span class="sd"> Channel</span>
+<span class="sd"> Accounts</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
@@ -115,20 +122,21 @@
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
 <span class="sd">        key (str): Name of the new object. If not set, a name of</span>
-<span class="sd">            `#dbref` will be set.</span>
+<span class="sd">            #dbref will be set.</span>
 <span class="sd">        home (Object or str): Obj or #dbref to use as the object&#39;s</span>
 <span class="sd">            home location.</span>
 <span class="sd">        permissions (list): A list of permission strings or tuples (permstring, category).</span>
 <span class="sd">        locks (str): one or more lockstrings, separated by semicolons.</span>
 <span class="sd">        aliases (list): A list of alternative keys or tuples (aliasstring, category).</span>
 <span class="sd">        tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</span>
-<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s target.</span>
+<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s</span>
+<span class="sd">            target.</span>
 <span class="sd">        report_to (Object): The object to return error messages to.</span>
 <span class="sd">        nohome (bool): This allows the creation of objects without a</span>
 <span class="sd">            default home location; only used when creating the default</span>
 <span class="sd">            location itself or during unittests.</span>
 <span class="sd">        attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
-<span class="sd">            (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
 <span class="sd">            to set as Attributes on the new object.</span>
 <span class="sd">        nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
 <span class="sd">            adding this rarely makes sense since this data will not survive a reload.</span>
@@ -262,8 +270,9 @@
 <span class="sd">        report_to (Object): The object to return error messages to.</span>
 <span class="sd">        desc (str): Optional description of script</span>
 <span class="sd">        tags (list): List of tags or tuples (tag, category).</span>
-<span class="sd">        attributes (list): List if tuples (key, value) or (key, value, category)</span>
-<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">        attributes (list): List of tuples `(key, value)`, `(key, value, category)`,</span>
+<span class="sd">           `(key, value, category, lockstring)` or</span>
+<span class="sd">           `(key, value, category, lockstring, default_access)`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        script (obj): An instance of the script created</span>
@@ -651,6 +660,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -669,7 +679,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
