@@ -80,18 +80,18 @@
 <span class="sd">            should directly give the module pathname to unload.</span>
 
 <span class="sd">    Example:</span>
+<span class="sd">        ::</span>
 
-<span class="sd">        ```python</span>
-<span class="sd">        # (in a test method)</span>
-<span class="sd">        unload_module(foo)</span>
-<span class="sd">        with mock.patch(&quot;foo.GLOBALTHING&quot;, &quot;mockval&quot;):</span>
-<span class="sd">            import foo</span>
-<span class="sd">            ... # test code using foo.GLOBALTHING, now set to &#39;mockval&#39;</span>
-<span class="sd">        ```</span>
+<span class="sd">            # (in a test method)</span>
+<span class="sd">            unload_module(foo)</span>
+<span class="sd">            with mock.patch(&quot;foo.GLOBALTHING&quot;, &quot;mockval&quot;):</span>
+<span class="sd">                import foo</span>
+<span class="sd">                ... # test code using foo.GLOBALTHING, now set to &#39;mockval&#39;</span>
 
-<span class="sd">    This allows for mocking constants global to the module, since</span>
-<span class="sd">    otherwise those would not be mocked (since a module is only</span>
-<span class="sd">    loaded once).</span>
+<span class="sd">    Notes:</span>
+<span class="sd">        This allows for mocking constants global to the module, since</span>
+<span class="sd">        otherwise those would not be mocked (since a module is only</span>
+<span class="sd">        loaded once).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -240,6 +240,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="test_resources.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

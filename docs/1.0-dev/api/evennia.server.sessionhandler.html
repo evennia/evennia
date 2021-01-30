@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.sessionhandler</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -42,7 +41,8 @@
 <p>This module defines handlers for storing sessions when handles
 sessions of users connecting to the server.</p>
 <p>There are two similar but separate stores of sessions:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><dl class="simple">
 <dt>ServerSessionHandler - this stores generic game sessions</dt><dd><p>for the game. These sessions has no knowledge about
 how they are connected to the world.</p>
@@ -56,6 +56,7 @@ handle network communication but holds no game info.</p>
 </dl>
 </li>
 </ul>
+</div></blockquote>
 <dl class="py class">
 <dt id="evennia.server.sessionhandler.DummySession">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.sessionhandler.</code><code class="sig-name descname">DummySession</code><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#DummySession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.DummySession" title="Permalink to this definition">¶</a></dt>
@@ -119,20 +120,28 @@ sessions in store.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The relevant session instance.</p></li>
-<li><p><strong>kwargs</strong> (<em>dict</em>) – of the instruction (like “text”). Suitable values for each
-keyword are:
-- arg                -&gt;  [[arg], {}]
-- [args]             -&gt;  [[args], {}]
-- {kwargs}           -&gt;  [[], {kwargs}]
-- [args, {kwargs}]   -&gt;  [[arg], {kwargs}]
-- [[args], {kwargs}] -&gt;  [[args], {kwargs}]</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – <p>send-instruction, with the keyword itself being the name
+of the instruction (like “text”). Suitable values for each
+keyword are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arg</span>                <span class="o">-&gt;</span>  <span class="p">[[</span><span class="n">arg</span><span class="p">],</span> <span class="p">{}]</span>
+<span class="p">[</span><span class="n">args</span><span class="p">]</span>             <span class="o">-&gt;</span>  <span class="p">[[</span><span class="n">args</span><span class="p">],</span> <span class="p">{}]</span>
+<span class="p">{</span><span class="n">kwargs</span><span class="p">}</span>           <span class="o">-&gt;</span>  <span class="p">[[],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>
+<span class="p">[</span><span class="n">args</span><span class="p">,</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>   <span class="o">-&gt;</span>  <span class="p">[[</span><span class="n">arg</span><span class="p">],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>
+<span class="p">[[</span><span class="n">args</span><span class="p">],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span> <span class="o">-&gt;</span>  <span class="p">[[</span><span class="n">args</span><span class="p">],</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">}]</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>kwargs (dict)</em> – A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
-where the keys, args and kwargs have all been converted to
+<dd class="field-even"><p><p><em>kwargs (dict)</em> –</p>
+<dl class="simple">
+<dt>A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,</dt><dd><p>where the keys, args and kwargs have all been converted to
 send-safe entities (strings or numbers), and inlinefuncs have been
 applied.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -483,13 +492,12 @@ object.</p>
 <code class="sig-name descname">sessions_from_csessid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csessid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#ServerSessionHandler.sessions_from_csessid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.ServerSessionHandler.sessions_from_csessid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a client identification hash (for session types that offer them)
 return all sessions with a matching hash.</p>
-<dl class="simple">
-<dt>Args</dt><dd><p>csessid (str): The session hash.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>sessions (list)</em> – The sessions with matching .csessid, if any.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>csessid</strong> (<em>str</em>) – The session hash.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>sessions (list)</em> – The sessions with matching .csessid, if any.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -546,17 +554,17 @@ this class’ <strong>sessionhandler.call_inputfunc</strong> with the
 <dl class="py method">
 <dt id="evennia.server.sessionhandler.ServerSessionHandler.call_inputfuncs">
 <code class="sig-name descname">call_inputfuncs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#ServerSessionHandler.call_inputfuncs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.ServerSessionHandler.call_inputfuncs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split incoming data into its inputfunc counterparts. This should be
-called by the <strong>serversession.data_in</strong> as
-<strong>sessionhandler.call_inputfunc(self, **kwargs)</strong>.</p>
+<dd><p>Split incoming data into its inputfunc counterparts.
+This should be called by the serversession.data_in
+as <strong>sessionhandler.call_inputfunc(self, **kwargs)</strong>.</p>
 <p>We also intercept OOB communication here.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>sessions</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>any</strong> (<em>tuple</em>) – Incoming data from protocol, each
-on the form <strong>commandname=((args), {kwargs})</strong>.</p>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – Incoming data from protocol on
+the form <strong>{“commandname”: ((args), {kwargs}),…}</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -598,6 +606,7 @@ on the form <strong>commandname=((args), {kwargs})</strong>.</p>
   <li><a href="../../0.9.5/api/evennia.server.sessionhandler.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -614,7 +623,6 @@ on the form <strong>commandname=((args), {kwargs})</strong>.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.sessionhandler</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -430,6 +430,21 @@ Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
 created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
+## Non-interactive setup
+
+When you first run `evennia start` after having created the database, you will be asked
+to interactively insert the superuser username, email and password. If you need to do 
+this in an automated faction (such as in an automated build flow), you can supply those
+values as environment variables, `EVENNIA_SUPERUSER_USERNAME`, `EVENNIA_SUPERUSER_EMAIL` and
+`EVENNIA_SUPERUSER_PASSWORD`. The email can be left out and will then be set to be the 
+empty string. 
+
+Use this to start Evennia (the envvars will be ignored on subsequent starts):
+
+```
+EVENNIA_SUPERUSER_USERNAME=Foo EVENNIA_SUPERUSER_PASSWORD=MygreatPwd evennia start 
+
+```
 
 ## Where to Go Next
 

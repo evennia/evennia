@@ -230,8 +230,8 @@ Defaults to client’s default width.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.utils.utils.iter_to_str">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_str" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.utils.iter_to_string">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -248,16 +248,16 @@ values with double quotes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>str</em> – The list represented as a string.</p>
+<dd class="field-even"><p><em>liststr (str)</em> – The list represented as a string.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2, 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># no endsep:</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;1, 2, 3&#39;</span>
+<span class="c1"># with endsep==&#39;and&#39;:</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;1, 2 and 3&#39;</span>
+<span class="c1"># with addquote and endsep</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -281,49 +281,16 @@ values with double quotes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>str</em> – The list represented as a string.</p>
+<dd class="field-even"><p><em>liststr (str)</em> – The list represented as a string.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2, 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.utils.iter_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>This pretty-formats an iterable list as string output, adding an optional
-alternative separator to the second to last entry.  If <strong>addquote</strong>
-is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>initer</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
-present with a string. Note that if this is a generator, it will be
-consumed by this operation.</p></li>
-<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
-be replaced with this value.</p></li>
-<li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
-values with double quotes.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>str</em> – The list represented as a string.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2, 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-<span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># no endsep:</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;1, 2, 3&#39;</span>
+<span class="c1"># with endsep==&#39;and&#39;:</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;1, 2 and 3&#39;</span>
+<span class="c1"># with addquote and endsep</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s1">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -582,8 +549,10 @@ be found, the protocol flag is reset to utf-8.  In any case, returns bytes.</p>
 </p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>If <strong>text</strong> is already bytes, return it as is.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -604,8 +573,10 @@ falling back to settings.ENCODINGS.</p></li>
 <dd class="field-even"><p><em>decoded_text (str)</em> – The decoded text.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>If <strong>text</strong> is already str, return it as is.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -631,10 +602,9 @@ distance from parent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<em>any</em>) – Object to analyze. This may be either an instance or
-a class.</p></li>
-<li><p><strong>parent</strong> (<em>any</em>) – Can be either an instance, a class or the python
-path to the class.</p></li>
+<li><p><strong>obj</strong> (<em>any</em>) – Object to analyze. This may be either an instance
+or a class.</p></li>
+<li><p><strong>parent</strong> (<em>any</em>) – Can be either instance, class or python path to class.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -642,8 +612,10 @@ path to the class.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>What differentiates this function from Python’s <strong>isinstance()</strong> is the
-flexibility in the types allowed for the object and parent being compared.</p>
+<p>What differs this function from e.g.  <strong>isinstance()</strong> is that <strong>obj</strong>
+may be both an instance and a class, and parent may be an
+instance, a class, or the python path to a class (counting from
+the evennia root directory).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -666,7 +638,10 @@ any results if called from inside the game.</p>
 shortcut to having to use the full backend name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – One of ‘sqlite3’, ‘mysql’, ‘postgresql’ or ‘oracle’.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – One of ‘sqlite3’, ‘mysql’, ‘postgresql’</p></li>
+<li><p><strong>'oracle'.</strong> (<em>or</em>) – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>uses (bool)</em> – If the given database is used or not.</p>
@@ -684,24 +659,30 @@ shortcut to having to use the full backend name.</p>
 <li><p><strong>timedelay</strong> (<em>int</em><em> or </em><em>float</em>) – The delay in seconds</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – Will be called as <strong>callback(*args, **kwargs)</strong>
 after <strong>timedelay</strong> seconds.</p></li>
-<li><p><strong>*args</strong> – Will be used as arguments to callback</p></li>
+<li><p><strong>args</strong> (<em>any</em><em>, </em><em>optional</em>) – Will be used as arguments to callback</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>persistent</strong> (<em>bool</em>) – Make the delay persistent over a reboot or reload.</p></li>
-<li><p><strong>any</strong> – Any other keywords will be use as keyword arguments to callback.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – should make the delay persistent
+over a reboot or reload</p></li>
+<li><p><strong>any</strong> (<em>any</em>) – Will be used as keyword arguments to callback.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>deferred</em> – Will fire with callback after <strong>timedelay</strong> seconds. Note that
-if <strong>timedelay()</strong> is used in the
+<dd class="field-odd"><p><p><em>deferred (deferred)</em> –</p>
+<dl class="simple">
+<dt>Will fire with callback after</dt><dd><p><strong>timedelay</strong> seconds. Note that if <strong>timedelay()</strong> is used in the
 commandhandler callback chain, the callback chain can be
 defined directly in the command body and don’t need to be
 specified here.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>The task handler (<strong>evennia.scripts.taskhandler.TASK_HANDLER</strong>) will
 be called for persistent or non-persistent tasks.
 If persistent is set to True, the callback, its arguments
@@ -709,6 +690,7 @@ and other keyword arguments will be saved in the database,
 assuming they can be.  The callback will be executed even after
 a server restart/reload, taking into account the specified delay
 (and server down time).</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -772,7 +754,7 @@ some checks for runtime libraries.</p>
 <dl class="py function">
 <dt id="evennia.utils.utils.has_parent">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">has_parent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">basepath</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#has_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.has_parent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if <strong>basepath</strong> is somewhere in obj’s parent tree.</p>
+<dd><p>Checks if <strong>basepath</strong> is somewhere in <strong>obj</strong>’s parent tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -956,7 +938,7 @@ importing directly from <strong>path</strong> doesn’t work.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.utils.class_from_module">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a class from a module, given the class’ full python path. This is
+<dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -978,7 +960,7 @@ try subsequent imports by prepending those paths to <strong>path</strong>.</p></
 <dl class="py function">
 <dt id="evennia.utils.utils.object_from_module">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a class from a module, given the class’ full python path. This is
+<dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1045,9 +1027,13 @@ the value, the more exact a match is required).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>suggestions (list)</em> – Suggestions from <strong>vocabulary</strong> with a
-similarity-rating that higher than or equal to <strong>cutoff</strong>.
+<dd class="field-even"><p><p><em>suggestions (list)</em> –</p>
+<dl class="simple">
+<dt>Suggestions from <strong>vocabulary</strong> with a</dt><dd><p>similarity-rating that higher than or equal to <strong>cutoff</strong>.
 Could be empty if there are no matches.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1080,123 +1066,45 @@ array) instead of strings.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.utils.format_table">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">extra_space</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Format a 2D array of strings into a multi-column table.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>table</strong> (<em>list</em>) – A list of lists to represent columns in the
-table: <strong>[[val,val,val,…], [val,val,val,…], …]</strong>, where
+<dd><p>Note: <strong>evennia.utils.evtable</strong> is more powerful than this, but this function
+can be useful when the number of columns and rows are unknown and must be
+calculated on the fly.</p>
+<dl class="simple">
+<dt>Args.</dt><dd><dl class="simple">
+<dt>table (list): A list of lists to represent columns in the</dt><dd><p>table: <strong>[[val,val,val,…], [val,val,val,…], …]</strong>, where
 each val will be placed on a separate row in the
 column. All columns must have the same number of rows (some
-positions may be empty though).</p></li>
-<li><p><strong>extra_space</strong> (<em>int</em><em>, </em><em>optional</em>) – Sets how much <em>minimum</em> extra
-padding (in characters) should  be left between columns.</p></li>
-</ul>
+positions may be empty though).</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list</em> – A list of lists representing the rows to print out one by one.</p>
+<dt>extra_space (int, optional): Sets how much <em>minimum</em> extra</dt><dd><p>padding (in characters) should  be left between columns.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>table (list)</em> –</p>
+<dl class="simple">
+<dt>A list of lists representing the rows to print</dt><dd><p>out one by one.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The function formats the columns to be as wide as the widest member
 of each column.</p>
-<p><strong>evennia.utils.evtable</strong> is more powerful than this, but this
-function can be useful when the number of columns and rows are
-unknown and must be calculated on the fly.</p>
-<p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ftable</span> <span class="o">=</span> <span class="n">format_table</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
-<span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ftable</span> <span class="o">=</span> <span class="n">format_table</span><span class="p">([[</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span>
 <span class="k">for</span> <span class="n">ir</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">enumarate</span><span class="p">(</span><span class="n">ftable</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">ir</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># make first row white</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n|w&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.utils.percent">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">minval</span></em>, <em class="sig-param"><span class="n">maxval</span></em>, <em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">'{:3.1f}%'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.percent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a value in an interval as a percentage of its position
-in that interval. This also understands negative numbers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> (<em>number</em>) – This should be a value minval&lt;=value&lt;=maxval.</p></li>
-<li><p><strong>minval</strong> (<em>number</em><em> or </em><em>None</em>) – Smallest value in interval. This could be None
-for an open interval (then return will always be 100%)</p></li>
-<li><p><strong>maxval</strong> (<em>number</em><em> or </em><em>None</em>) – Biggest value in interval. This could be None
-for an open interval (then return will always be 100%)</p></li>
-<li><p><strong>formatted</strong> (<em>str</em><em>, </em><em>optional</em>) – This is a string that should
-accept one formatting tag. This will receive the
-current value as a percentage. If None, the
-raw float will be returned instead.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>str or float</em> – The formatted value or the raw percentage as a float.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>We try to handle a weird interval gracefully.</p>
-<ul class="simple">
-<li><p>If either maxval or minval is None (open interval), we (aribtrarily) assume 100%.</p></li>
-<li><p>If minval &gt; maxval, we return 0%.</p></li>
-<li><p>If minval == maxval == value we are looking at a single value match and return 100%.</p></li>
-<li><p>If minval == maxval != value we return 0%.</p></li>
-<li><p>If value not in [minval..maxval], we set value to the  closest
-boundary, so the result will be 0% or 100%, respectively.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.utils.percentile">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">percentile</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">percent</em>, <em class="sig-param">key=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#percentile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.percentile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the percentile of a list of values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>iterable</strong> (<em>iterable</em>) – A list of values. Note N MUST BE already sorted.</p></li>
-<li><p><strong>percent</strong> (<em>float</em>) – A value from 0.0 to 1.0.</p></li>
-<li><p><strong>key</strong> (<em>callable</em><em>, </em><em>optional</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>float</em> – The percentile of the values</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.utils.format_grid">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">' '</span></em>, <em class="sig-param"><span class="n">verbatim_elements</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>This helper function makes a ‘grid’ output, where it distributes the given
-string-elements as evenly as possible to fill out the given width.
-will not work well if the variation of length is very big!</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>elements</strong> (<em>iterable</em>) – A 1D list of string elements to put in the grid.</p></li>
-<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – The width of the grid area to fill.</p></li>
-<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – The extra separator to put between words. If
-set to the empty string, words may run into each other.</p></li>
-<li><p><strong>verbatim_elements</strong> (<em>list</em><em>, </em><em>optional</em>) – This is a list of indices pointing to
-specific items in the <strong>elements</strong> list. An element at this index will
-not be included in the calculation of the slot sizes. It will still
-be inserted into the grid at the correct position and may be surrounded
-by padding unless filling the entire line. This is useful for embedding
-decorations in the grid, such as horizontal bars.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>gridstr</em> – The grid as a list of ready-formatted rows. We return it
-like this to make it easier to insert decorations between rows, such
-as horizontal bars.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1215,7 +1123,8 @@ Server by trying to access a PID file.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>This can be used to determine if we are in a subprocess by</p>
+<p>This can be used to determine if we are in a subprocess by
+something like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">self_pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
 <span class="n">server_pid</span><span class="p">,</span> <span class="n">portal_pid</span> <span class="o">=</span> <span class="n">get_evennia_pids</span><span class="p">()</span>
 <span class="n">is_subprocess</span> <span class="o">=</span> <span class="n">self_pid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">server_pid</span><span class="p">,</span> <span class="n">portal_pid</span><span class="p">)</span>
@@ -1372,10 +1281,14 @@ on errors.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>processed_result (Object or None)</em> – This is always a single result
-or <strong>None</strong>. If <strong>None</strong>, any error reporting/handling should
+<dd class="field-odd"><p><p><em>processed_result (Object or None)</em> –</p>
+<dl class="simple">
+<dt>This is always a single result</dt><dd><p>or <strong>None</strong>. If <strong>None</strong>, any error reporting/handling should
 already have happened. The returned object is of the type we are
 checking multimatches for (e.g. Objects or Commands)</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1436,11 +1349,11 @@ of the game directory.</p>
 from this parent.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>dict</em> – On the form <strong>{“typeclass.path”: typeclass, …}</strong></p>
+<dd class="field-even"><p><em>typeclasses (dict)</em> – On the form {“typeclass.path”: typeclass, …}</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This will dynamically retrieve all abstract django models inheriting at any distance
+<p>This will dynamicall retrieve all abstract django models inheriting at any distance
 from the TypedObject base (aka a Typeclass) so it will work fine with any custom
 classes being added.</p>
 </dd></dl>
@@ -1448,20 +1361,11 @@ classes being added.</p>
 <dl class="py function">
 <dt id="evennia.utils.utils.interactive">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">interactive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.interactive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator to make a method pausable with <strong>yield(seconds)</strong>
-and able to ask for user-input with <strong>response=yield(question)</strong>.
-For the question-asking to work, one of the args or kwargs to the
-decorated function must be named ‘caller’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ValueError</strong> – If asking an interactive question but the decorated
-function has no arg or kwarg named ‘caller’.</p></li>
-<li><p><strong>ValueError</strong> – If passing non int/float to yield using for pausing.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
+<dd><p>Decorator to make a method pausable with yield(seconds) and able to ask for
+user-input with <strong>response=yield(question)</strong>.  For the question-asking to
+work, ‘caller’ must the name of an argument or kwarg to the decorated
+function.</p>
+<p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@interactive</span>
 <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This is a test&quot;</span><span class="p">)</span>
@@ -1476,7 +1380,7 @@ function has no arg or kwarg named ‘caller’.</p></li>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
-<p>This turns the decorated function or method into a generator.</p>
+<p>This turns the method into a generator!</p>
 </dd></dl>
 
 </div>
@@ -1513,6 +1417,7 @@ function has no arg or kwarg named ‘caller’.</p></li>
   <li><a href="../../1.0-dev/api/evennia.utils.utils.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.utils.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

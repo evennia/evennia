@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -54,7 +53,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">:</span>
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a player&#39;s session and is a template for</span>
 <span class="sd">    both portal- and server-side sessions.</span>
@@ -76,6 +75,26 @@
 <span class="sd">    e.g. the portal can re-sync with the server when the server reboots.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># names of attributes that should be affected by syncing.</span>
+    <span class="n">_attrs_to_sync</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;protocol_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;suid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sessid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;uid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;csessid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;uname&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logged_in&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;puid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;conn_time&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cmd_last&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cmd_last_visible&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cmd_total&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;protocol_flags&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server_data&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cmdset_storage_string&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="Session.init_session"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.init_session">[docs]</a>    <span class="k">def</span> <span class="nf">init_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_key</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -143,9 +162,9 @@
 <span class="sd">                the keys given by self._attrs_to_sync.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">attr</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">SESSION_SYNC_ATTRS</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="p">}</span></div>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs_to_sync</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Session.load_sync_data"><a class="viewcode-back" href="../../../api/evennia.server.session.html#evennia.server.session.Session.load_sync_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_sync_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessdata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -241,6 +260,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -259,7 +279,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

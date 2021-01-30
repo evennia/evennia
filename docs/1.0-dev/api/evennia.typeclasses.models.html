@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -60,6 +59,7 @@ The admin should usually not have to deal directly  with the database object
 layer.</p>
 <p>This module also contains the Managers for the respective models; inherit from
 these to create custom managers.</p>
+<hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.typeclasses.models.TypedObject">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.models.</code><code class="sig-name descname">TypedObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/models.html#TypedObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.models.TypedObject" title="Permalink to this definition">¶</a></dt>
@@ -158,10 +158,10 @@ a class based on the db_typeclass_path database field rather
 than use the one in the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>through to parent.</strong> (<em>Passed</em>) – </p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>through to parent.</strong> (<em>Passed</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Passed through to parent.</p></li>
+<li><p><strong>**kwargs</strong> – Passed through to parent.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -367,7 +367,7 @@ superuser lock bypass (be careful with this one).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>kwar</strong> (<em>any</em>) – Ignored, but is there to make the api
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – Ignored, but is there to make the api
 consistent with the object-typeclass method access, which
 use it to feed to its hook methods.</p>
 </dd>
@@ -400,30 +400,36 @@ without involving any locks.</p>
 <em class="property">property </em><code class="sig-name descname">db</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attribute handler wrapper. Allows for the syntax</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">attrname</span> <span class="o">=</span> <span class="n">value</span>
-<span class="c1"># and</span>
+  <span class="ow">and</span>
 <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">attrname</span>
-<span class="c1"># and</span>
+  <span class="ow">and</span>
 <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">attrname</span>
-<span class="c1"># and</span>
+  <span class="ow">and</span>
 <span class="n">all_attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="c1"># (unless there is an attribute</span>
-<span class="c1">#  named &#39;all&#39;, in which case that will be returned instead).</span>
 </pre></div>
 </div>
+<p>(unless there is an attribute named ‘all’, in which case that will be
+returned instead).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.models.TypedObject.ndb">
 <em class="property">property </em><code class="sig-name descname">ndb</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.ndb" title="Permalink to this definition">¶</a></dt>
-<dd><p>NonDataBase). Everything stored
-to this is guaranteed to be cleared when a server is shutdown.
-Syntax is same as for the _get_db_holder() method and
-property, e.g. obj.ndb.attr = value etc.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>A non-attr_obj store (ndb</p>
-</dd>
-</dl>
+<dd><p>A non-attr_obj store (NonDataBase). Everything stored to this is
+guaranteed to be cleared when a server is shutdown. Syntax is same as
+for the <strong>.db</strong> property, e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">attrname</span> <span class="o">=</span> <span class="n">value</span>
+  <span class="ow">and</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">attrname</span>
+  <span class="ow">and</span>
+<span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">attrname</span>
+  <span class="ow">and</span>
+<span class="n">all_attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>What makes this preferable over just assigning properties directly on
+the object is that Evennia can track caching for these properties and
+for example avoid wiping objects with set <strong>.ndb</strong> data on cache flushes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -510,22 +516,27 @@ at/getting information for this object.</p>
 <em class="property">classmethod </em><code class="sig-name descname">web_get_create_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/models.html#TypedObject.web_get_create_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.web_get_create_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to create new
 instances of this object.</p>
-<p>ex. Chargen = ‘/characters/create/’</p>
-<p>For this to work, the developer must have defined a named view somewhere
-in urls.py that follows the format ‘modelname-action’, so in this case
-a named view of ‘character-create’ would be referenced by this method.</p>
-<p>ex.
-url(r’characters/create/’, ChargenView.as_view(), name=’character-create’)</p>
-<p>If no View has been created and defined in urls.py, returns an
-HTML anchor.</p>
-<p>This method is naive and simply returns a path. Securing access to
-the actual view and limiting who can create new objects is the
-developer’s responsibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>path (str)</em> – URI path to object creation page, if defined.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Chargen</span> <span class="o">=</span> <span class="s1">&#39;/characters/create/&#39;</span>
+</pre></div>
+</div>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-create’ would be referenced by this method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/create/&#39;</span><span class="p">,</span> <span class="n">ChargenView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-create&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p class="rubric">Notes</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can create new objects is the
+developer’s responsibility.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -545,12 +556,12 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-detail’ would be referenced by this method.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
+<p class="rubric">Notes</p>
 <p>This method is naive and simply returns a path. Securing access to
 the actual view and limiting who can view this object is the
 developer’s responsibility.</p>
@@ -563,7 +574,7 @@ developer’s responsibility.</p>
 object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str</em> – URI path to object puppet page, if defined.</p>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object puppet page, if defined.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -579,6 +590,7 @@ a named view of ‘character-puppet’ would be referenced by this method.</p>
 </div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
+<p class="rubric">Notes</p>
 <p>This method is naive and simply returns a path. Securing access to
 the actual view and limiting who can view this object is the developer’s
 responsibility.</p>
@@ -591,7 +603,7 @@ responsibility.</p>
 object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str</em> – URI path to object update page, if defined.</p>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object update page, if defined.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -607,6 +619,7 @@ a named view of ‘character-update’ would be referenced by this method.</p>
 </div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
+<p class="rubric">Notes</p>
 <p>This method is naive and simply returns a path. Securing access to
 the actual view and limiting who can modify objects is the developer’s
 responsibility.</p>
@@ -625,19 +638,19 @@ responsibility.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Oscar</span> <span class="p">(</span><span class="n">Character</span><span class="p">)</span> <span class="o">=</span> <span class="s1">&#39;/characters/oscar/1/delete/&#39;</span>
 </pre></div>
 </div>
-<p>For this to work, the developer must have defined a named view
-somewhere in urls.py that follows the format ‘modelname-action’, so
-in this case a named view of ‘character-detail’ would be referenced
-by this method.</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-detail’ would be referenced by this method.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;</span><span class="p">,</span>
     <span class="n">CharDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-delete&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If no View has been created and defined in urls.py, returns an HTML
-anchor.</p>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p class="rubric">Notes</p>
 <p>This method is naive and simply returns a path. Securing access to
-the actual view and limiting who can delete this object is the
-developer’s responsibility.</p>
+the actual view and limiting who can delete this object is the developer’s
+responsibility.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -663,12 +676,12 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-detail’ would be referenced by this method.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
+<p class="rubric">Notes</p>
 <p>This method is naive and simply returns a path. Securing access to
 the actual view and limiting who can view this object is the
 developer’s responsibility.</p>
@@ -743,6 +756,7 @@ developer’s responsibility.</p>
   <li><a href="../../0.9.5/api/evennia.typeclasses.models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -759,7 +773,6 @@ developer’s responsibility.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -580,6 +580,8 @@
 <span class="sd">    Only true if accessed_obj has the specified tag and optional</span>
 <span class="sd">    category.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
     <span class="n">tagkey</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
@@ -610,6 +612,9 @@
 <span class="sd">    of recursion (so if this lock is on a room, then an object inside a box</span>
 <span class="sd">    in your inventory will also pass the lock).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
 
     <span class="k">def</span> <span class="nf">_recursive_inside</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="n">lvl</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
@@ -763,6 +768,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="lockfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Choosing An SQL Server</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -114,11 +113,12 @@ database-superuser (always called <code class="docutils literal notranslate"><sp
 <div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    psql -U postgres --password
 </pre></div>
 </td></tr></table></div>
-<blockquote>
-<div><p>:warning: <strong>Warning:</strong> With the <code class="docutils literal notranslate"><span class="pre">--password</span></code> argument, Postgres should prompt you for a password.
-If it won’t, replace that with <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">yourpassword</span></code> instead. Do not use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> argument unless you
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>With the <cite>–password</cite> argument, Postgres should prompt you for a password.
+If it won’t, replace that with <cite>-p yourpassword</cite> instead. Do not use the <cite>-p</cite> argument unless you
 have to since the resulting command, and your password, will be logged in the shell history.</p>
-</div></blockquote>
+</div>
 <p>This will open a console to the postgres service using the psql client.</p>
 <p>On the psql command line:</p>
 <div class="highlight-sql notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -196,6 +196,84 @@ also use</p>
 <p>as a shortcut to get into the postgres command line for the right database and user.</p>
 <p>With the database setup you should now be able to start start Evennia normally with your new
 database.</p>
+</div>
+<div class="section" id="advanced-postgresql-usage-remote-server">
+<h3>Advanced Postgresql Usage (Remote Server)<a class="headerlink" href="#advanced-postgresql-usage-remote-server" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The example below is for a server within a private network that is not open to
+the Internet.  Be sure to understand the details before making any changes to
+an Internet-accessible server.</p>
+</div>
+<p>The above discussion is for hosting a local server. In certain configurations
+it may make sense host the database on a server remote to the one Evennia is
+running on. One example case is where code development may be done on multiple
+machines by multiple users. In this configuration, a local data base (such as
+SQLite3) is not feasible since all the machines and developers do not have
+access to the file.</p>
+<p>Choose a remote machine to host the database and PostgreSQl server. Follow the
+instructions <a class="reference external" href="#install-and-initial-setup-of-postgresql">above</a> on that server to set up the database.
+Depending on distribution, PostgreSQL will only accept connections on the local
+machine (localhost).  In order to enable remote access, two files need to be
+changed.</p>
+<p>First, determine which cluster is running your database. Use <code class="docutils literal notranslate"><span class="pre">pg_lscluster</span></code>:</p>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+<span class="m">12</span>  main    <span class="m">5432</span> online postgres /var/lib/postgresql/12/main /var/log/postgresql/postgresql-12-main.log
+</pre></div>
+</td></tr></table></div>
+<p>Next, edit the database’s <code class="docutils literal notranslate"><span class="pre">postgresql.conf</span></code>.  This is found on Ubuntu systems
+in <code class="docutils literal notranslate"><span class="pre">/etc/postgresql/&lt;ver&gt;/&lt;cluster&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;ver&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;cluster&gt;</span></code> are
+what are reported in the <code class="docutils literal notranslate"><span class="pre">pg_lscluster</span></code> output.  So, for the above example,
+the file is <code class="docutils literal notranslate"><span class="pre">/etc/postgresql/12/main/postgresql.conf</span></code>.</p>
+<p>In this file, look for the line with <code class="docutils literal notranslate"><span class="pre">listen_addresses</span></code>.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">listen_address</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>    <span class="c1"># What IP address(es) to listen on;</span>
+                                <span class="c1"># comma-separated list of addresses;</span>
+                                <span class="c1"># defaults to &#39;localhost&#39;; use &#39;*&#39; for all</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Misconfiguring the wrong cluster may cause problems
+with existing clusters.</p>
+</div>
+<p>Also, note the line with <code class="docutils literal notranslate"><span class="pre">port</span> <span class="pre">=</span></code> and keep the port number in mind.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">listen_addresses</span></code> to <code class="docutils literal notranslate"><span class="pre">'*'</span></code>.  This permits postgresql to accept connections
+on any interface.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Setting <cite>listen_addresses</cite> to <cite>‘*’</cite> opens a port on all interfaces.  If your
+server has access to the Internet, ensure your firewall is configured
+appropriately to limit access to this port as necessary.  (You may also list
+explicit addresses and subnets to listen.  See the postgresql documentation
+for more details.)</p>
+</div>
+<p>Finally, modify the <code class="docutils literal notranslate"><span class="pre">pg_hba.conf</span></code> (in the same directory as <code class="docutils literal notranslate"><span class="pre">postgresql.conf</span></code>).
+Look for a line with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># IPv4 local connections:</span>
+<span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">/</span><span class="mi">32</span>            <span class="n">md5</span>
+</pre></div>
+</div>
+<p>Add a line with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">0</span>               <span class="n">md5</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This permits incoming connections from <em>all</em> IPs.  See
+the PosgreSQL documentation on how to limit this.</p>
+</div>
+<p>Now, restart your cluster:</p>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_ctlcluster <span class="m">12</span> main restart
+</pre></div>
+</td></tr></table></div>
+<p>Finally, update the database settings in your Evennia secret_settings.py (as
+described <a class="reference external" href="#evennia-postgresql-configuration">above</a> modifying <code class="docutils literal notranslate"><span class="pre">SERVER</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PORT</span></code> to match your server.</p>
+<p>Now your Evennia installation should be able to connect and talk with a remote
+server.</p>
 </div>
 </div>
 <div class="section" id="mysql-mariadb">
@@ -338,6 +416,7 @@ others. If you try other databases out, consider expanding this page with instru
 <li><a class="reference internal" href="#postgresql">PostgreSQL</a><ul>
 <li><a class="reference internal" href="#install-and-initial-setup-of-postgresql">Install and initial setup of PostgreSQL</a></li>
 <li><a class="reference internal" href="#evennia-postgresql-configuration">Evennia PostgreSQL configuration</a></li>
+<li><a class="reference internal" href="#advanced-postgresql-usage-remote-server">Advanced Postgresql Usage (Remote Server)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#mysql-mariadb">MySQL / MariaDB</a><ul>
@@ -363,6 +442,7 @@ others. If you try other databases out, consider expanding this page with instru
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -379,7 +459,6 @@ others. If you try other databases out, consider expanding this page with instru
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Choosing An SQL Server</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

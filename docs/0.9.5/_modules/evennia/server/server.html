@@ -40,12 +40,12 @@
             
   <h1>Source code for evennia.server.server</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module implements the main Evennia server process, the core of the game</span>
-<span class="sd">engine.</span>
+<span class="sd">This module implements the main Evennia server process, the core of</span>
+<span class="sd">the game engine.</span>
 
-<span class="sd">This module should be started with the &#39;twistd&#39; executable since it sets up all</span>
-<span class="sd">the networking features.  (this is done automatically by</span>
-<span class="sd">evennia/server/server_runner.py).</span>
+<span class="sd">This module should be started with the &#39;twistd&#39; executable since it</span>
+<span class="sd">sets up all the networking features.  (this is done automatically</span>
+<span class="sd">by evennia/server/server_runner.py).</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -63,7 +63,6 @@
 <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
 <span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
@@ -73,6 +72,7 @@
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">initial_setup</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -382,7 +382,6 @@
 <span class="sd">        Once finished the last_initial_setup_step is set to -1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">INFO_DICT</span>
-        <span class="n">initial_setup</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">INITIAL_SETUP_MODULE</span><span class="p">)</span>
         <span class="n">last_initial_setup_step</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;last_initial_setup_step&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">last_initial_setup_step</span><span class="p">:</span>
             <span class="c1"># None is only returned if the config does not exist,</span>
@@ -441,17 +440,18 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shuts down the server from inside it.</span>
 
-<span class="sd">        mode - sets the server restart mode.</span>
-<span class="sd">           - &#39;reload&#39; - server restarts, no &quot;persistent&quot; scripts</span>
-<span class="sd">             are stopped, at_reload hooks called.</span>
-<span class="sd">           - &#39;reset&#39; - server restarts, non-persistent scripts stopped,</span>
-<span class="sd">             at_shutdown hooks called but sessions will not</span>
-<span class="sd">             be disconnected.</span>
-<span class="sd">           - &#39;shutdown&#39; - like reset, but server will not auto-restart.</span>
-<span class="sd">        _reactor_stopping - this is set if server is stopped by a kill</span>
-<span class="sd">           command OR this method was already called</span>
-<span class="sd">           once - in both cases the reactor is</span>
-<span class="sd">           dead/stopping already.</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            mode (str): Sets the server restart mode:</span>
+<span class="sd">            - &#39;reload&#39;: server restarts, no &quot;persistent&quot; scripts</span>
+<span class="sd">              are stopped, at_reload hooks called.</span>
+<span class="sd">            - &#39;reset&#39; - server restarts, non-persistent scripts stopped,</span>
+<span class="sd">              at_shutdown hooks called but sessions will not</span>
+<span class="sd">              be disconnected.</span>
+<span class="sd">            -&#39;shutdown&#39; - like reset, but server will not auto-restart.</span>
+<span class="sd">            _reactor_stopping: This is set if server is stopped by a kill</span>
+<span class="sd">                command OR this method was already called</span>
+<span class="sd">                once - in both cases the reactor is dead/stopping already.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_reactor_stopping</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;shutdown_complete&quot;</span><span class="p">):</span>
             <span class="c1"># this means we have already passed through this method</span>
@@ -796,6 +796,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="server.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

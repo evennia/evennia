@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -40,8 +39,7 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.server.throttle</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">caches</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
@@ -55,8 +53,8 @@
 
 <span class="sd">    This version of the throttle is usable by both the terminal server as well</span>
 <span class="sd">    as the web server, imposes limits on memory consumption by using deques</span>
-<span class="sd">    with length limits instead of open-ended lists, and uses native Django </span>
-<span class="sd">    caches for automatic key eviction and persistence configurability.</span>
+<span class="sd">    with length limits instead of open-ended lists, and removes sparse keys when</span>
+<span class="sd">    no recent failures have been recorded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Too many failed attempts; you must wait a few minutes before trying again.&quot;</span>
@@ -66,7 +64,6 @@
 <span class="sd">        Allows setting of throttle parameters.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            name (str): Name of this throttle.</span>
 <span class="sd">            limit (int): Max number of failures before imposing limiter</span>
 <span class="sd">            timeout (int): number of timeout seconds after</span>
 <span class="sd">                max number of tries has been reached.</span>
@@ -74,37 +71,9 @@
 <span class="sd">                rolling window; this is NOT the same as the limit after which</span>
 <span class="sd">                the throttle is imposed!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="s1">&#39;throttle&#39;</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Throttle: Errors encountered; using default cache.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined-throttle&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache_size&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">deque</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span></div>
-        
-<div class="viewcode-block" id="Throttle.get_cache_key"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.get_cache_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a &#39;prefixed&#39; key containing arbitrary terms to prevent key</span>
-<span class="sd">        collisions in the same namespace.</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
-        
-<div class="viewcode-block" id="Throttle.touch"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.touch">[docs]</a>    <span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Refreshes the timeout on a given key and ensures it is recorded in the</span>
-<span class="sd">        key register.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            key(str): Key of entry to renew.</span>
-<span class="sd">            </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">record_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Throttle.get"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -122,18 +91,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
-            <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">keys_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">)</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get_or_set</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="nb">set</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get_many</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">))</span>
-            
-            <span class="n">found_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_keys</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="n">found_keys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-                
-            <span class="k">return</span> <span class="n">data</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span></div>
 
 <div class="viewcode-block" id="Throttle.update"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">failmsg</span><span class="o">=</span><span class="s2">&quot;Exceeded threshold.&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -148,77 +108,24 @@
 <span class="sd">            None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        
         <span class="c1"># Get current status</span>
         <span class="n">previously_throttled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
 
-        <span class="c1"># Get previous failures, if any</span>
-        <span class="n">entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
-        
-        <span class="c1"># Store updated record</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="n">deque</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="c1"># Enforce length limits</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span><span class="o">.</span><span class="n">maxlen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 
         <span class="c1"># See if this update caused a change in status</span>
         <span class="n">currently_throttled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
 
         <span class="c1"># If this makes it engage, log a single activation event</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">previously_throttled</span> <span class="ow">and</span> <span class="n">currently_throttled</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Throttle Activated: </span><span class="si">{</span><span class="n">failmsg</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="si">}</span><span class="s2"> hits in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds.)&quot;</span><span class="p">)</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">record_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span></div>
-        
-<div class="viewcode-block" id="Throttle.remove"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Clears data stored for an IP from the throttle.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            ip(str): IP to clear.</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">exists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
-        
-        <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unrecord_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        
-        <span class="c1"># Return True if NOT exists</span>
-        <span class="k">return</span> <span class="o">~</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span></div>
-        
-<div class="viewcode-block" id="Throttle.record_ip"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.record_ip">[docs]</a>    <span class="k">def</span> <span class="nf">record_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tracks keys as they are added to the cache (since there is no way to </span>
-<span class="sd">        get a list of keys after-the-fact).</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            ip(str): IP being added to cache. This should be the original</span>
-<span class="sd">                IP, not the cache-prefixed key.</span>
-<span class="sd">            </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">keys_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">)</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
-        <span class="n">keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-        
-<div class="viewcode-block" id="Throttle.unrecord_ip"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.unrecord_ip">[docs]</a>    <span class="k">def</span> <span class="nf">unrecord_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Forces removal of a key from the key registry.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            ip(str): IP to remove from list of keys.</span>
-<span class="sd">            </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">keys_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">)</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
-        <span class="k">try</span><span class="p">:</span> 
-            <span class="n">keys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">keys_key</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+                <span class="s2">&quot;Throttle Activated: </span><span class="si">%s</span><span class="s2"> (IP: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%i</span><span class="s2"> hits in </span><span class="si">%i</span><span class="s2"> seconds.)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">failmsg</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Throttle.check"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -236,20 +143,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">ip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        
-        <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_key</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
 
         <span class="c1"># checking mode</span>
-        <span class="n">latest_fails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
+        <span class="n">latest_fails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">latest_fails</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_fails</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
             <span class="c1"># too many fails recently</span>
             <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">latest_fails</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
                 <span class="c1"># too soon - timeout in play</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># timeout has passed. clear faillist</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div></div>
@@ -280,6 +184,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -298,7 +203,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

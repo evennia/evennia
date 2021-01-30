@@ -42,49 +42,54 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">EvEditor (Evennia Line Editor)</span>
 
-<span class="sd">This implements an advanced line editor for editing longer texts in-game. The</span>
-<span class="sd">editor mimics the command mechanisms of the &quot;VI&quot; editor (a famous line-by-line</span>
-<span class="sd">editor) as far as reasonable.</span>
+<span class="sd">This implements an advanced line editor for editing longer texts</span>
+<span class="sd">in-game. The editor mimics the command mechanisms of the &quot;VI&quot; editor</span>
+<span class="sd">(a famous line-by-line editor) as far as reasonable.</span>
 
 <span class="sd">Features of the editor:</span>
 
-<span class="sd">- undo/redo.</span>
-<span class="sd">- edit/replace on any line of the buffer.</span>
-<span class="sd">- search&amp;replace text anywhere in buffer.</span>
-<span class="sd">- formatting of buffer, or selection, to certain width + indentations.</span>
-<span class="sd">- allow to echo the input or not, depending on your client.</span>
-<span class="sd">- in-built help</span>
+<span class="sd"> - undo/redo.</span>
+<span class="sd"> - edit/replace on any line of the buffer.</span>
+<span class="sd"> - search&amp;replace text anywhere in buffer.</span>
+<span class="sd"> - formatting of buffer, or selection, to certain width + indentations.</span>
+<span class="sd"> - allow to echo the input or not, depending on your client.</span>
 
-<span class="sd">To use the editor, just import EvEditor from this module and initialize it:</span>
+<span class="sd">To use the editor, just import EvEditor from this module</span>
+<span class="sd">and initialize it:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">from evennia.utils.eveditor import EvEditor</span>
+<span class="sd">    from evennia.utils.eveditor import EvEditor</span>
+<span class="sd">    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;, persistent=True)</span>
 
-<span class="sd"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
-<span class="sd">def _loadfunc(caller):</span>
-<span class="sd">    return caller.db.desc</span>
+<span class="sd">- `caller` is the user of the editor, the one to see all feedback.</span>
+<span class="sd">- `loadfunc(caller)` is called when the editor is first launched; the</span>
+<span class="sd">  return from this function is loaded as the starting buffer in the</span>
+<span class="sd">  editor.</span>
+<span class="sd">- `safefunc(caller, buffer)` is called with the current buffer when</span>
+<span class="sd">  saving in the editor. The function should return True/False depending</span>
+<span class="sd">  on if the saving was successful or not.</span>
+<span class="sd">- `quitfunc(caller)` is called when the editor exits. If this is given,</span>
+<span class="sd">  no automatic quit messages will be given.</span>
+<span class="sd">- `key` is an optional identifier for the editing session, to be</span>
+<span class="sd">  displayed in the editor.</span>
+<span class="sd">- `persistent` means the editor state will be saved to the database making it</span>
+<span class="sd">  survive a server reload. Note that using this mode, the load- save-</span>
+<span class="sd">  and quit-funcs must all be possible to pickle - notable unusable</span>
+<span class="sd">  callables are class methods and functions defined inside other</span>
+<span class="sd">  functions. With persistent=False, no such restriction exists.</span>
+<span class="sd">- `code` set to True activates features on the EvEditor to enter Python code.</span>
 
-<span class="sd">def _savefunc(caller, buffer):</span>
-<span class="sd">    caller.db.desc = buffer.strip()</span>
-<span class="sd">    return True</span>
+<span class="sd">In addition, the EvEditor can be used to enter Python source code,</span>
+<span class="sd">and offers basic handling of indentation.</span>
 
-<span class="sd">def _quitfunc(caller):</span>
-<span class="sd">    caller.msg(&quot;Custom quit message&quot;)</span>
-
-<span class="sd"># start the editor</span>
-<span class="sd">EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;,</span>
-<span class="sd">         persistent=True, code=False)</span>
-<span class="sd">```</span>
-
-<span class="sd">The editor can also be used to format Python code and be made to</span>
-<span class="sd">survive a reload. See the `EvEditor` class for more details.</span>
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 
@@ -94,6 +99,7 @@
 <span class="n">_CMD_NOINPUT</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOINPUT</span>
 
 <span class="n">_RE_GROUP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">.*?</span><span class="se">\&quot;</span><span class="s2">|\&#39;.*?\&#39;|\S*&quot;</span><span class="p">)</span>
+<span class="n">_COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 <span class="c1"># use NAWS in the future?</span>
 <span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 
@@ -207,7 +213,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdSaveYesNo"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdSaveYesNo">[docs]</a><span class="k">class</span> <span class="nc">CmdSaveYesNo</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSaveYesNo"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdSaveYesNo">[docs]</a><span class="k">class</span> <span class="nc">CmdSaveYesNo</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the editor state on quit. This catches</span>
 <span class="sd">    nomatches (defaults to Yes), and avoid saves only if</span>
@@ -238,7 +244,7 @@
     <span class="sd">&quot;&quot;&quot;Stores the yesno question&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quitsave_yesno&quot;</span>
-    <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># override other cmdsets.</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
 
 <div class="viewcode-block" id="SaveYesNoCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -253,7 +259,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdEditorBase"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorBase</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditorBase"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorBase</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base parent for editor commands</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -265,18 +271,17 @@
 
 <div class="viewcode-block" id="CmdEditorBase.parse"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handles pre-parsing. Editor commands are on the form</span>
+<span class="sd">        Handles pre-parsing</span>
 
-<span class="sd">        ::</span>
-
+<span class="sd">        Usage:</span>
 <span class="sd">            :cmd [li] [w] [txt]</span>
 
 <span class="sd">        Where all arguments are optional.</span>
 
-<span class="sd">        - `li`  - line number (int), starting from 1. This could also</span>
-<span class="sd">              be a range given as &lt;l&gt;:&lt;l&gt;.</span>
-<span class="sd">        - `w`  - word(s) (string), could be encased in quotes.</span>
-<span class="sd">        - `txt` - extra text (string), could be encased in quotes.</span>
+<span class="sd">        - li - line number (int), starting from 1. This could also</span>
+<span class="sd">          be a range given as &lt;l&gt;:&lt;l&gt;.</span>
+<span class="sd">        - w - word(s) (string), could be encased in quotes.</span>
+<span class="sd">        - txt - extra text (string), could be encased in quotes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1179,6 +1184,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="eveditor.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

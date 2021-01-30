@@ -43,22 +43,20 @@
 <span class="sd">Inline functions (nested form).</span>
 
 <span class="sd">This parser accepts nested inlinefunctions on the form</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">$funcname(arg, arg, ...)</span>
-<span class="sd">```</span>
+<span class="sd">    $funcname(arg, arg, ...)</span>
 
-<span class="sd">embedded in any text where any arg can be another ``$funcname()`` call.</span>
+<span class="sd">embedded in any text where any arg can be another `$funcname{}` call.</span>
 <span class="sd">This functionality is turned off by default - to activate,</span>
 <span class="sd">`settings.INLINEFUNC_ENABLED` must be set to `True`.</span>
 
-<span class="sd">Each token starts with `$funcname(` where there must be no space</span>
-<span class="sd">between the `$funcname` and `&quot;(&quot;`. The inlinefunc ends with a matched ending parentesis.</span>
-<span class="sd">`&quot;)&quot;`.</span>
+<span class="sd">Each token starts with `$funcname(` where there must be no space between the</span>
+<span class="sd">$funcname and &quot;(&quot;. It ends with a matched ending parentesis &quot;)&quot;.</span>
 
-<span class="sd">Inside the inlinefunc definition, one can use `\` to escape. This is</span>
+<span class="sd">Inside the inlinefunc definition, one can use \\\\ to escape. This is</span>
 <span class="sd">mainly needed for escaping commas in flowing text (which would</span>
-<span class="sd">otherwise be interpreted as an argument separator), or to escape `)`</span>
+<span class="sd">otherwise be interpreted as an argument separator), or to escape `}`</span>
 <span class="sd">when not intended to close the function block. Enclosing text in</span>
 <span class="sd">matched `\&quot;\&quot;\&quot;` (triple quotes) or `&#39;&#39;&#39;` (triple single-quotes) will</span>
 <span class="sd">also escape *everything* within without needing to escape individual</span>
@@ -68,11 +66,10 @@
 <span class="sd">modules defined by `settings.INLINEFUNC_MODULES`. They are identified</span>
 <span class="sd">by their function name (and ignored if this name starts with `_`). They</span>
 <span class="sd">should be on the following form:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">def funcname (*args, **kwargs):</span>
+<span class="sd">    def funcname (*args, **kwargs):</span>
 <span class="sd">    # ...</span>
-<span class="sd">```</span>
 
 <span class="sd">Here, the arguments given to `$funcname(arg1,arg2)` will appear as the</span>
 <span class="sd">`*args` tuple. This will be populated by the arguments given to the</span>
@@ -96,9 +93,8 @@
 <span class="sd">  the `stackfull` inlinefunc is appended to the end. By default this is an</span>
 <span class="sd">  error message.</span>
 
-<span class="sd">Syntax errors, notably failing to completely closing all inlinefunc</span>
-<span class="sd">blocks, will lead to the entire string remaining unparsed. Inlineparsing should</span>
-<span class="sd">never traceback.</span>
+<span class="sd">Syntax errors, notably not completely closing all inlinefunc blocks, will lead</span>
+<span class="sd">to the entire string remaining unparsed.</span>
 
 <span class="sd">----</span>
 
@@ -136,9 +132,10 @@
 <span class="sd">        given range.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        `$random()`</span>
-<span class="sd">        `$random(5)`</span>
-<span class="sd">        `$random(5, 10)`</span>
+
+<span class="sd">        - `$random()`</span>
+<span class="sd">        - `$random(5)`</span>
+<span class="sd">        - `$random(5, 10)`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -618,16 +615,16 @@
 <span class="sd">    Args:</span>
 <span class="sd">        in_template (str): The template to be used for nick recognition.</span>
 <span class="sd">        out_template (str): The template to be used to replace the string</span>
-<span class="sd">            matched by the in_template.</span>
+<span class="sd">            matched by the `in_template`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        regex  (regex): Regex to match against strings</span>
-<span class="sd">        template (str): Template with markers {arg1}, {arg2}, etc for</span>
-<span class="sd">        replacement using the standard .format method.</span>
+<span class="sd">        regex, template (regex, str): Regex to match against strings and a</span>
+<span class="sd">        template with markers `{arg1}`, `{arg2}`, etc for replacement using the</span>
+<span class="sd">        standard `.format` method.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        evennia.utils.inlinefuncs.NickTemplateInvalid: If the in/out template</span>
-<span class="sd">        does not have a matching number of $args.</span>
+<span class="sd">        inlinefuncs.NickTemplateInvalid: If the in/out template does not have a matching</span>
+<span class="sd">            number of $args.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># create the regex for in_template</span>
@@ -690,6 +687,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="inlinefuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

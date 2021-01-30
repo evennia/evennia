@@ -29,7 +29,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.rplanguage</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -98,46 +97,18 @@ words compared to the original and can help change the “feel” for
 the language you are creating. You can also add your own
 dictionary and “fix” random words for a list of input words.</p>
 <p>Below is an example of “elvish”, using “rounder” vowels and sounds:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># vowel/consonant grammar possibilities</span>
-<span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
-           <span class="s2">&quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;</span><span class="p">)</span>
-
-<span class="c1"># all not in this group is considered a consonant</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phonemes</span> <span class="o">=</span> <span class="s2">&quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot;</span>                <span class="s2">&quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot;</span>                <span class="s2">&quot;ng g m n l r w&quot;</span><span class="p">,</span>
 <span class="n">vowels</span> <span class="o">=</span> <span class="s2">&quot;eaoiuy&quot;</span>
-
-<span class="c1"># you need a representative of all of the minimal grammars here, so if a</span>
-<span class="c1"># grammar v exists, there must be atleast one phoneme available with only</span>
-<span class="c1"># one vowel in it</span>
-<span class="n">phonemes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot;</span>
-            <span class="s2">&quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot;</span>
-            <span class="s2">&quot;ng g m n l r w&quot;</span><span class="p">)</span>
-
-<span class="c1"># how much the translation varies in length compared to the original. 0 is</span>
-<span class="c1"># smallest, higher values give ever bigger randomness (including removing</span>
-<span class="c1"># short words entirely)</span>
+<span class="n">grammar</span> <span class="o">=</span> <span class="s2">&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>               <span class="s2">&quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;</span><span class="p">,</span>
 <span class="n">word_length_variance</span> <span class="o">=</span> <span class="mi">1</span>
-
-<span class="c1"># if a proper noun (word starting with capitalized letter) should be</span>
-<span class="c1"># translated or not. If not (default) it means e.g. names will remain</span>
-<span class="c1"># unchanged across languages.</span>
-<span class="n">noun_translate</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="c1"># all proper nouns (words starting with a capital letter not at the beginning</span>
-<span class="c1"># of a sentence) can have either a postfix or -prefix added at all times</span>
 <span class="n">noun_postfix</span> <span class="o">=</span> <span class="s2">&quot;&#39;la&quot;</span>
-
-<span class="c1"># words in dict will always be translated this way. The &#39;auto_translations&#39;</span>
-<span class="c1"># is instead a list or filename to file with words to use to help build a</span>
-<span class="c1"># bigger dictionary by creating random translations of each word in the</span>
-<span class="c1"># list *once* and saving the result for subsequent use.</span>
 <span class="n">manual_translations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;the&quot;</span><span class="p">:</span><span class="s2">&quot;y&#39;e&quot;</span><span class="p">,</span> <span class="s2">&quot;we&quot;</span><span class="p">:</span><span class="s2">&quot;uyi&quot;</span><span class="p">,</span> <span class="s2">&quot;she&quot;</span><span class="p">:</span><span class="s2">&quot;semi&quot;</span><span class="p">,</span> <span class="s2">&quot;he&quot;</span><span class="p">:</span><span class="s2">&quot;emi&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="s2">&quot;do&quot;</span><span class="p">,</span> <span class="s1">&#39;me&#39;</span><span class="p">:</span><span class="s1">&#39;mi&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">:</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;be&#39;</span><span class="p">:</span><span class="s2">&quot;hy&#39;e&quot;</span><span class="p">,</span> <span class="s1">&#39;and&#39;</span><span class="p">:</span><span class="s1">&#39;y&#39;</span><span class="p">}</span>
 
 <span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;elvish&quot;</span><span class="p">,</span> <span class="n">phonemes</span><span class="o">=</span><span class="n">phonemes</span><span class="p">,</span> <span class="n">grammar</span><span class="o">=</span><span class="n">grammar</span><span class="p">,</span>
                          <span class="n">word_length_variance</span><span class="o">=</span><span class="n">word_length_variance</span><span class="p">,</span>
-                         <span class="n">noun_translate</span><span class="o">=</span><span class="n">noun_translate</span><span class="p">,</span>
                          <span class="n">noun_postfix</span><span class="o">=</span><span class="n">noun_postfix</span><span class="p">,</span> <span class="n">vowels</span><span class="o">=</span><span class="n">vowels</span><span class="p">,</span>
-                         <span class="n">manual_translations</span><span class="o">=</span><span class="n">manual_translations</span><span class="p">,</span>
+                         <span class="n">manual_translations</span><span class="o">=</span><span class="n">manual_translations</span>
                          <span class="n">auto_translations</span><span class="o">=</span><span class="s2">&quot;my_word_file.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -218,13 +189,9 @@ cvcvccc would be c+v+c+v+cc+c (a word like ‘galosch’).</p></li>
 0 means a minimal variance, higher variance may mean words
 have wildly varying length; this strongly affects how the
 language “looks”.</p></li>
-<li><p><strong>noun_translate</strong> (<em>bool</em><em>, </em><em>optional</em>) – If a proper noun should be translated or
-not. By default they will not, allowing for e.g. the names of characters
-to be understandable. A ‘noun’ is identified as a capitalized word
-<em>not at the start of a sentence</em>. This simple metric means that names
-starting a sentence always will be translated (- but hey, maybe
-the fantasy language just never uses a noun at the beginning of
-sentences, who knows?)</p></li>
+<li><p><strong>noun_translate</strong> (<em>bool</em><em>, </em><em>optional</em>) – If a proper noun, identified as a
+capitalized word, should be translated or not. By default they
+will not, allowing for e.g. the names of characters to be understandable.</p></li>
 <li><p><strong>noun_prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – A prefix to go before every noun
 in this language (if any).</p></li>
 <li><p><strong>noun_postfix</strong> (<em>str</em><em>, </em><em>optuonal</em>) – A postfix to go after every noun
@@ -401,6 +368,7 @@ means fully obscured.</p></li>
   <li><a href="../../0.9.5/api/evennia.contrib.rplanguage.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -417,7 +385,6 @@ means fully obscured.</p></li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.rplanguage</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
