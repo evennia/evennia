@@ -68,9 +68,7 @@ _autodoc-index:
 	make _reformat_apidoc_headers
 
 _multiversion-autodoc-index:
-	make _clean_api_index
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
-	make _reformat_apidoc_headers
+	make _autodoc-index
 	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index." || :
 
 _html-build:
@@ -84,14 +82,11 @@ _multiversion-build:
 
 _multiversion-deploy:
 	@bash -e deploy.sh
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
 
 _latex-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(QUICKFILES)
 
-# main targets
-
-install:
+# main target:
 	@pip install -r requirements.txt
 
 clean:
@@ -128,7 +123,7 @@ local:
 mv-local:
 	make _multiversion-check-env
 	make clean
-	make _multiversion-autodoc-index
+	#make _multiversion-autodoc-index
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."
