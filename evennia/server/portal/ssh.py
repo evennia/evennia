@@ -263,7 +263,7 @@ class SshProtocol(Manhole, session.Session):
         """
         Data Evennia -> User
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Options to the protocol.
 
         """
@@ -276,18 +276,19 @@ class SshProtocol(Manhole, session.Session):
         Args:
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
-        Kwargs:
-            options (dict): Send-option flags
-                   - mxp: Enforce MXP link support.
-                   - ansi: Enforce no ANSI colors.
-                   - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
-                   - nocolor: Strip all colors.
-                   - raw: Pass string through without any ansi processing
-                        (i.e. include Evennia ansi markers but do not
-                        convert them into ansi tokens)
-                   - echo: Turn on/off line echo on the client. Turn
-                        off line echo for client, for example for password.
-                        Note that it must be actively turned back on again!
+        Keyword Args:
+            options (dict): Send-option flags:
+
+                - mxp: Enforce MXP link support.
+                - ansi: Enforce no ANSI colors.
+                - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
+                - nocolor: Strip all colors.
+                - raw: Pass string through without any ansi processing
+                  (i.e. include Evennia ansi markers but do not
+                  convert them into ansi tokens)
+                - echo: Turn on/off line echo on the client. Turn
+                  off line echo for client, for example for password.
+                  Note that it must be actively turned back on again!
 
         """
         # print "telnet.send_text", args,kwargs  # DEBUG
@@ -464,11 +465,16 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        from Crypto.PublicKey import RSA
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives.asymmetric import rsa
 
-        rsa_key = Key(RSA.generate(_KEY_LENGTH))
-        public_key_string = rsa_key.public().toString(type="OPENSSH")
-        private_key_string = rsa_key.toString(type="OPENSSH")
+        rsa_key = Key(
+            rsa.generate_private_key(
+                public_exponent=65537, key_size=_KEY_LENGTH, backend=default_backend()
+            )
+        )
+        public_key_string = rsa_key.public().toString(type="OPENSSH").decode()
+        private_key_string = rsa_key.toString(type="OPENSSH").decode()
 
         # save keys for the future.
         with open(privkeyfile, "wt") as pfile:

@@ -24,8 +24,7 @@ class InMemorySaveHandler(object):
 
 class OptionHandler(object):
     """
-    This is a generic Option handler. It is commonly used
-    implements AttributeHandler. Retrieve options eithers as properties on
+    This is a generic Option handler.  Retrieve options either as properties on
     this handler or by using the .get method.
 
     This is used for Account.options but it could be used by Scripts or Objects
@@ -54,7 +53,7 @@ class OptionHandler(object):
                 It will be called as `savefunc(key, value, **save_kwargs)`. A common one
                 to pass would be AttributeHandler.add.
             loadfunc (callable): A callable for all options to call when loading data into
-                itself. It will be called as `loadfunc(key, default=default, **load_kwargs)`. 
+                itself. It will be called as `loadfunc(key, default=default, **load_kwargs)`.
                 A common one to pass would be AttributeHandler.get.
             save_kwargs (any): Optional extra kwargs to pass into `savefunc` above.
             load_kwargs (any): Optional extra kwargs to pass into `loadfunc` above.
@@ -116,14 +115,16 @@ class OptionHandler(object):
         self.options[key] = loaded_option
         return loaded_option
 
-    def get(self, key, return_obj=False):
+    def get(self, key, default=None, return_obj=False, raise_error=False):
         """
         Retrieves an Option stored in the handler. Will load it if it doesn't exist.
 
         Args:
             key (str): The option key to retrieve.
+            default (any): What to return if the option is defined.
             return_obj (bool, optional): If True, returns the actual option
                 object instead of its value.
+            raise_error (bool, optional): Raise Exception if key is not found in options.
         Returns:
             option_value (any or Option): An option value  the Option itself.
         Raises:
@@ -131,7 +132,10 @@ class OptionHandler(object):
 
         """
         if key not in self.options_dict:
-            raise KeyError("Option not found!")
+            if raise_error:
+                raise KeyError("Option not found!")
+            return default
+        # get the options or load/recache it
         op_found = self.options.get(key) or self._load_option(key)
         return op_found if return_obj else op_found.value
 

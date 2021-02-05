@@ -16,6 +16,7 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 import os
 import time
+import glob
 from datetime import datetime
 from traceback import format_exc
 from twisted.python import log, logfile
@@ -76,33 +77,79 @@ def timeformat(when=None):
 
 class WeeklyLogFile(logfile.DailyLogFile):
     """
-    Log file that rotates once per week. Overrides key methods to change format
+    Log file that rotates once per week by default. Overrides key methods to change format.
 
     """
 
-    day_rotation = 7
+    def __init__(self, name, directory, defaultMode=None, day_rotation=7, max_size=1000000):
+        """
+        Args:
+            name (str): Name of log file.
+            directory (str): Directory holding the file.
+            defaultMode (str): Permissions used to create file. Defaults to
+                current permissions of this file if it exists.
+            day_rotation (int): How often to rotate the file.
+            max_size (int): Max size of log file before rotation (regardless of
+                time). Defaults to 1M.
+
+        """
+        self.day_rotation = day_rotation
+        self.max_size = max_size
+        self.size = 0
+        logfile.DailyLogFile.__init__(self, name, directory, defaultMode=defaultMode)
+
+    def _openFile(self):
+        logfile.DailyLogFile._openFile(self)
+        self.size = self._file.tell()
 
     def shouldRotate(self):
         """Rotate when the date has changed since last write"""
         # all dates here are tuples (year, month, day)
         now = self.toDate()
         then = self.lastDate
-        return now[0] > then[0] or now[1] > then[1] or now[2] > (then[2] + self.day_rotation)
+        return (
+            now[0] > then[0]
+            or now[1] > then[1]
+            or now[2] > (then[2] + self.day_rotation)
+            or self.size >= self.max_size
+        )
 
     def suffix(self, tupledate):
         """Return the suffix given a (year, month, day) tuple or unixtime.
-        Format changed to have 03 for march instead of 3 etc (retaining unix file order)  
+        Format changed to have 03 for march instead of 3 etc (retaining unix
+        file order)
+
+        If we get duplicate suffixes in location (due to hitting size limit),
+        we append __1, __2 etc.
+
+        Examples:
+            server.log.2020_01_29
+            server.log.2020_01_29__1
+            server.log.2020_01_29__2
         """
-        try:
-            return "_".join(["{:02d}".format(part) for part in tupledate])
-        except Exception:
-            # try taking a float unixtime
-            return "_".join(["{:02d}".format(part) for part in self.toDate(tupledate)])
+        suffix = ""
+        copy_suffix = 0
+        while True:
+            try:
+                suffix = "_".join(["{:02d}".format(part) for part in tupledate])
+            except Exception:
+                # try taking a float unixtime
+                suffix = "_".join(["{:02d}".format(part) for part in self.toDate(tupledate)])
+
+            suffix += f"__{copy_suffix}" if copy_suffix else ""
+
+            if os.path.exists(f"{self.path}.{suffix}"):
+                # Append a higher copy_suffix to try to break the tie (starting from 2)
+                copy_suffix += 1
+            else:
+                break
+        return suffix
 
     def write(self, data):
         "Write data to log file"
         logfile.BaseLogFile.write(self, data)
         self.lastDate = max(self.lastDate, self.toDate())
+        self.size += len(data)
 
 
 class PortalLogObserver(log.FileLogObserver):
@@ -320,7 +367,7 @@ class EvenniaLogFile(logfile.LogFile):
             logfile.LogFile.rotate(self)
             return
         lines = tail_log_file(self.path, 0, self.num_lines_to_append)
-        logfile.LogFile.rotate(self)
+        super().rotate()
         for line in lines:
             self.write(line)
 

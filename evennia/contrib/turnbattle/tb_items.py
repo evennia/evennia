@@ -348,7 +348,7 @@ def spend_action(character, actions, action_name=None):
         character (obj): Character spending the action
         actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
 
-    Kwargs:
+    Keyword Args:
         action_name (str or None): If a string is given, sets character's last action in
         combat to provided string
     """
@@ -718,11 +718,11 @@ class TBItemsTurnHandler(DefaultScript):
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
-            0
-        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+            0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        )
         character.db.combat_turnhandler = (
-            self
-        )  # Add a reference to this turn handler script to the character
+            self  # Add a reference to this turn handler script to the character
+        )
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):

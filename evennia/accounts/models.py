@@ -105,12 +105,12 @@ class AccountDB(TypedObject, AbstractUser):
     objects = AccountDBManager()
 
     # defaults
-    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
     __defaultclasspath__ = "evennia.accounts.accounts.DefaultAccount"
     __applabel__ = "accounts"
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
 
-    class Meta(object):
-        verbose_name = "Account"
+    #  class Meta:
+    #      verbose_name = "Account"
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch

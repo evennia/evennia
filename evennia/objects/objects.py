@@ -24,6 +24,7 @@ from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils import ansi
 from evennia.utils.utils import (
+    class_from_module,
     variable_from_module,
     lazy_property,
     make_iter,
@@ -31,7 +32,7 @@ from evennia.utils.utils import (
     list_to_string,
     to_str,
 )
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -40,6 +41,7 @@ _ScriptDB = None
 _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
+_COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
@@ -206,7 +208,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);" "delete:id({account_id}) or perm(Admin)"
+    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
 
     objects = ObjectManager()
 
@@ -333,24 +335,29 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
-        Kwargs:
+        Keyword Args:
             key (str): Optional key to pluralize, if given, use this instead of the object's key.
         Returns:
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
         """
+        plural_category = "plural_key"
         key = kwargs.get("key", self.key)
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
-        plural = _INFLECT.plural(key, 2)
-        plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        try:
+            plural = _INFLECT.plural(key, count)
+            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
+        except IndexError:
+            # this is raised by inflect if the input is not a proper noun
+            plural = key
         singular = _INFLECT.an(key)
-        if not self.aliases.get(plural, category="plural_key"):
+        if not self.aliases.get(plural, category=plural_category):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
-            self.aliases.clear(category="plural_key")
-            self.aliases.add(plural, category="plural_key")
+            self.aliases.clear(category=plural_category)
+            self.aliases.add(plural, category=plural_category)
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
-            self.aliases.add(singular, category="plural_key")
+            self.aliases.add(singular, category=plural_category)
         return singular, plural
 
     def search(
@@ -384,9 +391,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                    a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
-                   between multiple same-named matches
-            global_search (bool): Search all objects globally. This is overruled
-                by `location` keyword.
+                   between multiple same-named matches. The exact form of this input
+                   is given by `settings.SEARCH_MULTIMATCH_REGEX`.
+            global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
                 to `Objects` with this typeclass. May be a list of typeclasses
@@ -495,7 +502,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         if quiet:
-            return results
+            return list(results)
         return _AT_SEARCH_RESULT(
             results,
             self,
@@ -551,7 +558,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             session (Session, optional): Session to
                 return results to
 
-        Kwargs:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and
@@ -597,7 +604,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 depends on the MULTISESSION_MODE.
             options (dict, optional): Message-specific option-value
                 pairs. These will be applied at the protocol level.
-        Kwargs:
+        Keyword Args:
             any (string or tuples): All kwarg keys not listed above
                 will be treated as send-command names and their arguments
                 (which can be a string or a tuple).
@@ -648,7 +655,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude (list, optional): A list of object not to call the
                 function on.
 
-        Kwargs:
+        Keyword Args:
             Keyword arguments will be passed to the function for all objects.
         """
         contents = self.contents
@@ -680,7 +687,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 for every looker in contents that receives the
                 message. This allows for every object to potentially
                 get its own customized string.
-        Kwargs:
+        Keyword Args:
             Keyword arguments will be passed on to `obj.msg()` for all
             messaged objects.
 
@@ -755,7 +762,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 (at_before/after_move etc) with quiet=True, this is as quiet a move
                 as can be done.
 
-        Kwargs:
+        Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
 
         Returns:
@@ -929,7 +936,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             key (str): Name of the new object.
             account (Account): Account to attribute this object to.
 
-        Kwargs:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -1051,7 +1058,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # See if we need to kick the account off.
 
         for session in self.sessions.all():
-            session.msg(_("Your character %s has been destroyed.") % self.key)
+            session.msg(_("Your character {key} has been destroyed.").format(key=self.key))
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:
@@ -1095,7 +1102,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
           no_superuser_bypass (bool, optional): If `True`, don't skip
             lock check for superuser (be careful with this one).
 
-        Kwargs:
+        Keyword Args:
           Passed on to the at_access hook along with the result of the access check.
 
         """
@@ -1254,7 +1261,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         place to do it. This is called also if the object currently
         have no cmdsets.
 
-        Kwargs:
+        Keyword Args:
             caller (Session, Object or Account): The caller requesting
                 this cmdset.
 
@@ -1356,7 +1363,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             accessing_obj (Object or Account): The entity trying to gain access.
             access_type (str): The type of access that was requested.
 
-        Kwargs:
+        Keyword Args:
             Not used by default, added for possible expandability in a
             game.
 
@@ -1607,7 +1614,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str, optional): The message received.
             from_obj (any, optional): The object sending the message.
 
-        Kwargs:
+        Keyword Args:
             This includes any keywords sent to the `msg` method.
 
         Returns:
@@ -1629,7 +1636,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str, optional): Text to send.
             to_obj (any, optional): The object to send to.
 
-        Kwargs:
+        Keyword Args:
             Keywords passed from msg()
 
         Notes:
@@ -1865,7 +1872,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Args:
             message (str): The suggested say/whisper text spoken by self.
-        Kwargs:
+        Keyword Args:
             whisper (bool): If True, this is a whisper rather than
                 a say. This is sent by the whisper command by default.
                 Other verbal commands could use this hook in similar
@@ -1905,7 +1912,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 (by default only used by whispers).
             msg_receivers(str): Specific message to pass to the receiver(s). This will parsed
                 with the {receiver} placeholder replaced with the given receiver.
-        Kwargs:
+        Keyword Args:
             whisper (bool): If this is a whisper rather than a say. Kwargs
                 can be used by other verbal commands in a similar way.
             mapping (dict): Pass an additional mapping to the message.
@@ -1936,12 +1943,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # whisper mode
             msg_type = "whisper"
             msg_self = (
-                '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
+                '{self} whisper to {all_receivers}, "|n{speech}|n"'
+                if msg_self is True
+                else msg_self
             )
-            msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
+            msg_receivers = msg_receivers or '{object} whispers: "|n{speech}|n"'
             msg_location = None
         else:
-            msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
+            msg_self = '{self} say, "|n{speech}|n"' if msg_self is True else msg_self
             msg_location = msg_location or '{object} says, "{speech}"'
             msg_receivers = msg_receivers or message
 
@@ -2025,10 +2034,13 @@ class DefaultCharacter(DefaultObject):
 
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
+    lockstring = (
+        "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);"
+        "delete:id({account_id}) or perm(Admin)"
+    )
 
     @classmethod
-    def create(cls, key, account, **kwargs):
+    def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Character with default parameters, unless otherwise
         specified or extended.
@@ -2037,11 +2049,11 @@ class DefaultCharacter(DefaultObject):
 
         Args:
             key (str): Name of the new Character.
-            account (obj): Account to associate this Character with. Required as
-                an argument, but one can fake it out by supplying None-- it will
+            account (obj, optional): Account to associate this Character with.
+                If unset supplying None-- it will
                 change the default lockset and skip creator attribution.
 
-        Kwargs:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             All other kwargs will be passed into the create_object call.
@@ -2062,9 +2074,6 @@ class DefaultCharacter(DefaultObject):
         # Set the supplied key as the name of the intended object
         kwargs["key"] = key
 
-        # Get home for character
-        kwargs["home"] = ObjectDB.objects.get_id(kwargs.get("home", settings.DEFAULT_HOME))
-
         # Get permissions
         kwargs["permissions"] = kwargs.get("permissions", settings.PERMISSION_ACCOUNT_DEFAULT)
 
@@ -2076,9 +2085,10 @@ class DefaultCharacter(DefaultObject):
 
         try:
             # Check to make sure account does not have too many chars
-            if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                errors.append("There are too many characters associated with this account.")
-                return obj, errors
+            if account:
+                if len(account.characters) >= settings.MAX_NR_CHARACTERS:
+                    errors.append("There are too many characters associated with this account.")
+                    return obj, errors
 
             # Create the Character
             obj = create.create_object(**kwargs)
@@ -2247,7 +2257,7 @@ class DefaultRoom(DefaultObject):
     )
 
     @classmethod
-    def create(cls, key, account, **kwargs):
+    def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Room with default parameters, unless otherwise
         specified or extended.
@@ -2256,9 +2266,11 @@ class DefaultRoom(DefaultObject):
 
         Args:
             key (str): Name of the new Room.
-            account (obj): Account to associate this Room with.
+            account (obj, optional): Account to associate this Room with. If
+                given, it will be given specific control/edit permissions to this
+                object (along with normal Admin perms). If not given, default
 
-        Kwargs:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -2285,13 +2297,20 @@ class DefaultRoom(DefaultObject):
         # Get description, if provided
         description = kwargs.pop("description", "")
 
+        # get locks if provided
+        locks = kwargs.pop("locks", "")
+
         try:
             # Create the Room
             obj = create.create_object(**kwargs)
 
-            # Set appropriate locks
-            lockstring = kwargs.get("locks", cls.lockstring.format(id=account.id))
-            obj.locks.add(lockstring)
+            # Add locks
+            if not locks and account:
+                locks = cls.lockstring.format(**{"id": account.id})
+            elif not locks and not account:
+                locks = cls.lockstring(**{"id": obj.id})
+
+            obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -2327,8 +2346,7 @@ class DefaultRoom(DefaultObject):
 # Default Exit command, used by the base exit object
 #
 
-
-class ExitCommand(command.Command):
+class ExitCommand(_COMMAND_DEFAULT_CLASS):
     """
     This is a command that simply cause the caller to traverse
     the object it is attached to.
@@ -2440,7 +2458,7 @@ class DefaultExit(DefaultObject):
     # Command hooks
 
     @classmethod
-    def create(cls, key, account, source, dest, **kwargs):
+    def create(cls, key, source, dest, account=None, **kwargs):
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
@@ -2454,7 +2472,7 @@ class DefaultExit(DefaultObject):
             source (Room): The room to create this exit in.
             dest (Room): The room to which this exit should go.
 
-        Kwargs:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -2484,13 +2502,18 @@ class DefaultExit(DefaultObject):
 
         description = kwargs.pop("description", "")
 
+        locks = kwargs.get("locks", "")
+
         try:
             # Create the Exit
             obj = create.create_object(**kwargs)
 
             # Set appropriate locks
-            lockstring = kwargs.get("locks", cls.lockstring.format(id=account.id))
-            obj.locks.add(lockstring)
+            if not locks and account:
+                locks = cls.lockstring.format(**{"id": account.id})
+            elif not locks and not account:
+                locks = cls.lockstring.format(**{"id": obj.id})
+            obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -2524,10 +2547,10 @@ class DefaultExit(DefaultObject):
                 [
                     "puppet:false()",  # would be weird to puppet an exit ...
                     "traverse:all()",  # who can pass through exit by default
-                    "get:false()",
+                    "get:false()",  # noone can pick up the exit
                 ]
             )
-        )  # noone can pick up the exit
+        )
 
         # an exit should have a destination (this is replaced at creation time)
         if self.location:
@@ -2541,7 +2564,7 @@ class DefaultExit(DefaultObject):
         place to do it. This is called also if the object currently
         has no cmdsets.
 
-        Kwargs:
+        Keyword Args:
           force_init (bool): If `True`, force a re-build of the cmdset
             (for example to update aliases).
 

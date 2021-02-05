@@ -24,20 +24,33 @@ from evennia.utils.utils import to_str, mod_import
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
+from autobahn.exception import Disconnected
 
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
 )
 _CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
+_UPSTREAM_IPS = settings.UPSTREAM_IPS
 
-
+# Status Code 1000: Normal Closure
+#   called when the connection was closed through JavaScript
 CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
+
+# Status Code 1001: Going Away
+#   called when the browser is navigating away from the page
+GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
+
+STATE_CLOSING = WebSocketServerProtocol.STATE_CLOSING
 
 
 class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
     """
+
+    # nonce value, used to prevent the webclient from erasing the
+    # webclient_authenticated_uid value of csession on disconnect
+    nonce = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,14 +88,26 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         """
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
+
+        if client_address in _UPSTREAM_IPS and "x-forwarded-for" in self.http_headers:
+            addresses = [x.strip() for x in self.http_headers["x-forwarded-for"].split(",")]
+            addresses.reverse()
+
+            for addr in addresses:
+                if addr not in _UPSTREAM_IPS:
+                    client_address = addr
+                    break
+
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
         csession = self.get_client_session()  # this sets self.csessid
         csessid = self.csessid
         uid = csession and csession.get("webclient_authenticated_uid", None)
+        nonce = csession and csession.get("webclient_authenticated_nonce", 0)
         if uid:
             # the client session is already logged in.
             self.uid = uid
+            self.nonce = nonce
             self.logged_in = True
 
             for old_session in self.sessionhandler.sessions_from_csessid(csessid):
@@ -93,6 +118,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                     # if we have old sessions with the same csession, they are remnants
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
+
+        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        self.protocol_flags["UTF-8"] = True
+        self.protocol_flags["OOB"] = True
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
@@ -111,16 +140,24 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         csession = self.get_client_session()
 
         if csession:
-            csession["webclient_authenticated_uid"] = None
-            csession.save()
+            # if the nonce is different, webclient_authenticated_uid has been
+            # set *before* this disconnect (disconnect called after a new client
+            # connects, which occurs in some 'fast' browsers like Google Chrome
+            # and Mobile Safari)
+            if csession.get("webclient_authenticated_nonce", None) == self.nonce:
+                csession["webclient_authenticated_uid"] = None
+                csession["webclient_authenticated_nonce"] = 0
+                csession.save()
             self.logged_in = False
 
         self.sessionhandler.disconnect(self)
-        # autobahn-python: 1000 for a normal close, 3000-4999 for app. specific,
+        # autobahn-python:
+        # 1000 for a normal close, 1001 if the browser window is closed,
+        # 3000-4999 for app. specific,
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        self.sendClose(CLOSE_NORMAL, reason)
+        ret = self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
@@ -134,7 +171,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             reason (str or None): Close reason as sent by the WebSocket peer.
 
         """
-        if code == CLOSE_NORMAL:
+        if code == CLOSE_NORMAL or code == GOING_AWAY:
             self.disconnect(reason)
         else:
             self.websocket_close_code = code
@@ -161,7 +198,12 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             line (str): Text to send.
 
         """
-        return self.sendMessage(line.encode())
+        try:
+            return self.sendMessage(line.encode())
+        except Disconnected:
+            # this can happen on an unclean close of certain browsers.
+            # it means this link is actually already closed.
+            self.disconnect(reason="Browser already closed.")
 
     def at_login(self):
         csession = self.get_client_session()
@@ -204,7 +246,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         Args:
             text (str): Text to send.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Clean out all color.
@@ -219,6 +261,8 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                 return
         else:
             return
+        # just to be sure
+        text = to_str(text)
 
         flags = self.protocol_flags
 
@@ -257,7 +301,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
-        Kwargs:
+        Keyword Args:
             options (dict): These are ignored for oob commands. Use command
                 arguments (which can hold dicts) to send instructions to the
                 client instead.

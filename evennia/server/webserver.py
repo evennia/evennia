@@ -70,14 +70,15 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         Check to see if this is a reverse proxied connection.
 
         """
-        CLIENT = 0
-        http.HTTPChannel.allHeadersReceived(self)
-        req = self.requests[-1]
-        client_ip, port = self.transport.client
-        proxy_chain = req.getHeader("X-FORWARDED-FOR")
-        if proxy_chain and client_ip in _UPSTREAM_IPS:
-            forwarded = proxy_chain.split(", ", 1)[CLIENT]
-            self.transport.client = (forwarded, port)
+        if self.requests:
+            CLIENT = 0
+            http.HTTPChannel.allHeadersReceived(self)
+            req = self.requests[-1]
+            client_ip, port = self.transport.client
+            proxy_chain = req.getHeader("X-FORWARDED-FOR")
+            if proxy_chain and client_ip in _UPSTREAM_IPS:
+                forwarded = proxy_chain.split(", ", 1)[CLIENT]
+                self.transport.client = (forwarded, port)
 
 
 # Monkey-patch Twisted to handle X-Forwarded-For.
@@ -101,7 +102,8 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
 
         """
         request.notifyFinish().addErrback(
-            lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f)
+            lambda f: 0
+            # lambda f: logger.log_trace("%s\nCaught errback in webserver.py" % f)
         )
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + "/" + urlquote(path, safe=""), self.reactor
@@ -138,9 +140,9 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         # don't trigger traceback if connection is lost before request finish.
-        request.notifyFinish().addErrback(
-            lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f)
-        )
+        request.notifyFinish().addErrback(lambda f: 0)
+        # request.notifyFinish().addErrback(
+        #   lambda f:logger.log_trace("Caught errback in webserver.py: %s" % f)
         return NOT_DONE_YET
 
 
@@ -205,6 +207,11 @@ class DjangoWebRoot(resource.Resource):
         """
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
+
+        request.notifyFinish().addErrback(
+            lambda f: 0
+            # lambda f: logger.log_trace("%s\nCaught errback in webserver.py:" % f)
+        )
 
         deferred = request.notifyFinish()
         self._pending_requests[deferred] = deferred

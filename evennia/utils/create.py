@@ -78,7 +78,7 @@ def create_object(
 
     Create a new in-game object.
 
-    Kwargs:
+    Keyword Args:
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
             #dbref will be set.
@@ -206,7 +206,7 @@ def create_script(
     scripts.  It's behaviour is similar to the game objects except
     scripts has a time component and are more limited in scope.
 
-    Kwargs:
+    Keyword Args:
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
             #dbref will be set.
@@ -229,8 +229,12 @@ def create_script(
         report_to (Object): The object to return error messages to.
         desc (str): Optional description of script
         tags (list): List of tags or tuples (tag, category).
-        attributes (list): List if tuples (key, value) or (key, value, category)
-           (key, value, lockstring) or (key, value, lockstring, default_access).
+        attributes (list): List of tuples `(key, value)`, `(key, value, category)`,
+           `(key, value, category, lockstring)` or
+           `(key, value, category, lockstring, default_access)`.
+
+    Returns:
+        script (obj): An instance of the script created
 
     See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
@@ -255,11 +259,11 @@ def create_script(
     if obj:
         kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
     if interval:
-        kwarg["db_interval"] = interval
+        kwarg["db_interval"] = max(0, interval)
     if start_delay:
         kwarg["db_start_delay"] = start_delay
     if repeats:
-        kwarg["db_repeats"] = repeats
+        kwarg["db_repeats"] = max(0, repeats)
     if persistent:
         kwarg["db_persistent"] = persistent
     if desc:
@@ -310,7 +314,7 @@ script = create_script
 #
 
 
-def create_help_entry(key, entrytext, category="General", locks=None, aliases=None):
+def create_help_entry(key, entrytext, category="General", locks=None, aliases=None, tags=None):
     """
     Create a static help entry in the help database. Note that Command
     help entries are dynamic and directly taken from the __doc__
@@ -323,7 +327,8 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
         entrytext (str): The body of te help entry
         category (str, optional): The help category of the entry.
         locks (str, optional): A lockstring to restrict access.
-        aliases (list of str): List of alternative (likely shorter) keynames.
+        aliases (list of str, optional): List of alternative (likely shorter) keynames.
+        tags (lst, optional): List of tags or tuples `(tag, category)`.
 
     Returns:
         help (HelpEntry): A newly created help entry.
@@ -341,7 +346,9 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
         if locks:
             new_help.locks.add(locks)
         if aliases:
-            new_help.aliases.add(aliases)
+            new_help.aliases.add(make_iter(aliases))
+        if tags:
+            new_help.tags.batch_add(*tags)
         new_help.save()
         return new_help
     except IntegrityError:
@@ -363,7 +370,9 @@ help_entry = create_help_entry
 # Comm system methods
 
 
-def create_message(senderobj, message, channels=None, receivers=None, locks=None, header=None):
+def create_message(
+    senderobj, message, channels=None, receivers=None, locks=None, tags=None, header=None
+):
     """
     Create a new communication Msg. Msgs represent a unit of
     database-persistent communication between entites.
@@ -379,6 +388,7 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         receivers (Object, Account, str or list): An Account/Object to send
             to, or a list of them. May be Account objects or accountnames.
         locks (str): Lock definition string.
+        tags (list): A list of tags or tuples `(tag, category)`.
         header (str): Mime-type or other optional information for the message
 
     Notes:
@@ -405,6 +415,9 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         new_message.receivers = receiver
     if locks:
         new_message.locks.add(locks)
+    if tags:
+        new_message.tags.batch_add(*tags)
+
     new_message.save()
     return new_message
 
@@ -413,7 +426,9 @@ message = create_message
 create_msg = create_message
 
 
-def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None):
+def create_channel(
+    key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None
+):
     """
     Create A communication Channel. A Channel serves as a central hub
     for distributing Msgs to groups of people without specifying the
@@ -425,13 +440,14 @@ def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, type
     Args:
         key (str): This must be unique.
 
-    Kwargs:
+    Keyword Args:
         aliases (list of str): List of alternative (likely shorter) keynames.
         desc (str): A description of the channel, for use in listings.
         locks (str): Lockstring.
         keep_log (bool): Log channel throughput.
         typeclass (str or class): The typeclass of the Channel (not
             often used).
+        tags (list): A list of tags or tuples `(tag, category)`.
 
     Returns:
         channel (Channel): A newly created channel.
@@ -448,7 +464,7 @@ def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, type
 
     # store call signature for the signal
     new_channel._createdict = dict(
-        key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log
+        key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log, tags=tags
     )
 
     # this will trigger the save signal which in turn calls the
@@ -486,12 +502,11 @@ def create_account(
 
     Args:
         key (str): The account's name. This should be unique.
-        email (str): Email on valid addr@addr.domain form. This is
-            technically required but if set to `None`, an email of
-            `dummy@example.com` will be used as a placeholder.
+        email (str or None): Email on valid addr@addr.domain form. If
+            the empty string, will be set to None.
         password (str): Password in cleartext.
 
-    Kwargs:
+    Keyword Args:
         typeclass (str): The typeclass to use for the account.
         is_superuser (bool): Wether or not this account is to be a superuser
         locks (str): Lockstring.
@@ -502,6 +517,8 @@ def create_account(
         report_to (Object): An object with a msg() method to report
             errors to. If not given, errors will be logged.
 
+    Returns:
+        Account: The newly created Account.
     Raises:
         ValueError: If `key` already exists in database.
 
@@ -532,7 +549,7 @@ def create_account(
     # correctly when each object is recovered).
 
     if not email:
-        email = "dummy@example.com"
+        email = None
     if _AccountDB.objects.filter(username__iexact=key):
         raise ValueError("An Account with the name '%s' already exists." % key)
 

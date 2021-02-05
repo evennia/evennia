@@ -5,7 +5,8 @@ all Attributes and TypedObjects).
 
 """
 import shlex
-from django.db.models import Q
+from django.db.models import F, Q, Count, ExpressionWrapper, FloatField
+from django.db.models.functions import Cast
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module
 from evennia.typeclasses.attributes import Attribute
@@ -30,15 +31,15 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Attribute manager methods
     def get_attribute(
-        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None
+        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
     ):
         """
         Return Attribute objects by key, by category, by value, by
-        strvalue, by object (it is stored on) or with a combination of
+        `strvalue`, by object (it is stored on) or with a combination of
         those criteria.
 
-        Attrs:
-            key (str, optional): The attribute's key to search for
+        Args:
+            key (str, optional): The attribute's key to search for.
             category (str, optional): The category of the attribute(s)
                 to search for.
             value (str, optional): The attribute value to search for.
@@ -51,9 +52,10 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 precedence if given.
             obj (Object, optional): On which object the Attribute to
                 search for is.
-            attrype (str, optional): An attribute-type to search for.
+            attrtype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
+            kwargs (any): Currently unused. Reserved for future use.
 
         Returns:
             attributes (list): The matching Attributes.
@@ -82,7 +84,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         Get a nick, in parallel to `get_attribute`.
 
-        Attrs:
+        Args:
             key (str, optional): The nicks's key to search for
             category (str, optional): The category of the nicks(s) to search for.
             value (str, optional): The attribute value to search for. Note that this
@@ -101,7 +103,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             key=key, category=category, value=value, strvalue=strvalue, obj=obj
         )
 
-    def get_by_attribute(self, key=None, category=None, value=None, strvalue=None, attrtype=None):
+    def get_by_attribute(
+        self, key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+    ):
         """
         Return objects having attributes with the given key, category,
         value, strvalue or combination of those criteria.
@@ -121,13 +125,17 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             attrype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
+            kwargs (any): Currently unused. Reserved for future use.
 
         Returns:
             obj (list): Objects having the matching Attributes.
 
         """
         dbmodel = self.model.__dbclass__.__name__.lower()
-        query = [("db_attributes__db_attrtype", attrtype), ("db_attributes__db_model", dbmodel)]
+        query = [
+            ("db_attributes__db_attrtype", attrtype),
+            ("db_attributes__db_model", dbmodel),
+        ]
         if key:
             query.append(("db_attributes__db_key", key))
         if category:
@@ -162,7 +170,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
 
-        Attrs:
+        Args:
             key (str, optional): The Tag's key to search for
             category (str, optional): The Tag of the attribute(s)
                 to search for.
@@ -236,20 +244,28 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
-    def get_by_tag(self, key=None, category=None, tagtype=None):
+    def get_by_tag(self, key=None, category=None, tagtype=None, **kwargs):
         """
         Return objects having tags with a given key or category or combination of the two.
         Also accepts multiple tags/category/tagtype
 
         Args:
             key (str or list, optional): Tag key or list of keys. Not case sensitive.
-            category (str or list, optional): Tag category. Not case sensitive. If `key` is
-                a list, a single category can either apply to all keys in that list or this
-                must be a list matching the `key` list element by element. If no `key` is given,
-                all objects with tags of this category are returned.
+            category (str or list, optional): Tag category. Not case sensitive.
+                If `key` is a list, a single category can either apply to all
+                keys in that list or this must be a list matching the `key`
+                list element by element. If no `key` is given, all objects with
+                tags of this category are returned.
             tagtype (str, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
                 `permission`. This always apply to all queried tags.
+
+        Keyword Args:
+            match (str): "all" (default) or "any"; determines whether the
+                target object must be tagged with ALL of the provided
+                tags/categories or ANY single one. ANY will perform a weighted
+                sort, so objects with more tag matches will outrank those with
+                fewer tag matches.
 
         Returns:
             objects (list): Objects with matching tag.
@@ -262,10 +278,18 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if not (key or category):
             return []
 
+        global _Tag
+        if not _Tag:
+            from evennia.typeclasses.models import Tag as _Tag
+
+        anymatch = "any" == kwargs.get("match", "all").lower().strip()
+
         keys = make_iter(key) if key else []
         categories = make_iter(category) if category else []
         n_keys = len(keys)
         n_categories = len(categories)
+        unique_categories = sorted(set(categories))
+        n_unique_categories = len(unique_categories)
 
         dbmodel = self.model.__dbclass__.__name__.lower()
         query = (
@@ -286,14 +310,29 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                     "get_by_tag needs a single category or a list of categories "
                     "the same length as the list of tags."
                 )
+            clauses = Q()
             for ikey, key in enumerate(keys):
-                query = query.filter(
-                    db_tags__db_key__iexact=key, db_tags__db_category__iexact=categories[ikey]
-                )
+                # ANY mode; must match any one of the given tags/categories
+                clauses |= Q(db_key__iexact=key, db_category__iexact=categories[ikey])
         else:
             # only one or more categories given
-            for category in categories:
-                query = query.filter(db_tags__db_category__iexact=category)
+            clauses = Q()
+            # ANY mode; must match any one of them
+            for category in unique_categories:
+                clauses |= Q(db_category__iexact=category)
+
+        tags = _Tag.objects.filter(clauses)
+        query = query.filter(db_tags__in=tags).annotate(
+            matches=Count("db_tags__pk", filter=Q(db_tags__in=tags), distinct=True)
+        )
+
+        if anymatch:
+            # ANY: Match any single tag, ordered by weight
+            query = query.order_by("-matches")
+        else:
+            # Default ALL: Match all of the tags and optionally more
+            n_req_tags = n_keys if n_keys > 0 else n_unique_categories
+            query = query.filter(matches__gte=n_req_tags)
 
         return query
 
@@ -452,6 +491,34 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             retval = retval.filter(id__lte=self.dbref(max_dbref, reqhash=False))
         return retval
 
+    def get_typeclass_totals(self, *args, **kwargs) -> object:
+        """
+        Returns a queryset of typeclass composition statistics.
+
+        Returns:
+            qs (Queryset): A queryset of dicts containing the typeclass (name),
+                the count of objects with that typeclass and a float representing
+                the percentage of objects associated with the typeclass.
+
+        """
+        return (
+            self.values("db_typeclass_path")
+            .distinct()
+            .annotate(
+                # Get count of how many objects for each typeclass exist
+                count=Count("db_typeclass_path")
+            )
+            .annotate(
+                # Rename db_typeclass_path field to something more human
+                typeclass=F("db_typeclass_path"),
+                # Calculate this class' percentage of total composition
+                percent=ExpressionWrapper(
+                    ((F("count") / float(self.count())) * 100.0), output_field=FloatField(),
+                ),
+            )
+            .values("typeclass", "count", "percent")
+        )
+
     def object_totals(self):
         """
         Get info about database statistics.
@@ -463,11 +530,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 object having that typeclass set on themselves).
 
         """
-        dbtotals = {}
-        typeclass_paths = set(self.values_list("db_typeclass_path", flat=True))
-        for typeclass_path in typeclass_paths:
-            dbtotals[typeclass_path] = self.filter(db_typeclass_path=typeclass_path).count()
-        return dbtotals
+        stats = self.get_typeclass_totals().order_by("typeclass")
+        return {x.get("typeclass"): x.get("count") for x in stats}
 
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
@@ -587,7 +651,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django get method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method
         Returns:
@@ -609,7 +673,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:
@@ -732,7 +796,7 @@ class TypeclassManager(TypedObjectManager):
         Variation of get that not only returns the current typeclass
         but also all subclasses of that typeclass.
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method.
         Returns:
@@ -757,7 +821,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:

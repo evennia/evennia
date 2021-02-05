@@ -6,6 +6,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 """
 import re
 import math
+import inspect
 
 from django.conf import settings
 
@@ -74,6 +75,13 @@ def _init_command(cls, **kwargs):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
+    # make sure to pick up the parent's docstring if the child class is
+    # missing one (important for auto-help)
+    if cls.__doc__ is None:
+        for parent_class in inspect.getmro(cls):
+            if parent_class.__doc__ is not None:
+                cls.__doc__ = parent_class.__doc__
+                break
     cls.help_category = cls.help_category.lower()
 
 
@@ -130,6 +138,9 @@ class Command(object, metaclass=CommandMeta):
     arg_regex - (optional) raw string regex defining how the argument part of
                 the command should look in order to match for this command
                 (e.g. must it be a space between cmdname and arg?)
+    auto_help_display_key - (optional) if given, this replaces the string shown
+        in the auto-help listing. This is particularly useful for system-commands
+        whose actual key is not really meaningful.
 
     (Note that if auto_help is on, this initial string is also used by the
     system to create the help entry for the command, so it's a good idea to
@@ -332,7 +343,7 @@ class Command(object, metaclass=CommandMeta):
             session (Session, optional): Supply data only to a unique
                 session (ignores the value of `self.msg_all_sessions`).
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options to the protocol.
             any (any): All other keywords are interpreted as th
                 name of send-instructions.
@@ -358,7 +369,7 @@ class Command(object, metaclass=CommandMeta):
             obj (Object or Account, optional): Object or Account on which to call the execute_cmd.
                 If not given, self.caller will be used.
 
-        Kwargs:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and
@@ -401,12 +412,11 @@ class Command(object, metaclass=CommandMeta):
         """
         pass
 
-    def func(self):
+    def get_command_info(self):
         """
-        This is the actual executing part of the command.  It is
-        called directly after self.parse(). See the docstring of this
-        module for which object properties are available (beyond those
-        set in self.parse())
+        This is the default output of func() if no func() overload is done.
+        Provided here as a separate method so that it can be called for debugging
+        purposes when making commands.
 
         """
         variables = "\n".join(
@@ -416,11 +426,8 @@ class Command(object, metaclass=CommandMeta):
 Command {self} has no defined `func()` - showing on-command variables:
 {variables}
         """
-        self.caller.msg(string)
-        return
-
         # a simple test command to show the available properties
-        string = "-" * 50
+        string += "-" * 50
         string += "\n|w%s|n - Command variables from evennia:\n" % self.key
         string += "-" * 50
         string += "\nname of cmd (self.key): |w%s|n\n" % self.key
@@ -437,6 +444,16 @@ Command {self} has no defined `func()` - showing on-command variables:
         )
 
         self.caller.msg(string)
+
+    def func(self):
+        """
+        This is the actual executing part of the command.  It is
+        called directly after self.parse(). See the docstring of this
+        module for which object properties are available (beyond those
+        set in self.parse())
+
+        """
+        self.get_command_info()
 
     def get_extra_info(self, caller, **kwargs):
         """
@@ -484,12 +501,28 @@ Command {self} has no defined `func()` - showing on-command variables:
         Get the client screenwidth for the session using this command.
 
         Returns:
-            client width (int or None): The width (in characters) of the client window. None
-                if this command is run without a Session (such as by an NPC).
+            client width (int): The width (in characters) of the client window.
 
         """
         if self.session:
-            return self.session.protocol_flags["SCREENWIDTH"][0]
+            return self.session.protocol_flags.get(
+                "SCREENWIDTH", {0: settings.CLIENT_DEFAULT_WIDTH}
+            )[0]
+        return settings.CLIENT_DEFAULT_WIDTH
+
+    def client_height(self):
+        """
+        Get the client screenheight for the session using this command.
+
+        Returns:
+            client height (int): The height (in characters) of the client window.
+
+        """
+        if self.session:
+            return self.session.protocol_flags.get(
+                "SCREENHEIGHT", {0: settings.CLIENT_DEFAULT_HEIGHT}
+            )[0]
+        return settings.CLIENT_DEFAULT_HEIGHT
 
     def styled_table(self, *args, **kwargs):
         """
@@ -498,7 +531,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         Args:
             *args (str): Column headers. If not colored explicitly, these will get colors
                 from user options.
-        Kwargs:
+        Keyword Args:
             any (str, int or dict): EvTable options, including, optionally a `table` dict
                 detailing the contents of the table.
         Returns:
@@ -551,7 +584,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
         Helper for formatting a string into a pretty display, for a header, separator or footer.
 
-        Kwargs:
+        Keyword Args:
             header_text (str): Text to include in header.
             fill_character (str): This single character will be used to fill the width of the
                 display.

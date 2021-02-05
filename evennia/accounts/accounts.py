@@ -4,7 +4,7 @@ Typeclass for Account objects
 Note that this object is primarily intended to
 store OOC information, not game info! This
 object represents the actual user (not their
-character) and has NO actual precence in the
+character) and has NO actual presence in the
 game world (this is handled by the associated
 character object, so you should customize that
 instead for most things).
@@ -37,7 +37,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from random import getrandbits
 
 __all__ = ("DefaultAccount",)
@@ -51,8 +51,12 @@ _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
-CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
-LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
+CREATION_THROTTLE = Throttle(
+    limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+)
+LOGIN_THROTTLE = Throttle(
+    limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+)
 
 
 class AccountSessionHandler(object):
@@ -180,7 +184,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - at_server_reload()
      - at_server_shutdown()
 
-     """
+    """
 
     objects = AccountManager()
 
@@ -216,12 +220,16 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     @property
     def characters(self):
         # Get playable characters list
-        objs = self.db._playable_characters
+        objs = self.db._playable_characters or []
 
         # Rebuild the list if legacy code left null values after deletion
-        if None in objs:
-            objs = [x for x in self.db._playable_characters if x]
-            self.db._playable_characters = objs
+        try:
+            if None in objs:
+                objs = [x for x in self.db._playable_characters if x]
+                self.db._playable_characters = objs
+        except Exception as e:
+            logger.log_trace(e)
+            logger.log_err(e)
 
         return objs
 
@@ -267,11 +275,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object."))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
             return
         if obj.account:
             # object already puppeted
@@ -287,12 +295,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     else:
                         txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
                         txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
-                        self.msg(txt1, session=session)
-                        self.msg(txt2, session=obj.sessions.all())
+                        self.msg(_(txt1), session=session)
+                        self.msg(_(txt2), session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
-                self.msg(f"|c{obj.key}|R is already puppeted by another Account.")
+                self.msg(_("|c{key}|R is already puppeted by another Account.").format(key=obj.key))
                 return
 
         # do the puppeting
@@ -365,7 +373,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             puppet (Object): The matching puppeted object, if any.
 
         """
-        return session.puppet
+        return session.puppet if session else None
 
     def get_all_puppets(self):
         """
@@ -402,7 +410,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         Checks if a given username or IP is banned.
 
-        Kwargs:
+        Keyword Args:
             ip (str, optional): IP address.
             username (str, optional): Username.
 
@@ -473,7 +481,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             password (str): Password of account
             ip (str, optional): IP address of client
 
-        Kwargs:
+        Keyword Args:
             session (Session, optional): Session requesting authentication
 
         Returns:
@@ -488,7 +496,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # See if authentication is currently being throttled
         if ip and LOGIN_THROTTLE.check(ip):
-            errors.append("Too many login failures; please try again in a few minutes.")
+            errors.append(_("Too many login failures; please try again in a few minutes."))
 
             # With throttle active, do not log continued hits-- it is a
             # waste of storage and can be abused to make your logs harder to
@@ -500,8 +508,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if banned:
             # this is a banned IP or name!
             errors.append(
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
+                _(
+                    "|rYou have been banned and cannot continue from here."
+                    "\nIf you feel this ban is in error, please email an admin.|x"
+                )
             )
             logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
             LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
@@ -511,7 +521,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         account = authenticate(username=username, password=password)
         if not account:
             # User-facing message
-            errors.append("Username and/or password is incorrect.")
+            errors.append(_("Username and/or password is incorrect."))
 
             # Log auth failures while throttle is inactive
             logger.log_sec(f"Authentication Failure: {username} (IP: {ip}).")
@@ -601,7 +611,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         Args:
             password (str): Password to validate
 
-        Kwargs:
+        Keyword Args:
             account (DefaultAccount, optional): Account object to validate the
                 password for. Optional, but Django includes some validators to
                 do things like making sure users aren't setting passwords to the
@@ -641,6 +651,56 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         logger.log_sec(f"Password successfully changed for {self}.")
         self.at_password_change()
 
+    def create_character(self, *args, **kwargs):
+        """
+        Create a character linked to this account.
+
+        Args:
+            key (str, optional): If not given, use the same name as the account.
+            typeclass (str, optional): Typeclass to use for this character. If
+                not given, use settings.BASE_CHARACTER_TYPECLASS.
+            permissions (list, optional): If not given, use the account's permissions.
+            ip (str, optiona): The client IP creating this character. Will fall back to the
+                one stored for the account if not given.
+            kwargs (any): Other kwargs will be used in the create_call.
+        Returns:
+            Object: A new character of the `character_typeclass` type. None on an error.
+            list or None: A list of errors, or None.
+
+        """
+        # parse inputs
+        character_key = kwargs.pop("key", self.key)
+        character_ip = kwargs.pop("ip", self.db.creator_ip)
+        character_permissions = kwargs.pop("permissions", self.permissions)
+
+        # Load the appropriate Character class
+        character_typeclass = kwargs.pop("typeclass", None)
+        character_typeclass = (
+            character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        )
+        Character = class_from_module(character_typeclass)
+
+        if "location" not in kwargs:
+            kwargs["location"] = ObjectDB.objects.get_id(settings.START_LOCATION)
+
+        # Create the character
+        character, errs = Character.create(
+            character_key,
+            self,
+            ip=character_ip,
+            typeclass=character_typeclass,
+            permissions=character_permissions,
+            **kwargs,
+        )
+        if character:
+            # Update playable character list
+            if character not in self.characters:
+                self.db._playable_characters.append(character)
+
+            # We need to set this to have @ic auto-connect to this character
+            self.db._last_puppet = character
+        return character, errs
+
     @classmethod
     def create(cls, *args, **kwargs):
         """
@@ -648,7 +708,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         with default (or overridden) permissions and having joined them to the
         appropriate default channels.
 
-        Kwargs:
+        Keyword Args:
             username (str): Username of Account owner
             password (str): Password of Account owner
             email (str, optional): Email address of Account owner
@@ -680,7 +740,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         ip = kwargs.get("ip", "")
         if ip and CREATION_THROTTLE.check(ip):
             errors.append(
-                "You are creating too many accounts. Please log into an existing account."
+                _("You are creating too many accounts. Please log into an existing account.")
             )
             return None, errors
 
@@ -708,7 +768,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            string = (
+            string = _(
                 "|rYou have been banned and cannot continue from here."
                 "\nIf you feel this ban is in error, please email an admin.|x"
             )
@@ -725,7 +785,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             except Exception as e:
                 errors.append(
-                    "There was an error creating the Account. If this problem persists, contact an admin."
+                    _(
+                        "There was an error creating the Account. If this problem persists, contact an admin."
+                    )
                 )
                 logger.log_trace()
                 return None, errors
@@ -747,37 +809,19 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 logger.log_err(string)
 
             if account and settings.MULTISESSION_MODE < 2:
-                # Load the appropriate Character class
-                character_typeclass = kwargs.get(
-                    "character_typeclass", settings.BASE_CHARACTER_TYPECLASS
+                # Auto-create a character to go with this account
+
+                character, errs = account.create_character(
+                    typeclass=kwargs.get("character_typeclass")
                 )
-                character_home = kwargs.get("home")
-                Character = class_from_module(character_typeclass)
-
-                # Create the character
-                character, errs = Character.create(
-                    account.key,
-                    account,
-                    ip=ip,
-                    typeclass=character_typeclass,
-                    permissions=permissions,
-                    home=character_home,
-                )
-                errors.extend(errs)
-
-                if character:
-                    # Update playable character list
-                    if character not in account.characters:
-                        account.db._playable_characters.append(character)
-
-                    # We need to set this to have @ic auto-connect to this character
-                    account.db._last_puppet = character
+                if errs:
+                    errors.extend(errs)
 
         except Exception:
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_("An error occurred. Please e-mail an admin if the problem persists."))
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
@@ -820,7 +864,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         server.
 
         Args:
-            text (str, optional): text data to send
+            text (str or tuple, optional): The message to send. This
+                is treated internally like any send-command, so its
+                value can be a tuple if sending multiple arguments to
+                the `text` oob command.
             from_obj (Object or Account or list, optional): Object sending. If given, its
                 at_msg_send() hook will be called. If iterable, call on all entities.
             session (Session or list, optional): Session object or a list of
@@ -828,7 +875,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 default send behavior for the current
                 MULTISESSION_MODE.
             options (list): Protocol-specific options. Passed on to the protocol.
-        Kwargs:
+        Keyword Args:
             any (dict): All other keywords are passed on to the protocol.
 
         """
@@ -851,7 +898,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         kwargs["options"] = options
 
         if text is not None:
-            kwargs["text"] = to_str(text)
+            if not (isinstance(text, str) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text)
+                except Exception:
+                    text = repr(text)
+            kwargs["text"] = text
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
@@ -870,7 +923,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             session (Session, optional): The session to be responsible
                 for the command-send
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Other keyword arguments will be added to the
                 found command object instance as variables before it
                 executes. This is unused by default Evennia but may be
@@ -899,6 +952,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         nofound_string=None,
         multimatch_string=None,
         use_nicks=True,
+        quiet=False,
         **kwargs,
     ):
         """
@@ -925,9 +979,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 message to echo if `searchdata` leads to multiple matches.
                 If not given, will fall back to the default handler.
             use_nicks (bool, optional): Use account-level nick replacement.
+            quiet (bool, optional): If set, will not show any error to the user,
+                and will also lead to returning a list of matches.
 
         Return:
             match (Account, Object or None): A single Account or Object match.
+            list: If `quiet=True` this is a list of 0, 1 or more Account or Object matches.
+
         Notes:
             Extra keywords are ignored, but are allowed in call in
             order to make API more consistent with
@@ -939,28 +997,31 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self"):
                 return self
-        if search_object:
-            matches = ObjectDB.objects.object_search(
-                searchdata, typeclass=typeclass, use_nicks=use_nicks
-            )
-        else:
-            searchdata = self.nicks.nickreplace(
-                searchdata, categories=("account",), include_account=False
-            )
-
-            matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
-        matches = _AT_SEARCH_RESULT(
-            matches,
-            self,
-            query=searchdata,
-            nofound_string=nofound_string,
-            multimatch_string=multimatch_string,
+        searchdata = self.nicks.nickreplace(
+            searchdata, categories=("account",), include_account=False
         )
-        if matches and return_puppet:
-            try:
-                return matches.puppet
-            except AttributeError:
-                return None
+        if search_object:
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
+        else:
+            matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
+
+        if quiet:
+            matches = list(matches)
+            if return_puppet:
+                matches = [match.puppet for match in matches]
+        else:
+            matches = _AT_SEARCH_RESULT(
+                matches,
+                self,
+                query=searchdata,
+                nofound_string=nofound_string,
+                multimatch_string=multimatch_string,
+            )
+            if matches and return_puppet:
+                try:
+                    matches = matches.puppet
+                except AttributeError:
+                    return None
         return matches
 
     def access(
@@ -978,7 +1039,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
           no_superuser_bypass (bool, optional): Turn off superuser
             lock bypassing. Be careful with this one.
 
-        Kwargs:
+        Keyword Args:
           kwargs (any): Passed to the at_access hook along with the result.
 
         Returns:
@@ -1122,7 +1183,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 check.
             access_type (str): The type of access checked.
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): These are passed on from the access check
                 and can be used to relay custom instructions from the
                 check mechanism.
@@ -1204,7 +1265,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 ]
             except Exception:
                 logger.log_trace()
-        now = timezone.now()
+        if settings.USE_TZ:
+            now = timezone.localtime()
+        else:
+            now = timezone.now()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
         if _MUDINFO_CHANNEL:
             _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
@@ -1236,21 +1300,21 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if session:
             session.msg(logged_in={})
 
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_("The Character does not exist."))
                 return
         elif _MULTISESSION_MODE == 1:
             # in this mode all sessions connect to the same puppet.
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_("The Character does not exist."))
                 return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
@@ -1288,7 +1352,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(f"|R{self.key} disconnected{reason}|n")
+        self._send_to_connect_channel(
+            _("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason)
+        )
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1322,7 +1388,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             text (str, optional): The message received.
             from_obj (any, optional): The object sending the message.
 
-        Kwargs:
+        Keyword Args:
             This includes any keywords sent to the `msg` method.
 
         Returns:
@@ -1344,7 +1410,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             text (str, optional): Text to send.
             to_obj (any, optional): The object to send to.
 
-        Kwargs:
+        Keyword Args:
             Keywords passed from msg()
 
         Notes:
@@ -1394,7 +1460,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return "{} has no in-game appearance.".format(target)
+                return _("{target} has no in-game appearance.").format(target=target)
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1437,7 +1503,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        _(
+                            "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        )
                     )
                 else:
                     result.append("\n |w@charcreate <name> [=description]|n - create new character")
@@ -1501,7 +1569,7 @@ class DefaultGuest(DefaultAccount):
         """
         Gets or creates a Guest account object.
 
-        Kwargs:
+        Keyword Args:
             ip (str, optional): IP address of requestor; used for ban checking,
                 throttling and logging
 
@@ -1517,17 +1585,17 @@ class DefaultGuest(DefaultAccount):
 
         # check if guests are enabled.
         if not settings.GUEST_ENABLED:
-            errors.append("Guest accounts are not enabled on this server.")
+            errors.append(_("Guest accounts are not enabled on this server."))
             return None, errors
 
         try:
             # Find an available guest name.
             for name in settings.GUEST_LIST:
-                if not AccountDB.objects.filter(username__iexact=name).count():
+                if not AccountDB.objects.filter(username__iexact=name).exists():
                     username = name
                     break
             if not username:
-                errors.append("All guest accounts are in use. Please try again later.")
+                errors.append(_("All guest accounts are in use. Please try again later."))
                 if ip:
                     LOGIN_THROTTLE.update(ip, "Too many requests for Guest access.")
                 return None, errors
@@ -1549,13 +1617,22 @@ class DefaultGuest(DefaultAccount):
                     ip=ip,
                 )
                 errors.extend(errs)
+
+                if not account.characters:
+                    # this can happen for multisession_mode > 1. For guests we
+                    # always auto-create a character, regardless of multi-session-mode.
+                    character, errs = account.create_character()
+
+                if errs:
+                    errors.extend(errs)
+
                 return account, errors
 
         except Exception as e:
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_("An error occurred. Please e-mail an admin if the problem persists."))
             logger.log_trace()
             return None, errors
 
@@ -1572,7 +1649,7 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
         self.puppet_object(session, self.db._last_puppet)
 
     def at_server_shutdown(self):

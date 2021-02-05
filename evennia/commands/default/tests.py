@@ -17,9 +17,9 @@ import datetime
 from anything import Anything
 
 from django.conf import settings
-from mock import Mock, mock
+from unittest.mock import patch, Mock, MagicMock
 
-from evennia import DefaultRoom, DefaultExit
+from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import (
@@ -56,6 +56,7 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 # ------------------------------------------------------------
 
 
+@patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
 class CommandTest(EvenniaTest):
     """
     Tests a command
@@ -149,11 +150,18 @@ class CommandTest(EvenniaTest):
             returned_msg = msg_sep.join(
                 _RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi)) for mess in stored_msg
             ).strip()
-            if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
+            msg = msg.strip()
+            if msg == "" and returned_msg or not returned_msg.startswith(msg):
+                prt = ""
+                for ic, char in enumerate(msg):
+                    import re
+
+                    prt += char
+
                 sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
                 sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
                 sep3 = "\n" + "=" * 78
-                retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
+                retval = sep1 + msg + sep2 + returned_msg + sep3
                 raise AssertionError(retval)
         else:
             returned_msg = "\n".join(str(msg) for msg in stored_msg)
@@ -346,9 +354,27 @@ class TestAccount(CommandTest):
         self.call(account.CmdOOC(), "", "You go OOC.", caller=self.account)
 
     def test_ic(self):
+        self.account.db._playable_characters = [self.char1]
         self.account.unpuppet_object(self.session)
         self.call(
             account.CmdIC(), "Char", "You become Char.", caller=self.account, receiver=self.char1
+        )
+
+    def test_ic__other_object(self):
+        self.account.db._playable_characters = [self.obj1]
+        self.account.unpuppet_object(self.session)
+        self.call(
+            account.CmdIC(), "Obj", "You become Obj.", caller=self.account, receiver=self.obj1
+        )
+
+    def test_ic__nonaccess(self):
+        self.account.unpuppet_object(self.session)
+        self.call(
+            account.CmdIC(),
+            "Nonexistent",
+            "That is not a valid character choice.",
+            caller=self.account,
+            receiver=self.account,
         )
 
     def test_password(self):
@@ -456,9 +482,17 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Persistent attributes:\n test = testval")
+        self.call(building.CmdExamine(), "self/test", "Persistent attribute(s):\n  test = testval")
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
+
+        # escape inlinefuncs
+        self.char1.db.test2 = "this is a $random() value."
+        self.call(
+            building.CmdExamine(),
+            "self/test2",
+            "Persistent attribute(s):\n  test2 = this is a \$random() value.",
+        )
 
         self.room1.scripts.add(self.script.__class__)
         self.call(building.CmdExamine(), "")
@@ -505,7 +539,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
         self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
 
-        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+        with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
             mock_ed.assert_called_with(self.char1, Anything, Anything, key="Obj2/test3")
 
@@ -789,7 +823,7 @@ class TestBuilding(CommandTest):
         )
         self.call(building.CmdDesc(), "", "Usage: ")
 
-        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+        with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdDesc(), "/edit")
             mock_ed.assert_called_with(
                 self.char1,
@@ -937,7 +971,11 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
 
     def test_list_cmdsets(self):
-        self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
+        self.call(
+            building.CmdListCmdSets(),
+            "",
+            "<CmdSetHandler> stack:\n <CmdSet DefaultCharacter, Union, perm, prio 0>:",
+        )
         self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
@@ -991,6 +1029,34 @@ class TestBuilding(CommandTest):
             "All object creation hooks were run. All old attributes where deleted before the swap.",
         )
 
+        from evennia.prototypes.prototypes import homogenize_prototype
+
+        test_prototype = [
+            homogenize_prototype(
+                {
+                    "prototype_key": "testkey",
+                    "prototype_tags": [],
+                    "typeclass": "typeclasses.objects.Object",
+                    "key": "replaced_obj",
+                    "attrs": [("foo", "bar", None, ""), ("desc", "protdesc", None, "")],
+                }
+            )
+        ]
+        with patch(
+            "evennia.commands.default.building.protlib.search_prototype",
+            new=MagicMock(return_value=test_prototype),
+        ) as mprot:
+            self.call(
+                building.CmdTypeclass(),
+                "/prototype Obj=testkey",
+                "replaced_obj changed typeclass from "
+                "evennia.objects.objects.DefaultObject to "
+                "typeclasses.objects.Object.\nAll object creation hooks were "
+                "run. Attributes set before swap were not removed. Prototype "
+                "'replaced_obj' was successfully applied over the object type.",
+            )
+            assert self.obj1.db.desc == "protdesc"
+
     def test_lock(self):
         self.call(building.CmdLock(), "", "Usage: ")
         self.call(building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj.")
@@ -1038,10 +1104,40 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
         self.call(building.CmdFind(), "*TestAccount", "Match")
 
-        self.call(building.CmdFind(), "/char Obj")
-        self.call(building.CmdFind(), "/room Obj")
-        self.call(building.CmdFind(), "/exit Obj")
+        self.call(building.CmdFind(), "/char Obj", "No Matches")
+        self.call(building.CmdFind(), "/room Obj", "No Matches")
+        self.call(building.CmdFind(), "/exit Obj", "No Matches")
         self.call(building.CmdFind(), "/exact Obj", "One Match")
+
+        # Test multitype filtering
+        with patch(
+            "evennia.commands.default.building.CHAR_TYPECLASS",
+            "evennia.objects.objects.DefaultCharacter",
+        ):
+            self.call(building.CmdFind(), "/char/room Obj", "No Matches")
+            self.call(building.CmdFind(), "/char/room/exit Char", "2 Matches")
+            self.call(building.CmdFind(), "/char/room/exit/startswith Cha", "2 Matches")
+
+        # Test null search
+        self.call(building.CmdFind(), "=", "Usage: ")
+
+        # Test bogus dbref range with no search term
+        self.call(building.CmdFind(), "= obj", "Invalid dbref range provided (not a number).")
+        self.call(building.CmdFind(), "= #1a", "Invalid dbref range provided (not a number).")
+
+        # Test valid dbref ranges with no search term
+        id1 = self.obj1.id
+        id2 = self.obj2.id
+        maxid = ObjectDB.objects.latest("id").id
+        maxdiff = maxid - id1 + 1
+        mdiff = id2 - id1 + 1
+
+        self.call(building.CmdFind(), f"=#{id1}", f"{maxdiff} Matches(#{id1}-#{maxid}")
+        self.call(building.CmdFind(), f"={id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1} - {id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}- #{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}-#{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"=#{id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
@@ -1054,7 +1150,7 @@ class TestBuilding(CommandTest):
             "= Obj",
             "To create a global script you need scripts/add <typeclass>.",
         )
-        self.call(building.CmdScript(), "Obj = ", "dbref obj")
+        self.call(building.CmdScript(), "Obj ", "dbref ")
 
         self.call(
             building.CmdScript(), "/start Obj", "0 scripts started on Obj"
@@ -1147,10 +1243,10 @@ class TestBuilding(CommandTest):
         )
 
     def test_spawn(self):
-        def getObject(commandTest, objKeyStr):
+        def get_object(commandTest, obj_key):
             # A helper function to get a spawned object and
             # check that it exists in the process.
-            query = search_object(objKeyStr)
+            query = search_object(obj_key)
             commandTest.assertIsNotNone(query)
             commandTest.assertTrue(bool(query))
             obj = query[0]
@@ -1170,21 +1266,30 @@ class TestBuilding(CommandTest):
             inputs=["y"],
         )
 
+        self.call(
+            building.CmdSpawn(),
+            "/save testprot2 = {'key':'Test Char', "
+            "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+            "(Replacing `prototype_key` in prototype with given key.)|Saved prototype: testprot2",
+            inputs=["y"],
+        )
+
         self.call(building.CmdSpawn(), "/search ", "Key ")
-        self.call(building.CmdSpawn(), "/search test;test2", "")
+        self.call(building.CmdSpawn(), "/search test;test2", "No prototypes found.")
 
         self.call(
             building.CmdSpawn(),
             "/save {'key':'Test Char', " "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
-            "To save a prototype it must have the 'prototype_key' set.",
+            "A prototype_key must be given, either as `prototype_key = <prototype>` or as "
+            "a key 'prototype_key' inside the prototype structure.",
         )
 
         self.call(building.CmdSpawn(), "/list", "Key ")
-
         self.call(building.CmdSpawn(), "testprot", "Spawned Test Char")
-        # Tests that the spawned object's location is the same as the caharacter's location, since
+
+        # Tests that the spawned object's location is the same as the character's location, since
         # we did not specify it.
-        testchar = getObject(self, "Test Char")
+        testchar = get_object(self, "Test Char")
         self.assertEqual(testchar.location, self.char1.location)
         testchar.delete()
 
@@ -1201,7 +1306,7 @@ class TestBuilding(CommandTest):
             "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
             "Spawned goblin",
         )
-        goblin = getObject(self, "goblin")
+        goblin = get_object(self, "goblin")
         # Tests that the spawned object's type is a DefaultCharacter.
         self.assertIsInstance(goblin, DefaultCharacter)
         self.assertEqual(goblin.location, spawnLoc)
@@ -1220,7 +1325,7 @@ class TestBuilding(CommandTest):
         # Tests "spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")
 
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertEqual(ball.location, self.char1.location)
         self.assertIsInstance(ball, DefaultObject)
         ball.delete()
@@ -1230,7 +1335,7 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSpawn(), "/n 'BALL'", "Spawned Ball"
         )  # /n switch is abbreviated form of /noloc
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertIsNone(ball.location)
         ball.delete()
 
@@ -1249,12 +1354,12 @@ class TestBuilding(CommandTest):
             % spawnLoc.dbref,
             "Spawned Ball",
         )
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertEqual(ball.location, spawnLoc)
         ball.delete()
 
         # test calling spawn with an invalid prototype.
-        self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
+        self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST' was found.")
 
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
@@ -1285,13 +1390,12 @@ class TestBuilding(CommandTest):
 
         # spawn/edit with invalid prototype
         msg = self.call(
-            building.CmdSpawn(), "/edit NO_EXISTS", "No prototype 'NO_EXISTS' was found."
+            building.CmdSpawn(), "/edit NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
         )
 
         # spawn/examine (missing prototype)
         # lists all prototypes that exist
-        msg = self.call(building.CmdSpawn(), "/examine")
-        assert "testball" in msg and "testprot" in msg
+        self.call(building.CmdSpawn(), "/examine", "You need to specify a prototype-key to show.")
 
         # spawn/examine with valid prototype
         # prints the prototype
@@ -1300,7 +1404,9 @@ class TestBuilding(CommandTest):
 
         # spawn/examine with invalid prototype
         # shows error
-        self.call(building.CmdSpawn(), "/examine NO_EXISTS", "No prototype 'NO_EXISTS' was found.")
+        self.call(
+            building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
+        )
 
 
 class TestComms(CommandTest):
@@ -1472,11 +1578,11 @@ class TestSystemCommands(CommandTest):
 
         self.call(multimatch, "look", "")
 
-    @mock.patch("evennia.commands.default.syscommands.ChannelDB")
+    @patch("evennia.commands.default.syscommands.ChannelDB")
     def test_channelcommand(self, mock_channeldb):
-        channel = mock.MagicMock()
-        channel.msg = mock.MagicMock()
-        mock_channeldb.objects.get_channel = mock.MagicMock(return_value=channel)
+        channel = MagicMock()
+        channel.msg = MagicMock()
+        mock_channeldb.objects.get_channel = MagicMock(return_value=channel)
 
         self.call(syscommands.SystemSendToChannel(), "public:Hello")
         channel.msg.assert_called()

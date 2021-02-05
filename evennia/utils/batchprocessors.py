@@ -31,7 +31,8 @@ etc. You also need to know Python and Evennia's API. Hence it's
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
 
-Batch-command processor file syntax
+Batch-Command processor file syntax
+-----------------------------------
 
 The batch-command processor accepts 'batchcommand files' e.g
 `batch.ev`, containing a sequence of valid Evennia commands in a
@@ -39,66 +40,61 @@ simple format. The engine runs each command in sequence, as if they
 had been run at the game prompt.
 
 Each Evennia command must be delimited by a line comment to mark its
-end.
-
-```
-#INSERT path.batchcmdfile - this as the first entry on a line will
-      import and run a batch.ev file in this position, as if it was
-      written in this file.
-```
-
-This way entire game worlds can be created and planned offline; it is
+end. This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
 real offline text editor is often much better than any online text
 editor or prompt.
 
+There is only one batchcommand-specific entry to use in a batch-command
+files (all others are just like in-game commands):
+
+- `#INSERT path.batchcmdfile` - this as the first entry on a line will
+  import and run a batch.ev file in this position, as if it was
+  written in this file.
+
+
 Example of batch.ev file:
-----------------------------
+::
 
-```
-# batch file
-# all lines starting with # are comments; they also indicate
-# that a command definition is over.
+    # batch file
+    # all lines starting with # are comments; they also indicate
+    # that a command definition is over.
 
-@create box
+    @create box
 
-# this comment ends the @create command.
+    # this comment ends the @create command.
 
-@set box/desc = A large box.
+    @set box/desc = A large box.
 
-Inside are some scattered piles of clothing.
+    Inside are some scattered piles of clothing.
 
 
-It seems the bottom of the box is a bit loose.
+    It seems the bottom of the box is a bit loose.
 
-# Again, this comment indicates the @set command is over. Note how
-# the description could be freely added. Excess whitespace on a line
-# is ignored.  An empty line in the command definition is parsed as a \n
-# (so two empty lines becomes a new paragraph).
+    # Again, this comment indicates the @set command is over. Note how
+    # the description could be freely added. Excess whitespace on a line
+    # is ignored.  An empty line in the command definition is parsed as a \n
+    # (so two empty lines becomes a new paragraph).
 
-@teleport #221
+    @teleport #221
 
-# (Assuming #221 is a warehouse or something.)
-# (remember, this comment ends the @teleport command! Don'f forget it)
+    # (Assuming #221 is a warehouse or something.)
+    # (remember, this comment ends the @teleport command! Don'f forget it)
 
-# Example of importing another file at this point.
-#IMPORT examples.batch
+    # Example of importing another file at this point.
+    #INSERT examples.batch
 
-@drop box
+    @drop box
 
-# Done, the box is in the warehouse! (this last comment is not necessary to
-# close the @drop command since it's the end of the file)
-```
+    # Done, the box is in the warehouse! (this last comment is not necessary to
+    # close the @drop command since it's the end of the file)
 
--------------------------
 
 An example batch file is `contrib/examples/batch_example.ev`.
 
 
-==========================================================================
-
-
-Batch-code processor file syntax
+Batch-Code processor file syntax
+--------------------------------
 
 The Batch-code processor accepts full python modules (e.g. `batch.py`)
 that looks identical to normal Python files. The difference from
@@ -113,62 +109,62 @@ the code and re-run sections of it easily during development.
 
 Code blocks are marked by commented tokens alone on a line:
 
-#HEADER - This denotes code that should be pasted at the top of all
-         other code. Multiple HEADER statements - regardless of where
-         it exists in the file - is the same as one big block.
-         Observe that changes to variables made in one block is not
-         preserved between blocks!
-#CODE - This designates a code block that will be executed like a
-       stand-alone piece of code together with any HEADER(s)
-       defined. It is mainly used as a way to mark stop points for
-       the interactive mode of the batchprocessor. If no CODE block
-       is defined in the module, the entire module (including HEADERS)
-       is assumed to be a CODE block.
-#INSERT path.filename - This imports another batch_code.py file and
-      runs it in the given position. The inserted file will retain
-      its own HEADERs which will not be mixed with the headers of
-      this file.
+- `#HEADER` - This denotes code that should be pasted at the top of all
+  other code. Multiple HEADER statements - regardless of where
+  it exists in the file - is the same as one big block.
+  Observe that changes to variables made in one block is not
+  preserved between blocks!
+- `#CODE` - This designates a code block that will be executed like a
+  stand-alone piece of code together with any HEADER(s)
+  defined. It is mainly used as a way to mark stop points for
+  the interactive mode of the batchprocessor. If no CODE block
+  is defined in the module, the entire module (including HEADERS)
+  is assumed to be a CODE block.
+- `#INSERT path.filename` - This imports another batch_code.py file and
+  runs it in the given position. The inserted file will retain
+  its own HEADERs which will not be mixed with the headers of
+  this file.
 
 Importing works as normal. The following variables are automatically
 made available in the script namespace.
 
 - `caller` -  The object executing the batchscript
 - `DEBUG` - This is a boolean marking if the batchprocessor is running
-            in debug mode. It can be checked to e.g. delete created objects
-            when running a CODE block multiple times during testing.
-            (avoids creating a slew of same-named db objects)
+  in debug mode. It can be checked to e.g. delete created objects
+  when running a CODE block multiple times during testing.
+  (avoids creating a slew of same-named db objects)
 
+Example batch.py file:
+::
 
-Example batch.py file
------------------------------------
+    #HEADER
 
-```
-#HEADER
+    from django.conf import settings
+    from evennia.utils import create
+    from types import basetypes
 
-from django.conf import settings
-from evennia.utils import create
-from types import basetypes
+    GOLD = 10
 
-GOLD = 10
+    #CODE
 
-#CODE
+    obj = create.create_object(basetypes.Object)
+    obj2 = create.create_object(basetypes.Object)
+    obj.location = caller.location
+    obj.db.gold = GOLD
+    caller.msg("The object was created!")
 
-obj = create.create_object(basetypes.Object)
-obj2 = create.create_object(basetypes.Object)
-obj.location = caller.location
-obj.db.gold = GOLD
-caller.msg("The object was created!")
+    if DEBUG:
+        obj.delete()
+        obj2.delete()
 
-if DEBUG:
-    obj.delete()
-    obj2.delete()
+    #INSERT another_batch_file
 
-#INSERT another_batch_file
+    #CODE
 
-#CODE
+    script = create.create_script()
 
-script = create.create_script()
-```
+----
+
 """
 import re
 import codecs
@@ -206,7 +202,7 @@ def read_batchfile(pythonpath, file_ending=".py"):
         file_ending (str): The file ending of this file (.ev or .py)
 
     Returns:
-        text (str): The text content of the batch file.
+        str: The text content of the batch file.
 
     Raises:
         IOError: If problems reading file.
@@ -255,19 +251,20 @@ class BatchCommandProcessor(object):
         """
         This parses the lines of a batchfile according to the following
         rules:
-          1) # at the beginning of a line marks the end of the command before
-               it. It is also a comment and any number of # can exist on
-               subsequent lines (but not inside comments).
-          2) #INSERT at the beginning of a line imports another
-             batch-cmd file file and pastes it into the batch file as if
-             it was written there.
-          3) Commands are placed alone at the beginning of a line and their
-             arguments are considered to be everything following (on any
-             number of lines) until the next comment line beginning with #.
-          4) Newlines are ignored in command definitions
-          5) A completely empty line in a command line definition is condered
-             a newline (so two empty lines is a paragraph).
-          6) Excess spaces and indents inside arguments are stripped.
+
+        1. `#` at the beginning of a line marks the end of the command before
+           it. It is also a comment and any number of # can exist on
+           subsequent lines (but not inside comments).
+        2. `#INSERT` at the beginning of a line imports another
+           batch-cmd file file and pastes it into the batch file as if
+           it was written there.
+        3. Commands are placed alone at the beginning of a line and their
+           arguments are considered to be everything following (on any
+           number of lines) until the next comment line beginning with #.
+        4. Newlines are ignored in command definitions
+        5. A completely empty line in a command line definition is condered
+           a newline (so two empty lines is a paragraph).
+        6. Excess spaces and indents inside arguments are stripped.
 
         """
 

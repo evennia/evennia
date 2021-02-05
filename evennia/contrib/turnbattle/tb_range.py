@@ -78,7 +78,7 @@ And change your game's character typeclass to inherit from TBRangeCharacter
 instead of the default:
 
     class Character(TBRangeCharacter):
-        
+
 Do the same thing in your game's objects.py module for TBRangeObject:
 
     from evennia.contrib.turnbattle.tb_range import TBRangeObject
@@ -246,10 +246,10 @@ def apply_damage(defender, damage):
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
-    
+
     Args:
         defeated (obj): Fighter that's been defeated.
-    
+
     Notes:
         All this does is announce a defeat message by default, but if you
         want anything else to happen to defeated fighters (like putting them
@@ -300,11 +300,11 @@ def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_v
 def get_range(obj1, obj2):
     """
     Gets the combat range between two objects.
-    
+
     Args:
         obj1 (obj): First object
         obj2 (obj): Second object
-        
+
     Returns:
         range (int or None): Distance between two objects or None if not applicable
     """
@@ -324,7 +324,7 @@ def get_range(obj1, obj2):
 def distance_inc(mover, target):
     """
     Function that increases distance in range field between mover and target.
-    
+
     Args:
         mover (obj): The object moving
         target (obj): The object to be moved away from
@@ -340,11 +340,11 @@ def distance_inc(mover, target):
 def approach(mover, target):
     """
     Manages a character's whole approach, including changes in ranges to other characters.
-    
+
     Args:
         mover (obj): The object moving
         target (obj): The object to be moved toward
-        
+
     Notes:
         The mover will also automatically move toward any objects that are closer to the
         target than the mover is. The mover will also move away from anything they started
@@ -354,7 +354,7 @@ def approach(mover, target):
     def distance_dec(mover, target):
         """
         Helper function that decreases distance in range field between mover and target.
-        
+
         Args:
             mover (obj): The object moving
             target (obj): The object to be moved toward
@@ -388,11 +388,11 @@ def approach(mover, target):
 def withdraw(mover, target):
     """
     Manages a character's whole withdrawal, including changes in ranges to other characters.
-    
+
     Args:
         mover (obj): The object moving
         target (obj): The object to be moved away from
-        
+
     Notes:
         The mover will also automatically move away from objects that are close to the target
         of their withdrawl. The mover will never inadvertently move toward anything else while
@@ -470,7 +470,7 @@ def spend_action(character, actions, action_name=None):
         character (obj): Character spending the action
         actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
 
-    Kwargs:
+    Keyword Args:
         action_name (str or None): If a string is given, sets character's last action in
         combat to provided string
     """
@@ -540,7 +540,8 @@ class TBRangeTurnHandler(DefaultScript):
     room as its object.
 
     Fights persist until only one participant is left with any HP or all
-    remaining participants choose to end the combat with the 'disengage' command.
+    remaining participants choose to end the combat with the 'disengage'
+    command.
     """
 
     def at_script_creation(self):
@@ -615,7 +616,7 @@ class TBRangeTurnHandler(DefaultScript):
     def init_range(self, to_init):
         """
         Initializes range values for an object at the start of a fight.
-        
+
         Args:
             to_init (object): Object to initialize range field for.
         """
@@ -638,14 +639,14 @@ class TBRangeTurnHandler(DefaultScript):
     def join_rangefield(self, to_init, anchor_obj=None, add_distance=0):
         """
         Adds a new object to the range field of a fight in progress.
-        
+
         Args:
             to_init (object): Object to initialize range field for.
-        
-        Kwargs:
+
+        Keyword Args:
             anchor_obj (object): Object to copy range values from, or None for a random object.
             add_distance (int): Distance to put between to_init object and anchor object.
-            
+
         """
         # Get a list of room's contents without to_init object.
         contents = self.obj.contents
@@ -674,11 +675,11 @@ class TBRangeTurnHandler(DefaultScript):
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
-            0
-        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+            0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        )
         character.db.combat_turnhandler = (
-            self
-        )  # Add a reference to this turn handler script to the character
+            self  # Add a reference to this turn handler script to the character
+        )
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):

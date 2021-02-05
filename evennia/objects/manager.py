@@ -154,12 +154,12 @@ class ObjectDBManager(TypedObjectManager):
 
         Args:
             attribute_name (str): Attribute key to search for.
-            attribute_value (str):  Attribute value to search for.
+            attribute_value (any):  Attribute value to search for. This can also be database objects.
             candidates (list, optional): Candidate objects to limit search to.
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (list): Objects fullfilling both the `attribute_name` and
+            matches (query): Objects fullfilling both the `attribute_name` and
             `attribute_value` criterions.
 
         Notes:
@@ -175,31 +175,13 @@ class ObjectDBManager(TypedObjectManager):
         )
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
 
-        # This doesn't work if attribute_value is an object. Workaround below
-
-        if isinstance(attribute_value, (str, int, float, bool)):
-            return self.filter(
-                cand_restriction
-                & type_restriction
-                & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)
-            ).order_by("id")
-        else:
-            # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
-            global _ATTR
-            if not _ATTR:
-                from evennia.typeclasses.models import Attribute as _ATTR
-            cands = list(
-                self.filter(
-                    cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)
-                )
-            )
-            results = [
-                attr.objectdb_set.all()
-                for attr in _ATTR.objects.filter(
-                    objectdb__in=cands, db_value=attribute_value
-                ).order_by("id")
-            ]
-            return chain(*results)
+        results = self.filter(
+            cand_restriction
+            & type_restriction
+            & Q(db_attributes__db_key=attribute_name)
+            & Q(db_attributes__db_value=attribute_value)
+        ).order_by("id")
+        return results
 
     def get_objs_with_db_property(self, property_name, candidates=None):
         """
@@ -273,7 +255,7 @@ class ObjectDBManager(TypedObjectManager):
                 to exclude from the match.
 
         Returns:
-            contents (list): Matching contents, without excludeobj, if given.
+            contents (query): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = (
             Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
@@ -291,7 +273,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list): Only match objects with typeclasses having thess path strings.
 
         Returns:
-            matches (list): A list of matches of length 0, 1 or more.
+            matches (query): A list of matches of length 0, 1 or more.
         """
         if not isinstance(ostring, str):
             if hasattr(ostring, "key"):
@@ -484,19 +466,25 @@ class ObjectDBManager(TypedObjectManager):
                 # strips the number
                 match_number, searchdata = match.group("number"), match.group("name")
                 match_number = int(match_number) - 1
-                match_number = match_number if match_number >= 0 else None
             if match_number is not None or not exact:
                 # run search again, with the exactness set by call
                 matches = _searcher(searchdata, candidates, typeclass, exact=exact)
 
         # deal with result
-        if len(matches) > 1 and match_number is not None:
+        if len(matches) == 1 and match_number is not None and match_number != 0:
+            # this indicates trying to get a single match with a match-number
+            # targeting some higher-number match (like 2-box when there is only
+            # one box in the room). This leads to a no-match.
+            matches = []
+        elif len(matches) > 1 and match_number is not None:
             # multiple matches, but a number was given to separate them
-            try:
+            if 0 <= match_number < len(matches):
+                # limit to one match
                 matches = [matches[match_number]]
-            except IndexError:
-                # match number not matching anything
-                pass
+            else:
+                # a number was given outside of range. This means a no-match.
+                matches = []
+
         # return a list (possibly empty)
         return matches
 
@@ -575,8 +563,10 @@ class ObjectDBManager(TypedObjectManager):
             return None
 
         # copy over all attributes from old to new.
-        for attr in original_object.attributes.all():
-            new_object.attributes.add(attr.key, attr.value)
+        attrs = (
+            (a.key, a.value, a.category, a.lock_storage) for a in original_object.attributes.all()
+        )
+        new_object.attributes.batch_add(*attrs)
 
         # copy over all cmdsets, if any
         for icmdset, cmdset in enumerate(original_object.cmdset.all()):
@@ -590,8 +580,10 @@ class ObjectDBManager(TypedObjectManager):
             ScriptDB.objects.copy_script(script, new_obj=new_object)
 
         # copy over all tags, if any
-        for tag in original_object.tags.get(return_tagobj=True, return_list=True):
-            new_object.tags.add(tag=tag.db_key, category=tag.db_category, data=tag.db_data)
+        tags = (
+            (t.db_key, t.db_category, t.db_data) for t in original_object.tags.all(return_objs=True)
+        )
+        new_object.tags.batch_add(*tags)
 
         return new_object
 

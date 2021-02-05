@@ -2,6 +2,7 @@
 Unit tests for the utilities of the evennia.utils.gametime module.
 """
 
+from datetime import datetime
 import time
 import unittest
 from unittest.mock import Mock
@@ -16,7 +17,7 @@ class TestGametime(TestCase):
     def setUp(self) -> None:
         self.time = time.time
         self._SERVER_EPOCH = gametime._SERVER_EPOCH
-        time.time = Mock(return_value=1555595378.0)
+        time.time = Mock(return_value=datetime(2019, 4, 18, 13, 49, 38).timestamp())
         gametime._SERVER_EPOCH = None
         gametime.SERVER_RUNTIME = 600.0
         gametime.SERVER_START_TIME = time.time() - 300
@@ -54,7 +55,9 @@ class TestGametime(TestCase):
         self.assertAlmostEqual(gametime.gametime(), 630.0 * 5)
 
     def test_gametime_absolute(self):
-        self.assertAlmostEqual(gametime.gametime(absolute=True), 1555597898.0)
+        self.assertAlmostEqual(
+            gametime.gametime(absolute=True), datetime(2019, 4, 18, 14, 31, 38).timestamp()
+        )
 
     def test_gametime_downtimes(self):
         gametime.IGNORE_DOWNTIMES = True
@@ -95,4 +98,4 @@ class TestGametime(TestCase):
         self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
         self.assertAlmostEqual(script.interval, 12)
-        self.assertEqual(script.repeats, -1)
+        self.assertEqual(script.repeats, 0)

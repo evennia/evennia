@@ -539,7 +539,11 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     Only true if accessed_obj has the specified tag and optional
     category.
     """
-    return bool(accessed_obj.tags.get(*args))
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
+    tagkey = args[0] if args else None
+    category = args[1] if len(args) > 1 else None
+    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
@@ -547,9 +551,42 @@ def inside(accessing_obj, accessed_obj, *args, **kwargs):
     Usage:
        inside()
 
-    Only true if accessing_obj is "inside" accessed_obj
+    True if accessing_obj is 'inside' accessing_obj. Note that this only checks
+    one level down. So if if the lock is on a room, you will pass but not your
+    inventory (since their location is you, not the locked object).  If you
+    want also nested objects to pass the lock, use the `insiderecursive`
+    lockfunc.
     """
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
     return accessing_obj.location == accessed_obj
+
+
+def inside_rec(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        inside_rec()
+
+    True if accessing_obj is inside the accessed obj, at up to 10 levels
+    of recursion (so if this lock is on a room, then an object inside a box
+    in your inventory will also pass the lock).
+    """
+
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
+
+    def _recursive_inside(obj, accessed_obj, lvl=1):
+        if obj.location:
+            if obj.location == accessed_obj:
+                return True
+            elif lvl >= 10:
+                # avoid infinite recursions
+                return False
+            else:
+                return _recursive_inside(obj.location, accessed_obj, lvl + 1)
+        return False
+
+    return _recursive_inside(accessing_obj, accessed_obj)
 
 
 def holds(accessing_obj, accessed_obj, *args, **kwargs):
@@ -604,7 +641,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     if len(args) == 1:
         # command is holds(dbref/key) - check if given objname/dbref is held by accessing_ob
         return check_holds(args[0])
-    elif len(args=2):
+    elif len(args) > 1:
         # command is holds(attrname, value) check if any held object has the given attribute and value
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:

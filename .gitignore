@@ -47,3 +47,6 @@ nosetests.xml
 # Windows files generated during setup
 evennia.bat
 twistd.bat
+
+# never commit docs/build
+docs/build

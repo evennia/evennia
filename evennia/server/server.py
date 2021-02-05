@@ -38,7 +38,7 @@ from evennia.utils import logger
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _SA = object.__setattr__
 
@@ -105,6 +105,7 @@ _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 
 def _server_maintenance():
@@ -113,6 +114,8 @@ def _server_maintenance():
     the server needs to do. It is called every minute.
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
+    global _LAST_SERVER_TIME_SNAPSHOT
+
     if not _FLUSH_CACHE:
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
     if not _GAMETIME_MODULE:
@@ -125,8 +128,13 @@ def _server_maintenance():
         # first call after a reload
         _GAMETIME_MODULE.SERVER_START_TIME = now
         _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+        _LAST_SERVER_TIME_SNAPSHOT = now
     else:
-        _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
+        # adjust the runtime not with 60s but with the actual elapsed time
+        # in case this may varies slightly from 60s.
+        _GAMETIME_MODULE.SERVER_RUNTIME += now - _LAST_SERVER_TIME_SNAPSHOT
+    _LAST_SERVER_TIME_SNAPSHOT = now
+
     # update game time and save it across reloads
     _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
     ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
@@ -148,13 +156,17 @@ def _server_maintenance():
     # handle idle timeouts
     if _IDLE_TIMEOUT > 0:
         reason = _("idle timeout exceeded")
+        to_disconnect = []
         for session in (
             sess for sess in SESSIONS.values() if (now - sess.cmd_last) > _IDLE_TIMEOUT
         ):
             if not session.account or not session.account.access(
                 session.account, "noidletimeout", default=False
             ):
-                SESSIONS.disconnect(session, reason=reason)
+                to_disconnect.append(session)
+
+        for session in to_disconnect:
+            SESSIONS.disconnect(session, reason=reason)
 
 
 # ------------------------------------------------------------
@@ -387,17 +399,18 @@ class Evennia(object):
         """
         Shuts down the server from inside it.
 
-        mode - sets the server restart mode.
-               'reload' - server restarts, no "persistent" scripts
-                          are stopped, at_reload hooks called.
-               'reset' - server restarts, non-persistent scripts stopped,
-                         at_shutdown hooks called but sessions will not
-                         be disconnected.
-               'shutdown' - like reset, but server will not auto-restart.
-        _reactor_stopping - this is set if server is stopped by a kill
-                            command OR this method was already called
-                             once - in both cases the reactor is
-                             dead/stopping already.
+        Keyword Args:
+            mode (str): Sets the server restart mode:
+            - 'reload': server restarts, no "persistent" scripts
+              are stopped, at_reload hooks called.
+            - 'reset' - server restarts, non-persistent scripts stopped,
+              at_shutdown hooks called but sessions will not
+              be disconnected.
+            -'shutdown' - like reset, but server will not auto-restart.
+            _reactor_stopping: This is set if server is stopped by a kill
+                command OR this method was already called
+                once - in both cases the reactor is dead/stopping already.
+
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method
@@ -416,7 +429,7 @@ class Evennia(object):
             yield [
                 (s.pause(manual_pause=False), s.at_server_reload())
                 for s in ScriptDB.get_all_cached_instances()
-                if s.is_active or s.attributes.has("_manual_pause")
+                if s.id and (s.is_active or s.attributes.has("_manual_pause"))
             ]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -612,7 +625,10 @@ application = service.Application("Evennia")
 if "--nodaemon" not in sys.argv:
     # custom logging, but only if we are not running in interactive mode
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.SERVER_LOG_FILE), os.path.dirname(settings.SERVER_LOG_FILE)
+        os.path.basename(settings.SERVER_LOG_FILE),
+        os.path.dirname(settings.SERVER_LOG_FILE),
+        day_rotation=settings.SERVER_LOG_DAY_ROTATION,
+        max_size=settings.SERVER_LOG_MAX_SIZE,
     )
     application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 

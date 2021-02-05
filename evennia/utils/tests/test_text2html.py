@@ -140,63 +140,93 @@ class TestText2Html(TestCase):
 
     def test_sub_text(self):
         parser = text2html.HTML_PARSER
+
         mocked_match = mock.Mock()
+
         mocked_match.groupdict.return_value = {"htmlchars": "foo"}
         self.assertEqual("foo", parser.sub_text(mocked_match))
+
         mocked_match.groupdict.return_value = {"htmlchars": "", "lineend": "foo"}
         self.assertEqual("<br>", parser.sub_text(mocked_match))
-        mocked_match.groupdict.return_value = {"htmlchars": "", "lineend": "", "firstspace": "foo"}
-        self.assertEqual(" &nbsp;", parser.sub_text(mocked_match))
+
         parser.tabstop = 2
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
             "lineend": "",
-            "firstspace": "",
-            "space": "\t",
+            "tab": "\t",
+            "space": "",
         }
-        self.assertEqual(" &nbsp;&nbsp;", parser.sub_text(mocked_match))
+        self.assertEqual(" &nbsp;", parser.sub_text(mocked_match))
+
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
             "lineend": "",
-            "firstspace": "",
+            "tab": "\t\t",
             "space": " ",
             "spacestart": " ",
         }
-        mocked_match.group.return_value = " \t "
-        self.assertEqual("&nbsp;&nbsp;&nbsp;&nbsp;", parser.sub_text(mocked_match))
+        self.assertEqual(" &nbsp; &nbsp;",
+                         parser.sub_text(mocked_match))
+
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
             "lineend": "",
-            "firstspace": "",
+            "tab": "",
             "space": "",
             "spacestart": "",
         }
         self.assertEqual(None, parser.sub_text(mocked_match))
 
+    def test_parse_tab_to_html(self):
+        """Test entire parse mechanism"""
+        parser = text2html.HTML_PARSER
+        parser.tabstop = 4
+        # single tab
+        self.assertEqual(parser.parse("foo|>foo"),
+                         "foo &nbsp;&nbsp;&nbsp;foo")
+
+        # space and tab
+        self.assertEqual(parser.parse("foo |>foo"),
+                         "foo &nbsp;&nbsp;&nbsp;&nbsp;foo")
+
+        # space, tab, space
+        self.assertEqual(parser.parse("foo |> foo"),
+                         "foo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
+
+    def test_parse_space_to_html(self):
+        """test space parsing - a single space should be kept, two or more
+        should get &nbsp;"""
+        parser = text2html.HTML_PARSER
+        # single space
+        self.assertEqual(parser.parse("foo foo"),
+                         "foo foo")
+        # double space
+        self.assertEqual(parser.parse("foo  foo"),
+                         "foo &nbsp;foo")
+        # triple space
+        self.assertEqual(parser.parse("foo   foo"),
+                         "foo &nbsp;&nbsp;foo")
+
     def test_parse_html(self):
         self.assertEqual("foo", text2html.parse_html("foo"))
         self.maxDiff = None
         self.assertEqual(
-            """<span class="blink"><span class="bgcolor-006">Hello </span><span class="underline"><span class="err">W</span><span class="err">o</span><span class="err">r</span><span class="err">l</span><span class="err">d</span><span class="err">!<span class="bgcolor-002">!</span></span></span></span>""",
-            text2html.parse_html(
-                ansi.ANSI_BLINK
-                + ansi.ANSI_BACK_CYAN
-                + "Hello "
-                + ansi.ANSI_NORMAL
-                + ansi.ANSI_UNDERLINE
-                + ansi.ANSI_RED
-                + "W"
-                + ansi.ANSI_GREEN
-                + "o"
-                + ansi.ANSI_YELLOW
-                + "r"
-                + ansi.ANSI_BLUE
-                + "l"
-                + ansi.ANSI_MAGENTA
-                + "d"
-                + ansi.ANSI_CYAN
-                + "!"
-                + ansi.ANSI_BACK_GREEN
-                + "!"
-            ),
+            # TODO: note that the blink is currently *not* correctly aborted
+            # with |n here! This is probably not possible to correctly handle
+            # with regex - a stateful parser may be needed.
+            # blink back-cyan normal underline red green yellow blue magenta cyan back-green
+            text2html.parse_html("|^|[CHello|n|u|rW|go|yr|bl|md|c!|[G!"),
+            '<span class="blink">'
+                '<span class="bgcolor-006">Hello</span>'   # noqa
+                '<span class="underline">'
+                    '<span class="color-009">W</span>'     # noqa
+                    '<span class="color-010">o</span>'
+                    '<span class="color-011">r</span>'
+                    '<span class="color-012">l</span>'
+                    '<span class="color-013">d</span>'
+                    '<span class="color-014">!'
+                        '<span class="bgcolor-002">!</span>'  # noqa
+                    '</span>'
+                '</span>'
+            '</span>'
         )

@@ -1,0 +1,299 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Evennia Russian Translation v0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-20 12:13+0000\n"
+"PO-Revision-Date: 2020-04-19 18:32+0000\n"
+"Last-Translator: 3eluk\n"
+"Language-Team: Russian (Russia)\n"
+"Language: ru-RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
+"n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Loco-Source-Locale: ru_RU\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Parser: loco_parse_po"
+
+#: accounts/accounts.py:440
+msgid "Account being deleted."
+msgstr "Аккаунт удаляется."
+
+#: commands/cmdhandler.py:681
+msgid "There were multiple matches."
+msgstr "Здесь было несколько совпадений."
+
+#: commands/cmdhandler.py:704
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "Команда '%s' недоступна."
+
+#: commands/cmdhandler.py:709
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr "Возможно, вы имели ввиду %s?"
+
+#: commands/cmdhandler.py:709
+msgid "or"
+msgstr "или"
+
+#: commands/cmdhandler.py:711
+msgid " Type \"help\" for help."
+msgstr " Введи \"справка\" для получения помощи."
+
+#: commands/cmdsethandler.py:89
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:94
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:98
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:103
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:108
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+
+#: commands/cmdsethandler.py:114
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr ""
+
+#: commands/cmdsethandler.py:182 commands/cmdsethandler.py:192
+#, python-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '%s')."
+msgstr ""
+"\n"
+"(Безуспешно пробую '%s')."
+
+#: commands/cmdsethandler.py:311
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr ""
+
+#: commands/cmdsethandler.py:314
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr ""
+
+#: commands/cmdsethandler.py:322
+msgid ""
+" <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
+" {keylist}"
+msgstr ""
+
+#: commands/cmdsethandler.py:426
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr ""
+
+#: comms/channelhandler.py:100
+msgid "Say what?"
+msgstr "Сказать что?"
+
+#: comms/channelhandler.py:105
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Канал '%s' не обнаружен."
+
+#: comms/channelhandler.py:108
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Ты не соединён с каналом '%s'."
+
+#: comms/channelhandler.py:112
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "У тебя нет разрешения слать в канал '%s'."
+
+#: comms/channelhandler.py:155
+msgid " (channel)"
+msgstr " (канал)"
+
+#: locks/lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr ""
+
+#: locks/lockhandler.py:249
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr ""
+
+#: locks/lockhandler.py:253
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)"
+"s' to '%(goal)s' "
+msgstr ""
+
+#: locks/lockhandler.py:320
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr ""
+
+#: locks/lockhandler.py:328
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr ""
+
+#: locks/lockhandler.py:336
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr ""
+
+#: locks/lockhandler.py:343
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr ""
+
+#: objects/objects.py:732
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Не удалось выполнить действие ('%s'). Свяжитесь с администратором."
+
+#: objects/objects.py:742
+msgid "The destination doesn't exist."
+msgstr "Такой точки назначения нету."
+
+#: objects/objects.py:833
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Не обнаружен дом по умолчанию '(#%d)'."
+
+#: objects/objects.py:849
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr ""
+"Что-то пошло не так! Тебя выбрасывает в пустоту. Свяжитесь с администратором."
+
+#: objects/objects.py:915
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "Ваш персонаж %s был уничтожен."
+
+#: scripts/scripthandler.py:53
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+
+#: scripts/scripts.py:205
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+
+#: server/initial_setup.py:28
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with |w@batchcommand "
+"tutorial_world.build|n.\n"
+"    "
+msgstr ""
+"\n"
+"Добро пожаловать в твою новую игру, основанную на  |wEvennia|n! Посети http:"
+"//www.evennia.com\n"
+"если тебе нужна помощь, хочешь помочь, сообщить об ошибках, lили просто "
+"присоединиться к сообществу.\n"
+"Как Аккаунт №1, ты можешь создать зону для демонстрации/обучения командой "
+"|w@batchcommand tutorial_world.build|n.\n"
+"    "
+
+#: server/initial_setup.py:92
+msgid "This is User #1."
+msgstr "Это Пользователь №1."
+
+#: server/initial_setup.py:105
+msgid "Limbo"
+msgstr "Лимб"
+
+#: server/server.py:139
+msgid "idle timeout exceeded"
+msgstr "время бездействия превышено"
+
+#: server/sessionhandler.py:386
+msgid " ... Server restarted."
+msgstr " ... Сервер перезапущен."
+
+#: server/sessionhandler.py:606
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Выполнено соединение в другом месте. Отключение."
+
+#: server/sessionhandler.py:634
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Время бездействия превышено, отключение."
+
+#: server/validators.py:50
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Если вы используете терминал, вы можете использовать фразу из нескольких "
+"слов если возьмёте пароль в двойные скобки."
+
+#: utils/evmenu.py:192
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice."
+msgstr ""
+
+#: utils/evmenu.py:194
+msgid "Error in menu node '{nodename}'."
+msgstr ""
+
+#: utils/evmenu.py:195
+msgid "No description."
+msgstr "Нет описания."
+
+#: utils/evmenu.py:196
+msgid "Commands: <menu option>, help, quit"
+msgstr "Команды: <menu option>, справка, выход"
+
+#: utils/evmenu.py:197
+msgid "Commands: <menu option>, help"
+msgstr "Команды: <menu option>, справка"
+
+#: utils/evmenu.py:198
+msgid "Commands: help, quit"
+msgstr ""
+
+#: utils/evmenu.py:199
+msgid "Commands: help"
+msgstr "Команды: справка"
+
+#: utils/evmenu.py:200
+msgid "Choose an option or try 'help'."
+msgstr "Выберите опцию или введите \"справка\"."
+
+#: utils/utils.py:1866
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Не обнаружено '%s'."
+
+#: utils/utils.py:1873
+#, python-format
+msgid ""
+"More than one match for '%s' (please narrow target):\n"
+msgstr ""
+"Больше одного подходящего варианта для '%s' (уточните цель):\n"
