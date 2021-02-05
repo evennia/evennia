@@ -100,11 +100,11 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
             keypair.generate_key(crypto.TYPE_RSA, _PRIVATE_KEY_LENGTH)
 
             with open(_PRIVATE_KEY_FILE, "wt") as pfile:
-                pfile.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, keypair))
+                pfile.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, keypair).decode("utf-8"))
                 print("Created SSL private key in '{}'.".format(_PRIVATE_KEY_FILE))
 
             with open(_PUBLIC_KEY_FILE, "wt") as pfile:
-                pfile.write(crypto.dump_publickey(crypto.FILETYPE_PEM, keypair))
+                pfile.write(crypto.dump_publickey(crypto.FILETYPE_PEM, keypair).decode("utf-8"))
                 print("Created SSL public key in '{}'.".format(_PUBLIC_KEY_FILE))
 
         except Exception as err:
@@ -128,7 +128,7 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
                 cert.sign(keypair, "sha1")
 
                 with open(_CERTIFICATE_FILE, "wt") as cfile:
-                    cfile.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+                    cfile.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
                     print("Created SSL certificate in '{}'.".format(_CERTIFICATE_FILE))
 
             except Exception as err:

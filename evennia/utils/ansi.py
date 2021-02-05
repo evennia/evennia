@@ -5,9 +5,12 @@ Use the codes defined in ANSIPARSER in your text
 to apply colour to text according to the ANSI standard.
 
 Examples:
- This is |rRed text|n and this is normal again.
 
-Mostly you should not need to call parse_ansi() explicitly;
+```python
+"This is |rRed text|n and this is normal again."
+```
+
+Mostly you should not need to call `parse_ansi()` explicitly;
 it is run by Evennia just before returning data to/from the
 user.  Depreciated example forms are available by extending
 the ansi mapping.
@@ -82,8 +85,7 @@ class ANSIParser(object):
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with a \ for xterm256,
-    an extra | for Merc-style codes
+    by prepending with an extra |.
 
     """
 
@@ -94,6 +96,7 @@ class ANSIParser(object):
         (r"|n", ANSI_NORMAL),  # reset
         (r"|/", ANSI_RETURN),  # line break
         (r"|-", ANSI_TAB),  # tab
+        (r"|>", ANSI_SPACE * 4),  # indent (4 spaces)
         (r"|_", ANSI_SPACE),  # space
         (r"|*", ANSI_INVERSE),  # invert
         (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
@@ -523,6 +526,13 @@ def raw(string):
     return string.replace("{", "{{").replace("|", "||")
 
 
+# ------------------------------------------------------------
+#
+# ANSIString - ANSI-aware string class
+#
+# ------------------------------------------------------------
+
+
 def _spacing_preflight(func):
     """
     This wrapper function is used to do some preflight checks on
@@ -674,6 +684,13 @@ class ANSIString(str, metaclass=ANSIMeta):
 
     """
 
+    # A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec
+    re_format = re.compile(
+        r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
+        r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
+        r"(?P<type>b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?"
+    )
+
     def __new__(cls, *args, **kwargs):
         """
         When creating a new ANSIString, you may use a custom parser that has
@@ -733,6 +750,47 @@ class ANSIString(str, metaclass=ANSIMeta):
     def __str__(self):
         return self._raw_string
 
+    def __format__(self, format_spec):
+        """
+        This magic method covers ANSIString's behavior within a str.format() or f-string.
+
+        Current features supported: fill, align, width.
+
+        Args:
+            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as
+                "0<30" which would mean "left justify to 30, filling with zeros". The full specification can be found
+                at https://docs.python.org/3/library/string.html#formatspec
+
+        Returns:
+            ansi_str (str): The formatted ANSIString's .raw() form, for display.
+        """
+        # This calls the compiled regex stored on ANSIString's class to analyze the format spec.
+        # It returns a dictionary.
+        format_data = self.re_format.match(format_spec).groupdict()
+        clean = self.clean()
+        base_output = ANSIString(self.raw())
+        align = format_data.get("align", "<")
+        fill = format_data.get("fill", " ")
+
+        # Need to coerce width into an integer. We can be certain that it's numeric thanks to regex.
+        width = format_data.get("width", None)
+        if width is None:
+            width = len(clean)
+        else:
+            width = int(width)
+
+        if align == "<":
+            base_output = self.ljust(width, fill)
+        elif align == ">":
+            base_output = self.rjust(width, fill)
+        elif align == "^":
+            base_output = self.center(width, fill)
+        elif align == "=":
+            pass
+
+        # Return the raw string with ANSI markup, ready to be displayed.
+        return base_output.raw()
+
     def __repr__(self):
         """
         Let's make the repr the command that would actually be used to
@@ -773,6 +831,8 @@ class ANSIString(str, metaclass=ANSIMeta):
         by a number.
 
         """
+        if not offset:
+            return iterable
         return [i + offset for i in iterable]
 
     @classmethod
@@ -843,9 +903,23 @@ class ANSIString(str, metaclass=ANSIMeta):
         replayed.
 
         """
-        slice_indexes = self._char_indexes[slc]
+        char_indexes = self._char_indexes
+        slice_indexes = char_indexes[slc]
         # If it's the end of the string, we need to append final color codes.
         if not slice_indexes:
+            # if we find no characters it may be because we are just outside
+            # of the interval, using an open-ended slice. We must replay all
+            # of the escape characters until/after this point.
+            if char_indexes:
+                if slc.start is None and slc.stop is None:
+                    # a [:] slice of only escape characters
+                    return ANSIString(self._raw_string[slc])
+                if slc.start is None:
+                    # this is a [:x] slice
+                    return ANSIString(self._raw_string[:char_indexes[0]])
+                if slc.stop is None:
+                    # a [x:] slice
+                    return ANSIString(self._raw_string[char_indexes[-1] + 1:])
             return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string
@@ -865,7 +939,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 # raw_string not long enough
                 pass
         if i is not None:
-            append_tail = self._get_interleving(self._char_indexes.index(i) + 1)
+            append_tail = self._get_interleving(char_indexes.index(i) + 1)
         else:
             append_tail = ""
         return ANSIString(string + append_tail, decoded=True)
@@ -932,13 +1006,11 @@ class ANSIString(str, metaclass=ANSIMeta):
             sep (str): The separator to split the string on.
             reverse (boolean): Whether to split the string on the last
                 occurrence of the separator rather than the first.
+
         Returns:
-            result (tuple):
-               prefix (ANSIString): The part of the string before the
-                   separator
-               sep (ANSIString): The separator itself
-               postfix (ANSIString): The part of the string after the
-                   separator.
+            ANSIString: The part of the string before the separator
+            ANSIString: The separator itself
+            ANSIString: The part of the string after the separator.
 
         """
         if hasattr(sep, "_clean_string"):
@@ -1015,7 +1087,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         clean_string = self._clean_string * other
         code_indexes = self._code_indexes[:]
         char_indexes = self._char_indexes[:]
-        for i in range(1, other + 1):
+        for i in range(other):
             code_indexes.extend(self._shifter(self._code_indexes, i * len(self._raw_string)))
             char_indexes.extend(self._shifter(self._char_indexes, i * len(self._raw_string)))
         return ANSIString(
@@ -1238,18 +1310,21 @@ class ANSIString(str, metaclass=ANSIMeta):
         one.
 
         NOTE: This should always be used for joining strings when ANSIStrings
-            are involved. Otherwise color information will be discarded by
-            python, due to details in the C implementation of strings.
+        are involved. Otherwise color information will be discarded by python,
+        due to details in the C implementation of strings.
 
         Args:
             iterable (list of strings): A list of strings to join together
+
         Returns:
-            result (ANSIString): A single string with all of the iterable's
-                contents concatenated, with this string between each. For
-                example:
-                    ANSIString(', ').join(['up', 'right', 'left', 'down'])
-                ...Would return:
-                    ANSIString('up, right, left, down')
+            ANSIString: A single string with all of the iterable's
+                contents concatenated, with this string between each.
+
+        Examples:
+            ::
+
+                >>> ANSIString(', ').join(['up', 'right', 'left', 'down'])
+                ANSIString('up, right, left, down')
 
         """
         result = ANSIString("")

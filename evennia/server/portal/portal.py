@@ -13,6 +13,7 @@ import time
 
 from os.path import dirname, abspath
 from twisted.application import internet, service
+from twisted.internet.task import LoopingCall
 from twisted.internet import protocol, reactor
 from twisted.python.log import ILogObserver
 
@@ -20,6 +21,7 @@ import django
 
 django.setup()
 from django.conf import settings
+from django.db import connection
 
 import evennia
 
@@ -95,6 +97,35 @@ INFO_DICT = {
     "webserver_internal": [],
 }
 
+try:
+    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+except ImportError:
+    WEB_PLUGINS_MODULE = None
+    INFO_DICT["errors"] = (
+        "WARNING: settings.WEB_PLUGINS_MODULE not found - "
+        "copy 'evennia/game_template/server/conf/web_plugins.py to "
+        "mygame/server/conf."
+    )
+
+
+_MAINTENANCE_COUNT = 0
+
+
+def _portal_maintenance():
+    """
+    Repeated maintenance tasks for the portal.
+
+    """
+    global _MAINTENANCE_COUNT
+
+    _MAINTENANCE_COUNT += 1
+
+    if _MAINTENANCE_COUNT % (3600 * 7) == 0:
+        # drop database connection every 7 hrs to avoid default timeouts on MySQL
+        # (see https://github.com/evennia/evennia/issues/1376)
+        connection.close()
+
+
 # -------------------------------------------------------------
 # Portal Service object
 # -------------------------------------------------------------
@@ -132,6 +163,9 @@ class Portal(object):
         self.server_info_dict = {}
 
         self.start_time = time.time()
+
+        self.maintenance_task = LoopingCall(_portal_maintenance)
+        self.maintenance_task.start(60, now=True)  # call every minute
 
         # in non-interactive portal mode, this gets overwritten by
         # cmdline sent by the evennia launcher
@@ -190,7 +224,6 @@ class Portal(object):
         self.sessions.disconnect_all()
         if _stop_server:
             self.amp_protocol.stop_server(mode="shutdown")
-
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
             # a flag to avoid loops.
@@ -213,7 +246,10 @@ application = service.Application("Portal")
 
 if "--nodaemon" not in sys.argv:
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.PORTAL_LOG_FILE), os.path.dirname(settings.PORTAL_LOG_FILE)
+        os.path.basename(settings.PORTAL_LOG_FILE),
+        os.path.dirname(settings.PORTAL_LOG_FILE),
+        day_rotation=settings.PORTAL_LOG_DAY_ROTATION,
+        max_size=settings.PORTAL_LOG_MAX_SIZE,
     )
     application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
 
@@ -358,7 +394,7 @@ if WEBSERVER_ENABLED:
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ""
                     if w_interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
-                        w_ifacestr = "-%s" % interface
+                        w_ifacestr = "-%s" % w_interface
                     port = WEBSOCKET_CLIENT_PORT
 
                     class Websocket(WebSocketServerFactory):
@@ -376,6 +412,14 @@ if WEBSERVER_ENABLED:
                     webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
                 INFO_DICT["webclient"].append(webclientstr)
 
+            if WEB_PLUGINS_MODULE:
+                try:
+                    web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
+                except Exception as e:  # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                    INFO_DICT["errors"] = (
+                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
+                        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+                    )
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
             proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)

@@ -284,7 +284,6 @@ $(document).ready(function() {
 
     // Event when closing window (have to have Evennia initialized)
     $(window).bind("beforeunload", plugin_handler.onBeforeUnload);
-    $(window).bind("unload", Evennia.connection.close);
 
     // Event when any key is pressed
     $(document).keydown(plugin_handler.onKeydown)

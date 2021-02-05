@@ -46,6 +46,14 @@ NULNUL = b"\x00\x00"
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
 
+# amp internal
+ASK = b'_ask'
+ANSWER = b'_answer'
+ERROR = b'_error'
+ERROR_CODE = b'_error_code'
+ERROR_DESCRIPTION = b'_error_description'
+UNKNOWN_ERROR_CODE = b'UNKNOWN'
+
 # buffers
 _SENDBATCH = defaultdict(list)
 _MSGBUFFER = defaultdict(list)
@@ -301,6 +309,47 @@ class AMPMultiConnectionProtocol(amp.AMP):
         # later twisted amp has its own __init__
         super(AMPMultiConnectionProtocol, self).__init__(*args, **kwargs)
 
+    def _commandReceived(self, box):
+        """
+        This overrides the default Twisted AMP error handling which is not
+        passing enough of the traceback through to the other side. Instead we
+        add a specific log of the problem on the erroring side.
+
+        """
+        def formatAnswer(answerBox):
+            answerBox[ANSWER] = box[ASK]
+            return answerBox
+
+        def formatError(error):
+            if error.check(amp.RemoteAmpError):
+                code = error.value.errorCode
+                desc = error.value.description
+
+                # Evennia extra logging
+                desc += " (error logged on other side)"
+                _get_logger().log_err(f"AMP caught exception ({desc}):\n{error.value}")
+
+                if isinstance(desc, str):
+                    desc = desc.encode("utf-8", "replace")
+                if error.value.fatal:
+                    errorBox = amp.QuitBox()
+                else:
+                    errorBox = amp.AmpBox()
+            else:
+                errorBox = amp.QuitBox()
+                _get_logger().log_err(error)  # server-side logging if unhandled error
+                code = UNKNOWN_ERROR_CODE
+                desc = b"Unknown Error"
+            errorBox[ERROR] = box[ASK]
+            errorBox[ERROR_DESCRIPTION] = desc
+            errorBox[ERROR_CODE] = code
+            return errorBox
+        deferred = self.dispatchCommand(box)
+        if ASK in box:
+            deferred.addCallbacks(formatAnswer, formatError)
+            deferred.addCallback(self._safeEmit)
+        deferred.addErrback(self.unhandledError)
+
     def dataReceived(self, data):
         """
         Handle non-AMP messages, such as HTTP communication.
@@ -314,7 +363,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming partial data: {}".format(to_str(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming partial (packed) data (len {})".format(len(data))
+                )
         elif self.multibatches:
             # invalid AMP, but we have a pending multi-batch that is not yet complete
             if data[-2:] == NULNUL:
@@ -323,7 +374,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming multi-batch data:".format(to_str(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming multi-batch (packed) data (len {})".format(len(data))
+                )
         else:
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
@@ -381,7 +434,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         e.trap(Exception)
         _get_logger().log_err(
-            "AMP Error for {info}: {trcbck} {err}".format(
+            "AMP Error from {info}: {trcbck} {err}".format(
                 info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()
             )
         )

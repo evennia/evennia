@@ -331,7 +331,7 @@ class LanguageHandler(DefaultScript):
                 # find out what preceeded this word
                 wpos = match.start()
                 preceeding = match.string[:wpos].strip()
-                start_sentence = preceeding.endswith(".") or not preceeding
+                start_sentence = preceeding.endswith((".", "!", "?")) or not preceeding
 
                 # make up translation on the fly. Length can
                 # vary from un-translated word.

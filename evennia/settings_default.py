@@ -4,7 +4,7 @@ Master configuration file for Evennia.
 NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!
 
 All settings changes should be done by copy-pasting the variable and
-its value to <gamedir>/conf/settings.py.
+its value to <gamedir>/server/conf/settings.py.
 
 Hint: Don't copy&paste over more from this file than you actually want
 to change.  Anything you don't copy&paste will thus retain its default
@@ -135,17 +135,19 @@ else:
                 break
         os.chdir(os.pardir)
 
-# Place to put log files
+# Place to put log files, how often to rotate the log and how big each log file
+# may become before rotating.
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
 SERVER_LOG_FILE = os.path.join(LOG_DIR, "server.log")
+SERVER_LOG_DAY_ROTATION = 7
+SERVER_LOG_MAX_SIZE = 1000000
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, "portal.log")
+PORTAL_LOG_DAY_ROTATION = 7
+PORTAL_LOG_MAX_SIZE = 1000000
+# The http log is usually only for debugging since it's very spammy
 HTTP_LOG_FILE = os.path.join(LOG_DIR, "http_requests.log")
 # if this is set to the empty string, lockwarnings will be turned off.
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
-# Rotate log files when server and/or portal stops. This will keep log
-# file sizes down. Turn off to get ever growing log files and never
-# lose log info.
-CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
 # Max size (in bytes) of channel log files before they rotate
@@ -243,7 +245,7 @@ IN_GAME_ERRORS = True
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.postgresql_psycopg2',
+#            'django.db.backends.postgresql',
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)
@@ -373,49 +375,62 @@ DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # tuples mapping the exact tag (not a regex!) to the ANSI convertion, like
 # `(r"%c%r", ansi.ANSI_RED)` (the evennia.utils.ansi module contains all
 # ANSI escape sequences). Default is to use `|` and `|[` -prefixes.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_EXTRA_MAP = []
 # Extend the available regexes for adding XTERM256 colors in-game. This is given
 # as a list of regexes, where each regex must contain three anonymous groups for
 # holding integers 0-5 for the red, green and blue components Default is
 # is r'\|([0-5])([0-5])([0-5])', which allows e.g. |500 for red.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
+COLOR_ANSI_EXTRA_MAP = []
 # XTERM256 foreground color replacement
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_FG = []
 # XTERM256 background color replacement. Default is \|\[([0-5])([0-5])([0-5])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_BG = []
 # Extend the available regexes for adding XTERM256 grayscale values in-game. Given
 # as a list of regexes, where each regex must contain one anonymous group containing
 # a single letter a-z to mark the level from white to black. Default is r'\|=([a-z])',
 # which allows e.g. |=k for a medium gray.
 # XTERM256 grayscale foreground
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GFG = []
 # XTERM256 grayscale background. Default is \|\[=([a-z])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
-# ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
+# ansi tag (not a regex!) to a valid XTERM256 tag, such as `(r'|o', r'|531')`
+# for orange. By default this is only used for bright backgrounds but
+# both bright and dark colors can be mapped this way, and is a way to add
+# new shortcuts to xterm colors without having to write the RGB value.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_NO_DEFAULT = False
 
 
 ######################################################################
-# Default command sets
+# Default command sets and commands
 ######################################################################
-# Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the database), changing these paths will only affect
-# NEW created characters/objects, not those already in play. So if you plan to
-# change this, it's recommended you do it before having created a lot of objects
-# (or simply reset the database after the change for simplicity).
 
 # Command set used on session before account has logged in
 CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
+# (Note that changing these three following cmdset paths will only affect NEW
+# created characters/objects, not those already in play. So if you want to
+# change this and have it apply to every object, it's recommended you do it
+# before having created a lot of objects (or simply reset the database after
+# the change for simplicity)).
 # Command set used on the logged-in session
 CMDSET_SESSION = "commands.default_cmdsets.SessionCmdSet"
 # Default set for logged in account with characters (fallback)
 CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for accounts without a character (ooc)
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
+
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
@@ -445,10 +460,17 @@ COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
 COMMAND_DEFAULT_HELP_CATEGORY = "general"
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
-# The Channel Handler will create a command to represent each channel,
-# creating it with the key of the channel, its aliases, locks etc. The
-# default class logs channel messages to a file and allows for /history.
-# This setting allows to override the command class used with your own.
+# The Channel Handler is responsible for managing all available channels. By
+# default it builds the current channels into a channel-cmdset that it feeds
+# to the cmdhandler. Overloading this can completely change how Channels
+# are identified and called.
+CHANNEL_HANDLER_CLASS = "evennia.comms.channelhandler.ChannelHandler"
+# The (default) Channel Handler will create a command to represent each
+# channel, creating it with the key of the channel, its aliases, locks etc. The
+# default class logs channel messages to a file and allows for /history.  This
+# setting allows to override the command class used with your own.
+# If you implement CHANNEL_HANDLER_CLASS, you can change this directly and will
+# likely not need this setting.
 CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
@@ -573,12 +595,15 @@ TIME_IGNORE_DOWNTIMES = False
 # session-aware text formatting and manipulation on the fly. If
 # disabled, such inline functions will not be parsed.
 INLINEFUNC_ENABLED = False
+# This defined how deeply nested inlinefuncs can be. Set to <=0 to
+# disable (not recommended, this is a safeguard against infinite loops).
+INLINEFUNC_STACK_MAXSIZE = 20
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
-# Module holding handlers for OLCFuncs. These allow for embedding
-# functional code in prototypes
+# Module holding handlers for ProtFuncs. These allow for embedding
+# functional code in prototypes and has the same syntax as inlinefuncs.
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
 
 ######################################################################
@@ -640,6 +665,12 @@ CLIENT_DEFAULT_HEIGHT = 45
 # (excluding webclient with separate help popups). If continuous scroll
 # is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
 HELP_MORE = True
+# Set rate limits per-IP on account creations and login attempts
+CREATION_THROTTLE_LIMIT = 2
+CREATION_THROTTLE_TIMEOUT = 10 * 60
+LOGIN_THROTTLE_LIMIT = 5
+LOGIN_THROTTLE_TIMEOUT = 5 * 60
+
 
 ######################################################################
 # Guest accounts
@@ -711,9 +742,9 @@ CHANNEL_CONNECTINFO = None
 GAME_INDEX_ENABLED = False
 # This dict
 GAME_INDEX_LISTING = {
-    "game_name": SERVERNAME,
+    "game_name": "Mygame",  # usually SERVERNAME
     "game_status": "pre-alpha",  # pre-alpha, alpha, beta or launched
-    "short_description": GAME_SLOGAN,
+    "short_description": "",  # could be GAME_SLOGAN
     "long_description": "",
     "listing_contact": "",  # email
     "telnet_hostname": "",  # mygame.com
@@ -949,7 +980,7 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 try:
     import django_extensions  # noqa
 
-    INSTALLED_APPS = INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS += ["django_extensions"]
 except ImportError:
     # Django extensions are not installed in all distros.
     pass

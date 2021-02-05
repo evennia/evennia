@@ -10,39 +10,44 @@ how and if they are handled.  Examples of OOB instructions could be to
 instruct the client to play sounds or to update a graphical health
 bar.
 
-> Note that in Evennia's Web client, all send commands are "OOB
-commands", (including the "text" one), there is no equivalence to
-MSDP/GMCP for the webclient since it doesn't need it.
+> Note that in Evennia's Web client, all send commands are "OOB commands",
+(including the "text" one), there is no equivalence to MSDP/GMCP for the
+webclient since it doesn't need it.
 
 This implements the following telnet OOB communication protocols:
-- MSDP (Mud Server Data Protocol), as per
-    http://tintin.sourceforge.net/msdp/
-- GMCP (Generic Mud Communication Protocol) as per
-    http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
 
-Following the lead of KaVir's protocol snippet, we first check if
-client supports MSDP and if not, we fallback to GMCP with a MSDP
-header where applicable.
+- MSDP (Mud Server Data Protocol), as per
+  http://tintin.sourceforge.net/msdp/
+- GMCP (Generic Mud Communication Protocol) as per
+  http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
+
+Following the lead of KaVir's protocol snippet, we first check if client
+supports MSDP and if not, we fallback to GMCP with a MSDP header where
+applicable.
+
+----
 
 """
 import re
 import json
 from evennia.utils.utils import is_iter
-
-# MSDP-relevant telnet cmd/opt-codes
-MSDP = b"\x45"
-MSDP_VAR = b"\x01"  # ^A
-MSDP_VAL = b"\x02"  # ^B
-MSDP_TABLE_OPEN = b"\x03"  # ^C
-MSDP_TABLE_CLOSE = b"\x04"  # ^D
-MSDP_ARRAY_OPEN = b"\x05"  # ^E
-MSDP_ARRAY_CLOSE = b"\x06"  # ^F
-
-# GMCP
-GMCP = b"\xc9"
+from twisted.python.compat import _bytesChr as bchr
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
+
+# MSDP-relevant telnet cmd/opt-codes
+MSDP = bchr(69)
+MSDP_VAR = bchr(1)
+MSDP_VAL = bchr(2)
+MSDP_TABLE_OPEN = bchr(3)
+MSDP_TABLE_CLOSE = bchr(4)
+
+MSDP_ARRAY_OPEN = bchr(5)
+MSDP_ARRAY_CLOSE = bchr(6)
+
+# GMCP
+GMCP = bchr(201)
 
 
 # pre-compiled regexes
@@ -154,21 +159,22 @@ class TelnetOOB(object):
         Notes:
             The output of this encoding will be
             MSDP structures on these forms:
+            ::
 
-            [cmdname, [], {}]          -> VAR cmdname VAL ""
-            [cmdname, [arg], {}]       -> VAR cmdname VAL arg
-            [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
-            [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
-            [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
-                                           VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+                [cmdname, [], {}]          -> VAR cmdname VAL ""
+                [cmdname, [arg], {}]       -> VAR cmdname VAL arg
+                [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+                [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                                               VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
 
-            Further nesting is not supported, so if an array argument
-            consists of an array (for example), that array will be
-            json-converted to a string.
+            Further nesting is not supported, so if an array argument consists
+            of an array (for example), that array will be json-converted to a
+            string.
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
-            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL
+            msdp_var=MSDP_VAR.decode(), msdp_cmdname=cmdname, msdp_val=MSDP_VAL.decode()
         )
 
         if not (args or kwargs):
@@ -186,9 +192,9 @@ class TelnetOOB(object):
                     "{msdp_array_open}"
                     "{msdp_args}"
                     "{msdp_array_close}".format(
-                        msdp_array_open=MSDP_ARRAY_OPEN,
-                        msdp_array_close=MSDP_ARRAY_CLOSE,
-                        msdp_args="".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
+                        msdp_array_open=MSDP_ARRAY_OPEN.decode(),
+                        msdp_array_close=MSDP_ARRAY_CLOSE.decode(),
+                        msdp_args="".join("%s%s" % (MSDP_VAL.decode(), val) for val in args),
                     )
                 )
 
@@ -199,10 +205,10 @@ class TelnetOOB(object):
                 "{msdp_table_open}"
                 "{msdp_kwargs}"
                 "{msdp_table_close}".format(
-                    msdp_table_open=MSDP_TABLE_OPEN,
-                    msdp_table_close=MSDP_TABLE_CLOSE,
+                    msdp_table_open=MSDP_TABLE_OPEN.decode(),
+                    msdp_table_close=MSDP_TABLE_CLOSE.decode(),
                     msdp_kwargs="".join(
-                        "%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, json.dumps(val))
+                        "%s%s%s%s" % (MSDP_VAR.decode(), key, MSDP_VAL.decode(), val)
                         for key, val in kwargs.items()
                     ),
                 )
@@ -228,16 +234,19 @@ class TelnetOOB(object):
             to have adopted). A cmdname without Package will end
             up in the Core package, while Core package names will
             be stripped on the Evennia side.
+            ::
 
-            [cmd.name, [], {}]          -> Cmd.Name
-            [cmd.name, [arg], {}]       -> Cmd.Name arg
-            [cmd.name, [args],{}]       -> Cmd.Name [args]
-            [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
-            [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
+                [cmd.name, [], {}]          -> Cmd.Name
+                [cmd.name, [arg], {}]       -> Cmd.Name arg
+                [cmd.name, [args],{}]       -> Cmd.Name [args]
+                [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
+                [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
 
         Notes:
             There are also a few default mappings between evennia outputcmds and
             GMCP:
+            ::
+
                 client_options -> Core.Supports.Get
                 get_inputfuncs -> Core.Commands.Get
                 get_value      -> Char.Value.Get
@@ -278,12 +287,13 @@ class TelnetOOB(object):
         Notes:
             Clients should always send MSDP data on
             one of the following forms:
+            ::
 
-            cmdname ''          -> [cmdname, [], {}]
-            cmdname val         -> [cmdname, [val], {}]
-            cmdname array       -> [cmdname, [array], {}]
-            cmdname table       -> [cmdname, [], {table}]
-            cmdname array cmdname table -> [cmdname, [array], {table}]
+                cmdname ''          -> [cmdname, [], {}]
+                cmdname val         -> [cmdname, [val], {}]
+                cmdname array       -> [cmdname, [array], {}]
+                cmdname table       -> [cmdname, [], {table}]
+                cmdname array cmdname table -> [cmdname, [array], {table}]
 
             Observe that all MSDP_VARS are used to identify cmdnames,
             so if there are multiple arrays with the same cmdname
@@ -377,12 +387,13 @@ class TelnetOOB(object):
             We assume the structure is valid JSON.
 
             The following is parsed into Evennia's formal structure:
+            ::
 
-            Core.Name                         -> [name, [], {}]
-            Core.Name string                  -> [name, [string], {}]
-            Core.Name [arg, arg,...]          -> [name, [args], {}]
-            Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
-            Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
+                Core.Name                         -> [name, [], {}]
+                Core.Name string                  -> [name, [string], {}]
+                Core.Name [arg, arg,...]          -> [name, [args], {}]
+                Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
+                Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
 
         """
         if isinstance(data, list):

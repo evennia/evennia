@@ -27,7 +27,6 @@ body {
   }
 }
 
-
 a:link, a:visited { color: inherit; }
 a:hover, a:active { color: inherit;
                     font-weight: bold;}
@@ -86,6 +85,16 @@ div {margin:0px;}
 /* Style specific classes corresponding to formatted, narative text. */
 .wrapper {
   height: 100%;
+}
+
+.card {
+  background-color: #333;
+}
+
+.tabspace {
+  white-space: pre;
+  tab-size: 4;
+  -moz-tab-size: 4;
 }
 
 /* Container surrounding entire client */

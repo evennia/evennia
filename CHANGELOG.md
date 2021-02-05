@@ -1,12 +1,16 @@
 # Changelog
 
-## Evennia 1.0 (2019-) (WIP)
+## Evennia 1.0-dev (2019-) (WIP)
 
-- new `drop:holds()` lock default to limit dropping nonsensical things. Access check
+- New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 
-### Already in master
+### Evennia 0.9.5 (Nov 2020)
 
+A transitional release, including new doc system.
+
+- `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
 - Webclient default to a single input pane instead of two. Now defaults to no help-popup.
@@ -27,13 +31,63 @@ without arguments starts a full interactive Python console.
 - `AttributeHandler.get(return_list=True)` will return `[]` if there are no
   Attributes instead of `[None]`.
 - Remove `pillow` requirement (install especially if using imagefield)
-- Add Simplified Korean translation (user aceamro)
+- Add Simplified Korean translation (aceamro)
 - Show warning on `start -l` if settings contains values unsafe for production.
 - Make code auto-formatted with Black.
 - Make default `set` command able to edit nested structures (PR by Aaron McMillan)
 - Allow running Evennia test suite from core repo with `make test`.
-- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to 
-  the `TickerHandler.remove` method. This makes it easier to manage tickers. 
+- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to
+  the `TickerHandler.remove` method. This makes it easier to manage tickers.
+- EvMore auto-justify now defaults to False since this works better with all types
+  of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
+  but is now only used to pass extra kwargs into the justify function.
+- EvMore `text` argument can now also be a list or a queryset. Querysets will be
+  sliced to only return the required data per page.
+- Improve performance of `find` and `objects` commands on large data sets (strikaco)
+- New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
+- Made `py` interactive mode support regular quit() and more verbose.
+- Made `Account.options.get` accept `default=None` kwarg to mimic other uses of get. Set
+  the new `raise_exception` boolean if ranting to raise KeyError on a missing key.
+- Moved behavior of unmodified `Command` and `MuxCommand` `.func()` to new
+  `.get_command_info()` method for easier overloading and access. (Volund)
+- Removed unused `CYCLE_LOGFILES` setting. Added `SERVER_LOG_DAY_ROTATION`
+  and `SERVER_LOG_MAX_SIZE` (and equivalent for PORTAL) to control log rotation.
+- Addded `inside_rec` lockfunc - if room is locked, the normal `inside()` lockfunc will
+  fail e.g. for your inventory objs (since their loc is you), whereas this will pass.
+- RPSystem contrib's CmdRecog will now list all recogs if no arg is given. Also multiple
+  bugfixes.
+- Remove `dummy@example.com` as a default account email when unset, a string is no longer
+  required by Django.
+- Fixes to `spawn`, make updating an existing prototype/object work better. Add `/raw` switch
+  to `spawn` command to extract the raw prototype dict for manual editing.
+- `list_to_string` is now `iter_to_string` (but old name still works as legacy alias). It will
+  now accept any input, including generators and single values.
+- EvTable should now correctly handle columns with wider asian-characters in them.
+- Update Twisted requirement to >=2.3.0 to close security vulnerability
+- Add `$random` inlinefunc, supports minval,maxval arguments that can be ints and floats.
+- Add `evennia.utils.inlinefuncs.raw(<str>)` as a helper to escape inlinefuncs in a string.
+- Make CmdGet/Drop/Give give proper error if `obj.move_to` returns `False`.
+- Make `Object/Room/Exit.create`'s `account` argument optional. If not given, will set perms
+  to that of the object itself (along with normal Admin/Dev permission).
+- Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
+- Change how `ic` finds puppets; non-priveleged users will use `_playable_characters` list as
+  candidates, Builders+ will use list, local search and only global search if no match found.
+- Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays
+  with yield.
+- `EvMore` support for db queries and django paginators as well as easier to override for custom
+  pagination (e.g. to create EvTables for every page instead of splitting one table).
+- New `EvMore` methods `.init_pages`, `paginator` and `page_formatter` for easily customize pagination.
+- Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings
+  (100x speed increase for displaying 1000+ prototypes/scripts).
+- `EvMenu` now uses the more logically named `.ndb._evmenu` instead of `.ndb._menutree` to store itself.
+  Both still work for backward compatibility, but `_menutree` is deprecated.
+- `EvMenu.msg(txt)` added as a central place to send text to the user, makes it easier to override.
+  Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
+- New EvMenu templating system for quickly building simpler EvMenus without as much code.
+- Add `Command.client_height()` method to match existing `.client_width` (stricako)
+- Include more Web-client info in `session.protocol_flags`.
+- Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
+  only two boxes in location.
 
 
 ## Evennia 0.9 (2018-2019)

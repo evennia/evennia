@@ -31,7 +31,7 @@ Modified for Evennia by Griatch and the Evennia community.
 from ast import literal_eval
 from datetime import datetime
 
-from copy import deepcopy
+from copy import deepcopy, Error as CopyError
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
 
@@ -43,7 +43,8 @@ from django.forms.fields import CharField
 from django.forms.widgets import Textarea
 
 from pickle import loads, dumps
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
+from evennia.utils.dbserialize import pack_dbobj
 
 
 DEFAULT_PROTOCOL = 4
@@ -92,7 +93,15 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
     # The reason this is important is because we do all of our lookups as
     # simple string matches, thus the character streams must be the same
     # for the lookups to work properly. See tests.py for more information.
-    value = dumps(deepcopy(value), protocol=pickle_protocol)
+    try:
+        value = deepcopy(value)
+    except CopyError:
+        # this can happen on a manager query where the search query string is a
+        # database model.
+        value = pack_dbobj(value)
+
+    value = dumps(value, protocol=pickle_protocol)
+
     if compress_object:
         value = compress(value)
     value = b64encode(value).decode()  # decode bytes to str
@@ -133,8 +142,9 @@ class PickledWidget(Textarea):
         try:
             # necessary to convert it back after repr(), otherwise validation errors will mutate it
             value = literal_eval(repr_value)
-        except ValueError:
-            pass
+        except (ValueError, SyntaxError):
+            # we could not eval it, just show its prepresentation
+            value = repr_value
         return super().render(name, value, attrs=attrs, renderer=renderer)
 
     def value_from_datadict(self, data, files, name):
@@ -209,10 +219,10 @@ class PickledObjectField(models.Field):
         """
         Returns the default value for this field.
 
-        The default implementation on models.Field calls force_text
+        The default implementation on models.Field calls force_str
         on the default, which means you can't set arbitrary Python
         objects as the default. To fix this, we just return the value
-        without calling force_text on it. Note that if you set a
+        without calling force_str on it. Note that if you set a
         callable as a default, the field will still call it. It will
         *not* try to pickle and encode it.
 
@@ -266,13 +276,13 @@ class PickledObjectField(models.Field):
 
         """
         if value is not None and not isinstance(value, PickledObject):
-            # We call force_text here explicitly, so that the encoded string
-            # isn't rejected by the postgresql_psycopg2 backend. Alternatively,
+            # We call force_str here explicitly, so that the encoded string
+            # isn't rejected by the postgresql backend. Alternatively,
             # we could have just registered PickledObject with the psycopg
             # marshaller (telling it to store it like it would a string), but
             # since both of these methods result in the same value being stored,
             # doing things this way is much easier.
-            value = force_text(dbsafe_encode(value, self.compress, self.protocol))
+            value = force_str(dbsafe_encode(value, self.compress, self.protocol))
         return value
 
     def value_to_string(self, obj):

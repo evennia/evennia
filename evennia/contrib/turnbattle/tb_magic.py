@@ -44,6 +44,12 @@ instead of the default:
 
     class Character(TBMagicCharacter):
 
+Note: If your character already existed you need to also make sure
+to re-run the creation hooks on it to set the needed Attributes.
+Use `update self` to try on yourself or use py to call `at_object_creation()`
+on all existing Characters.
+
+
 Next, import this module into your default_cmdsets.py module:
 
     from evennia.contrib.turnbattle import tb_magic
@@ -199,10 +205,10 @@ def apply_damage(defender, damage):
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
-    
+
     Args:
         defeated (obj): Fighter that's been defeated.
-    
+
     Notes:
         All this does is announce a defeat message by default, but if you
         want anything else to happen to defeated fighters (like putting them
@@ -298,7 +304,7 @@ def spend_action(character, actions, action_name=None):
         character (obj): Character spending the action
         actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
 
-    Kwargs:
+    Keyword Args:
         action_name (str or None): If a string is given, sets character's last action in
         combat to provided string
     """
@@ -332,7 +338,7 @@ class TBMagicCharacter(DefaultCharacter):
         """
         Called once, when this object is first created. This is the
         normal hook to overload for most object types.
-        
+
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
 
@@ -464,11 +470,11 @@ class TBMagicTurnHandler(DefaultScript):
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
-            0
-        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+            0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        )
         character.db.combat_turnhandler = (
-            self
-        )  # Add a reference to this turn handler script to the character
+            self  # Add a reference to this turn handler script to the character
+        )
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
@@ -731,26 +737,26 @@ class CmdDisengage(Command):
 class CmdLearnSpell(Command):
     """
     Learn a magic spell.
-    
+
     Usage:
         learnspell <spell name>
-        
+
     Adds a spell by name to your list of spells known.
-    
+
     The following spells are provided as examples:
-    
+
         |wmagic missile|n (3 MP): Fires three missiles that never miss. Can target
             up to three different enemies.
-        
+
         |wflame shot|n (3 MP): Shoots a high-damage jet of flame at one target.
-        
+
         |wcure wounds|n (5 MP): Heals damage on one target.
-        
+
         |wmass cure wounds|n (10 MP): Like 'cure wounds', but can heal up to 5
             targets at once.
 
         |wfull heal|n (12 MP): Heals one target back to full HP.
-        
+
         |wcactus conjuration|n (2 MP): Creates a cactus.
     """
 
@@ -803,10 +809,10 @@ class CmdCast(MuxCommand):
     """
     Cast a magic spell that you know, provided you have the MP
     to spend on its casting.
-    
+
     Usage:
         cast <spellname> [= <target1>, <target2>, etc...]
-        
+
     Some spells can be cast on multiple targets, some can be cast
     on only yourself, and some don't need a target specified at all.
     Typing 'cast' by itself will give you a list of spells you know.
@@ -818,7 +824,7 @@ class CmdCast(MuxCommand):
     def func(self):
         """
         This performs the actual command.
-        
+
         Note: This is a quite long command, since it has to cope with all
         the different circumstances in which you may or may not be able
         to cast a spell. None of the spell's effects are handled by the
@@ -1123,7 +1129,7 @@ in the docstring for each function.
 def spell_healing(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that restores HP to a target or targets.
-    
+
     kwargs:
         healing_range (tuple): Minimum and maximum amount healed to
             each target. (20, 40) by default.
@@ -1156,7 +1162,7 @@ def spell_healing(caster, spell_name, targets, cost, **kwargs):
 def spell_attack(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that deals damage in combat. Similar to resolve_attack.
-    
+
     kwargs:
         attack_name (tuple): Single and plural describing the sort of
             attack or projectile that strikes each enemy.
@@ -1250,12 +1256,12 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
 def spell_conjure(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that creates an object.
-    
+
     kwargs:
         obj_key (str): Key of the created object.
         obj_desc (str): Desc of the created object.
         obj_typeclass (str): Typeclass path of the object.
-    
+
     If you want to make more use of this particular spell funciton,
     you may want to modify it to use the spawner (in evennia.utils.spawner)
     instead of creating objects directly.
@@ -1300,7 +1306,7 @@ parameters, some of which are required and others which are optional.
 
 Required values for spells:
 
-    cost (int): MP cost of casting the spell 
+    cost (int): MP cost of casting the spell
     target (str): Valid targets for the spell. Can be any of:
         "none" - No target needed
         "self" - Self only
@@ -1312,9 +1318,9 @@ Required values for spells:
     spellfunc (callable): Function that performs the action of the spell.
         Must take the following arguments: caster (obj), spell_name (str),
         targets (list), and cost (int), as well as **kwargs.
-    
+
 Optional values for spells:
-    
+
     combat_spell (bool): If the spell can be cast in combat. True by default.
     noncombat_spell (bool): If the spell can be cast out of combat. True by default.
     max_targets (int): Maximum number of objects that can be targeted by the spell.

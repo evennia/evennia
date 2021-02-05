@@ -154,7 +154,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         if not account.is_superuser and (
             account.db._playable_characters and len(account.db._playable_characters) >= charmax
         ):
-            self.msg("You may only create a maximum of %i characters." % charmax)
+            plural = "" if charmax == 1 else "s"
+            self.msg(f"You may only create a maximum of {charmax} character{plural}.")
             return
         from evennia.objects.models import ObjectDB
 
@@ -300,27 +301,68 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         session = self.session
 
         new_character = None
+        character_candidates = []
+
         if not self.args:
-            new_character = account.db._last_puppet
-            if not new_character:
+            character_candidates = [account.db._last_puppet] if account.db._last_puppet else []
+            if not character_candidates:
                 self.msg("Usage: ic <character>")
                 return
-        if not new_character:
-            # search for a matching character
-            new_character = [
-                char for char in search.object_search(self.args) if char.access(account, "puppet")
-            ]
-            if not new_character:
-                self.msg("That is not a valid character choice.")
-                return
-            if len(new_character) > 1:
-                self.msg(
-                    "Multiple targets with the same name:\n %s"
-                    % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in new_character)
+        else:
+            # argument given
+
+            if account.db._playable_characters:
+                # look at the playable_characters list first
+                character_candidates.extend(
+                    account.search(
+                        self.args,
+                        candidates=account.db._playable_characters,
+                        search_object=True,
+                        quiet=True,
+                    )
                 )
-                return
-            else:
-                new_character = new_character[0]
+
+            if account.locks.check_lockstring(account, "perm(Builder)"):
+                # builders and higher should be able to puppet more than their
+                # playable characters.
+                if session.puppet:
+                    # start by local search - this helps to avoid the user
+                    # getting locked into their playable characters should one
+                    # happen to be named the same as another. We replace the suggestion
+                    # from playable_characters here - this allows builders to puppet objects
+                    # with the same name as their playable chars should it be necessary
+                    # (by going to the same location).
+                    character_candidates = [
+                        char
+                        for char in session.puppet.search(self.args, quiet=True)
+                        if char.access(account, "puppet")
+                    ]
+                if not character_candidates:
+                    # fall back to global search only if Builder+ has no
+                    # playable_characers in list and is not standing in a room
+                    # with a matching char.
+                    character_candidates.extend(
+                        [
+                            char
+                            for char in search.object_search(self.args)
+                            if char.access(account, "puppet")
+                        ]
+                    )
+
+        # handle possible candidates
+        if not character_candidates:
+            self.msg("That is not a valid character choice.")
+            return
+        if len(character_candidates) > 1:
+            self.msg(
+                "Multiple targets with the same name:\n %s"
+                % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in character_candidates)
+            )
+            return
+        else:
+            new_character = character_candidates[0]
+
+        # do the puppet puppet
         try:
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
@@ -957,7 +999,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
                 self.msg("Already quelling Account %s permissions." % permstr)
                 return
             account.attributes.add("_quell", True)
-            puppet = self.session.puppet
+            puppet = self.session.puppet if self.session else None
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions %s." % cpermstr

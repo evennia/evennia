@@ -225,16 +225,16 @@ class PortalSessionHandler(SessionHandler):
     def server_connect(self, protocol_path="", config=dict()):
         """
         Called by server to force the initialization of a new protocol
-        instance. Server wants this instance to get a unique sessid
-        and to be connected back as normal. This is used to initiate
-        irc/rss etc connections.
+        instance. Server wants this instance to get a unique sessid and to be
+        connected back as normal. This is used to initiate irc/rss etc
+        connections.
 
         Args:
-            protocol_path (st): Full python path to the class factory
+            protocol_path (str): Full python path to the class factory
                 for the protocol used, eg
                 'evennia.server.portal.irc.IRCClientFactory'
             config (dict): Dictionary of configuration options, fed as
-                **kwarg to protocol class' __init__ method.
+                `**kwarg` to protocol class `__init__` method.
 
         Raises:
             RuntimeError: If The correct factory class is not found.
@@ -375,7 +375,7 @@ class PortalSessionHandler(SessionHandler):
         Args:
             session (PortalSession): Session receiving data.
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Other data from protocol.
 
         Notes:
@@ -433,11 +433,11 @@ class PortalSessionHandler(SessionHandler):
         Args:
             session (Session): Session sending data.
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Each key is a command instruction to the
-            protocol on the form key = [[args],{kwargs}]. This will
-            call a method send_<key> on the protocol. If no such
-            method exixts, it sends the data to a method send_default.
+                protocol on the form key = [[args],{kwargs}]. This will
+                call a method send_<key> on the protocol. If no such
+                method exixts, it sends the data to a method send_default.
 
         """
         # from evennia.server.profiling.timetrace import timetrace  # DEBUG

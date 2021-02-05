@@ -6,7 +6,7 @@ Test AMP client
 import pickle
 from model_mommy import mommy
 from unittest import TestCase
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 from twisted.trial.unittest import TestCase as TwistedTestCase
 from evennia.server import amp_client
 from evennia.server.portal import amp_server
@@ -36,6 +36,7 @@ class _TestAMP(TwistedTestCase):
         self.server.sessions[1] = self.session
 
         self.portal = portal.Portal(MagicMock())
+        self.portal.maintenance_task.stop()
         self.portalsession = session.Session()
         self.portalsession.sessid = 1
         self.portal.sessions[1] = self.portalsession

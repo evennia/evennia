@@ -28,7 +28,7 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from django.utils.safestring import SafeString, SafeBytes
+from django.utils.safestring import SafeString
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
 
@@ -229,6 +229,12 @@ class _SaverMutable(object):
     def __ne__(self, other):
         return self._data != other
 
+    def __lt__(self, other):
+        return self._data < other
+
+    def __gt__(self, other):
+        return self._data > other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -274,6 +280,13 @@ class _SaverList(_SaverMutable, MutableSequence):
     def index(self, value, *args):
         return self._data.index(value, *args)
 
+    @_save
+    def sort(self, *, key=None, reverse=False):
+        self._data.sort(key=key, reverse=reverse)
+
+    def copy(self):
+        return self._data.copy()
+
 
 class _SaverDict(_SaverMutable, MutableMapping):
     """
@@ -286,6 +299,10 @@ class _SaverDict(_SaverMutable, MutableMapping):
 
     def has_key(self, key):
         return key in self._data
+
+    @_save
+    def update(self, *args, **kwargs):
+        self._data.update(*args, **kwargs)
 
 
 class _SaverSet(_SaverMutable, MutableSet):
@@ -549,7 +566,7 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -577,7 +594,7 @@ def to_pickle(data):
         except TypeError:
             return item
         except Exception:
-            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
+            logger.log_err(f"The object {item} of type {type(item)} could not be stored.")
             raise
 
     return process_item(data)
@@ -591,7 +608,7 @@ def from_pickle(data, db_obj=None):
     object was removed (or changed in-place) in the database, None will be
     returned.
 
-    Args_
+    Args:
         data (any): Pickled data to unpickle.
         db_obj (Atribute, any): This is the model instance (normally
             an Attribute) that _Saver*-type iterables (_SaverList etc)
@@ -599,7 +616,7 @@ def from_pickle(data, db_obj=None):
             that saves assigned data to the database. Skip if not
             serializing onto a given object.  If db_obj is given, this
             function will convert lists, dicts and sets to their
-            _SaverList, _SaverDict and _SaverSet counterparts.
+            `_SaverList`, `_SaverDict` and `_SaverSet` counterparts.
 
     Returns:
         data (any): Unpickled data.
@@ -609,7 +626,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -638,7 +655,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -716,7 +733,7 @@ def do_pickle(data):
     try:
         return dumps(data, protocol=PICKLE_PROTOCOL)
     except Exception:
-        logger.log_error(f"Could not pickle data for storage: {data}")
+        logger.log_err(f"Could not pickle data for storage: {data}")
         raise
 
 
@@ -725,7 +742,7 @@ def do_unpickle(data):
     try:
         return loads(to_bytes(data))
     except Exception:
-        logger.log_error(f"Could not unpickle data from storage: {data}")
+        logger.log_err(f"Could not unpickle data from storage: {data}")
         raise
 
 

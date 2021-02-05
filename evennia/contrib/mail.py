@@ -238,7 +238,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
                             else:
                                 raise IndexError
                 except IndexError:
-                    self.caller.msg("Message does not exixt.")
+                    self.caller.msg("Message does not exist.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/forward <account list>=<#>[/<Message>]")
             elif "reply" in self.switches or "rep" in self.switches:

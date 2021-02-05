@@ -130,7 +130,7 @@ def _set_property(caller, raw_string, **kwargs):
         caller (Object, Account): The user of the wizard.
         raw_string (str): Input from user on given node - the new value to set.
 
-    Kwargs:
+    Keyword Args:
         test_parse (bool): If set (default True), parse raw_string for protfuncs and obj-refs and
             try to run result through literal_eval. The parser will be run in 'testing' mode and any
             parsing errors will shown to the user. Note that this is just for testing, the original
@@ -297,7 +297,7 @@ def _format_list_actions(*args, **kwargs):
     Args:
         actions (str): Available actions. The first letter of the action name will be assumed
             to be a shortcut.
-    Kwargs:
+    Keyword Args:
         prefix (str): Default prefix to use.
     Returns:
         string (str): Formatted footer for adding to the node text.
@@ -1175,7 +1175,7 @@ def _add_attr(caller, attr_string, **kwargs):
                 attr = value
                 attr;category = value
                 attr;category;lockstring = value
-    Kwargs:
+    Keyword Args:
         delete (str): If this is set, attr_string is
             considered the name of the attribute to delete and
             no further parsing happens.
@@ -1235,7 +1235,7 @@ def _attr_select(caller, attrstr):
 
     attr_tup = _get_tup_by_attrname(caller, attrname)
     if attr_tup:
-        return "node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"}
+        return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
     else:
         caller.msg("Attribute not found.")
         return "node_attrs"
@@ -1260,7 +1260,7 @@ def _attrs_actions(caller, raw_inp, **kwargs):
 
     if action and attr_tup:
         if action == "examine":
-            return "node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"}
+            return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
         elif action == "remove":
             res = _add_attr(caller, attrname, delete=True)
             caller.msg(res)
@@ -1362,7 +1362,7 @@ def _add_tag(caller, tag_string, **kwargs):
             tagname;category
             tagname;category;data
 
-    Kwargs:
+    Keyword Args:
         delete (str): If this is set, tag_string is considered
             the name of the tag to delete.
 
@@ -1439,7 +1439,7 @@ def _tags_actions(caller, raw_inp, **kwargs):
 
     if tag_tup:
         if action == "examine":
-            return "node_examine_entity", {"text": _display_tag(tag_tup), "back": "tags"}
+            return ("node_examine_entity", {"text": _display_tag(tag_tup), "back": "tags"})
         elif action == "remove":
             res = _add_tag(caller, tagname, delete=True)
             caller.msg(res)
@@ -1488,7 +1488,7 @@ def node_tags(caller):
         as the |cprototype_key|n and with a category "{tag_category}". This allows the spawner to
         optionally update previously spawned objects when their prototype changes.
     """.format(
-        tag_category=protlib._PROTOTYPE_TAG_CATEGORY
+        tag_category=protlib.PROTOTYPE_TAG_CATEGORY
     )
 
     text = (text, helptext)
@@ -1510,7 +1510,7 @@ def _locks_display(caller, lock):
 
 
 def _lock_select(caller, lockstr):
-    return "node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"}
+    return ("node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"})
 
 
 def _lock_add(caller, lock, **kwargs):
@@ -1552,7 +1552,7 @@ def _locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _lock_add(caller, lock, delete=True)
             caller.msg(ret)
@@ -1645,7 +1645,10 @@ def _display_perm(caller, permission, only_hierarchy=False):
 
 
 def _permission_select(caller, permission, **kwargs):
-    return "node_examine_entity", {"text": _display_perm(caller, permission), "back": "permissions"}
+    return (
+        "node_examine_entity",
+        {"text": _display_perm(caller, permission), "back": "permissions"},
+    )
 
 
 def _add_perm(caller, perm, **kwargs):
@@ -1908,7 +1911,7 @@ def _add_prototype_tag(caller, tag_string, **kwargs):
         caller (Object): Caller of menu.
         tag_string (str): Input from user - only tagname
 
-    Kwargs:
+    Keyword Args:
         delete (str): If this is set, tag_string is considered
             the name of the tag to delete.
 
@@ -2051,7 +2054,7 @@ def _prototype_locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _prototype_lock_add(caller, lock.strip(), delete=True)
             caller.msg(ret)
@@ -2128,14 +2131,15 @@ def _keep_diff(caller, **kwargs):
     tmp[path[-1]] = tuple(list(tmp[path[-1]][:-1]) + ["KEEP"])
 
 
-def _format_diff_text_and_options(diff, **kwargs):
+def _format_diff_text_and_options(diff, minimal=True, **kwargs):
     """
     Reformat the diff in a way suitable for the olc menu.
 
     Args:
         diff (dict): A diff as produced by `prototype_diff`.
+        minimal (bool, optional): Don't show KEEPs.
 
-    Kwargs:
+    Keyword Args:
         any (any): Forwarded into the generated options as arguments to the callable.
 
     Returns:
@@ -2147,12 +2151,15 @@ def _format_diff_text_and_options(diff, **kwargs):
 
     def _visualize(obj, rootname, get_name=False):
         if utils.is_iter(obj):
+            if not obj:
+                return str(obj)
             if get_name:
                 return obj[0] if obj[0] else "<unset>"
             if rootname == "attrs":
                 return "{} |W=|n {} |W(category:|n {}|W, locks:|n {}|W)|n".format(*obj)
             elif rootname == "tags":
                 return "{} |W(category:|n {}|W)|n".format(obj[0], obj[1])
+
         return "{}".format(obj)
 
     def _parse_diffpart(diffpart, optnum, *args):
@@ -2163,17 +2170,39 @@ def _format_diff_text_and_options(diff, **kwargs):
             rootname = args[0]
             old, new, instruction = diffpart
             if instruction == "KEEP":
-                texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
+                if not minimal:
+                    texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
             else:
+                # instructions we should be able to revert by a menu choice
                 vold = _visualize(old, rootname)
                 vnew = _visualize(new, rootname)
                 vsep = "" if len(vold) < 78 else "\n"
-                vinst = "|rREMOVE|n" if instruction == "REMOVE" else "|y{}|n".format(instruction)
-                texts.append(
-                    "   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
-                        inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew
+
+                if instruction == "ADD":
+                    texts.append(
+                        "   |c[{optnum}] |yADD|n: {new}".format(
+                            optnum=optnum, new=_visualize(new, rootname)
+                        )
                     )
-                )
+                elif instruction == "REMOVE" and not new:
+                    if rootname == "tags" and old[1] == protlib.PROTOTYPE_TAG_CATEGORY:
+                        # special exception for the prototype-tag mechanism
+                        # this is added post-spawn automatically and should
+                        # not be listed as REMOVE.
+                        return texts, options, optnum
+
+                    texts.append(
+                        "   |c[{optnum}] |rREMOVE|n: {old}".format(
+                            optnum=optnum, old=_visualize(old, rootname)
+                        )
+                    )
+                else:
+                    vinst = "|y{}|n".format(instruction)
+                    texts.append(
+                        "   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
+                            inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew
+                        )
+                    )
                 options.append(
                     {
                         "key": str(optnum),
@@ -2200,11 +2229,8 @@ def _format_diff_text_and_options(diff, **kwargs):
     for root_key in sorted(diff):
         diffpart = diff[root_key]
         text, option, optnum = _parse_diffpart(diffpart, optnum, root_key)
-
         heading = "- |w{}:|n ".format(root_key)
-        if root_key in ("attrs", "tags", "permissions"):
-            texts.append(heading)
-        elif text:
+        if text:
             text = [heading + text[0]] + text[1:]
         else:
             text = [heading]
@@ -2274,7 +2300,9 @@ def node_apply_diff(caller, **kwargs):
     if not custom_location:
         diff.pop("location", None)
 
-    txt, options = _format_diff_text_and_options(diff, objects=update_objects, base_obj=base_obj)
+    txt, options = _format_diff_text_and_options(
+        diff, objects=update_objects, base_obj=base_obj, prototype=prototype
+    )
 
     if options:
         text = [

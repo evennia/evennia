@@ -169,6 +169,8 @@ class TestRPSystem(EvenniaTest):
         self.speaker.recog.remove(self.receiver1)
         self.assertEqual(self.speaker.recog.get(self.receiver1), sdesc1)
 
+        self.assertEqual(self.speaker.recog.all(), {"Mr Receiver2": self.receiver2})
+
     def test_parse_language(self):
         self.assertEqual(
             rpsystem.parse_language(self.speaker, emote),
@@ -231,6 +233,49 @@ class TestRPSystem(EvenniaTest):
         self.speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
         self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
         self.assertEqual(self.speaker.search("colliding"), self.receiver2)
+
+
+class TestRPSystemCommands(CommandTest):
+    def setUp(self):
+        super().setUp()
+        self.char1.swap_typeclass(rpsystem.ContribRPCharacter)
+        self.char2.swap_typeclass(rpsystem.ContribRPCharacter)
+
+    def test_commands(self):
+
+        self.call(
+            rpsystem.CmdSdesc(), "Foobar Character", "Char's sdesc was set to 'Foobar Character'."
+        )
+        self.call(
+            rpsystem.CmdSdesc(),
+            "BarFoo Character",
+            "Char2's sdesc was set to 'BarFoo Character'.",
+            caller=self.char2,
+        )
+        self.call(rpsystem.CmdSay(), "Hello!", 'Char says, "Hello!"')
+        self.call(rpsystem.CmdEmote(), "/me smiles to /barfoo.", "Char smiles to BarFoo Character")
+        self.call(
+            rpsystem.CmdPose(),
+            "stands by the bar",
+            "Pose will read 'Foobar Character stands by the bar.'.",
+        )
+        self.call(
+            rpsystem.CmdRecog(),
+            "barfoo as friend",
+            "Char will now remember BarFoo Character as friend.",
+        )
+        self.call(
+            rpsystem.CmdRecog(),
+            "",
+            "Currently recognized (use 'recog <sdesc> as <alias>' to add new "
+            "and 'forget <alias>' to remove):\n friend  (BarFoo Character)",
+        )
+        self.call(
+            rpsystem.CmdRecog(),
+            "friend",
+            "Char will now know them only as 'BarFoo Character'",
+            cmdstring="forget",
+        )
 
 
 # Testing of ExtendedRoom contrib
@@ -607,7 +652,7 @@ class TestWilderness(EvenniaTest):
             "west": (0, 1),
             "northwest": (0, 2),
         }
-        for direction, correct_loc in directions.items():  # Not compatible with Python 3
+        for (direction, correct_loc) in directions.items():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEqual(new_loc, correct_loc, direction)
 
@@ -829,20 +874,17 @@ class TestCustomGameTime(EvenniaTest):
 
 # Test dice module
 
+from evennia.contrib import dice  # noqa
 
-@patch("random.randint", return_value=5)
+
+@patch("evennia.contrib.dice.randint", return_value=5)
 class TestDice(CommandTest):
     def test_roll_dice(self, mocked_randint):
-        # we must import dice here for the mocked randint to apply correctly.
-        from evennia.contrib import dice
-
         self.assertEqual(dice.roll_dice(6, 6, modifier=("+", 4)), mocked_randint() * 6 + 4)
         self.assertEqual(dice.roll_dice(6, 6, conditional=("<", 35)), True)
         self.assertEqual(dice.roll_dice(6, 6, conditional=(">", 33)), False)
 
     def test_cmddice(self, mocked_randint):
-        from evennia.contrib import dice
-
         self.call(
             dice.CmdDice(), "3d6 + 4", "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19."
         )
@@ -853,7 +895,7 @@ class TestDice(CommandTest):
 # Test email-login
 
 
-from evennia.contrib import email_login
+from evennia.contrib import email_login  # noqa
 
 
 class TestEmailLogin(CommandTest):
