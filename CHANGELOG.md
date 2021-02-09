@@ -29,6 +29,7 @@
   change means that proper nouns at the start of sentences will not be treated as nouns.
 - Make MuxCommand `lhs/rhslist` always be lists, also if empty (used to be the empty string)
 - Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
+- Latin (la) i18n translation (jamalainm)
 
 ### Evennia 0.9.5 (2019-2020)
 
