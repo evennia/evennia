@@ -1,0 +1,469 @@
+# Latin language messages.
+# Copyright (C) 2021
+# This file is distributed under the same license as the Evennia package.
+# James Inman <robot@inman.xyz>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-04 21:25-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: accounts/accounts.py:278
+msgid "You are already puppeting this object."
+msgstr "Tū iam hanc rem administrās"
+
+#: accounts/accounts.py:282
+#, python-brace-format
+msgid "You don't have permission to puppet '{key}'."
+msgstr "Tibi non licet administrāre '{key}'."
+
+#: accounts/accounts.py:303
+#, python-brace-format
+msgid "|c{key}|R is already puppeted by another Account."
+msgstr "|c{key}|R ab aliā ratiōne iam administrātur"
+
+#: accounts/accounts.py:499
+msgid "Too many login failures; please try again in a few minutes."
+msgstr "Saepius nequīquam nōmen datum est; quaesō, paucis post mōmentīs rursus conāre."
+
+#: accounts/accounts.py:512 accounts/accounts.py:772
+msgid ""
+"|rYou have been banned and cannot continue from here.\n"
+"If you feel this ban is in error, please email an admin.|x"
+msgstr ""
+"|rTū prohibēris neque tibi hinc pergere licet.\n"
+"Sī errōre tē prohibērī vidētur, quaesō litterās electronicās ad administrātōrem mitte.|x"
+
+#: accounts/accounts.py:524
+msgid "Username and/or password is incorrect."
+msgstr "Nōmen vel tessera male datur."
+
+#: accounts/accounts.py:743
+msgid ""
+"You are creating too many accounts. Please log into an existing account."
+msgstr ""
+"Plūrēs ratiōnēs creās. Quaesō nōmen prō ratiōne iam factā da."
+
+#: accounts/accounts.py:789
+msgid ""
+"There was an error creating the Account. If this problem persists, contact "
+"an admin."
+msgstr ""
+"Nequīquam ratiō creāta est. Sī semper tibi hic error obviam fit, adminstrātōrem vocā "
+
+#: accounts/accounts.py:824 accounts/accounts.py:1635
+msgid "Something has gone wrong. If this error persists, contact an admin"
+msgstr "Errātum est. Si semper tibi hic error obiam fit, adminstratorem voca."
+
+#: accounts/accounts.py:851
+msgid "Account being deleted."
+msgstr "Ratiō dēlētur."
+
+#: accounts/accounts.py:1303 accounts/accounts.py:1652
+#, python-brace-format
+msgid "|G{key} connected|n"
+msgstr "|G{key} sē iunxit.|n"
+
+#: accounts/accounts.py:1310 accounts/accounts.py:1317
+msgid "The Character does not exist."
+msgstr "Nōn est ista Persōna."
+
+#: accounts/accounts.py:1356
+#, python-brace-format
+msgid "|R{key} disconnected{reason}|n"
+msgstr "|R{key} sē dissolvit{reason}|n"
+
+#: accounts/accounts.py:1463
+#, python-brace-format
+msgid "{target} has no in-game appearance."
+msgstr "{target} nullam faciem in hōc mundō habet."
+
+#: accounts/accounts.py:1507
+msgid ""
+"\n"
+"\n"
+" You don't have any characters yet. See |whelp @charcreate|n for creating "
+"one."
+msgstr ""
+"\n"
+"\n"
+" Tibi nondum est ulla persōna. Vidē |whelp @charcreate|n ad persōnam "
+"creāndam."
+
+#: accounts/accounts.py:1588
+msgid "Guest accounts are not enabled on this server."
+msgstr "Hospitibus nōn licet ratiōnibus ūtī in hoc moderātrō."
+
+#: accounts/accounts.py:1598
+msgid "All guest accounts are in use. Please try again later."
+msgstr "Nōn iam sunt ratiōnēs hospitum. Quaesō in posterum rursus conāre."
+
+#: accounts/bots.py:333
+#, python-brace-format
+msgid ""
+"Nicks at {chstr}:\n"
+" {nicklist}"
+msgstr "Nōmina dīminutīva apud {chstr}:\n"
+" {nicklist}"
+
+#: accounts/bots.py:344
+#, python-brace-format
+msgid "IRC ping return from {chstr} took {time}s."
+msgstr "IRC ad {chstr} {time} secundīs responsāvit."
+
+#: commands/cmdhandler.py:738
+msgid "There were multiple matches."
+msgstr "Plūra quam ūnum inventa sunt."
+
+#: commands/cmdhandler.py:763
+#, python-brace-format
+msgid "Command '{command}' is not available."
+msgstr "Iussum '{command}' non suppetit."
+
+#: commands/cmdhandler.py:773
+#, python-brace-format
+msgid " Maybe you meant {command}?"
+msgstr " Fortasse '{command}' in tuō animō habuistī?"
+
+#: commands/cmdhandler.py:774
+msgid "or"
+msgstr "vel"
+
+#: commands/cmdhandler.py:777
+msgid " Type \"help\" for help."
+msgstr "Scrībe \"auxilium\" ut adiūveris."
+
+#: commands/cmdsethandler.py:88
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"in legendō cmdset '{path}' errātum est\n"
+"(Iter ordōque struis memorātum est {timestamp})"
+
+#: commands/cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"In legendō cmdset errātum est: Nūllum exemplar cmdset '{classname}' in '{path}'.\n"
+"(Iter ordōque struis memorātum est {timestamp})"
+
+#: commands/cmdsethandler.py:99
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Error syntaxis in obiviam fit dum cmdset lectum est '{path}'.\n"
+"(Iter ordōque struis memorātum est {timestamp})"
+
+#: commands/cmdsethandler.py:105
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Vel compīlandō vel pellendō errātum est dum cmdset '{path}' lectum est.\",\n"
+"(Iter ordōque struis memorātum est {timestamp})"
+
+#: commands/cmdsethandler.py:111
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"Error in obviam fit prō cmdset apud '{path}'.\n"
+"Subsidium vocātur '{fallback_path}'.\n"
+
+#: commands/cmdsethandler.py:117
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "Per subsidiī iter '{fallback_path}' nullum cmdset inventum est"
+
+#: commands/cmdsethandler.py:187 commands/cmdsethandler.py:199
+#, python-brace-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '{path}')."
+msgstr ""
+"\n"
+"(Iter nequīquam factum est: '{path}')."
+
+#: commands/cmdsethandler.py:329
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "Quoddam {mergetype} ad cmdset '{cmdset}'"
+
+#: commands/cmdsethandler.py:451
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Sōla possunt CmdSets ad cmdsethandler addī"
+
+#: comms/channelhandler.py:103
+msgid "Say what?"
+msgstr "Quid dīcis?"
+
+#: comms/channelhandler.py:108
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Canālis '%s' nōn est inventa"
+
+#: comms/channelhandler.py:111
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Ad canālem '%s' nōn iungeris"
+
+#: comms/channelhandler.py:115
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "Tibi nōn licet per canālem '%s' mittere."
+
+#: comms/channelhandler.py:122
+#, python-format
+msgid "You start listening to %s."
+msgstr "Tū %s audīre incipis."
+
+#: comms/channelhandler.py:124
+#, python-format
+msgid "You were already listening to %s."
+msgstr "Tū %s iam audīs."
+
+#: comms/channelhandler.py:130
+#, python-format
+msgid "You stop listening to %s."
+msgstr "Tū %s audīre desistis."
+
+#: comms/channelhandler.py:132
+#, python-format
+msgid "You were already not listening to %s."
+msgstr "Tū %s iam nōn audīs."
+
+#: comms/channelhandler.py:147
+#, python-format
+msgid "You currently have %s muted."
+msgstr "Tū %s iam praetermittis."
+
+#: comms/channelhandler.py:161
+msgid " (channel)"
+msgstr " (canālis)"
+
+#: help/manager.py:134
+#, python-brace-format
+msgid "Help database moved to category {default_category}"
+msgstr "Datōrum Ordinātrum ad auxilium pertinēns ad genus {default_category} mōtum est."
+
+#: locks/lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Claustra: functiō ad claudendum '%s' nōn suppetit."
+
+#: locks/lockhandler.py:256
+#, python-brace-format
+msgid "Lock: definition '{lock_string}' has syntax errors."
+msgstr "Claustra: explicātiō '{lock_string}' errōrēs syntaxis habet."
+
+#: locks/lockhandler.py:265
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"Administrātor Claustrōrum ad %(obj)s pertinēns: genus forāminis immitendae clavis "
+"'%(access_type)s' ab '%(source)s' in '%(goal)s' mūtātum est."
+
+#: locks/lockhandler.py:339
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Claustra: '{lockdef}' nullum punctum duplex (:) continet"
+
+#: locks/lockhandler.py:348
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "Claustra: {lockdef}' nullum genus forāminis clāvis immitendae habet (spatium ante punctum duplex vacuum est)."
+
+#: locks/lockhandler.py:356
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Claustra: '{lockdef}' interclusiōnēs impārēs habet."
+
+#: locks/lockhandler.py:363
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Claustra: '{lockdef}' nullās functiōnēs clastrōrum idoneōs habet."
+
+#: objects/objects.py:795
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Iste mōtus ('%s') efficī nōn potuit. Administrātōrem vocā."
+
+#: objects/objects.py:805
+msgid "The destination doesn't exist."
+msgstr "Iste fīnis nōn est."
+
+#: objects/objects.py:896
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Domus data '(#%d)' nōn inventa est."
+
+#: objects/objects.py:912
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "Errātum est! In nūsquam cecidistī. Administrātōrem vocā."
+
+#: objects/objects.py:1061
+#, python-brace-format
+msgid "Your character {key} has been destroyed."
+msgstr "Persōna tua {key} dēlēta est."
+
+#: scripts/scripthandler.py:52
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s iterātur): %(desc)s"
+
+#: scripts/scripts.py:198
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Scriptum %(key)s(#%(dbid)s) generis '%(cname)s': at_repeat() error '%(err)s'."
+
+#: server/initial_setup.py:29
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with '|wbatchcommand "
+"tutorial_world.build|n'.\n"
+"    "
+msgstr ""
+"\n"
+"Tē excipimus in novum ludum ex |wEvennia|n ortum!\n" 
+"Vīsitā http://www.evennia.com sī tū auxilium petis,\n"
+"collāborāre vel difficilia nuntiāre velis,\n"
+"etiam sī colloquī modo in animō habēs.\n"
+"Ut Ratiō #1 tibi licet locūm tuī exercendī atque\n"
+"discendī grātiā creāre scrībendō '|wbatchcommand "
+"tutorial_world.build|n'.\n"
+"    "
+
+#: server/initial_setup.py:94
+msgid "This is User #1."
+msgstr "Haec est Ratiō #1."
+
+#: server/initial_setup.py:110
+msgid "Limbo"
+msgstr "In Limbō"
+
+#: server/server.py:158
+msgid "idle timeout exceeded"
+msgstr "Nimis temporis in nihil agendō ēgistī."
+
+#: server/sessionhandler.py:402
+msgid " ... Server restarted."
+msgstr "... Moderātrum redintegrātum est."
+
+#: server/sessionhandler.py:627
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Alibi initum est. Dissolveris."
+
+#: server/sessionhandler.py:655
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Nimis temporis in nihil agendō ēgistī, dissolveris."
+
+#: server/validators.py:31
+msgid "Sorry, that username is reserved."
+msgstr "Mē paenitet, illud nōmen servātur"
+
+#: server/validators.py:38
+msgid "Sorry, that username is already taken."
+msgstr "Mē paenitet, illud nōmen iam captum est."
+
+#: server/validators.py:88
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Ūtēns cliente terminālis, multīs verbīs ūtī licet sī "
+"circum tesseram signa citātiōnis duplicia ponis."
+
+#: utils/evmenu.py:292
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice or try 'q' to abort."
+msgstr ""
+"Nōdus indicis '{nodename}' aut nōn effectus est aut errāvit. Ēlige "
+"aliud aut scrībe 'r' ut fugās."
+
+#: utils/evmenu.py:295
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Errātum est in nōdō indicis '{nodename}'."
+
+#: utils/evmenu.py:296
+msgid "No description."
+msgstr "Nulla dēscriptiō"
+
+#: utils/evmenu.py:297
+msgid "Commands: <menu option>, help, quit"
+msgstr "Iussa: <menu option>, auxilium pete, relinque"
+
+#: utils/evmenu.py:298
+msgid "Commands: <menu option>, help"
+msgstr "Iussa: <menu option>, auxilium pete"
+
+#: utils/evmenu.py:299
+msgid "Commands: help, quit"
+msgstr "Iussa: auxilium pete, relinque"
+
+#: utils/evmenu.py:300
+msgid "Commands: help"
+msgstr "Iussa: auxilium pete"
+
+#: utils/evmenu.py:301 utils/evmenu.py:1665
+msgid "Choose an option or try 'help'."
+msgstr "Optiōnem ēlige aut 'auxilium' pete."
+
+#: utils/utils.py:1906
+#, python-format
+msgid "Could not find '%s'."
+msgstr "'%s' nōn inventum est"
+
+#: utils/utils.py:1913
+#, python-brace-format
+msgid "More than one match for '{query}' (please narrow target):\n"
+msgstr "Plūra quam ūnum inventum est in '{query}' petendō (quaesō certiōribus verbīs ūtere):\n"
+
+#: utils/validatorfuncs.py:62
+#, python-brace-format
+msgid "No {option_key} entered!"
+msgstr "{option_key} nōn scriptum est"
+
+#: utils/validatorfuncs.py:71
+#, python-brace-format
+msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
+msgstr "Litterae circulī temporālis '{acct_tz}' nōn est idoneus circulus temporālis ({err})"
