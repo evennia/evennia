@@ -4,17 +4,17 @@ A login menu using EvMenu.
 Contribution - Vincent-lg 2016, Griatch 2019 (rework for modern EvMenu)
 
 This changes the Evennia login to ask for the account name and password in
-sequence instead of requiring you to enter both at once. 
+sequence instead of requiring you to enter both at once.
 
 To install, add this line to the settings file (`mygame/server/conf/settings.py`):
 
     CMDSET_UNLOGGEDIN = "evennia.contrib.menu_login.UnloggedinCmdSet"
 
 Reload the server and the new connection method will be active. Note that you must
-independently change the connection screen to match this login style, by editing 
+independently change the connection screen to match this login style, by editing
 `mygame/server/conf/connection_screens.py`.
 
-This uses Evennia's menu system EvMenu and is triggered by a command that is 
+This uses Evennia's menu system EvMenu and is triggered by a command that is
 called automatically when a new user connects.
 
 """

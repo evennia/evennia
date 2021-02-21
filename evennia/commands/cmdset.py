@@ -106,9 +106,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
               commands preference.
 
     duplicates - determines what happens when two sets of equal
-                 priority merge. Default has the first of them in the
+                 priority merge (only). Defaults to None and has the first of them in the
                  merger (i.e. A above) automatically taking
-                 precedence. But if allow_duplicates is true, the
+                 precedence. But if `duplicates` is true, the
                  result will be a merger with more than one of each
                  name match.  This will usually lead to the account
                  receiving a multiple-match error higher up the road,
@@ -119,6 +119,16 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                  select which ball to kick ...  Allowing duplicates
                  only makes sense for Union and Intersect, the setting
                  is ignored for the other mergetypes.
+                 Note that the `duplicates` flag is *not* propagated in
+                 a cmdset merger. So `A + B = C` will result in
+                 a cmdset with duplicate commands, but C.duplicates will
+                 be `None`. For duplication to apply to a whole cmdset
+                 stack merge, _all_ cmdsets in the stack must have
+                 `.duplicates=True` set.
+                Finally, if a final cmdset has `.duplicates=None` (the normal
+                unless created alone with another value), the cmdhandler
+                will assume True for object-based cmdsets and False for
+                all other. This is usually the most intuitive outcome.
 
     key_mergetype (dict) - allows the cmdset to define a unique
              mergetype for particular cmdsets.  Format is
@@ -144,14 +154,27 @@ class CmdSet(object, metaclass=_CmdSetMeta):
     mergetype = "Union"
     priority = 0
 
-    # These flags, if set to None, will allow "pass-through" of lower-prio settings
-    # of True/False. If set to True/False, will override lower-prio settings.
+    # These flags, if set to None should be interpreted as 'I don't care' and,
+    # will allow "pass-through" even of lower-prio cmdsets' explicitly True/False
+    # options. If this is set to True/False however, priority matters.
     no_exits = None
     no_objs = None
     no_channels = None
-    # same as above, but if left at None in the final merged set, the
-    # cmdhandler will auto-assume True for Objects and stay False for all
-    # other entities.
+    # The .duplicates setting does not propagate and since duplicates can only happen
+    # on same-prio cmdsets, there is no concept of passthrough on `None`.
+    # The merger of two cmdsets always return in a cmdset with `duplicates=None`
+    # (even if the result may have duplicated commands).
+    # If a final cmdset has `duplicates=None` (normal, unless the cmdset is
+    # created on its own with the flag set), the cmdhandler will auto-assume it to be
+    # True for Object-based cmdsets and stay None/False for all other entities.
+    #
+    # Example:
+    #  A and C has .duplicates=True, B has .duplicates=None (or False)
+    #  B + A = BA, where BA will have duplicate cmds, but BA.duplicates = None
+    #  BA + C = BAC, where BAC will have more duplication, but BAC.duplicates = None
+    #
+    # Basically, for the `.duplicate` setting to survive throughout a
+    # merge-stack, every cmdset in the stack must have `duplicates` set explicitly.
     duplicates = None
 
     permanent = False
@@ -334,7 +357,19 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             commands (str): Representation of commands in Cmdset.
 
         """
-        return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        perm = "perm" if self.permanent else "non-perm"
+        options = ", ".join(
+            [
+                "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
+                for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+                if getattr(self, opt) is not None
+            ]
+        )
+        options = (", " + options) if options else ""
+        return (
+            f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: "
+            + ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        )
 
     def __iter__(self):
         """
@@ -401,12 +436,15 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
             # pass through options whenever they are set, unless the merging or higher-prio
             # set changes the setting (i.e. has a non-None value). We don't pass through
-            # the duplicates setting; that is per-merge
+            # the duplicates setting; that is per-merge; the resulting .duplicates value
+            # is always None (so merging cmdsets must all have explicit values if wanting
+            # to cause duplicates).
             cmdset_c.no_channels = (
                 self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
             )
             cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
             cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
+            cmdset_c.duplicates = None
 
         else:
             # B higher priority than A
@@ -428,12 +466,15 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
             # pass through options whenever they are set, unless the higher-prio
             # set changes the setting (i.e. has a non-None value). We don't pass through
-            # the duplicates setting; that is per-merge
+            # the duplicates setting; that is per-merge; the resulting .duplicates value#
+            # is always None (so merging cmdsets must all have explicit values if wanting
+            # to cause duplicates).
             cmdset_c.no_channels = (
                 cmdset_a.no_channels if self.no_channels is None else self.no_channels
             )
             cmdset_c.no_exits = cmdset_a.no_exits if self.no_exits is None else self.no_exits
             cmdset_c.no_objs = cmdset_a.no_objs if self.no_objs is None else self.no_objs
+            cmdset_c.duplicates = None
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.
@@ -477,15 +518,16 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             # cmd is a command set so merge all commands in that set
             # to this one. We raise a visible error if we created
             # an infinite loop (adding cmdset to itself somehow)
+            cmdset = cmd
             try:
-                cmd = self._instantiate(cmd)
+                cmdset = self._instantiate(cmdset)
             except RuntimeError:
-                string = "Adding cmdset %(cmd)s to %(class)s lead to an "
-                string += "infinite loop. When adding a cmdset to another, "
-                string += "make sure they are not themself cyclically added to "
-                string += "the new cmdset somewhere in the chain."
-                raise RuntimeError(_(string) % {"cmd": cmd, "class": self.__class__})
-            cmds = cmd.commands
+                err = ("Adding cmdset {cmdset} to {cls} lead to an "
+                       "infinite loop. When adding a cmdset to another, "
+                       "make sure they are not themself cyclically added to "
+                       "the new cmdset somewhere in the chain.")
+                raise RuntimeError(_(err.format(cmdset=cmdset, cls=self.__class__)))
+            cmds = cmdset.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]
         else:
@@ -494,7 +536,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         system_commands = self.system_commands
         for cmd in cmds:
             # add all commands
-            if not hasattr(cmd, "obj"):
+            if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
             try:
                 ic = commands.index(cmd)

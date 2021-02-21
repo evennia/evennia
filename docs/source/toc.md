@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [./A voice operated elevator using events](./A-voice-operated-elevator-using-events)
 - [./API refactoring](./API-refactoring)
 - [./Accounts](./Accounts)
@@ -38,6 +38,7 @@
 - [./Connection Screen](./Connection-Screen)
 - [./Continuous Integration](./Continuous-Integration)
 - [./Contributing](./Contributing)
+- [./Contributing Docs](./Contributing-Docs)
 - [./Coordinates](./Coordinates)
 - [./Custom Protocols](./Custom-Protocols)
 - [./Customize channels](./Customize-channels)
@@ -66,7 +67,7 @@
 - [./Glossary](./Glossary)
 - [./Grapevine](./Grapevine)
 - [./Guest Logins](./Guest-Logins)
-- [./HAProxy Config (Optional)](./HAProxy-Config-(Optional))
+- [./HAProxy Config](./HAProxy-Config)
 - [./Help System](./Help-System)
 - [./Help System Tutorial](./Help-System-Tutorial)
 - [./How To Get And Give Help](./How-To-Get-And-Give-Help)

@@ -10,7 +10,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
-SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
+SPHINXAPIDOCOPTS = --tocfile evennia-api --module-first --force --maxdepth 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
 SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests/* ../evennia/*/tests.py
 
@@ -56,7 +56,7 @@ _multiversion-check-env:
 _clean_api_index:
 	rm source/api/*
 
-# remove supervluous 'module' and 'package' text from api headers
+# remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
 	for f in source/api/*.rst; do\
         perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
@@ -71,7 +71,7 @@ _multiversion-autodoc-index:
 	make _clean_api_index
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	make _reformat_apidoc_headers
-	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
+	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index." | :
 
 _html-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
@@ -96,7 +96,7 @@ install:
 
 clean:
 	@rm -Rf $(BUILDDIR)
-	# @git clean -f -d docs/
+	@git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
 # not fully working at this time
@@ -107,11 +107,14 @@ pdf:
 	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
-	make _check-env
 	make _quick-html-build $(FILES)
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+
+# abort on warnings too
+quickstrict:
+	SPHINXOPTS=-W make quick
 
 local:
 	make _check-env

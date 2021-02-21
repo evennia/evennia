@@ -1,8 +1,8 @@
 # requirements for building the docs
 
-sphinx==2.4.4
-sphinx-multiversion==0.1.1
-lunr==0.5.8
+sphinx==3.2.1
+sphinx-multiversion==0.2.4
+# lunr==0.5.8
 
 # recommonmark custom branch with evennia-specific fixes
 git+https://github.com/evennia/recommonmark.git@evennia-mods#egg=recommonmark

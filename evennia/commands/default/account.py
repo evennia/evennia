@@ -304,7 +304,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         character_candidates = []
 
         if not self.args:
-            character_candidates = [account.db._last_puppet] or []
+            character_candidates = [account.db._last_puppet] if account.db._last_puppet else []
             if not character_candidates:
                 self.msg("Usage: ic <character>")
                 return
@@ -999,7 +999,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
                 self.msg("Already quelling Account %s permissions." % permstr)
                 return
             account.attributes.add("_quell", True)
-            puppet = self.session.puppet
+            puppet = self.session.puppet if self.session else None
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions %s." % cpermstr

@@ -300,6 +300,10 @@ class _SaverDict(_SaverMutable, MutableMapping):
     def has_key(self, key):
         return key in self._data
 
+    @_save
+    def update(self, *args, **kwargs):
+        self._data.update(*args, **kwargs)
+
 
 class _SaverSet(_SaverMutable, MutableSet):
     """
@@ -604,7 +608,7 @@ def from_pickle(data, db_obj=None):
     object was removed (or changed in-place) in the database, None will be
     returned.
 
-    Args_
+    Args:
         data (any): Pickled data to unpickle.
         db_obj (Atribute, any): This is the model instance (normally
             an Attribute) that _Saver*-type iterables (_SaverList etc)
@@ -612,7 +616,7 @@ def from_pickle(data, db_obj=None):
             that saves assigned data to the database. Skip if not
             serializing onto a given object.  If db_obj is given, this
             function will convert lists, dicts and sets to their
-            _SaverList, _SaverDict and _SaverSet counterparts.
+            `_SaverList`, `_SaverDict` and `_SaverSet` counterparts.
 
     Returns:
         data (any): Unpickled data.

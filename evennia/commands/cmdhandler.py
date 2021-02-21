@@ -494,6 +494,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             cmdset = None
         for cset in (cset for cset in local_obj_cmdsets if cset):
             cset.duplicates = cset.old_duplicates
+        # important - this syncs the CmdSetHandler's .current field with the
+        # true current cmdset!
+        if cmdset:
+            caller.cmdset.current = cmdset
+
         returnValue(cmdset)
     except ErrorReported:
         raise
@@ -548,7 +553,7 @@ def cmdhandler(
             is made available as `self.cmdstring` when the Command runs.
             If not given, the command will be assumed to be called as `cmdobj.key`.
 
-    Kwargs:
+    Keyword Args:
         kwargs (any): other keyword arguments will be assigned as named variables on the
             retrieved command object *before* it is executed. This is unused
             in default Evennia but may be used by code to set custom flags or

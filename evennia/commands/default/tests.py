@@ -971,7 +971,11 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
 
     def test_list_cmdsets(self):
-        self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
+        self.call(
+            building.CmdListCmdSets(),
+            "",
+            "<CmdSetHandler> stack:\n <CmdSet DefaultCharacter, Union, perm, prio 0>:",
+        )
         self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):

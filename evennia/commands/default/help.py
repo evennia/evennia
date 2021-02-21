@@ -25,7 +25,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SEP = "|C" + "-" * _DEFAULT_WIDTH + "|n"
 
 
-class CmdHelp(Command):
+class CmdHelp(COMMAND_DEFAULT_CLASS):
     """
     View help or a list of topics
 
@@ -175,7 +175,7 @@ class CmdHelp(Command):
             False: the command shouldn't appear in the table.
 
         """
-        return True
+        return cmd.access(caller, "view", default=True)
 
     def parse(self):
         """
@@ -219,10 +219,15 @@ class CmdHelp(Command):
             hdict_topic = defaultdict(list)
             # create the dictionaries {category:[topic, topic ...]} required by format_help_list
             # Filter commands that should be reached by the help
-            # system, but not be displayed in the table.
+            # system, but not be displayed in the table, or be displayed differently.
             for cmd in all_cmds:
                 if self.should_list_cmd(cmd, caller):
-                    hdict_cmd[cmd.help_category].append(cmd.key)
+                    key = (
+                        cmd.auto_help_display_key
+                        if hasattr(cmd, "auto_help_display_key")
+                        else cmd.key
+                    )
+                    hdict_cmd[cmd.help_category].append(key)
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
             self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
@@ -266,11 +271,10 @@ class CmdHelp(Command):
             ]
 
         if len(match) == 1:
+            cmd = match[0]
+            key = cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key
             formatted = self.format_help_entry(
-                match[0].key,
-                match[0].get_help(caller, cmdset),
-                aliases=match[0].aliases,
-                suggested=suggestions,
+                key, cmd.get_help(caller, cmdset), aliases=cmd.aliases, suggested=suggestions,
             )
             self.msg_help(formatted)
             return
@@ -291,7 +295,15 @@ class CmdHelp(Command):
         if query in all_categories:
             self.msg_help(
                 self.format_help_list(
-                    {query: [cmd.key for cmd in all_cmds if cmd.help_category == query]},
+                    {
+                        query: [
+                            cmd.auto_help_display_key
+                            if hasattr(cmd, "auto_help_display_key")
+                            else cmd.key
+                            for cmd in all_cmds
+                            if cmd.help_category == query
+                        ]
+                    },
                     {query: [topic.key for topic in all_topics if topic.help_category == query]},
                 )
             )

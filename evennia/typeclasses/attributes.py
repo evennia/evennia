@@ -181,10 +181,10 @@ class Attribute(SharedMemoryModel):
     #
 
     def __str__(self):
-        return smart_str("%s(%s)" % (self.db_key, self.id))
+        return smart_str("%s[category=%s](#%s)" % (self.db_key, self.db_category, self.id))
 
     def __repr__(self):
-        return "%s(%s)" % (self.db_key, self.id)
+        return "%s[category=%s](#%s)" % (self.db_key, self.db_category, self.id)
 
     def access(self, accessing_obj, access_type="attrread", default=False, **kwargs):
         """
@@ -257,7 +257,7 @@ class AttributeHandler(object):
                 "%s-%s"
                 % (
                     to_str(attr.db_key).lower(),
-                    attr.db_category.lower() if attr.db_category else None,
+                    attr.db_category.lower() if attr.db_category is not None else None,
                 ),
                 attr,
             )
@@ -289,7 +289,7 @@ class AttributeHandler(object):
 
         """
         key = key.strip().lower() if key else None
-        category = category.strip().lower() if category else None
+        category = category.strip().lower() if category is not None else None
         if key:
             cachekey = "%s-%s" % (key, category)
             cachefound = False
@@ -558,6 +558,7 @@ class AttributeHandler(object):
             return
 
         category = category.strip().lower() if category is not None else None
+
         keystr = key.strip().lower()
         attr_obj = self._getcache(key, category)
 
@@ -596,12 +597,13 @@ class AttributeHandler(object):
             *args (tuple): Each argument should be a tuples (can be of varying
                 length) representing the Attribute to add to this object.
                 Supported tuples are
+
                     - `(key, value)`
                     - `(key, value, category)`
                     - `(key, value, category, lockstring)`
                     - `(key, value, category, lockstring, default_access)`
 
-        Kwargs:
+        Keyword Args:
             strattr (bool): If `True`, value must be a string. This
                 will save the value without pickling which is less
                 flexible but faster to search (not often used except
@@ -847,12 +849,12 @@ def initialize_nick_templates(in_template, out_template):
             matched by the in_template.
 
     Returns:
-        regex  (regex): Regex to match against strings
-        template (str): Template with markers {arg1}, {arg2}, etc for
-            replacement using the standard .format method.
+        (regex, str): Regex to match against strings and a template
+            Template with markers `{arg1}`, `{arg2}`, etc for
+            replacement using the standard `.format` method.
 
     Raises:
-        NickTemplateInvalid: If the in/out template does not have a matching
+        attributes.NickTemplateInvalid: If the in/out template does not have a matching
             number of $args.
 
     """

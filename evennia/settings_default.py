@@ -375,29 +375,41 @@ DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # tuples mapping the exact tag (not a regex!) to the ANSI convertion, like
 # `(r"%c%r", ansi.ANSI_RED)` (the evennia.utils.ansi module contains all
 # ANSI escape sequences). Default is to use `|` and `|[` -prefixes.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_EXTRA_MAP = []
 # Extend the available regexes for adding XTERM256 colors in-game. This is given
 # as a list of regexes, where each regex must contain three anonymous groups for
 # holding integers 0-5 for the red, green and blue components Default is
 # is r'\|([0-5])([0-5])([0-5])', which allows e.g. |500 for red.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
+COLOR_ANSI_EXTRA_MAP = []
 # XTERM256 foreground color replacement
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_FG = []
 # XTERM256 background color replacement. Default is \|\[([0-5])([0-5])([0-5])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_BG = []
 # Extend the available regexes for adding XTERM256 grayscale values in-game. Given
 # as a list of regexes, where each regex must contain one anonymous group containing
 # a single letter a-z to mark the level from white to black. Default is r'\|=([a-z])',
 # which allows e.g. |=k for a medium gray.
 # XTERM256 grayscale foreground
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GFG = []
 # XTERM256 grayscale background. Default is \|\[=([a-z])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
-# ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
+# ansi tag (not a regex!) to a valid XTERM256 tag, such as `(r'|o', r'|531')`
+# for orange. By default this is only used for bright backgrounds but
+# both bright and dark colors can be mapped this way, and is a way to add
+# new shortcuts to xterm colors without having to write the RGB value.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_NO_DEFAULT = False
 
 
@@ -968,7 +980,7 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 try:
     import django_extensions  # noqa
 
-    INSTALLED_APPS = INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS += ["django_extensions"]
 except ImportError:
     # Django extensions are not installed in all distros.
     pass

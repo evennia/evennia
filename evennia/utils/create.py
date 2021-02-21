@@ -78,7 +78,7 @@ def create_object(
 
     Create a new in-game object.
 
-    Kwargs:
+    Keyword Args:
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
             #dbref will be set.
@@ -206,7 +206,7 @@ def create_script(
     scripts.  It's behaviour is similar to the game objects except
     scripts has a time component and are more limited in scope.
 
-    Kwargs:
+    Keyword Args:
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
             #dbref will be set.
@@ -229,8 +229,9 @@ def create_script(
         report_to (Object): The object to return error messages to.
         desc (str): Optional description of script
         tags (list): List of tags or tuples (tag, category).
-        attributes (list): List if tuples (key, value) or (key, value, category)
-           (key, value, lockstring) or (key, value, lockstring, default_access).
+        attributes (list): List of tuples `(key, value)`, `(key, value, category)`,
+           `(key, value, category, lockstring)` or
+           `(key, value, category, lockstring, default_access)`.
 
     Returns:
         script (obj): An instance of the script created
@@ -439,7 +440,7 @@ def create_channel(
     Args:
         key (str): This must be unique.
 
-    Kwargs:
+    Keyword Args:
         aliases (list of str): List of alternative (likely shorter) keynames.
         desc (str): A description of the channel, for use in listings.
         locks (str): Lockstring.
@@ -505,7 +506,7 @@ def create_account(
             the empty string, will be set to None.
         password (str): Password in cleartext.
 
-    Kwargs:
+    Keyword Args:
         typeclass (str): The typeclass to use for the account.
         is_superuser (bool): Wether or not this account is to be a superuser
         locks (str): Lockstring.

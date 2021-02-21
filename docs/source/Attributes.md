@@ -15,7 +15,8 @@ specific names and require very specific types of data (for example you couldn't
 *list* to the `key` property no matter how hard you tried).  `Attributes` come into play when you
 want to assign arbitrary data to arbitrary names.
 
-**Attributes are _not_ secure by default and any player may be able to change them unless you [prevent this behavior](./Attributes#locking-and-checking-attributes).**
+**Attributes are _not_ secure by default and any player may be able to change them unless you
+[prevent this behavior](./Attributes#locking-and-checking-attributes).**
 
 ## The .db and .ndb shortcuts
 
@@ -52,7 +53,8 @@ is tracked by the server and will not be purged in various cache-cleanup operati
 while it runs. Data stored on `ndb` (as well as `db`) will also be easily listed by example the
 `@examine` command.
 
-You can also `del` properties on `db` and `ndb` as normal. This will for example delete an `Attribute`:
+You can also `del` properties on `db` and `ndb` as normal. This will for example delete an
+`Attribute`:
 
 ```python
     del rose.db.has_thorns
@@ -116,12 +118,15 @@ An Attribute object is stored in the database. It has the following properties:
   to `attrname`.
 - `value` - this is the value of the Attribute. This value can be anything which can be pickled -
   objects, lists, numbers or what have you (see
-  [this section](./Attributes#What_types_of_data_can_I_save_in_an_Attribute) for more info). In the example
+  [this section](./Attributes#What_types_of_data_can_I_save_in_an_Attribute) for more info). In the
+example
   `obj.db.attrname = value`, the `value` is stored here.
 - `category` - this is an optional property that is set to None for most Attributes. Setting this
   allows to use Attributes for different functionality. This is usually not needed unless you want
-  to use Attributes for very different functionality ([Nicks](./Nicks) is an example of using Attributes
-  in this way). To modify this property you need to use the [Attribute Handler](./Attributes#The_Attribute_Handler).
+  to use Attributes for very different functionality ([Nicks](./Nicks) is an example of using
+Attributes
+  in this way). To modify this property you need to use the [Attribute
+Handler](Attributes#The_Attribute_Handler).
 - `strvalue` - this is a separate value field that only accepts strings. This severely limits the
   data possible to store, but allows for easier database lookups. This property is usually not used
   except when re-using Attributes for some other purpose ([Nicks](./Nicks) use it). It is only
@@ -151,13 +156,15 @@ useful in a few situations though.
   this is not an issue unless you are reading *and* writing to your Attribute very often (like many
   times per second). Reading from an already cached Attribute is as fast as reading any Python
   property. But even then this is not likely something to worry about: Apart from Evennia's own
-  caching, modern database systems  themselves also cache data very efficiently for speed. Our default
+  caching, modern database systems  themselves also cache data very efficiently for speed. Our
+default
   database even runs completely in RAM if possible, alleviating much of the need to write to disk
   during heavy loads.
 - A more valid reason for using non-persistent data is if you *want* to lose your state when logging
   off. Maybe you are storing throw-away data that are re-initialized at server startup. Maybe you
   are implementing some caching of your own. Or maybe you are testing a buggy [Script](./Scripts) that
-  does potentially harmful stuff to your character object. With non-persistent storage you can be sure
+  does potentially harmful stuff to your character object. With non-persistent storage you can be
+sure
   that whatever is messed up, it's nothing a server reboot can't clear up.
 - NAttributes have no restrictions at all on what they can store (see next section), since they
   don't need to worry about being saved to the database - they work very well for temporary storage.
@@ -185,11 +192,13 @@ not a big deal. But if you are accessing the Attribute as part of some big loop 
 amount of reads/writes you should first extract it to a temporary variable, operate on *that* and
 then save the result back to the Attribute. If you are storing a more complex structure like a
 `dict` or a `list` you should make sure to "disconnect" it from the database before looping over it,
-as mentioned in the [Retrieving Mutable Objects](./Attributes#retrieving-mutable-objects) section below.
+as mentioned in the [Retrieving Mutable Objects](./Attributes#retrieving-mutable-objects) section
+below.
 
 ### Storing single objects
 
-With a single object, we mean anything that is *not iterable*, like numbers, strings or custom class instances without the `__iter__` method.
+With a single object, we mean anything that is *not iterable*, like numbers, strings or custom class
+instances without the `__iter__` method.
 
 * You can generally store any non-iterable Python entity that can be
   [pickled](http://docs.python.org/library/pickle.html).
@@ -223,17 +232,23 @@ This means storing objects in a collection of some kind and are examples of *ite
 entities you can loop over in a for-loop. Attribute-saving supports the following iterables:
 
 * [Tuples](https://docs.python.org/2/library/functions.html#tuple), like `(1,2,"test", <dbobj>)`.
-* [Lists](https://docs.python.org/2/tutorial/datastructures.html#more-on-lists), like `[1,2,"test", <dbobj>]`.
-* [Dicts](https://docs.python.org/2/tutorial/datastructures.html#dictionaries), like `{1:2, "test":<dbobj>]`.
+* [Lists](https://docs.python.org/2/tutorial/datastructures.html#more-on-lists), like `[1,2,"test",
+<dbobj>]`.
+* [Dicts](https://docs.python.org/2/tutorial/datastructures.html#dictionaries), like `{1:2,
+"test":<dbobj>]`.
 * [Sets](https://docs.python.org/2/tutorial/datastructures.html#sets), like `{1,2,"test",<dbobj>}`.
-* [collections.OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict), like `OrderedDict((1,2), ("test", <dbobj>))`.
-* [collections.Deque](https://docs.python.org/2/library/collections.html#collections.deque), like `deque((1,2,"test",<dbobj>))`.
-* *Nestings* of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each containing dicts, etc.
+* [collections.OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDi
+ct), like `OrderedDict((1,2), ("test", <dbobj>))`.
+* [collections.Deque](https://docs.python.org/2/library/collections.html#collections.deque), like
+`deque((1,2,"test",<dbobj>))`.
+* *Nestings* of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each
+containing dicts, etc.
 * All other iterables (i.e. entities with the `__iter__` method) will be converted to a *list*.
   Since you can use any combination of the above iterables, this is generally not much of a
   limitation.
 
-Any entity listed in the [Single object](./Attributes#Storing-Single-Objects) section above can be stored in the iterable.
+Any entity listed in the [Single object](./Attributes#Storing-Single-Objects) section above can be
+stored in the iterable.
 
 > As mentioned in the previous section, database entities (aka typeclasses) are not possible to
 > pickle. So when storing an iterable, Evennia must recursively traverse the iterable *and all its
@@ -339,7 +354,8 @@ already disconnected from the database from the onset.
 Attributes are normally not locked down by default, but you can easily change that for individual
 Attributes (like those that may be game-sensitive in games with user-level building).
 
-First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](./Locks). The relevant lock types are
+First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](./Locks).
+The relevant lock types are
 
 - `attrread` - limits who may read the value of the Attribute
 - `attredit` - limits who may set/change this Attribute

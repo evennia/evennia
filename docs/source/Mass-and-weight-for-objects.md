@@ -40,7 +40,8 @@ non-default mass would be stored on the `mass` [[Attributes]] of the objects.
 
 You can add a `get_mass` definition to characters and rooms, also.
 
-If you were in a one metric-ton elevator with four other friends also wearing armor and carrying gold bricks, you might wonder if this elevator's going to move, and how fast.
+If you were in a one metric-ton elevator with four other friends also wearing armor and carrying
+gold bricks, you might wonder if this elevator's going to move, and how fast.
 
 Assuming the unit is grams and the elevator itself weights 1,000 kilograms, it would already be
 `@set elevator/mass=1000000`, we're `@set me/mass=85000` and our armor is `@set armor/mass=50000`.
@@ -57,10 +58,13 @@ else:
 ```
 
 #### Inventory
-Example of listing mass of items in your inventory:
+Example of listing mass of items in your inventory, don't forget to add it to your
+default_cmdsets.py file:
 
 ```python
-class CmdInventory(MuxCommand):
+from evennia import utils
+
+class CmdInventory(Command):
     """
     view inventory
     Usage:
@@ -81,15 +85,11 @@ class CmdInventory(MuxCommand):
         if not items:
             string = "You are not carrying anything."
         else:
-            table = prettytable.PrettyTable(["name", "desc"])
-            table.header = False
-            table.border = False
+            table = utils.evtable.EvTable("name", "weight")
             for item in items:
-                second = item.get_mass() \
-                        if 'weight' in self.switches else item.db.desc
-                table.add_row(["%s" % item.get_display_name(self.caller.sessions),
-                               second and second or ""])
-            string = "|wYou are carrying:\n%s" % table
+                mass = item.get_mass()
+                table.add_row(item.name, mass)
+            string = f"|wYou are carrying:|n\n{table}"
         self.caller.msg(string)
 
 ```

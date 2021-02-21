@@ -394,7 +394,7 @@ if WEBSERVER_ENABLED:
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ""
                     if w_interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
-                        w_ifacestr = "-%s" % interface
+                        w_ifacestr = "-%s" % w_interface
                     port = WEBSOCKET_CLIENT_PORT
 
                     class Websocket(WebSocketServerFactory):

@@ -14,7 +14,9 @@ ACTIONS - see below
 
 ACTIONS is a tuple
 
+```
 (login_func, logout_func, (0.3, func1), (0.1, func2) ... )
+```
 
 where the first entry is the function to call on first connect, with a
 chance of occurring given by CHANCE_OF_LOGIN. This function is usually
@@ -33,14 +35,15 @@ returns a string or a list of command strings to execute.  Use the
 client object for optionally saving data between actions.
 
 The client object has the following relevant properties and methods:
-  key - an optional client key. This is only used for dummyrunner output.
+
+- key - an optional client key. This is only used for dummyrunner output.
         Default is "Dummy-<cid>"
-  cid - client id
-  gid - globally unique id, hashed with time stamp
-  istep - the current step
-  exits - an empty list. Can be used to store exit names
-  objs - an empty list. Can be used to store object names
-  counter() - returns a unique increasing id, hashed with time stamp
+- cid - client id
+- gid - globally unique id, hashed with time stamp
+- istep - the current step
+- exits - an empty list. Can be used to store exit names
+- objs - an empty list. Can be used to store object names
+- counter() - returns a unique increasing id, hashed with time stamp
               to make it unique also between dummyrunner instances.
 
 The return should either be a single command string or a tuple of
@@ -48,6 +51,8 @@ command strings. This list of commands will always be executed every
 TIMESTEP with a chance given by CHANCE_OF_ACTION by in the order given
 (no randomness) and allows for setting up a more complex chain of
 commands (such as creating an account and logging in).
+
+---
 
 """
 # Dummy runner settings

@@ -144,35 +144,41 @@ def homogenize_prototype(prototype, custom_keys=None):
 
 # module-based prototypes
 
-for mod in settings.PROTOTYPE_MODULES:
-    # to remove a default prototype, override it with an empty dict.
-    # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = []
-    for variable_name, prot in all_from_module(mod).items():
-        if isinstance(prot, dict):
-            if "prototype_key" not in prot:
-                prot["prototype_key"] = variable_name.lower()
-            prots.append((prot["prototype_key"], homogenize_prototype(prot)))
-    # assign module path to each prototype_key for easy reference
-    _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
-    # make sure the prototype contains all meta info
-    for prototype_key, prot in prots:
-        actual_prot_key = prot.get("prototype_key", prototype_key).lower()
-        prot.update(
-            {
-                "prototype_key": actual_prot_key,
-                "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
-                "prototype_locks": (
-                    prot["prototype_locks"]
-                    if "prototype_locks" in prot
-                    else "use:all();edit:false()"
-                ),
-                "prototype_tags": list(
-                    set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
-                ),
-            }
-        )
-        _MODULE_PROTOTYPES[actual_prot_key] = prot
+def load_module_prototypes():
+    """
+    This is called by `evennia.__init__` as Evennia initializes. It's important
+    to do this late so as to not interfere with evennia initialization.
+
+    """
+    for mod in settings.PROTOTYPE_MODULES:
+        # to remove a default prototype, override it with an empty dict.
+        # internally we store as (key, desc, locks, tags, prototype_dict)
+        prots = []
+        for variable_name, prot in all_from_module(mod).items():
+            if isinstance(prot, dict):
+                if "prototype_key" not in prot:
+                    prot["prototype_key"] = variable_name.lower()
+                prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+        # assign module path to each prototype_key for easy reference
+        _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
+        # make sure the prototype contains all meta info
+        for prototype_key, prot in prots:
+            actual_prot_key = prot.get("prototype_key", prototype_key).lower()
+            prot.update(
+                {
+                    "prototype_key": actual_prot_key,
+                    "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
+                    "prototype_locks": (
+                        prot["prototype_locks"]
+                        if "prototype_locks" in prot
+                        else "use:all();edit:false()"
+                    ),
+                    "prototype_tags": list(
+                        set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
+                    ),
+                }
+            )
+            _MODULE_PROTOTYPES[actual_prot_key] = prot
 
 
 # Db-based prototypes
@@ -330,7 +336,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
-    Kwargs:
+    Keyword Args:
         key (str): An exact or partial key to query for.
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
@@ -730,7 +736,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             behave differently.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
         protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
         current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
@@ -929,7 +935,10 @@ def init_spawn_value(value, validator=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    return protfunc_parser(value)
+    result = protfunc_parser(value)
+    if result != value:
+        return validator(result)
+    return result
 
 
 def value_to_obj_or_any(value):

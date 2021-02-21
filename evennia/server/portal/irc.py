@@ -275,7 +275,7 @@ class IRCBot(irc.IRCClient, Session):
         """
         Data IRC -> Server.
 
-        Kwargs:
+        Keyword Args:
             text (str): Ingoing text.
             kwargs (any): Other data from protocol.
 
@@ -306,7 +306,7 @@ class IRCBot(irc.IRCClient, Session):
         Args:
             text (str): Outgoing text.
 
-        Kwargs:
+        Keyword Args:
             user (str): the nick to send
                 privately to.
 
@@ -375,7 +375,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         Args:
             sessionhandler (SessionHandler): Reference to the main Sessionhandler.
 
-        Kwargs:
+        Keyword Args:
             uid (int): Bot user id.
             botname (str): Bot name (seen in IRC channel).
             channel (str): IRC channel to connect to.

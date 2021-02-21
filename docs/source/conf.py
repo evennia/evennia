@@ -7,7 +7,6 @@
 import os
 import sys
 import re
-import sphinx_theme
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
 
@@ -20,7 +19,7 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "0.9.1"
+release = "0.9.5"
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,7 +53,7 @@ html_static_path = ["_static"]
 
 # which branches to include in multi-versioned docs
 # - master, develop and vX.X branches
-smv_branch_whitelist = r"^master$|^develop$|^v[0-9\.]+?$"
+smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
@@ -77,7 +76,7 @@ html_sidebars = {
 }
 html_favicon = "_static/images/favicon.ico"
 html_logo = "_static/images/evennia_logo.png"
-html_short_title = f"Evennia {release}"
+html_short_title = "Evennia"
 
 # HTML syntax highlighting style
 pygments_style = "sphinx"
@@ -223,7 +222,7 @@ autodoc_default_options = {
 }
 
 autodoc_member_order = "bysource"
-autodoc_typehints = "description"
+# autodoc_typehints = "description"
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
@@ -276,7 +275,7 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
         doc = re.sub(r"```", "", doc, flags=re.MULTILINE)
         doc = re.sub(r"`{1}", "**", doc, flags=re.MULTILINE)
         doc = re.sub(
-            r"^(?P<hashes>#{1,2})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE
+            r"^(?P<hashes>#{1,4})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE
         )
 
         newlines = doc.split("\n")
@@ -315,10 +314,11 @@ def setup(app):
     app.add_transform(AutoStructify)
 
     # build toctree file
-    sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), "docs"))
+    sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     from docs.pylib import auto_link_remapper
 
-    auto_link_remapper.auto_link_remapper()
+    _no_autodoc = os.environ.get("NOAUTODOC")
+    auto_link_remapper.auto_link_remapper(no_autodoc=_no_autodoc)
     print("Updated source/toc.md file")
 
     # custom lunr-based search
