@@ -176,7 +176,7 @@ ansi_clean = None
 if not _no_autodoc:
     # we must set up Evennia and its paths for autodocs to work
 
-    EV_ROOT = os.path.abspath(os.path.abspath(os.path.abspath(__file__)))  # os.environ.get("EVDIR")
+    EV_ROOT = os.path.abspath(os.path.abspath(os.path.abspath(os.path.abspath(__file__))))  # os.environ.get("EVDIR")
     GAME_DIR = os.environ.get("EVGAMEDIR")
 
     if not (EV_ROOT and GAME_DIR):
