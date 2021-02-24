@@ -187,7 +187,10 @@ if not _no_autodoc:
         )
         raise RuntimeError(err)
 
-    print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
+    print("Evennia root: {}, Game dir: {}, branch:".format(EV_ROOT, GAME_DIR)),
+    import subprocess
+    subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    subprocess.call("pwd")
 
     sys.path.insert(1, EV_ROOT)
     sys.path.insert(1, GAME_DIR)
