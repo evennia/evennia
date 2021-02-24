@@ -78,7 +78,7 @@ _quick-html-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(QUICKFILES)
 
 _multiversion-build:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) -v
 
 _multiversion-deploy:
 	@bash -e deploy.sh
@@ -111,6 +111,7 @@ quick:
 quickstrict:
 	SPHINXOPTS=-W make quick
 
+# we build index directly for the current branch
 local:
 	make _check-env
 	make clean
@@ -120,10 +121,14 @@ local:
 	@echo "Documentation built (single version)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
+# note that this should be done for each relevant multiversion branch.
+mv-index:
+	make _multiversion-autodoc-index
+	@echo "(Re)Built and committed api rst files for this branch only."
+
 mv-local:
 	make _multiversion-check-env
 	make clean
-	#make _multiversion-autodoc-index
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."

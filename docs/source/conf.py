@@ -176,7 +176,7 @@ ansi_clean = None
 if not _no_autodoc:
     # we must set up Evennia and its paths for autodocs to work
 
-    EV_ROOT = os.environ.get("EVDIR")
+    EV_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # os.environ.get("EVDIR")
     GAME_DIR = os.environ.get("EVGAMEDIR")
 
     if not (EV_ROOT and GAME_DIR):
@@ -190,6 +190,7 @@ if not _no_autodoc:
     print("Evennia root: {}, Game dir: {}, branch:".format(EV_ROOT, GAME_DIR)),
     import subprocess
     subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    subprocess.call("pwd")
 
     sys.path.insert(1, EV_ROOT)
     sys.path.insert(1, GAME_DIR)
