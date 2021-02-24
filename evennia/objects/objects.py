@@ -4,6 +4,8 @@ This module defines the basic `DefaultObject` and its children
 These are the (default) starting points for all in-game visible
 entities.
 
+This is the v1.0 develop version (for ref in doc building).
+
 """
 import time
 import inflect
