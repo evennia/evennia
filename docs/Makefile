@@ -10,7 +10,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
-SPHINXAPIDOCOPTS = --tocfile evennia-api --module-first --force --maxdepth 6 --separate --templatedir=$(SOURCEDIR)/_templates/
+SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
 SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests/* ../evennia/*/tests.py
 
@@ -68,10 +68,8 @@ _autodoc-index:
 	make _reformat_apidoc_headers
 
 _multiversion-autodoc-index:
-	make _clean_api_index
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
-	make _reformat_apidoc_headers
-	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index." | :
+	make _autodoc-index
+	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index." || :
 
 _html-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
@@ -84,14 +82,11 @@ _multiversion-build:
 
 _multiversion-deploy:
 	@bash -e deploy.sh
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
 
 _latex-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(QUICKFILES)
 
-# main targets
-
-install:
+# main target:
 	@pip install -r requirements.txt
 
 clean:
@@ -116,6 +111,7 @@ quick:
 quickstrict:
 	SPHINXOPTS=-W make quick
 
+# we build index directly for the current branch
 local:
 	make _check-env
 	make clean
@@ -125,10 +121,14 @@ local:
 	@echo "Documentation built (single version)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
+# note that this should be done for each relevant multiversion branch.
+mv-index:
+	make _multiversion-autodoc-index
+	@echo "(Re)Built and committed api rst files for this branch only."
+
 mv-local:
 	make _multiversion-check-env
 	make clean
-	make _multiversion-autodoc-index
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."
