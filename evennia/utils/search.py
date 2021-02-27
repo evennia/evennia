@@ -26,6 +26,7 @@ Example: To reach the search method 'get_object_with_account'
 
 # Import the manager methods to be wrapped
 
+from django.db.utils impoort OperationalError
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
@@ -43,14 +44,23 @@ __all__ = (
 
 
 # import objects this way to avoid circular import problems
-ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
-ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
-Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
-Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
-HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
-Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
-
+try:
+    ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
+    AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
+    ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
+    Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
+    Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
+    HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
+    Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
+except OperationalError:
+   # this is a fallback used during tests/doc building
+   print("Couldn't initialize search managers - db not set up.")
+   from evennia.objects.models import ObjectDB
+   from evennia.accounts.models import AccountDB
+   from evennia.scripts.models import ScriptDB
+   from evennia.comms.models import Msg, ChannelDB
+   from evennia.help.models import HelpEntry
+   from evennia.typeclasses.tags import Tag
 
 # -------------------------------------------------------------------
 # Search manager-wrappers
