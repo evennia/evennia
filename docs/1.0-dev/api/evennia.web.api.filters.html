@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.api.filters</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -36,8 +37,202 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evennia-web-api-filters">
-<h1>evennia.web.api.filters<a class="headerlink" href="#evennia-web-api-filters" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-evennia.web.api.filters">
+<span id="evennia-web-api-filters"></span><h1>evennia.web.api.filters<a class="headerlink" href="#module-evennia.web.api.filters" title="Permalink to this headline">¶</a></h1>
+<p>FilterSets allow clients to specify querystrings that will determine the data
+that is retrieved in GET requests. By default, Django Rest Framework uses the
+‘django-filter’ package as its backend. Django-filter also has a section in its
+documentation specifically regarding DRF integration.</p>
+<p><a class="reference external" href="https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html">https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html</a></p>
+<dl class="py function">
+<dt id="evennia.web.api.filters.get_tag_query">
+<code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">get_tag_query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; django.db.models.query_utils.Q<a class="reference internal" href="../_modules/evennia/web/api/filters.html#get_tag_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.get_tag_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Q object for searching by tag names for typeclasses
+:param tag_type: The type of tag (None, ‘alias’, etc)
+:type tag_type: str or None
+:param key: The name of the tag
+:type key: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Q object that for searching by this tag type and name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.TagTypeFilter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">TagTypeFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#TagTypeFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.TagTypeFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_filters.filters.CharFilter</span></code></p>
+<p>This class lets you create different filters for tags of a specified db_tagtype.</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.TagTypeFilter.tag_type">
+<code class="sig-name descname">tag_type</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.filters.TagTypeFilter.tag_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.api.filters.TagTypeFilter.filter">
+<code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qs</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#TagTypeFilter.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.TagTypeFilter.filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.AliasFilter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">AliasFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#AliasFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.AliasFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.TagTypeFilter" title="evennia.web.api.filters.TagTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.TagTypeFilter</span></code></a></p>
+<p>A filter for objects by their aliases (tags with a tagtype of ‘alias’</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.AliasFilter.tag_type">
+<code class="sig-name descname">tag_type</code><em class="property"> = 'alias'</em><a class="headerlink" href="#evennia.web.api.filters.AliasFilter.tag_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.PermissionFilter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">PermissionFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#PermissionFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.PermissionFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.TagTypeFilter" title="evennia.web.api.filters.TagTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.TagTypeFilter</span></code></a></p>
+<p>A filter for objects by their permissions (tags with a tagtype of ‘permission’</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.PermissionFilter.tag_type">
+<code class="sig-name descname">tag_type</code><em class="property"> = 'permission'</em><a class="headerlink" href="#evennia.web.api.filters.PermissionFilter.tag_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.BaseTypeclassFilterSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">BaseTypeclassFilterSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">request</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#BaseTypeclassFilterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.BaseTypeclassFilterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_filters.rest_framework.filterset.FilterSet</span></code></p>
+<p>A parent class with filters for aliases and permissions</p>
+<dl class="py method">
+<dt id="evennia.web.api.filters.BaseTypeclassFilterSet.filter_name">
+<em class="property">static </em><code class="sig-name descname">filter_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#BaseTypeclassFilterSet.filter_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.BaseTypeclassFilterSet.filter_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters a queryset by aliases or the key of the typeclass
+:param queryset: The queryset being filtered
+:param name: The name of the field
+:param value: The value passed in from GET params</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The filtered queryset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.BaseTypeclassFilterSet.base_filters">
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.BaseTypeclassFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.BaseTypeclassFilterSet.declared_filters">
+<code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.BaseTypeclassFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">ObjectDBFilterSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">request</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#ObjectDBFilterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.BaseTypeclassFilterSet" title="evennia.web.api.filters.BaseTypeclassFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.BaseTypeclassFilterSet</span></code></a></p>
+<p>This adds filters for ObjectDB instances - characters, rooms, exits, etc</p>
+<dl class="py class">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/filters.html#ObjectDBFilterSet.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.models.ObjectDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['db_key', 'db_typeclass_path', 'db_tags__db_key', 'db_tags__db_category', 'db_location__db_key', 'db_home__db_key', 'db_location__id', 'db_home__id']</em><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet.base_filters">
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'db_home__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_home__id': &lt;django_filters.filters.NumberFilter object&gt;, 'db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_location__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_location__id': &lt;django_filters.filters.NumberFilter object&gt;, 'db_tags__db_category': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_typeclass_path': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ObjectDBFilterSet.declared_filters">
+<code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.ObjectDBFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.AccountDBFilterSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">AccountDBFilterSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">request</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#AccountDBFilterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.BaseTypeclassFilterSet" title="evennia.web.api.filters.BaseTypeclassFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.BaseTypeclassFilterSet</span></code></a></p>
+<p>This adds filters for Account objects</p>
+<dl class="py class">
+<dt id="evennia.web.api.filters.AccountDBFilterSet.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/filters.html#AccountDBFilterSet.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.AccountDBFilterSet.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.models.AccountDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.AccountDBFilterSet.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['db_key', 'db_typeclass_path', 'db_tags__db_key', 'db_tags__db_category', 'username', 'db_is_connected', 'db_is_bot']</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.AccountDBFilterSet.base_filters">
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'db_is_bot': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_is_connected': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_category': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_typeclass_path': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;, 'username': &lt;django_filters.filters.CharFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.AccountDBFilterSet.declared_filters">
+<code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">ScriptDBFilterSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">request</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#ScriptDBFilterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.BaseTypeclassFilterSet" title="evennia.web.api.filters.BaseTypeclassFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.BaseTypeclassFilterSet</span></code></a></p>
+<p>This adds filters for Script objects</p>
+<dl class="py class">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/filters.html#ScriptDBFilterSet.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.scripts.models.html#evennia.scripts.models.ScriptDB" title="evennia.scripts.models.ScriptDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.models.ScriptDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['db_key', 'db_typeclass_path', 'db_tags__db_key', 'db_tags__db_category', 'db_desc', 'db_obj__db_key', 'db_obj__id', 'db_account__id', 'db_account__username', 'db_is_active', 'db_persistent', 'db_interval']</em><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet.base_filters">
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'db_account__id': &lt;django_filters.filters.NumberFilter object&gt;, 'db_account__username': &lt;django_filters.filters.CharFilter object&gt;, 'db_desc': &lt;django_filters.filters.CharFilter object&gt;, 'db_interval': &lt;django_filters.filters.NumberFilter object&gt;, 'db_is_active': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_obj__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_obj__id': &lt;django_filters.filters.NumberFilter object&gt;, 'db_persistent': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_tags__db_category': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_typeclass_path': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.ScriptDBFilterSet.declared_filters">
+<code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -73,7 +268,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -90,6 +284,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.api.filters</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -67,6 +68,7 @@
 
 <span class="c1"># Import the manager methods to be wrapped</span>
 
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 
 <span class="c1"># limit symbol import from API</span>
@@ -77,6 +79,7 @@
     <span class="s2">&quot;search_message&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_help_entry&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_script_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_account_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel_tag&quot;</span><span class="p">,</span>
@@ -84,13 +87,23 @@
 
 
 <span class="c1"># import objects this way to avoid circular import problems</span>
-<span class="n">ObjectDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;objects&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;objectdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">AccountDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;accountdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">ScriptDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;scriptdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">Msg</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">Channel</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;channeldb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">HelpEntry</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;helpentry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
-<span class="n">Tag</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ObjectDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;objects&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;objectdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">AccountDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;accountdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">ScriptDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;scriptdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">Msg</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">ChannelDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;channeldb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">HelpEntry</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;helpentry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">Tag</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+    <span class="c1"># this is a fallback used during tests/doc building</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t initialize search managers - db not set up.&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+    <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
 
 
 <span class="c1"># -------------------------------------------------------------------</span>
@@ -211,7 +224,7 @@
 <span class="c1">#     exact -  requires an exact ostring match (not case sensitive)</span>
 <span class="c1">#</span>
 
-<span class="n">search_channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span>
+<span class="n">search_channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span>
 <span class="n">search_channels</span> <span class="o">=</span> <span class="n">search_channel</span>
 <span class="n">channel_search</span> <span class="o">=</span> <span class="n">search_channel</span>
 <span class="n">channels</span> <span class="o">=</span> <span class="n">search_channels</span>
@@ -387,7 +400,7 @@
 <span class="sd">            matches were found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Channel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="c1"># search for tag objects (not the objects they are attached to</span>
@@ -419,7 +432,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -438,6 +450,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

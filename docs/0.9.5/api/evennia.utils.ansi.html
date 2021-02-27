@@ -39,24 +39,21 @@
   <div class="section" id="module-evennia.utils.ansi">
 <span id="evennia-utils-ansi"></span><h1>evennia.utils.ansi<a class="headerlink" href="#module-evennia.utils.ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI - Gives colour to text.</p>
-<p>Use the codes defined in ANSIPARSER in your text
-to apply colour to text according to the ANSI standard.</p>
+<p>Use the codes defined in ANSIPARSER in your text to apply colour to text
+according to the ANSI standard.</p>
 <p>Examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |rRed text|n and this is normal again.&quot;</span>
 </pre></div>
 </div>
-<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly;
-it is run by Evennia just before returning data to/from the
-user.  Depreciated example forms are available by extending
-the ansi mapping.</p>
+<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly; it is run by
+Evennia just before returning data to/from the user. Depreciated example forms
+are available by extending the ansi mapping.</p>
 <dl class="py class">
 <dt id="evennia.utils.ansi.ANSIParser">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIParser</code><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class that parses ANSI markup
-to ANSI command sequences</p>
-<p>We also allow to escape colour codes
-by prepending with an extra <a href="#id1"><span class="problematic" id="id2">|</span></a>.</p>
+<p>A class that parses ANSI markup to ANSI command sequences.</p>
+<p>We also allow to escape colour codes by prepending with an extra <strong>|</strong>.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map">
 <code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|&gt;', '    '), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>

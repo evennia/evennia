@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -36,8 +37,471 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evennia-contrib-awsstorage-aws-s3-cdn">
-<h1>evennia.contrib.awsstorage.aws_s3_cdn<a class="headerlink" href="#evennia-contrib-awsstorage-aws-s3-cdn" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-evennia.contrib.awsstorage.aws_s3_cdn">
+<span id="evennia-contrib-awsstorage-aws-s3-cdn"></span><h1>evennia.contrib.awsstorage.aws_s3_cdn<a class="headerlink" href="#module-evennia.contrib.awsstorage.aws_s3_cdn" title="Permalink to this headline">¶</a></h1>
+<p>AWS Storage System
+The Right Honourable Reverend (trhr) 2020</p>
+<p>ABOUT THIS PLUGIN:</p>
+<p>This plugin migrates the Web-based portion of Evennia, namely images,
+javascript, and other items located inside staticfiles into Amazon AWS (S3) for hosting.</p>
+<p>Files hosted on S3 are “in the cloud,” and while your personal
+server may be sufficient for serving multimedia to a minimal number of users,
+the perfect use case for this plugin would be:</p>
+<ol class="arabic simple">
+<li><p>Servers supporting heavy web-based traffic (webclient, etc)</p></li>
+<li><p>With a sizable number of users</p></li>
+<li><p>Where the users are globally distributed</p></li>
+<li><p>Where multimedia files are served to users as a part of gameplay</p></li>
+</ol>
+<p>Bottom line - if you’re sending an image to a player every time they traverse a
+map, the bandwidth reduction will be substantial. If not, probably skip
+this one.</p>
+<p>Note that storing and serving files via S3 is not technically free outside of
+Amazon’s “free tier” offering, which you may or may not be eligible for;
+evennia’s base install currently requires 1.5MB of storage space on S3,
+making the current total cost to install this plugin ~$0.0005 per year. If
+you have substantial media assets and intend to serve them to many users,
+caveat emptor on a total cost of ownership - check AWS’s pricing structure.</p>
+<p>See the ./README.md file for details and install instructions.</p>
+<dl class="py function">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.setting">
+<code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">setting</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get a Django setting by name. If setting doesn’t exist
+it will return a default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – A Django setting name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value of the setting variable by that name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.safe_join">
+<code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">safe_join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">paths</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#safe_join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.safe_join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function, a version of django.utils._os.safe_join for S3 paths.
+Joins one or more path components to the base path component
+intelligently. Returns a normalized version of the final path.
+The final path must be located inside of the base path component
+(otherwise a ValueError is raised). Paths outside the base path
+indicate a possible security sensitive operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> (<em>str</em>) – A path string to the base of the staticfiles</p></li>
+<li><p><strong>*paths</strong> (<em>list</em>) – A list of paths as referenced from the base path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>final_path (str)</em> – A joined path, base + filepath</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.check_location">
+<code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">check_location</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#check_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.check_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to make sure that the storage location is configured correctly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>storage</strong> (<em>Storage</em>) – A Storage object (Django)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ImproperlyConfigured</strong> – If the storage location is not configured correctly,
+this is raised.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.lookup_env">
+<code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">lookup_env</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">names</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#lookup_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.lookup_env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for looking up names in env vars. Returns the first element found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>str</em>) – A list of environment variables</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>value (str)</em> – The value of the found environment variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.get_available_overwrite_name">
+<code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">get_available_overwrite_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_length</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#get_available_overwrite_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.get_available_overwrite_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function indicating files that will be overwritten during trunc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the file</p></li>
+<li><p><strong>max_length</strong> (<em>int</em>) – The maximum length of a filename</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>joined (path)</em> – A joined path including directory, file, and extension</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">S3Boto3StorageFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.files.base.File</span></code></p>
+<p>The default file object used by the S3Boto3Storage backend.
+This file implements file streaming using boto’s multipart
+uploading functionality. The file can be opened in read or
+write mode.
+This class extends Django’s File class. However, the contained
+data is only the data contained in the current buffer. So you
+should not access the contained file object directly. You should
+access the data via this class.
+Warning: This file <em>must</em> be closed using the close() method in
+order to properly write the file to S3. Be sure to close the file
+in your application.</p>
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">mode</span></em>, <em class="sig-param"><span class="n">storage</span></em>, <em class="sig-param"><span class="n">buffer_size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the File object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the file</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – The access mode (‘r’ or ‘w’)</p></li>
+<li><p><strong>storage</strong> (<em>Storage</em>) – The Django Storage object</p></li>
+<li><p><strong>buffer_size</strong> (<em>int</em>) – The buffer size, for multipart uploads</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.buffer_size">
+<code class="sig-name descname">buffer_size</code><em class="property"> = 5242880</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.size">
+<em class="property">property </em><code class="sig-name descname">size</code><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper property to return filesize</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.file">
+<em class="property">property </em><code class="sig-name descname">file</code><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to manage zipping and temporary files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if file is in read mode; then continues to boto3 operation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.readline">
+<code class="sig-name descname">readline</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile.readline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if file is in read mode; then continues to boto3 operation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if file is in write mode or needs multipart handling,
+then continues to boto3 operation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3StorageFile.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manages file closing after multipart uploads</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.deconstruct">
+<code class="sig-name descname">deconstruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.deconstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a 3-tuple of class import path, positional arguments,
+and keyword arguments.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.awsstorage.aws_s3_cdn.</code><code class="sig-name descname">S3Boto3Storage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.files.storage.Storage</span></code></p>
+<p>Amazon Simple Storage Service using Boto3
+This storage backend supports opening files in read or write
+mode and supports streaming(buffering) data in chunks to S3
+when writing.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.default_content_type">
+<code class="sig-name descname">default_content_type</code><em class="property"> = 'application/octet-stream'</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.default_content_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.access_key_names">
+<code class="sig-name descname">access_key_names</code><em class="property"> = ['AWS_S3_ACCESS_KEY_ID', 'AWS_ACCESS_KEY_ID']</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.access_key_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secret_key_names">
+<code class="sig-name descname">secret_key_names</code><em class="property"> = ['AWS_S3_SECRET_ACCESS_KEY', 'AWS_SECRET_ACCESS_KEY']</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secret_key_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.security_token_names">
+<code class="sig-name descname">security_token_names</code><em class="property"> = ['AWS_SESSION_TOKEN', 'AWS_SECURITY_TOKEN']</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.security_token_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.file_overwrite">
+<code class="sig-name descname">file_overwrite</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.file_overwrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.object_parameters">
+<code class="sig-name descname">object_parameters</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.object_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket_name">
+<code class="sig-name descname">bucket_name</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.auto_create_bucket">
+<code class="sig-name descname">auto_create_bucket</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.auto_create_bucket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.default_acl">
+<code class="sig-name descname">default_acl</code><em class="property"> = 'public-read'</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.default_acl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket_acl">
+<code class="sig-name descname">bucket_acl</code><em class="property"> = 'public-read'</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket_acl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.querystring_auth">
+<code class="sig-name descname">querystring_auth</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.querystring_auth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.querystring_expire">
+<code class="sig-name descname">querystring_expire</code><em class="property"> = 3600</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.querystring_expire" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.signature_version">
+<code class="sig-name descname">signature_version</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.signature_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.reduced_redundancy">
+<code class="sig-name descname">reduced_redundancy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.reduced_redundancy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.location">
+<code class="sig-name descname">location</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.encryption">
+<code class="sig-name descname">encryption</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.encryption" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.custom_domain">
+<code class="sig-name descname">custom_domain</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.custom_domain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.addressing_style">
+<code class="sig-name descname">addressing_style</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.addressing_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secure_urls">
+<code class="sig-name descname">secure_urls</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secure_urls" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.file_name_charset">
+<code class="sig-name descname">file_name_charset</code><em class="property"> = 'utf-8'</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.file_name_charset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.gzip">
+<code class="sig-name descname">gzip</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.gzip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.preload_metadata">
+<code class="sig-name descname">preload_metadata</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.preload_metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.gzip_content_types">
+<code class="sig-name descname">gzip_content_types</code><em class="property"> = ('text/css', 'text/javascript', 'application/javascript', 'application/x-javascript', 'image/svg+xml')</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.gzip_content_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.endpoint_url">
+<code class="sig-name descname">endpoint_url</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.endpoint_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.proxies">
+<code class="sig-name descname">proxies</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.proxies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.region_name">
+<code class="sig-name descname">region_name</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.region_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.use_ssl">
+<code class="sig-name descname">use_ssl</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.use_ssl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.verify">
+<code class="sig-name descname">verify</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.verify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.max_memory_size">
+<code class="sig-name descname">max_memory_size</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.max_memory_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">acl</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bucket</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">settings</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if some of the settings we’ve provided as class attributes
+need to be overwritten with values passed in here.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url_protocol">
+<code class="sig-name descname">url_protocol</code><em class="property"> = 'http:'</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url_protocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.access_key">
+<code class="sig-name descname">access_key</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.access_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secret_key">
+<code class="sig-name descname">secret_key</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.secret_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.security_token">
+<code class="sig-name descname">security_token</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.security_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.config">
+<code class="sig-name descname">config</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.connection">
+<em class="property">property </em><code class="sig-name descname">connection</code><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the actual connection to S3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket">
+<em class="property">property </em><code class="sig-name descname">bucket</code><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.bucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current bucket. If there is no current bucket object
+create it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.entries">
+<em class="property">property </em><code class="sig-name descname">entries</code><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the locally cached files for the bucket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a file from S3.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.exists">
+<code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if file exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.listdir">
+<code class="sig-name descname">listdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.listdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.listdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translational function to go from S3 file paths to the format
+Django’s listdir expects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.size">
+<code class="sig-name descname">size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the filesize of a remote file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.deconstruct">
+<code class="sig-name descname">deconstruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.deconstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a 3-tuple of class import path, positional arguments,
+and keyword arguments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_object_parameters">
+<code class="sig-name descname">get_object_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.get_object_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_object_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary that is passed to file upload. Override this
+method to adjust this on a per-object basis to set e.g ContentDisposition.
+By default, returns the value of AWS_S3_OBJECT_PARAMETERS.
+Setting ContentEncoding will prevent objects from being automatically gzipped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_modified_time">
+<code class="sig-name descname">get_modified_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.get_modified_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_modified_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an (aware) datetime object containing the last modified time if
+USE_TZ is True, otherwise returns a naive datetime in the local timezone.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.modified_time">
+<code class="sig-name descname">modified_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.modified_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.modified_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a naive datetime object containing the last modified time.
+If USE_TZ=False then get_modified_time will return a naive datetime
+so we just return that, else we have to localize and strip the tz</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url">
+<code class="sig-name descname">url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">parameters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">expire</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the URL of a remotely-hosted file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_available_name">
+<code class="sig-name descname">get_available_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/aws_s3_cdn.html#S3Boto3Storage.get_available_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_available_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite existing file with the same name.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -73,7 +537,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -90,6 +553,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

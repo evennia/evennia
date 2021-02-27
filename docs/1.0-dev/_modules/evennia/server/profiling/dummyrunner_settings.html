@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner_settings</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -47,15 +48,15 @@
 
 <span class="sd">The settings are global variables:</span>
 
-<span class="sd">TIMESTEP - time in seconds between each &#39;tick&#39;</span>
-<span class="sd">CHANCE_OF_ACTION - chance 0-1 of action happening</span>
-<span class="sd">CHANCE_OF_LOGIN - chance 0-1 of login happening</span>
-<span class="sd">TELNET_PORT - port to use, defaults to settings.TELNET_PORT</span>
-<span class="sd">ACTIONS - see below</span>
+<span class="sd">- TIMESTEP - time in seconds between each &#39;tick&#39;</span>
+<span class="sd">- CHANCE_OF_ACTION - chance 0-1 of action happening</span>
+<span class="sd">- CHANCE_OF_LOGIN - chance 0-1 of login happening</span>
+<span class="sd">- TELNET_PORT - port to use, defaults to settings.TELNET_PORT</span>
+<span class="sd">- ACTIONS - see below</span>
 
 <span class="sd">ACTIONS is a tuple</span>
 
-<span class="sd">```</span>
+<span class="sd">```python</span>
 <span class="sd">(login_func, logout_func, (0.3, func1), (0.1, func2) ... )</span>
 <span class="sd">```</span>
 
@@ -78,14 +79,14 @@
 <span class="sd">The client object has the following relevant properties and methods:</span>
 
 <span class="sd">- key - an optional client key. This is only used for dummyrunner output.</span>
-<span class="sd">        Default is &quot;Dummy-&lt;cid&gt;&quot;</span>
+<span class="sd">  Default is &quot;Dummy-&lt;cid&gt;&quot;</span>
 <span class="sd">- cid - client id</span>
 <span class="sd">- gid - globally unique id, hashed with time stamp</span>
 <span class="sd">- istep - the current step</span>
 <span class="sd">- exits - an empty list. Can be used to store exit names</span>
 <span class="sd">- objs - an empty list. Can be used to store object names</span>
 <span class="sd">- counter() - returns a unique increasing id, hashed with time stamp</span>
-<span class="sd">              to make it unique also between dummyrunner instances.</span>
+<span class="sd">  to make it unique also between dummyrunner instances.</span>
 
 <span class="sd">The return should either be a single command string or a tuple of</span>
 <span class="sd">command strings. This list of commands will always be executed every</span>
@@ -93,7 +94,7 @@
 <span class="sd">(no randomness) and allows for setting up a more complex chain of</span>
 <span class="sd">commands (such as creating an account and logging in).</span>
 
-<span class="sd">---</span>
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># Dummy runner settings</span>
@@ -358,7 +359,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -377,6 +377,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner_settings</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

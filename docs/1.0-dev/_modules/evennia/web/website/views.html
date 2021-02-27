@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -73,6 +74,7 @@
 
 <span class="n">_BASE_CHAR_TYPECLASS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
 
+<span class="c1"># typeclass fallbacks</span>
 
 <span class="k">def</span> <span class="nf">_gamestats</span><span class="p">():</span>
     <span class="c1"># Some misc. configurable stuff.</span>
@@ -89,11 +91,14 @@
 
     <span class="n">nobjs</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
     <span class="n">nobjs</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="ow">or</span> <span class="mi">1</span>  <span class="c1"># fix zero-div error with empty database</span>
-    <span class="n">Character</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Character</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
+                                  <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span><span class="p">)</span>
     <span class="n">nchars</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-    <span class="n">Room</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Room</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span>
+                             <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ROOM_TYPECLASS</span><span class="p">)</span>
     <span class="n">nrooms</span> <span class="o">=</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-    <span class="n">Exit</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Exit</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span>
+                             <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_EXIT_TYPECLASS</span><span class="p">)</span>
     <span class="n">nexits</span> <span class="o">=</span> <span class="n">Exit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
     <span class="n">nothers</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="o">-</span> <span class="n">nchars</span> <span class="o">-</span> <span class="n">nrooms</span> <span class="o">-</span> <span class="n">nexits</span>
 
@@ -310,7 +315,8 @@
     <span class="c1">#</span>
     <span class="c1"># So when you extend it, this line should look simple, like:</span>
     <span class="c1"># model = Object</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
 
     <span class="c1"># What HTML template you wish to use to display this page.</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_detail.html&quot;</span>
@@ -413,7 +419,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span></div>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDeleteView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
@@ -428,7 +435,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_confirm_delete.html&quot;</span>
 
     <span class="c1"># -- Evennia constructs --</span>
@@ -471,7 +479,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
 
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>
@@ -554,7 +563,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ACCOUNT_TYPECLASS</span><span class="p">)</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">website_forms</span><span class="o">.</span><span class="n">AccountForm</span></div>
 
 
@@ -619,7 +629,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span><span class="p">)</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">website_forms</span><span class="o">.</span><span class="n">CharacterForm</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;character-manage&quot;</span><span class="p">)</span>
 
@@ -858,7 +869,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
 
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Channels&quot;</span>
@@ -1187,7 +1199,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -1206,6 +1217,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -67,6 +67,7 @@
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
@@ -246,7 +247,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="c1"># initialize channelhandler</span>
-        <span class="n">channelhandler</span><span class="o">.</span><span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">channelhandler</span><span class="o">.</span><span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;channelhandler couldn&#39;t update - db not set up&quot;</span><span class="p">)</span>
 
         <span class="c1"># wrap the SIGINT handler to make sure we empty the threadpool</span>
         <span class="c1"># even when we reload and we have long-running requests in queue.</span>
@@ -657,7 +661,11 @@
 
 
 <span class="c1"># Tell the system the server is starting up; some things are not available yet</span>
-<span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server server_starting_mode couldn&#39;t be set - database not set up.&quot;</span><span class="p">)</span>
+
 
 <span class="c1"># twistd requires us to define the variable &#39;application&#39; so it knows</span>
 <span class="c1"># what to execute from.</span>
@@ -769,7 +777,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load plugin module </span><span class="si">{</span><span class="n">plugin_module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># clear server startup mode</span>
-<span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server server_starting_mode couldn&#39;t unset - db not set up.&quot;</span><span class="p">)</span>
 </pre></div>
 
             <div class="clearer"></div>

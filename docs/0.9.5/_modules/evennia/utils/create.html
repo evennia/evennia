@@ -137,16 +137,16 @@
 <span class="sd">            location itself or during unittests.</span>
 <span class="sd">        attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
 <span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
-<span class="sd">            to set as Attributes on the new object.</span>
+<span class="sd">           to set as Attributes on the new object.</span>
 <span class="sd">        nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
-<span class="sd">            adding this rarely makes sense since this data will not survive a reload.</span>
+<span class="sd">           adding this rarely makes sense since this data will not survive a reload.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        object (Object): A newly created object of the given typeclass.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ObjectDB.DoesNotExist: If trying to create an Object with</span>
-<span class="sd">            `location` or `home` that can&#39;t be found.</span>
+<span class="sd">        `location` or `home` that can&#39;t be found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_ObjectDB</span>

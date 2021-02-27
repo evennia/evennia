@@ -1363,6 +1363,9 @@
 
     <span class="n">mod</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mod</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
     <span class="k">if</span> <span class="n">variable</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">variable</span><span class="p">):</span>
@@ -1454,7 +1457,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="class_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.class_from_module">[docs]</a><span class="k">def</span> <span class="nf">class_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="class_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.class_from_module">[docs]</a><span class="k">def</span> <span class="nf">class_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a class from a module, given the module&#39;s path. This is</span>
 <span class="sd">    primarily used to convert db_typeclass_path:s to classes.</span>
@@ -1463,6 +1466,10 @@
 <span class="sd">        path (str): Full Python dot-path to module.</span>
 <span class="sd">        defaultpaths (iterable, optional): If a direct import from `path` fails,</span>
 <span class="sd">            try subsequent imports by prepending those paths to `path`.</span>
+<span class="sd">        fallback (str): If all other attempts fail, use this path as a fallback.</span>
+<span class="sd">            This is intended as a last-resport. In the example of Evennia</span>
+<span class="sd">            loading, this would be a path to a default parent class in the</span>
+<span class="sd">            evennia repo itself.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        class (Class): An uninstatiated class recovered from path.</span>
@@ -1516,7 +1523,13 @@
             <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Paths searched:</span><span class="se">\n</span><span class="s2">    </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fallback</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Falling back to </span><span class="si">{</span><span class="n">fallback</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># even fallback fails</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
 
 

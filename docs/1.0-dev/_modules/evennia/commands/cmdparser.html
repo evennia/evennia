@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -112,7 +113,7 @@
                         <span class="k">for</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span>
                         <span class="k">if</span> <span class="n">cmdname</span>
                         <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">):]))</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -131,7 +132,7 @@
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">cmdname</span>
                         <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">):]))</span>
                     <span class="p">):</span>
                         <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -139,7 +140,7 @@
     <span class="k">return</span> <span class="n">matches</span></div>
 
 
-<div class="viewcode-block" id="try_num_prefixes"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.try_num_prefixes">[docs]</a><span class="k">def</span> <span class="nf">try_num_prefixes</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
+<div class="viewcode-block" id="try_num_differentiators"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.try_num_differentiators">[docs]</a><span class="k">def</span> <span class="nf">try_num_differentiators</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test if user tried to separate multi-matches with a number separator</span>
 <span class="sd">    (default 1-name, 2-name etc). This is usually called last, if no other</span>
@@ -167,7 +168,7 @@
         <span class="c1"># with a #num-command style syntax. We expect the regex to</span>
         <span class="c1"># contain the groups &quot;number&quot; and &quot;name&quot;.</span>
         <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mindex</span><span class="p">),</span> <span class="n">new_raw_string</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
@@ -211,19 +212,22 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_string</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="c1"># find mathces, first using the full name</span>
+    <span class="c1"># find matches, first using the full name</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
-        <span class="c1"># try to match a number 1-cmdname, 2-cmdname etc</span>
-        <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="n">try_num_prefixes</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">mindex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cmdparser</span><span class="p">(</span><span class="n">new_raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">match_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">mindex</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">:</span>
-            <span class="c1"># still no match. Try to strip prefixes</span>
-            <span class="n">raw_string</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
-            <span class="p">)</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># no single match, try parsing for optional numerical tags like 1-cmd</span>
+        <span class="c1"># or cmd-2, cmd.2 etc</span>
+        <span class="n">match_index</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="n">try_num_differentiators</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">build_matches</span><span class="p">(</span><span class="n">new_raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span> <span class="ow">and</span> <span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">:</span>
+        <span class="c1"># still no match. Try to strip prefixes</span>
+        <span class="n">raw_string</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
+        <span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># only select command matches we are actually allowed to call.</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)]</span>
@@ -289,7 +293,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -308,6 +311,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -937,7 +937,7 @@ importing directly from <strong>path</strong> doesn’t work.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.class_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fallback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
@@ -946,6 +946,10 @@ primarily used to convert db_typeclass_path:s to classes.</p>
 <li><p><strong>path</strong> (<em>str</em>) – Full Python dot-path to module.</p></li>
 <li><p><strong>defaultpaths</strong> (<em>iterable</em><em>, </em><em>optional</em>) – If a direct import from <strong>path</strong> fails,
 try subsequent imports by prepending those paths to <strong>path</strong>.</p></li>
+<li><p><strong>fallback</strong> (<em>str</em>) – If all other attempts fail, use this path as a fallback.
+This is intended as a last-resport. In the example of Evennia
+loading, this would be a path to a default parent class in the
+evennia repo itself.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -959,7 +963,7 @@ try subsequent imports by prepending those paths to <strong>path</strong>.</p></
 
 <dl class="py function">
 <dt id="evennia.utils.utils.object_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fallback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
@@ -968,6 +972,10 @@ primarily used to convert db_typeclass_path:s to classes.</p>
 <li><p><strong>path</strong> (<em>str</em>) – Full Python dot-path to module.</p></li>
 <li><p><strong>defaultpaths</strong> (<em>iterable</em><em>, </em><em>optional</em>) – If a direct import from <strong>path</strong> fails,
 try subsequent imports by prepending those paths to <strong>path</strong>.</p></li>
+<li><p><strong>fallback</strong> (<em>str</em>) – If all other attempts fail, use this path as a fallback.
+This is intended as a last-resport. In the example of Evennia
+loading, this would be a path to a default parent class in the
+evennia repo itself.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

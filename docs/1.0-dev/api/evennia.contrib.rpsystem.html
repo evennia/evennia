@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -265,7 +266,10 @@ langname can be None.</p>
 </p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="evennia.contrib.rplanguage.html#evennia.contrib.rplanguage.LanguageError" title="evennia.contrib.rplanguage.LanguageError"><strong>rplanguage.LanguageError</strong></a> – If an invalid language was specified.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#evennia.contrib.rpsystem.LanguageError" title="evennia.contrib.rpsystem.LanguageError"><strong>evennia.contrib.rpsystem.LanguageError</strong></a> – If an invalid language was</p></li>
+<li><p><strong>specified.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -550,6 +554,11 @@ mechanism. This is useful for adding masks/hoods etc.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.RPCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': 'simple parent'}</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -603,6 +612,11 @@ a different language.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdEmote.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote /me looks around.\n      emote With a flurry /me attacks /tall man with his sword.\n      emote &quot;Hello&quot;, /me says.\n\n    Describes an event in the world. This allows the use of /ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -622,7 +636,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -644,6 +658,11 @@ a different language.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdSay.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -687,6 +706,11 @@ a different language.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdSdesc.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'sdesc', 'tags': '', 'text': '\n    Assign yourself a short description (sdesc).\n\n    Usage:\n      sdesc &lt;short description&gt;\n\n    Assigns a short description to yourself.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -747,6 +771,11 @@ sdesc in the emote, regardless of who is seeing it.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdPose.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'pose', 'tags': '', 'text': &quot;\n    Set a static pose\n\n    Usage:\n        pose &lt;pose&gt;\n        pose default &lt;pose&gt;\n        pose reset\n        pose obj = &lt;pose&gt;\n        pose default obj = &lt;pose&gt;\n        pose reset obj =\n\n    Examples:\n        pose leans against the tree\n        pose is talking to the barkeep.\n        pose box = is sitting on the floor.\n\n    Set a static pose. This is the end of a full sentence that starts\n    with your sdesc. If no full stop is given, it will be added\n    automatically. The default pose is the pose you get when using\n    pose reset. Note that you can use sdescs/recogs to reference\n    people in your pose, but these always appear as that person's\n    sdesc in the emote, regardless of who is seeing it.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -772,7 +801,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -795,6 +824,11 @@ Using the command without arguments will list all current recogs.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdRecog.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -839,6 +873,11 @@ set in self.parse())</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpsystem.CmdMask.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unmask', 'category': 'general', 'key': 'mask', 'tags': '', 'text': &quot;\n    Wear a mask\n\n    Usage:\n        mask &lt;new sdesc&gt;\n        unmask\n\n    This will put on a mask to hide your identity. When wearing\n    a mask, your sdesc will be replaced by the sdesc you pick and\n    people's recognitions of you will be disabled.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1239,7 +1278,6 @@ the evennia.contrib.rplanguage module.</p>
   <li><a href="../../0.9.5/api/evennia.contrib.rpsystem.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -1256,6 +1294,7 @@ the evennia.contrib.rplanguage module.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.optionclasses</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -39,13 +40,7 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.utils.optionclasses</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Option classes store user- or server Options in a generic way</span>
-<span class="sd">while also providing validation.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.validatorfuncs</span> <span class="kn">import</span> <span class="n">_TZ_DICT</span>
@@ -53,7 +48,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">validatorfuncs</span>
 
 
-<div class="viewcode-block" id="BaseOption"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption">[docs]</a><span class="k">class</span> <span class="nc">BaseOption</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseOption"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption">[docs]</a><span class="k">class</span> <span class="nc">BaseOption</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract Class to deal with encapsulating individual Options. An Option has</span>
 <span class="sd">    a name/key, a description to display in relevant commands and menus, and a</span>
@@ -157,8 +152,8 @@
 <div class="viewcode-block" id="BaseOption.save"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores the current value using `.handler.save_handler(self.key, value, **kwargs)`</span>
-<span class="sd">        where kwargs are a combination of those passed into this function and the</span>
-<span class="sd">        ones specified by the OptionHandler.</span>
+<span class="sd">        where `kwargs` are a combination of those passed into this function and</span>
+<span class="sd">        the ones specified by the `OptionHandler`.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            any (any): Not used by default. These are passed in from self.set</span>
@@ -395,7 +390,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -414,6 +408,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.optionclasses</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

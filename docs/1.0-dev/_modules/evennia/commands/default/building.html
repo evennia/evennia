@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -2557,14 +2558,12 @@
 
             <span class="k">def</span> <span class="nf">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
                 <span class="sd">&quot;&quot;&quot;helper for cmdset-option display&quot;&quot;&quot;</span>
-
                 <span class="k">def</span> <span class="nf">_truefalse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
                     <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: T&quot;</span>
                     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: F&quot;</span>
-
                 <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">_truefalse</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">opt</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
@@ -2581,8 +2580,7 @@
                     <span class="k">continue</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">stored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
-                <span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored</span><span class="p">)</span>
 
             <span class="c1"># this gets all components of the currently merged set</span>
@@ -2620,15 +2618,13 @@
             <span class="c1"># the resulting merged cmdset</span>
             <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">)</span>
             <span class="n">merged</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
-            <span class="p">]</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
 
             <span class="c1"># the merge stack</span>
             <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span><span class="p">:</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
-                <span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
 
             <span class="c1"># list the commands available to this object</span>
@@ -3889,7 +3885,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -3908,6 +3903,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

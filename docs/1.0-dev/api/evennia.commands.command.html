@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -375,17 +376,6 @@ commands the caller can use.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.commands.command.Command.client_height">
-<code class="sig-name descname">client_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.client_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.client_height" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the client screenheight for the session using this command.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>client height (int)</em> – The height (in characters) of the client window.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.commands.command.Command.styled_table">
 <code class="sig-name descname">styled_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an EvTable styled by on user preferences.</p>
@@ -437,6 +427,11 @@ detailing the contents of the table.</p>
 <code class="sig-name descname">save_for_next</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.command.Command.save_for_next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.command.Command.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    Base command\n\n    Usage:\n      command [args]\n\n    This is the base command class. Inherit from this\n    to create new commands.\n\n    The cmdhandler makes the following variables available to the\n    command methods (so you can always assume them to be there):\n    self.caller - the game object calling the command\n    self.cmdstring - the command name used to trigger this command (allows\n                     you to know which alias was used, for example)\n    cmd.args - everything supplied to the command following the cmdstring\n               (this is usually what is parsed in self.parse())\n    cmd.cmdset - the cmdset from which this command was matched (useful only\n                seldomly, notably for help-type commands, to create dynamic\n                help entries and lists)\n    cmd.obj - the object on which this command is defined. If a default command,\n                 this is usually the same as caller.\n    cmd.rawstring - the full raw string input, including any args and no parsing.\n\n    The following class properties can/should be defined on your child class:\n\n    key - identifier for command (e.g. &quot;look&quot;)\n    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])\n    locks - lock string (default is &quot;cmd:all()&quot;)\n    help_category - how to organize this help entry in help system\n                    (default is &quot;General&quot;)\n    auto_help - defaults to True. Allows for turning off auto-help generation\n    arg_regex - (optional) raw string regex defining how the argument part of\n                the command should look in order to match for this command\n                (e.g. must it be a space between cmdname and arg?)\n    auto_help_display_key - (optional) if given, this replaces the string shown\n        in the auto-help listing. This is particularly useful for system-commands\n        whose actual key is not really meaningful.\n\n    (Note that if auto_help is on, this initial string is also used by the\n    system to create the help entry for the command, so it\'s a good idea to\n    format it similar to this one).  This behavior can be changed by\n    overriding the method \'get_help\' of a command: by default, this\n    method returns cmd.__doc__ (that is, this very docstring, or\n    the docstring of your command).  You can, however, extend or\n    replace this without disabling auto_help.\n    '}</em><a class="headerlink" href="#evennia.commands.command.Command.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -481,7 +476,6 @@ detailing the contents of the table.</p>
   <li><a href="../../0.9.5/api/evennia.commands.command.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -498,6 +492,7 @@ detailing the contents of the table.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

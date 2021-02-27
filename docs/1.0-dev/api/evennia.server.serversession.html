@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.serversession</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -43,126 +44,6 @@ a connection to the outside world but don’t know any details about how the
 connection actually happens (so it’s the same for telnet, web, ssh etc).</p>
 <p>It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)</p>
-<dl class="py class">
-<dt id="evennia.server.serversession.NDbHolder">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.serversession.</code><code class="sig-name descname">NDbHolder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">manager_name</span><span class="o">=</span><span class="default_value">'attributes'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NDbHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NDbHolder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Holder for allowing property access of attributes</p>
-<dl class="py method">
-<dt id="evennia.server.serversession.NDbHolder.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">manager_name</span><span class="o">=</span><span class="default_value">'attributes'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NDbHolder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NDbHolder.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NDbHolder.get_all">
-<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NDbHolder.get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NDbHolder.get_all" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NDbHolder.all">
-<em class="property">property </em><code class="sig-name descname">all</code><a class="headerlink" href="#evennia.server.serversession.NDbHolder.all" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.server.serversession.NAttributeHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.serversession.</code><code class="sig-name descname">NAttributeHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>NAttributeHandler version without recache protection.
-This stand-alone handler manages non-database saving.
-It is similar to <strong>AttributeHandler</strong> and is used
-by the <strong>.ndb</strong> handler in the same way as <strong>.db</strong> does
-for the <strong>AttributeHandler</strong>.</p>
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialized on the object</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.has">
-<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.has" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if object has this attribute or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The Nattribute key to check.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>has_nattribute (bool)</em> – If Nattribute is set or not.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the named key value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The Nattribute key to get.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the value of the Nattribute.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add new key and value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The name of Nattribute to add.</p></li>
-<li><p><strong>value</strong> (<em>any</em>) – The value to store.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove Nattribute from storage.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The name of the Nattribute to remove.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove all NAttributes from handler.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.serversession.NAttributeHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_tuples</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#NAttributeHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.NAttributeHandler.all" title="Permalink to this definition">¶</a></dt>
-<dd><p>List the contents of the handler.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>return_tuples</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the Nattributes
-are returns as a list of keys or as a list of <strong>(key, value)</strong>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>nattributes (list)</em> –</p>
-<dl class="simple">
-<dt>A list of keys <strong>[key, key, …]</strong> or a</dt><dd><p>list of tuples <strong>[(key, value), …]</strong> depending on the
-setting of <strong>return_tuples</strong>.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt id="evennia.server.serversession.ServerSession">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.serversession.</code><code class="sig-name descname">ServerSession</code><a class="reference internal" href="../_modules/evennia/server/serversession.html#ServerSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.ServerSession" title="Permalink to this definition">¶</a></dt>
@@ -181,6 +62,11 @@ through their session.</p>
 <dl class="py method">
 <dt id="evennia.server.serversession.ServerSession.cmdset_storage">
 <em class="property">property </em><code class="sig-name descname">cmdset_storage</code><a class="headerlink" href="#evennia.server.serversession.ServerSession.cmdset_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.serversession.ServerSession.id">
+<em class="property">property </em><code class="sig-name descname">id</code><a class="headerlink" href="#evennia.server.serversession.ServerSession.id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -295,7 +181,7 @@ idle timers and command counters.</p>
 <dd><p>Update the protocol_flags and sync them with Portal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>any</strong> – A key:value pair to set in the
+<dd class="field-odd"><p><strong>protocol_flag</strong> (<em>any</em>) – A key and value to set in the
 protocol_flags dictionary.</p>
 </dd>
 </dl>
@@ -328,7 +214,7 @@ for the protocol(s).</p></li>
 the respective inputfuncs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>any</strong> – Incoming data from protocol on
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Incoming data from protocol on
 the form <strong>{“commandname”: ((args), {kwargs}),…}</strong></p>
 </dd>
 </dl>
@@ -345,12 +231,12 @@ this data off to <strong>self.sessionhandler.call_inputfuncs(self, **kwargs)</st
 <dd><p>Wrapper to mimic msg() functionality of Objects and Accounts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>text</strong> (<em>str</em>) – String input.</p></li>
-<li><p><strong>kwargs</strong> (<em>str</em><em> or </em><em>tuple</em>) – Send-commands identified
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – String input.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>any</strong> (<em>str</em><em> or </em><em>tuple</em>) – Send-commands identified
 by their keys. Or “options”, carrying options
-for the protocol(s).</p></li>
-</ul>
+for the protocol(s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -496,7 +382,6 @@ property, e.g. obj.ndb.attr = value etc.</p>
   <li><a href="../../0.9.5/api/evennia.server.serversession.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -513,6 +398,7 @@ property, e.g. obj.ndb.attr = value etc.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.serversession</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
