@@ -179,13 +179,7 @@ if not _no_autodoc:
 
     EV_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    import subprocess
-    subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-    subprocess.call("pwd")
-
-    sys.path.insert(0, EV_ROOT)
-
-    print(f"sys.path: {sys.path}")
+    sys.path.insert(1, EV_ROOT)
 
     with cd(EV_ROOT):
         # set up Evennia so its sources can be parsed
@@ -195,25 +189,11 @@ if not _no_autodoc:
 
         django.setup()
 
-        # modnames = [mname for mname in sys.modules if mname.startswith("evennia")]
-        # for modname in modnames:
-        #     del sys.modules[modname]
-
         import evennia  # noqa
 
         evennia._init()
 
     from evennia.utils.ansi import strip_raw_ansi as ansi_clean
-    try:
-        from evennia.contrib import crafting  # noqa
-    except ImportError:
-        print("--- NOT develop branch!")
-        print(f"evennia location: {evennia.__file__}")
-    else:
-        print("--- Develop branch!")
-        print(f"evennia location: {evennia.__file__}")
-        print(f"crafting location: {crafting.__file__}")
-
 
 if _no_autodoc:
     exclude_patterns = ["api/*"]
