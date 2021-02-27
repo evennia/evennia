@@ -26,6 +26,7 @@ import evennia
 evennia._init()
 
 from django.db import connection
+from django.db.utils import OperationalError
 from django.conf import settings
 
 from evennia.accounts.models import AccountDB
@@ -205,7 +206,10 @@ class Evennia(object):
         self.start_time = time.time()
 
         # initialize channelhandler
-        channelhandler.CHANNELHANDLER.update()
+        try:
+            channelhandler.CHANNELHANDLER.update()
+        except OperationalError:
+            print("channelhandler couldn't update - db not set up")
 
         # wrap the SIGINT handler to make sure we empty the threadpool
         # even when we reload and we have long-running requests in queue.
@@ -616,7 +620,11 @@ class Evennia(object):
 
 
 # Tell the system the server is starting up; some things are not available yet
-ServerConfig.objects.conf("server_starting_mode", True)
+try:
+    ServerConfig.objects.conf("server_starting_mode", True)
+except OperationalError:
+    print("Server server_starting_mode couldn't be set - database not set up.")
+
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.
@@ -728,4 +736,7 @@ for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
         print(f"Could not load plugin module {plugin_module}")
 
 # clear server startup mode
-ServerConfig.objects.conf("server_starting_mode", delete=True)
+try:
+    ServerConfig.objects.conf("server_starting_mode", delete=True)
+except OperationalError:
+    print("Server server_starting_mode couldn't unset - db not set up.")

@@ -1,8 +1,8 @@
 """
 ANSI - Gives colour to text.
 
-Use the codes defined in ANSIPARSER in your text
-to apply colour to text according to the ANSI standard.
+Use the codes defined in ANSIPARSER in your text to apply colour to text
+according to the ANSI standard.
 
 Examples:
 
@@ -10,10 +10,9 @@ Examples:
 "This is |rRed text|n and this is normal again."
 ```
 
-Mostly you should not need to call `parse_ansi()` explicitly;
-it is run by Evennia just before returning data to/from the
-user.  Depreciated example forms are available by extending
-the ansi mapping.
+Mostly you should not need to call `parse_ansi()` explicitly; it is run by
+Evennia just before returning data to/from the user. Depreciated example forms
+are available by extending the ansi mapping.
 
 """
 import functools
@@ -81,11 +80,9 @@ _COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
 
 class ANSIParser(object):
     """
-    A class that parses ANSI markup
-    to ANSI command sequences
+    A class that parses ANSI markup to ANSI command sequences.
 
-    We also allow to escape colour codes
-    by prepending with an extra |.
+    We also allow to escape colour codes by prepending with an extra `|`.
 
     """
 
