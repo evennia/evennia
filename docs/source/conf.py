@@ -178,11 +178,6 @@ if not _no_autodoc:
 
     EV_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    print(f"Evennia root: {EV_ROOT}, branch:")
-    import subprocess
-    subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-    subprocess.call("pwd")
-
     sys.path.insert(1, EV_ROOT)
 
     with cd(EV_ROOT):
@@ -198,13 +193,6 @@ if not _no_autodoc:
         evennia._init()
 
     from evennia.utils.ansi import strip_raw_ansi as ansi_clean
-    try:
-        from evennia.contrib import crafting  # noqa
-    except ImportError:
-        print("--- NOT develop branch!")
-    else:
-        print("--- Develop branch!")
-
 
 if _no_autodoc:
     exclude_patterns = ["api/*"]
