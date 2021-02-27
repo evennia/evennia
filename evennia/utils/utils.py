@@ -1319,6 +1319,9 @@ def variable_from_module(module, variable=None, default=None):
 
     mod = mod_import(module)
 
+    if not mod:
+        return default
+
     if variable:
         result = []
         for var in make_iter(variable):
@@ -1410,7 +1413,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     return default
 
 
-def class_from_module(path, defaultpaths=None):
+def class_from_module(path, defaultpaths=None, fallback=None):
     """
     Return a class from a module, given the class' full python path. This is
     primarily used to convert db_typeclass_path:s to classes.
@@ -1419,6 +1422,10 @@ def class_from_module(path, defaultpaths=None):
         path (str): Full Python dot-path to module.
         defaultpaths (iterable, optional): If a direct import from `path` fails,
             try subsequent imports by prepending those paths to `path`.
+        fallback (str): If all other attempts fail, use this path as a fallback.
+            This is intended as a last-resport. In the example of Evennia
+            loading, this would be a path to a default parent class in the
+            evennia repo itself.
 
     Returns:
         class (Class): An uninstatiated class recovered from path.
@@ -1472,7 +1479,13 @@ def class_from_module(path, defaultpaths=None):
             err += "\nPaths searched:\n    %s" % "\n    ".join(paths)
         else:
             err += "."
-        raise ImportError(err)
+        logger.log_err(err)
+        if fallback:
+            logger.log_warn(f"Falling back to {fallback}.")
+            return class_from_module(fallback)
+        else:
+            # even fallback fails
+            raise ImportError(err)
     return cls
 
 

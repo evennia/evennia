@@ -511,6 +511,18 @@ START_LOCATION = "#2"
 # out of sync between the processes. Keep on unless you face such
 # issues.
 TYPECLASS_AGGRESSIVE_CACHE = True
+# These are fallbacks for BASE typeclasses failing to load. Usually needed only
+# during doc building. The system expects these to *always* load correctly, so
+# only modify if you are making fundamental changes to how objects/accounts
+# work and know what you are doing
+FALLBACK_ACCOUNT_TYPECLASS = "evennia.accounts.accounts.DefaultAccount"
+FALLBACK_OBJECT_TYPECLASS = "evennia.objects.objects.DefaultObject"
+FALLBACK_CHARACTER_TYPECLASS = "evennia.objects.objects.DefaultCharacter"
+FALLBACK_ROOM_TYPECLASS = "evennia.objects.objects.DefaultRoom"
+FALLBACK_EXIT_TYPECLASS = "evennia.objects.objects.DefaultExit"
+FALLBACK_CHANNEL_TYPECLASS = "evennia.comms.comms.DefaultChannel"
+FALLBACK_SCRIPT_TYPECLASS = "evennia.scripts.scripts.DefaultScript"
+
 
 ######################################################################
 # Options and validators

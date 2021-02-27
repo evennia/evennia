@@ -31,7 +31,6 @@ from evennia.utils.utils import get_evennia_version, mod_import, make_iter, clas
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
-from django.db import connection
 
 
 # we don't need a connection to the database so close it right away
@@ -434,4 +433,6 @@ if WEBSERVER_ENABLED:
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
-    plugin_module.start_plugin_services(PORTAL)
+    if plugin_module:
+        plugin_module.start_plugin_services(PORTAL)
+

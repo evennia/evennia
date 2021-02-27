@@ -19,7 +19,8 @@ from evennia.utils import create, logger, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
-CHANNEL_DEFAULT_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+CHANNEL_DEFAULT_TYPECLASS = class_from_module(
+    settings.BASE_CHANNEL_TYPECLASS, fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
 
 
 # limit symbol import for API
