@@ -195,9 +195,9 @@ if not _no_autodoc:
 
         django.setup()
 
-        for modname in sys.modules:
-            if modname.startswith("evennia"):
-                del sys.modules[modname]
+        modnames = [mname for mname in sys.modules if mname.startswith("evennia")]
+        for modname in modnames:
+            del sys.modules[modname]
 
         import evennia  # noqa
 
