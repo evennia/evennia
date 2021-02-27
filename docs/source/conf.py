@@ -7,6 +7,7 @@
 import os
 import sys
 import re
+import importlib
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
 
@@ -189,10 +190,12 @@ if not _no_autodoc:
         os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
 
         import django  # noqa
+        importlib.reload(django)
 
         django.setup()
 
         import evennia  # noqa
+        importlib.reload(evennia)
 
         evennia._init()
 
