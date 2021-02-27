@@ -198,6 +198,12 @@ if not _no_autodoc:
         evennia._init()
 
     from evennia.utils.ansi import strip_raw_ansi as ansi_clean
+    try:
+        from evennia.contrib import crafting  # noqa
+    except ImportError:
+        print("--- NOT develop branch!")
+    else:
+        print("--- Develop branch!")
 
 
 if _no_autodoc:
