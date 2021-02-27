@@ -212,7 +212,7 @@ if not _no_autodoc:
     else:
         print("--- Develop branch!")
         print(f"evennia location: {evennia.__file__}")
-        print(f"crafting location: {evennia.contrib.crafting.__file__}")
+        print(f"crafting location: {crafting.__file__}")
 
 
 if _no_autodoc:
