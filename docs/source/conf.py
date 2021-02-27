@@ -176,28 +176,17 @@ ansi_clean = None
 if not _no_autodoc:
     # we must set up Evennia and its paths for autodocs to work
 
-    EV_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # os.environ.get("EVDIR")
-    GAME_DIR = os.environ.get("EVGAMEDIR")
+    EV_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    if not (EV_ROOT and GAME_DIR):
-        err = (
-            "The EVDIR and EVGAMEDIR environment variables must be set to "
-            "the absolute paths to the evennia/ repo and an initialized "
-            "evennia gamedir respectively."
-        )
-        raise RuntimeError(err)
-
-    print("Evennia root: {}, Game dir: {}, branch:".format(EV_ROOT, GAME_DIR)),
     import subprocess
     subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     subprocess.call("pwd")
 
     sys.path.insert(1, EV_ROOT)
-    sys.path.insert(1, GAME_DIR)
 
-    with cd(GAME_DIR):
+    with cd(EV_ROOT):
         # set up Evennia so its sources can be parsed
-        os.environ["DJANGO_SETTINGS_MODULE"] = "server.conf.settings"
+        os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings.default"
 
         import django  # noqa
 
