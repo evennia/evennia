@@ -203,15 +203,16 @@ if not _no_autodoc:
 
         evennia._init()
 
-        print(f"evennia location: {evennia.__file__}")
-
     from evennia.utils.ansi import strip_raw_ansi as ansi_clean
     try:
         from evennia.contrib import crafting  # noqa
     except ImportError:
         print("--- NOT develop branch!")
+        print(f"evennia location: {evennia.__file__}")
     else:
         print("--- Develop branch!")
+        print(f"evennia location: {evennia.__file__}")
+        print(f"crafting location: {evennia.contrib.crafting.__file__}")
 
 
 if _no_autodoc:
