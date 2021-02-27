@@ -190,12 +190,14 @@ if not _no_autodoc:
         os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
 
         import django  # noqa
-        importlib.reload(django)
 
         django.setup()
 
+        import sys
         import evennia  # noqa
-        importlib.reload(evennia)
+        del sys.modules['evennia']
+        del evennia
+        import evennia  # noqa
 
         evennia._init()
 
