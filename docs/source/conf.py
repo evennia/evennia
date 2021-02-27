@@ -185,6 +185,8 @@ if not _no_autodoc:
 
     sys.path.insert(1, EV_ROOT)
 
+    print(f"sys.path: {sys.path}")
+
     with cd(EV_ROOT):
         # set up Evennia so its sources can be parsed
         os.environ["DJANGO_SETTINGS_MODULE"] = "evennia.settings_default"
