@@ -30,6 +30,7 @@
 - Make MuxCommand `lhs/rhslist` always be lists, also if empty (used to be the empty string)
 - Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
 - Latin (la) i18n translation (jamalainm)
+- Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
 
 ### Evennia 0.9.5 (2019-2020)
 

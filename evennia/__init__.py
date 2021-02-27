@@ -379,19 +379,6 @@ def _init():
     del SystemCmds
     del _EvContainer
 
-    # typeclases
-    from .utils.utils import class_from_module
-
-    BASE_ACCOUNT_TYPECLASS = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-    BASE_OBJECT_TYPECLASS = class_from_module(settings.BASE_OBJECT_TYPECLASS)
-    BASE_CHARACTER_TYPECLASS = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
-    BASE_ROOM_TYPECLASS = class_from_module(settings.BASE_ROOM_TYPECLASS)
-    BASE_EXIT_TYPECLASS = class_from_module(settings.BASE_EXIT_TYPECLASS)
-    BASE_CHANNEL_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
-    BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
-    BASE_GUEST_TYPECLASS = class_from_module(settings.BASE_GUEST_TYPECLASS)
-    del class_from_module
-
     # delayed starts - important so as to not back-access evennia before it has
     # finished initializing
     GLOBAL_SCRIPTS.start()
