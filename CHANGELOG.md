@@ -5,6 +5,16 @@
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
+- Make IP throttle use Django-based cache system for optional persistence (PR by strikaco)
+- Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
+  "TutorialWeaponRack" to prevent collisions with classes in mygame
+- New `crafting` contrib, adding a full crafting subsystem (Griatch 2020)
+- The `rplanguage` contrib now auto-capitalizes sentences and retains ellipsis (...). This
+  change means that proper nouns at the start of sentences will not be treated as nouns.
+- Make MuxCommand `lhs/rhslist` always be lists, also if empty (used to be the empty string)
+- Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
+- Latin (la) i18n translation (jamalainm)
+- Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
 
 ### Evennia 0.9.5 (Nov 2020)
 
@@ -88,6 +98,7 @@ without arguments starts a full interactive Python console.
 - Include more Web-client info in `session.protocol_flags`.
 - Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
   only two boxes in location.
+- Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
 
 
 ## Evennia 0.9 (2018-2019)

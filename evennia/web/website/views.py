@@ -32,6 +32,7 @@ from django.utils.text import slugify
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
+# typeclass fallbacks
 
 def _gamestats():
     # Some misc. configurable stuff.
@@ -48,11 +49,14 @@ def _gamestats():
 
     nobjs = ObjectDB.objects.count()
     nobjs = nobjs or 1  # fix zero-div error with empty database
-    Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+    Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
+                                  fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
     nchars = Character.objects.all_family().count()
-    Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
+    Room = class_from_module(settings.BASE_ROOM_TYPECLASS,
+                             fallback=settings.FALLBACK_ROOM_TYPECLASS)
     nrooms = Room.objects.all_family().count()
-    Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
+    Exit = class_from_module(settings.BASE_EXIT_TYPECLASS,
+                             fallback=settings.FALLBACK_EXIT_TYPECLASS)
     nexits = Exit.objects.all_family().count()
     nothers = nobjs - nchars - nrooms - nexits
 
@@ -269,7 +273,8 @@ class ObjectDetailView(EvenniaDetailView):
     #
     # So when you extend it, this line should look simple, like:
     # model = Object
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
+                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
 
     # What HTML template you wish to use to display this page.
     template_name = "website/object_detail.html"
@@ -372,7 +377,8 @@ class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
 
     """
 
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
+                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
 
 
 class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
@@ -387,7 +393,8 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
+                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
     template_name = "website/object_confirm_delete.html"
 
     # -- Evennia constructs --
@@ -430,7 +437,8 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
+                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
 
     # -- Evennia constructs --
     access_type = "edit"
@@ -513,7 +521,8 @@ class AccountMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+    model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS,
+                              fallback=settings.FALLBACK_ACCOUNT_TYPECLASS)
     form_class = website_forms.AccountForm
 
 
@@ -578,7 +587,8 @@ class CharacterMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+    model = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
+                              fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
     form_class = website_forms.CharacterForm
     success_url = reverse_lazy("character-manage")
 
@@ -817,7 +827,8 @@ class ChannelMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+    model = class_from_module(settings.BASE_CHANNEL_TYPECLASS,
+                              fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
 
     # -- Evennia constructs --
     page_title = "Channels"
