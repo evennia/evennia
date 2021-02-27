@@ -183,7 +183,7 @@ if not _no_autodoc:
     subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     subprocess.call("pwd")
 
-    sys.path.insert(1, EV_ROOT)
+    sys.path.insert(0, EV_ROOT)
 
     print(f"sys.path: {sys.path}")
 
@@ -202,6 +202,8 @@ if not _no_autodoc:
         import evennia  # noqa
 
         evennia._init()
+
+        print(f"evennia location: {evennia.__file__}")
 
     from evennia.utils.ansi import strip_raw_ansi as ansi_clean
     try:
