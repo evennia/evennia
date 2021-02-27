@@ -72,7 +72,6 @@
 <span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 
 
 <span class="c1"># we don&#39;t need a connection to the database so close it right away</span>
@@ -472,7 +471,9 @@
 
 <span class="k">for</span> <span class="n">plugin_module</span> <span class="ow">in</span> <span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="p">:</span>
     <span class="c1"># external plugin services to start</span>
-    <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="n">PORTAL</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plugin_module</span><span class="p">:</span>
+        <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="n">PORTAL</span><span class="p">)</span>
+
 </pre></div>
 
             <div class="clearer"></div>

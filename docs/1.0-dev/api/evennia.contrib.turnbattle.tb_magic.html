@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_magic</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -523,6 +524,11 @@ When it’s your turn, you can attack other characters.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdFight.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdFight.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'fight', 'tags': '', 'text': &quot;\n    Starts a fight with everyone in the same room as you.\n\n    Usage:\n      fight\n\n    When you start a fight, everyone in the room who is able to\n    fight is added to combat, and a turn order is randomly rolled.\n    When it's your turn, you can attack other characters.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdFight.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -562,6 +568,11 @@ a chance to hit, and if successful, will deal damage.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdAttack.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'attack', 'tags': '', 'text': '\n    Attacks another character.\n\n    Usage:\n      attack &lt;target&gt;\n\n    When in a fight, you may attack another character. The attack has\n    a chance to hit, and if successful, will deal damage.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -582,7 +593,7 @@ if there are still any actions you can take.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -599,6 +610,11 @@ if there are still any actions you can take.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdPass.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdPass.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -639,6 +655,11 @@ fight ends.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdDisengage.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdDisengage.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdDisengage.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'spare', 'category': 'combat', 'key': 'disengage', 'tags': '', 'text': &quot;\n    Passes your turn and attempts to end combat.\n\n    Usage:\n      disengage\n\n    Ends your turn early and signals that you're trying to end\n    the fight. If all participants in a fight disengage, the\n    fight ends.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdDisengage.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -694,6 +715,11 @@ fight ends.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdLearnSpell.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdLearnSpell.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'magic', 'key': 'learnspell', 'tags': '', 'text': &quot;\n    Learn a magic spell.\n\n    Usage:\n        learnspell &lt;spell name&gt;\n\n    Adds a spell by name to your list of spells known.\n\n    The following spells are provided as examples:\n\n        |wmagic missile|n (3 MP): Fires three missiles that never miss. Can target\n            up to three different enemies.\n\n        |wflame shot|n (3 MP): Shoots a high-damage jet of flame at one target.\n\n        |wcure wounds|n (5 MP): Heals damage on one target.\n\n        |wmass cure wounds|n (10 MP): Like 'cure wounds', but can heal up to 5\n            targets at once.\n\n        |wfull heal|n (12 MP): Heals one target back to full HP.\n\n        |wcactus conjuration|n (2 MP): Creates a cactus.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdLearnSpell.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -741,6 +767,11 @@ function.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCast.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdCast.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'magic', 'key': 'cast', 'tags': '', 'text': &quot;\n    Cast a magic spell that you know, provided you have the MP\n    to spend on its casting.\n\n    Usage:\n        cast &lt;spellname&gt; [= &lt;target1&gt;, &lt;target2&gt;, etc...]\n\n    Some spells can be cast on multiple targets, some can be cast\n    on only yourself, and some don't need a target specified at all.\n    Typing 'cast' by itself will give you a list of spells you know.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCast.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -778,6 +809,11 @@ only rest if you’re not in a fight.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdRest.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdRest.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdRest.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'rest', 'tags': '', 'text': &quot;\n    Recovers damage and restores MP.\n\n    Usage:\n      rest\n\n    Resting recovers your HP and MP to their maximum, but you can\n    only rest if you're not in a fight.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdRest.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -819,6 +855,11 @@ other targets in combat.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdStatus.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdStatus.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'status', 'tags': '', 'text': '\n    Gives combat information.\n\n    Usage:\n      status\n\n    Shows your current and maximum HP and your distance from\n    other targets in combat.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdStatus.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -858,6 +899,11 @@ topics related to the game.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdCombatHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCombatHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.turnbattle.tb_magic.CmdCombatHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCombatHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -971,7 +1017,6 @@ instead of creating objects directly.</p>
   <li><a href="../../0.9.5/api/evennia.contrib.turnbattle.tb_magic.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -988,6 +1033,7 @@ instead of creating objects directly.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_magic</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

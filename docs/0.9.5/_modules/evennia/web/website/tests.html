@@ -166,7 +166,8 @@
 <div class="viewcode-block" id="ChannelDetailTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelDetailTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ChannelDetailTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
-        <span class="n">klass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_typeclass</span><span class="p">)</span>
+        <span class="n">klass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_typeclass</span><span class="p">,</span>
+                                  <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
 
         <span class="c1"># Create a channel</span>
         <span class="n">klass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span></div>

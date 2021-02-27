@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.muxcommand</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -216,8 +217,8 @@
         <span class="n">rhs</span> <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">lhs</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># Further split left/right sides by comma delimiter</span>
-        <span class="n">lhslist</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">lhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">rhslist</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">rhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lhslist</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">lhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">rhslist</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">rhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="c1"># save to object properties:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="o">=</span> <span class="n">switches</span>
@@ -336,7 +337,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -355,6 +355,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.muxcommand</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -419,19 +419,6 @@
     <span class="k">del</span> <span class="n">SystemCmds</span>
     <span class="k">del</span> <span class="n">_EvContainer</span>
 
-    <span class="c1"># typeclases</span>
-    <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
-
-    <span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
-    <span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
-    <span class="k">del</span> <span class="n">class_from_module</span>
-
     <span class="c1"># delayed starts - important so as to not back-access evennia before it has</span>
     <span class="c1"># finished initializing</span>
     <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -205,6 +206,11 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(puzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;puzzlerecipe', 'category': 'puzzles', 'key': '&#64;puzzle', 'tags': '', 'text': &quot;\n    Creates a puzzle recipe. A puzzle consists of puzzle-parts that\n    the player can 'use' together to create a specified result.\n\n    Usage:\n        &#64;puzzle name,&lt;part1[,part2,...&gt;] = &lt;result1[,result2,...]&gt;\n\n    Example:\n        create/drop balloon\n        create/drop glass of water\n        create/drop water balloon\n        &#64;puzzle waterballon,balloon,glass of water = water balloon\n        &#64;del ballon, glass of water, water balloon\n        &#64;armpuzzle #1\n\n    Notes:\n    Each part and result are objects that must (temporarily) exist and be placed in their\n    corresponding location in order to create the puzzle. After the creation of the puzzle,\n    these objects are not needed anymore and can be deleted. Components of the puzzle\n    will be re-created by use of the `&#64;armpuzzle` command later.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -268,6 +274,11 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(puzzleedit) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;puzzleedit', 'tags': '', 'text': &quot;\n    Edits puzzle properties\n\n    Usage:\n        &#64;puzzleedit[/delete] &lt;#dbref&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/use_success_message = &lt;Custom message&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/use_success_location_message = &lt;Custom message from {caller} producing {result_names}&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/mask = attr1[,attr2,...]&gt;\n        &#64;puzzleedit[/addpart] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/delpart] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/addresult] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/delresult] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n\n    Switches:\n      addpart - adds parts to the puzzle\n      delpart - removes parts from the puzzle\n      addresult - adds results to the puzzle\n      delresult - removes results from the puzzle\n      delete - deletes the recipe. Existing parts and results aren't modified\n\n      mask - attributes to exclude during matching (e.g. location, desc, etc.)\n      use_success_location_message containing {result_names} and {caller} will\n        automatically be replaced with correct values. Both are optional.\n\n      When removing parts/results, it's possible to remove all.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -313,6 +324,11 @@ to all the variables defined therein.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.puzzles.CmdArmPuzzle.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(armpuzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;armpuzzle', 'tags': '', 'text': '\n    Arms a puzzle by spawning all its parts.\n\n    Usage:\n      &#64;armpuzzle &lt;puzzle #dbref&gt;\n\n    Notes:\n        Create puzzles with `&#64;puzzle`; get list of\n        defined puzzles using `&#64;lspuzzlerecipes`.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -363,6 +379,11 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(use) or pperm(Player)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'combine', 'category': 'puzzles', 'key': 'use', 'tags': '', 'text': '\n    Use an object, or a group of objects at once.\n\n\n    Example:\n      You look around you and see a pole, a long string, and a needle.\n\n      use pole, long string, needle\n\n      Genius! You built a fishing pole.\n\n\n    Usage:\n        use &lt;obj1&gt; [,obj2,...]\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -407,6 +428,11 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(lspuzzlerecipes) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;lspuzzlerecipes', 'tags': '', 'text': '\n    Searches for all puzzle recipes\n\n    Usage:\n        &#64;lspuzzlerecipes\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -449,6 +475,11 @@ to all the variables defined therein.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(lsarmedpuzzles) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;lsarmedpuzzles', 'tags': '', 'text': '\n    Searches for all armed puzzles\n\n    Usage:\n        &#64;lsarmedpuzzles\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -508,7 +539,6 @@ self.add().</p>
   <li><a href="../../0.9.5/api/evennia.contrib.puzzles.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -525,6 +555,7 @@ self.add().</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

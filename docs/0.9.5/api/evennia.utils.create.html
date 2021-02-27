@@ -79,12 +79,9 @@ target.</p></li>
 <li><p><strong>nohome</strong> (<em>bool</em>) – This allows the creation of objects without a
 default home location; only used when creating the default
 location itself or during unittests.</p></li>
-<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – <p>Tuples on the form (key, value) or (key, value, category),
-(key, value, lockstring) or (key, value, lockstring, default_access).</p>
-<blockquote>
-<div><p>to set as Attributes on the new object.</p>
-</div></blockquote>
-</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Tuples on the form (key, value) or (key, value, category),
+(key, value, lockstring) or (key, value, lockstring, default_access).
+to set as Attributes on the new object.</p></li>
 <li><p><strong>nattributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Non-persistent tuples on the form (key, value). Note that
 adding this rarely makes sense since this data will not survive a reload.</p></li>
 </ul>
@@ -93,8 +90,10 @@ adding this rarely makes sense since this data will not survive a reload.</p></l
 <dd class="field-even"><p><em>object (Object)</em> – A newly created object of the given typeclass.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.DoesNotExist" title="evennia.objects.models.ObjectDB.DoesNotExist"><strong>ObjectDB.DoesNotExist</strong></a> – If trying to create an Object with
-<strong>location</strong> or <strong>home</strong> that can’t be found.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.DoesNotExist" title="evennia.objects.models.ObjectDB.DoesNotExist"><strong>ObjectDB.DoesNotExist</strong></a> – If trying to create an Object with</p></li>
+<li><p><strong>location</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

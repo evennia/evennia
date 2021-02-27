@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -60,7 +61,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
-<span class="n">CHANNEL_DEFAULT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">)</span>
+<span class="n">CHANNEL_DEFAULT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
 
 
 <span class="c1"># limit symbol import for API</span>
@@ -874,7 +876,7 @@
                 <span class="n">receiver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|n,</span><span class="si">{</span><span class="n">clr</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">receivers</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">sending</span><span class="p">:</span>
                     <span class="n">template</span> <span class="o">=</span> <span class="n">to_template</span>
-                    <span class="n">sender</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">multi_send</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">sender</span> <span class="o">=</span>  <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">multi_send</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
                     <span class="n">receiver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">multi_recv</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">template</span> <span class="o">=</span> <span class="n">from_template</span>
@@ -889,6 +891,7 @@
                         <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span>
                         <span class="n">message</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
                     <span class="p">)</span>
+
                 <span class="p">)</span>
             <span class="n">lastpages</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listing</span><span class="p">)</span>
 
@@ -1422,7 +1425,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -1441,6 +1443,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

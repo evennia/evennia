@@ -29,6 +29,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -36,8 +37,221 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evennia-contrib-crafting-tests">
-<h1>evennia.contrib.crafting.tests<a class="headerlink" href="#evennia-contrib-crafting-tests" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-evennia.contrib.crafting.tests">
+<span id="evennia-contrib-crafting-tests"></span><h1>evennia.contrib.crafting.tests<a class="headerlink" href="#module-evennia.contrib.crafting.tests" title="Permalink to this headline">¶</a></h1>
+<p>Unit tests for the crafting system contrib.</p>
+<dl class="py class">
+<dt id="evennia.contrib.crafting.tests.TestCraftUtils">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.tests.</code><code class="sig-name descname">TestCraftUtils</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Test helper utils for crafting.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.tests.TestCraftUtils.maxDiff">
+<code class="sig-name descname">maxDiff</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftUtils.maxDiff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftUtils.test_load_recipes">
+<code class="sig-name descname">test_load_recipes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftUtils.test_load_recipes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftUtils.test_load_recipes" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should only load the example module now</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.tests.</code><code class="sig-name descname">TestCraftingRecipeBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Test the parent recipe class.</p>
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_msg">
+<code class="sig-name descname">test_msg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.test_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test messaging to crafter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_pre_craft">
+<code class="sig-name descname">test_pre_craft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.test_pre_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_pre_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test validating hook</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_pre_craft_fail">
+<code class="sig-name descname">test_pre_craft_fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.test_pre_craft_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_pre_craft_fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should rase error if validation fails</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_craft_hook__succeed">
+<code class="sig-name descname">test_craft_hook__succeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.test_craft_hook__succeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_craft_hook__succeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test craft hook, the main access method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_craft_hook__fail">
+<code class="sig-name descname">test_craft_hook__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipeBase.test_craft_hook__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipeBase.test_craft_hook__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test failing the call</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.tests.</code><code class="sig-name descname">TestCraftingRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Test the CraftingRecipe class with one recipe</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.maxDiff">
+<code class="sig-name descname">maxDiff</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.maxDiff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_error_format">
+<code class="sig-name descname">test_error_format</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_error_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_error_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the automatic error formatter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft__success">
+<code class="sig-name descname">test_craft__success</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft__success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft__success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test to create a result from the recipe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_seed__succcess">
+<code class="sig-name descname">test_seed__succcess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_seed__succcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_seed__succcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test seed helper classmethod</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_tool__fail">
+<code class="sig-name descname">test_craft_missing_tool__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_missing_tool__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_tool__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail craft by missing tool2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__fail">
+<code class="sig-name descname">test_craft_missing_cons__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_missing_cons__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail craft by missing cons3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__always_consume__fail">
+<code class="sig-name descname">test_craft_missing_cons__always_consume__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_missing_cons__always_consume__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__always_consume__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail craft by missing cons3, with always-consume flag</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_wrong_tool__fail">
+<code class="sig-name descname">test_craft_wrong_tool__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_wrong_tool__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_wrong_tool__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail craft by including a wrong tool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__fail">
+<code class="sig-name descname">test_craft_tool_excess__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_tool_excess__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail by too many consumables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__fail">
+<code class="sig-name descname">test_craft_cons_excess__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_cons_excess__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail by too many consumables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__sucess">
+<code class="sig-name descname">test_craft_tool_excess__sucess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_tool_excess__sucess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__sucess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow too many consumables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__sucess">
+<code class="sig-name descname">test_craft_cons_excess__sucess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_cons_excess__sucess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__sucess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow too many consumables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_order__fail">
+<code class="sig-name descname">test_craft_tool_order__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_tool_order__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_tool_order__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strict tool-order recipe fail</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_order__fail">
+<code class="sig-name descname">test_craft_cons_order__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftingRecipe.test_craft_cons_order__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftingRecipe.test_craft_cons_order__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strict tool-order recipe fail</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.tests.TestCraftSword">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.tests.</code><code class="sig-name descname">TestCraftSword</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftSword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftSword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Test the <strong>craft</strong> function by crafting the example sword.</p>
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftSword.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftSword.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftSword.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftSword.test_craft_sword">
+<code class="sig-name descname">test_craft_sword</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mockrandom</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftSword.test_craft_sword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftSword.test_craft_sword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Craft example sword. For the test, every crafting works.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.tests.TestCraftCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.tests.</code><code class="sig-name descname">TestCraftCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
+<p>Test the crafting command</p>
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftCommand.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftCommand.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftCommand.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftCommand.test_craft__success">
+<code class="sig-name descname">test_craft__success</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftCommand.test_craft__success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftCommand.test_craft__success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Successfully craft using command</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftCommand.test_craft__notools__failure">
+<code class="sig-name descname">test_craft__notools__failure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftCommand.test_craft__notools__failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftCommand.test_craft__notools__failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Craft fail no tools</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.tests.TestCraftCommand.test_craft__nocons__failure">
+<code class="sig-name descname">test_craft__nocons__failure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/tests.html#TestCraftCommand.test_craft__nocons__failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.tests.TestCraftCommand.test_craft__nocons__failure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -73,7 +287,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -90,6 +303,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

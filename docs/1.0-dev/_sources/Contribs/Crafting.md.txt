@@ -41,7 +41,7 @@ In code, you can craft using the `evennia.contrib.crafting.crafting.craft` funct
 ```python
 from evennia.contrib.crafting.crafting import craft
 
-result = craft(caller, *inputs)
+result = craft(caller, "recipename", *inputs)
 
 ```
 Here, `caller` is the one doing the crafting and `*inputs` is any combination of consumables and/or tool
