@@ -152,12 +152,6 @@ class CommandTest(EvenniaTest):
             ).strip()
             msg = msg.strip()
             if msg == "" and returned_msg or not returned_msg.startswith(msg):
-                prt = ""
-                for ic, char in enumerate(msg):
-                    import re
-
-                    prt += char
-
                 sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
                 sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
                 sep3 = "\n" + "=" * 78
@@ -167,7 +161,6 @@ class CommandTest(EvenniaTest):
             returned_msg = "\n".join(str(msg) for msg in stored_msg)
             returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         receiver.msg = old_msg
-
         return returned_msg
 
     def call_multi_receivers(
