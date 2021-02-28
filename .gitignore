@@ -50,3 +50,6 @@ twistd.bat
 
 # never commit docs/build
 docs/build
+
+#remote sync config
+.remote-sync.json
