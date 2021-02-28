@@ -125,7 +125,8 @@ class ChannelDetailTest(EvenniaWebTest):
     def setUp(self):
         super(ChannelDetailTest, self).setUp()
 
-        klass = class_from_module(self.channel_typeclass)
+        klass = class_from_module(self.channel_typeclass,
+                                  fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
 
         # Create a channel
         klass.create("demo")
