@@ -437,16 +437,16 @@ footer {
 }
 
 .patreon {
-  scale: 0.6;
+  scale: 0.8;
 }
 
 .paypal {
-  scale: 0.6;
+  scale: 0.8;
 }
 
 .sponsor-column {
-    float: left;
-    width: 33%;
+    float: right;
+    width: 15%;
     padding: 2px;
 }
 
