@@ -21,6 +21,7 @@ time, mark, audio, video {
   border: 0;
   font: inherit;
   vertical-align: baseline;
+  line-height: 1.5em;
 }
 
 
@@ -438,10 +439,12 @@ footer {
 
 .patreon {
   scale: 0.8;
+  opacity: 0.8;
 }
 
 .paypal {
   scale: 0.8;
+  opacity: 0.8;
 }
 
 .sponsor-column {
