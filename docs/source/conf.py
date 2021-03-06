@@ -71,6 +71,7 @@ html_sidebars = {
         # "globaltoc.html",
         "relations.html",
         "sourcelink.html",
+        "links.html",
         "versioning.html",
     ]
 }
