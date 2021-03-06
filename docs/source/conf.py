@@ -72,8 +72,8 @@ html_sidebars = {
         # "globaltoc.html",
         "relations.html",
         "sourcelink.html",
-        "versioning.html",
         "links.html",
+        "versioning.html",
     ]
 }
 html_favicon = "_static/images/favicon.ico"
