@@ -73,6 +73,7 @@ html_sidebars = {
         "relations.html",
         "sourcelink.html",
         "versioning.html",
+        "links.html",
     ]
 }
 html_favicon = "_static/images/favicon.ico"
