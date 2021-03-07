@@ -101,17 +101,6 @@ CHANNEL_HANDLER = None
 GLOBAL_SCRIPTS = None
 OPTION_CLASSES = None
 
-# typeclasses
-BASE_ACCOUNT_TYPECLASS = None
-BASE_OBJECT_TYPECLASS = None
-BASE_CHARACTER_TYPECLASS = None
-BASE_ROOM_TYPECLASS = None
-BASE_EXIT_TYPECLASS = None
-BASE_CHANNEL_TYPECLASS = None
-BASE_SCRIPT_TYPECLASS = None
-BASE_GUEST_TYPECLASS = None
-
-
 def _create_version():
     """
     Helper function for building the version string
@@ -164,10 +153,6 @@ def _init():
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
-
-    global BASE_ACCOUNT_TYPECLASS, BASE_OBJECT_TYPECLASS, BASE_CHARACTER_TYPECLASS
-    global BASE_ROOM_TYPECLASS, BASE_EXIT_TYPECLASS, BASE_CHANNEL_TYPECLASS
-    global BASE_SCRIPT_TYPECLASS, BASE_GUEST_TYPECLASS
 
     # Parent typeclasses
     from .accounts.accounts import DefaultAccount

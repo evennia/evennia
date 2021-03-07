@@ -22,7 +22,6 @@ from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
-from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
 from evennia.utils import class_from_module, create, logger
@@ -49,6 +48,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
+_CMDHANDLER = None
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(
@@ -931,6 +931,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 commands at run-time.
 
         """
+        # break circular import issues
+        global _CMDHANDLER
+        if not _CMDHANDLER:
+            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=False
         )
@@ -939,7 +943,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        return cmdhandler.cmdhandler(
+        return _CMDHANDLER(
             self, raw_string, callertype="account", session=session, **kwargs
         )
 
