@@ -150,7 +150,8 @@
         <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">num</span></div>
 
 <div class="viewcode-block" id="ScriptHandler.get"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -185,7 +186,8 @@
             <span class="p">]</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">delscripts</span><span class="p">:</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">num</span></div>
 
     <span class="c1"># alias to delete</span>
@@ -196,22 +198,7 @@
 <span class="sd">        Get all scripts stored in this handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScriptHandler.validate"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Runs a validation on this object&#39;s scripts only.  This should</span>
-<span class="sd">        be called regularly to crank the wheels.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            init_mode (str, optional): - This is used during server</span>
-<span class="sd">                upstart and can have three values:</span>
-<span class="sd">                - `False` (no init mode). Called during run.</span>
-<span class="sd">                - `&quot;reset&quot;` - server reboot. Kill non-persistent scripts</span>
-<span class="sd">                - `&quot;reload&quot;` - server reload. Keep non-persistent scripts.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="n">init_mode</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

@@ -291,14 +291,19 @@ should only be accessible by trusted server admins/superusers.|n</p>
 <dt id="evennia.commands.default.system.CmdScripts">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdScripts</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdScripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdScripts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
-<p>list and manage all running scripts</p>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>scripts[/switches] [#dbref, key, script.path or &lt;obj&gt;]</p>
+<p>List and manage all running scripts. Allows for creating new global
+scripts.</p>
+<dl>
+<dt>Usage:</dt><dd><p>script[/switches] [#dbref, key, script.path or &lt;obj&gt;]</p>
 </dd>
-<dt>Switches:</dt><dd><p>start - start a script (must supply a script path)
-stop - stops an existing script
-kill - kills a script - without running its cleanup hooks
-validate - run a validation on the script(s)</p>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>create - create a new global script of given typeclass path. This will</dt><dd><p>auto-start the script’s timer if it has one.</p>
+</dd>
+</dl>
+<p>start - start/unpause an existing script’s timer.
+stop - stops an existing script’s timer
+pause - pause a script’s timer
+delete - deletes script. This will also stop the timer as needed</p>
 </dd>
 </dl>
 <p>If no switches are given, this command just views all active
@@ -306,7 +311,8 @@ scripts. The argument can be either an object, at which point it
 will be searched for all scripts defined on it, or a script name
 or #dbref. For using the /stop switch, a unique script #dbref is
 required since whole classes of scripts often have the same name.</p>
-<p>Use script for managing commands on objects.</p>
+<p>Use the <strong>script</strong> build-level command for managing scripts attached to
+objects.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.key">
 <code class="sig-name descname">key</code><em class="property"> = 'scripts'</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.key" title="Permalink to this definition">¶</a></dt>
@@ -314,12 +320,12 @@ required since whole classes of scripts often have the same name.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['globalscript', 'listscripts']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.switch_options">
-<code class="sig-name descname">switch_options</code><em class="property"> = ('start', 'stop', 'kill', 'validate')</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">switch_options</code><em class="property"> = ('create', 'start', 'stop', 'pause', 'delete')</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -337,6 +343,11 @@ required since whole classes of scripts often have the same name.</p>
 <code class="sig-name descname">excluded_typeclass_paths</code><em class="property"> = ['evennia.prototypes.prototypes.DbPrototype']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.excluded_typeclass_paths" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.switch_mapping">
+<code class="sig-name descname">switch_mapping</code><em class="property"> = {'create': '|gCreated|n', 'delete': '|rDeleted|n', 'pause': '|Paused|n', 'start': '|gStarted|n', 'stop': '|RStopped|n'}</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.switch_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.commands.default.system.CmdScripts.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdScripts.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.func" title="Permalink to this definition">¶</a></dt>
@@ -350,7 +361,7 @@ required since whole classes of scripts often have the same name.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdScripts.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'globalscript listscripts', 'category': 'system', 'key': 'scripts', 'tags': '', 'text': '\n    list and manage all running scripts\n\n    Usage:\n      scripts[/switches] [#dbref, key, script.path or &lt;obj&gt;]\n\n    Switches:\n      start - start a script (must supply a script path)\n      stop - stops an existing script\n      kill - kills a script - without running its cleanup hooks\n      validate - run a validation on the script(s)\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use script for managing commands on objects.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'system', 'key': 'scripts', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [#dbref, key, script.path or &lt;obj&gt;]\n\n    Switches:\n      create - create a new global script of given typeclass path. This will\n         auto-start the script's timer if it has one.\n      start - start/unpause an existing script's timer.\n      stop - stops an existing script's timer\n      pause - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -374,7 +385,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['listobjs', 'db', 'listobjects', 'stats']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['stats', 'listobjects', 'db', 'listobjs']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -400,7 +411,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjs db listobjects stats', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'stats listobjects db listobjs', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -142,17 +142,6 @@
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">OPTION_CLASSES</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="c1"># typeclasses</span>
-<span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-
-
 <span class="k">def</span> <span class="nf">_create_version</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for building the version string</span>
@@ -205,10 +194,6 @@
     <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span>
-
-    <span class="k">global</span> <span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_CHARACTER_TYPECLASS</span>
-    <span class="k">global</span> <span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_CHANNEL_TYPECLASS</span>
-    <span class="k">global</span> <span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_GUEST_TYPECLASS</span>
 
     <span class="c1"># Parent typeclasses</span>
     <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>

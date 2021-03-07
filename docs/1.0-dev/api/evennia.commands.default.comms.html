@@ -64,7 +64,7 @@ aliases to an already joined channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['chanalias', 'aliaschan']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['aliaschan', 'chanalias']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -95,7 +95,7 @@ aliases to an already joined channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chanalias aliaschan', 'category': 'comms', 'key': 'addcom', 'tags': '', 'text': '\n    add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'aliaschan chanalias', 'category': 'comms', 'key': 'addcom', 'tags': '', 'text': '\n    add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -234,7 +234,7 @@ Use addcom/delcom to join and leave channels</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdChannels.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['clist', 'comlist', 'all channels', 'channellist', 'chanlist']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['chanlist', 'clist', 'all channels', 'comlist', 'channellist']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -265,7 +265,7 @@ Use addcom/delcom to join and leave channels</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdChannels.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'clist comlist all channels channellist chanlist', 'category': 'comms', 'key': 'channels', 'tags': '', 'text': &quot;\n    list all channels available to you\n\n    Usage:\n      channels\n      clist\n      comlist\n\n    Lists all channels available to you, whether you listen to them or not.\n    Use 'comlist' to only view your current channel subscriptions.\n    Use addcom/delcom to join and leave channels\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chanlist clist all channels comlist channellist', 'category': 'comms', 'key': 'channels', 'tags': '', 'text': &quot;\n    list all channels available to you\n\n    Usage:\n      channels\n      clist\n      comlist\n\n    Lists all channels available to you, whether you listen to them or not.\n    Use 'comlist' to only view your current channel subscriptions.\n    Use addcom/delcom to join and leave channels\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

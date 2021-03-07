@@ -185,9 +185,6 @@
     <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">300</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># check cache size every 5 minutes</span>
         <span class="n">_FLUSH_CACHE</span><span class="p">(</span><span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">3600</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># validate scripts every hour</span>
-        <span class="n">evennia</span><span class="o">.</span><span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">3700</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># validate channels off-sync with scripts</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">CHANNEL_HANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
@@ -473,9 +470,9 @@
             <span class="k">yield</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
             <span class="k">yield</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
             <span class="k">yield</span> <span class="p">[</span>
-                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">manual_pause</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">())</span>
+                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;_manual_pause&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">is_active</span>
             <span class="p">]</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span>
@@ -499,11 +496,9 @@
                 <span class="p">]</span>
                 <span class="k">yield</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span><span class="p">()</span>
             <span class="k">yield</span> <span class="p">[</span>
-                <span class="p">(</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">manual_pause</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_manual_pause&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">at_server_shutdown</span><span class="p">(),</span>
-                <span class="p">)</span>
+                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">at_server_shutdown</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">is_active</span>
             <span class="p">]</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_restart_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span>
@@ -574,9 +569,8 @@
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
-        <span class="c1"># after sync is complete we force-validate all scripts</span>
-        <span class="c1"># (this also starts any that didn&#39;t yet start)</span>
-        <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="c1"># Un-pause all scripts, stop non-persistent timers</span>
+        <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_scripts_after_server_start</span><span class="p">()</span>
 
         <span class="c1"># start the task handler</span>
         <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
@@ -633,7 +627,7 @@
         <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">GUEST_ENABLED</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">guest</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>

@@ -81,12 +81,16 @@
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>
 <span class="n">_GAME_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span>
 <span class="n">ENCODINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ENCODINGS</span>
+
+<span class="n">_TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 <span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
 
 
-<div class="viewcode-block" id="is_iter"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.is_iter">[docs]</a><span class="k">def</span> <span class="nf">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="is_iter"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.is_iter">[docs]</a><span class="k">def</span> <span class="nf">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if an object behaves iterably.</span>
 
@@ -111,7 +115,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="make_iter"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.make_iter">[docs]</a><span class="k">def</span> <span class="nf">make_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="make_iter"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.make_iter">[docs]</a><span class="k">def</span> <span class="nf">make_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes sure that the object is always iterable.</span>
 
@@ -126,7 +130,7 @@
     <span class="k">return</span> <span class="ow">not</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">and</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="ow">or</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="wrap"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.wrap">[docs]</a><span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="wrap"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.wrap">[docs]</a><span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safely wrap text to a certain number of characters.</span>
 
@@ -150,7 +154,7 @@
 <span class="n">fill</span> <span class="o">=</span> <span class="n">wrap</span>
 
 
-<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pads to a given width.</span>
 
@@ -176,7 +180,7 @@
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="crop"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.crop">[docs]</a><span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;[...]&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="crop"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.crop">[docs]</a><span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;[...]&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Crop text to a certain width, throwing away text from too-long</span>
 <span class="sd">    lines.</span>
@@ -204,7 +208,7 @@
         <span class="k">return</span> <span class="n">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dedent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.dedent">[docs]</a><span class="k">def</span> <span class="nf">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">baseline_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dedent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.dedent">[docs]</a><span class="k">def</span> <span class="nf">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">baseline_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safely clean all whitespace at the left of a paragraph.</span>
 
@@ -237,7 +241,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="justify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.justify">[docs]</a><span class="k">def</span> <span class="nf">justify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="justify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.justify">[docs]</a><span class="k">def</span> <span class="nf">justify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fully justify a text so that it fits inside `width`. When using</span>
 <span class="sd">    full justification (default) this will be done by padding between</span>
@@ -330,7 +334,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">indentstring</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="columnize"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.columnize">[docs]</a><span class="k">def</span> <span class="nf">columnize</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="columnize"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.columnize">[docs]</a><span class="k">def</span> <span class="nf">columnize</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Break a string into a number of columns, using as little</span>
 <span class="sd">    vertical space as possible.</span>
@@ -386,7 +390,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="iter_to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.iter_to_str">[docs]</a><span class="k">def</span> <span class="nf">iter_to_str</span><span class="p">(</span><span class="n">initer</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="iter_to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.iter_to_str">[docs]</a><span class="k">def</span> <span class="nf">iter_to_str</span><span class="p">(</span><span class="n">initer</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This pretty-formats an iterable list as string output, adding an optional</span>
 <span class="sd">    alternative separator to the second to last entry.  If `addquote`</span>
@@ -438,7 +442,7 @@
 <span class="n">iter_to_string</span> <span class="o">=</span> <span class="n">iter_to_str</span>
 
 
-<div class="viewcode-block" id="wildcard_to_regexp"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.wildcard_to_regexp">[docs]</a><span class="k">def</span> <span class="nf">wildcard_to_regexp</span><span class="p">(</span><span class="n">instring</span><span class="p">):</span>
+<div class="viewcode-block" id="wildcard_to_regexp"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.wildcard_to_regexp">[docs]</a><span class="k">def</span> <span class="nf">wildcard_to_regexp</span><span class="p">(</span><span class="n">instring</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a player-supplied string that may have wildcards in it to</span>
 <span class="sd">    regular expressions. This is useful for name matching.</span>
@@ -470,7 +474,7 @@
     <span class="k">return</span> <span class="n">regexp_string</span></div>
 
 
-<div class="viewcode-block" id="time_format"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.time_format">[docs]</a><span class="k">def</span> <span class="nf">time_format</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="time_format"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.time_format">[docs]</a><span class="k">def</span> <span class="nf">time_format</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to return a &#39;prettified&#39; version of a value in seconds.</span>
 
@@ -606,7 +610,7 @@
     <span class="k">return</span> <span class="n">retval</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="datetime_format"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.datetime_format">[docs]</a><span class="k">def</span> <span class="nf">datetime_format</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
+<div class="viewcode-block" id="datetime_format"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.datetime_format">[docs]</a><span class="k">def</span> <span class="nf">datetime_format</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pretty-prints the time since a given time.</span>
 
@@ -637,7 +641,7 @@
     <span class="k">return</span> <span class="n">timestring</span></div>
 
 
-<div class="viewcode-block" id="host_os_is"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.host_os_is">[docs]</a><span class="k">def</span> <span class="nf">host_os_is</span><span class="p">(</span><span class="n">osname</span><span class="p">):</span>
+<div class="viewcode-block" id="host_os_is"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.host_os_is">[docs]</a><span class="k">def</span> <span class="nf">host_os_is</span><span class="p">(</span><span class="n">osname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check to see if the host OS matches the query.</span>
 
@@ -652,7 +656,7 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">osname</span></div>
 
 
-<div class="viewcode-block" id="get_evennia_version"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.get_evennia_version">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_version</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;long&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="get_evennia_version"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_evennia_version">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_version</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;long&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper method for getting the current evennia version.</span>
 
@@ -678,7 +682,7 @@
         <span class="k">return</span> <span class="n">vers</span></div>
 
 
-<div class="viewcode-block" id="pypath_to_realpath"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.pypath_to_realpath">[docs]</a><span class="k">def</span> <span class="nf">pypath_to_realpath</span><span class="p">(</span><span class="n">python_path</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">pypath_prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="pypath_to_realpath"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.pypath_to_realpath">[docs]</a><span class="k">def</span> <span class="nf">pypath_to_realpath</span><span class="p">(</span><span class="n">python_path</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">pypath_prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a dotted Python path to an absolute path under the</span>
 <span class="sd">    Evennia library directory or under the current game directory.</span>
@@ -738,7 +742,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">p</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts/checks if input is a valid dbref.</span>
 
@@ -766,7 +770,7 @@
         <span class="k">return</span> <span class="n">inp</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="dbref_to_obj"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.dbref_to_obj">[docs]</a><span class="k">def</span> <span class="nf">dbref_to_obj</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">objclass</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="dbref_to_obj"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.dbref_to_obj">[docs]</a><span class="k">def</span> <span class="nf">dbref_to_obj</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">objclass</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a #dbref to a valid object.</span>
 
@@ -822,7 +826,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="latinify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.latinify">[docs]</a><span class="k">def</span> <span class="nf">latinify</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="n">pure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="latinify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.latinify">[docs]</a><span class="k">def</span> <span class="nf">latinify</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="n">pure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a unicode string to &quot;safe&quot; ascii/latin-1 characters.</span>
 <span class="sd">    This is used as a last resort when normal encoding does not work.</span>
@@ -876,7 +880,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_bytes"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.to_bytes">[docs]</a><span class="k">def</span> <span class="nf">to_bytes</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="to_bytes"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.to_bytes">[docs]</a><span class="k">def</span> <span class="nf">to_bytes</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to encode the given text to bytes, using encodings from settings or from Session. Will</span>
 <span class="sd">    always return a bytes, even if given something that is not str or bytes.</span>
@@ -919,7 +923,7 @@
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">default_encoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.to_str">[docs]</a><span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.to_str">[docs]</a><span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to decode a bytestream to a python str, using encoding schemas from settings</span>
 <span class="sd">    or from Session. Will always return a str(), also if not given a str/bytes.</span>
@@ -958,7 +962,7 @@
         <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">default_encoding</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="validate_email_address"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.validate_email_address">[docs]</a><span class="k">def</span> <span class="nf">validate_email_address</span><span class="p">(</span><span class="n">emailaddress</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_email_address"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.validate_email_address">[docs]</a><span class="k">def</span> <span class="nf">validate_email_address</span><span class="p">(</span><span class="n">emailaddress</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if an email address is syntactically correct. Makes use</span>
 <span class="sd">    of the django email-validator for consistency.</span>
@@ -981,7 +985,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="inherits_from"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.inherits_from">[docs]</a><span class="k">def</span> <span class="nf">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="inherits_from"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.inherits_from">[docs]</a><span class="k">def</span> <span class="nf">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes an object and tries to determine if it inherits at *any*</span>
 <span class="sd">    distance from parent.</span>
@@ -1018,7 +1022,7 @@
     <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">obj_path</span> <span class="ow">in</span> <span class="n">obj_paths</span> <span class="k">if</span> <span class="n">obj_path</span> <span class="o">==</span> <span class="n">parent_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="server_services"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.server_services">[docs]</a><span class="k">def</span> <span class="nf">server_services</span><span class="p">():</span>
+<div class="viewcode-block" id="server_services"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.server_services">[docs]</a><span class="k">def</span> <span class="nf">server_services</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Lists all services active on the Server. Observe that since</span>
 <span class="sd">    services are launched in memory, this function will only return</span>
@@ -1039,7 +1043,7 @@
     <span class="k">return</span> <span class="n">server</span></div>
 
 
-<div class="viewcode-block" id="uses_database"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.uses_database">[docs]</a><span class="k">def</span> <span class="nf">uses_database</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="uses_database"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.uses_database">[docs]</a><span class="k">def</span> <span class="nf">uses_database</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if the game is currently using a given database. This is a</span>
 <span class="sd">    shortcut to having to use the full backend name.</span>
@@ -1058,10 +1062,9 @@
     <span class="k">return</span> <span class="n">engine</span> <span class="o">==</span> <span class="s2">&quot;django.db.backends.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span></div>
 
 
-<span class="n">_TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="delay"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.delay">[docs]</a><span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="delay"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.delay">[docs]</a><span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delay the return of a value.</span>
 
@@ -1092,10 +1095,78 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_TASK_HANDLER</span>
-    <span class="c1"># Do some imports here to avoid circular import and speed things up</span>
     <span class="k">if</span> <span class="n">_TASK_HANDLER</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
+
     <span class="k">return</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+           <span class="n">store_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start a repeating task using the TickerHandler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interval (int): How often to call callback.</span>
+<span class="sd">        callback (callable): This will be called with `*args, **kwargs` every</span>
+<span class="sd">            `interval` seconds. This must be possible to pickle regardless</span>
+<span class="sd">            of if `persistent` is set or not!</span>
+<span class="sd">        persistent (bool, optional): If ticker survives a server reload.</span>
+<span class="sd">        idstring (str, optional): Separates multiple tickers. This is useful</span>
+<span class="sd">            mainly if wanting to set up multiple repeats for the same</span>
+<span class="sd">            interval/callback but with different args/kwargs.</span>
+<span class="sd">        stop (bool, optional): If set, use the given parameters to _stop_ a running</span>
+<span class="sd">            ticker instead of creating a new one.</span>
+<span class="sd">        store_key (tuple, optional): This is only used in combination with `stop` and</span>
+<span class="sd">            should be the return given from the original `repeat` call. If this</span>
+<span class="sd">            is given, all other args except `stop` are ignored.</span>
+<span class="sd">        *args, **kwargs: Used as arguments to `callback`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple or None: This is the `store_key` - the identifier for the created ticker.</span>
+<span class="sd">        Store this and pass into unrepat() in order to to stop this ticker</span>
+<span class="sd">        later. It this lost you need to stop the ticker via `TICKER_HANDLER.remove`</span>
+<span class="sd">        by supplying all the same arguments directly. No return if `stop=True`</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError: If trying to stop a ticker that was not found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_TICKER_HANDLER</span>
+    <span class="k">if</span> <span class="n">_TICKER_HANDLER</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">_TICKER_HANDLER</span>
+
+    <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
+        <span class="c1"># we pass all args, but only store_key matters if given</span>
+        <span class="n">_TICKER_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+                               <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                               <span class="n">idstring</span><span class="o">=</span><span class="n">idstring</span><span class="p">,</span>
+                               <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span>
+                               <span class="n">store_key</span><span class="o">=</span><span class="n">store_key</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_TICKER_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+                                   <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                                   <span class="n">idstring</span><span class="o">=</span><span class="n">idstring</span><span class="p">,</span>
+                                   <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="unrepeat"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.unrepeat">[docs]</a><span class="k">def</span> <span class="nf">unrepeat</span><span class="p">(</span><span class="n">store_key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is used to stop a ticker previously started with `repeat`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        store_key (tuple): This is the return from `repeat`, used to uniquely</span>
+<span class="sd">            identify the ticker to stop.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if a ticker was stopped, False if not (for example because no</span>
+<span class="sd">            matching ticker was found or it was already stopped).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">repeat</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_key</span><span class="o">=</span><span class="n">store_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <span class="n">_PPOOL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1103,7 +1174,7 @@
 <span class="n">_PROC_ERR</span> <span class="o">=</span> <span class="s2">&quot;A process has ended with a probable error condition: process ended by signal 9.&quot;</span>
 
 
-<div class="viewcode-block" id="run_async"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.run_async">[docs]</a><span class="k">def</span> <span class="nf">run_async</span><span class="p">(</span><span class="n">to_execute</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="run_async"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.run_async">[docs]</a><span class="k">def</span> <span class="nf">run_async</span><span class="p">(</span><span class="n">to_execute</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Runs a function or executes a code snippet asynchronously.</span>
 
@@ -1161,7 +1232,7 @@
     <span class="n">deferred</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">errback</span><span class="p">,</span> <span class="o">**</span><span class="n">errback_kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.check_evennia_dependencies">[docs]</a><span class="k">def</span> <span class="nf">check_evennia_dependencies</span><span class="p">():</span>
+<div class="viewcode-block" id="check_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.check_evennia_dependencies">[docs]</a><span class="k">def</span> <span class="nf">check_evennia_dependencies</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the versions of Evennia&#39;s dependencies including making</span>
 <span class="sd">    some checks for runtime libraries.</span>
@@ -1205,7 +1276,7 @@
     <span class="k">return</span> <span class="n">not_error</span></div>
 
 
-<div class="viewcode-block" id="has_parent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.has_parent">[docs]</a><span class="k">def</span> <span class="nf">has_parent</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="has_parent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.has_parent">[docs]</a><span class="k">def</span> <span class="nf">has_parent</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if `basepath` is somewhere in obj&#39;s parent tree.</span>
 
@@ -1229,7 +1300,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="mod_import_from_path"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.mod_import_from_path">[docs]</a><span class="k">def</span> <span class="nf">mod_import_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="mod_import_from_path"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.mod_import_from_path">[docs]</a><span class="k">def</span> <span class="nf">mod_import_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a Python module at the specified path.</span>
 
@@ -1253,7 +1324,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="mod_import"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.mod_import">[docs]</a><span class="k">def</span> <span class="nf">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="mod_import"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.mod_import">[docs]</a><span class="k">def</span> <span class="nf">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic Python module loader.</span>
 
@@ -1284,7 +1355,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="all_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.all_from_module">[docs]</a><span class="k">def</span> <span class="nf">all_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="all_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.all_from_module">[docs]</a><span class="k">def</span> <span class="nf">all_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return all global-level variables defined in a module.</span>
 
@@ -1311,7 +1382,7 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="callables_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.callables_from_module">[docs]</a><span class="k">def</span> <span class="nf">callables_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="callables_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.callables_from_module">[docs]</a><span class="k">def</span> <span class="nf">callables_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return all global-level callables defined in a module.</span>
 
@@ -1334,7 +1405,7 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="variable_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.variable_from_module">[docs]</a><span class="k">def</span> <span class="nf">variable_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="variable_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.variable_from_module">[docs]</a><span class="k">def</span> <span class="nf">variable_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve a variable or list of variables from a module. The</span>
 <span class="sd">    variable(s) must be defined globally in the module. If no variable</span>
@@ -1381,7 +1452,7 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="string_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.string_from_module">[docs]</a><span class="k">def</span> <span class="nf">string_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="string_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.string_from_module">[docs]</a><span class="k">def</span> <span class="nf">string_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a wrapper for `variable_from_module` that requires return</span>
 <span class="sd">    value to be a string to pass. It&#39;s primarily used by login screen.</span>
@@ -1410,7 +1481,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="random_string_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.random_string_from_module">[docs]</a><span class="k">def</span> <span class="nf">random_string_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="random_string_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.random_string_from_module">[docs]</a><span class="k">def</span> <span class="nf">random_string_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a random global string from a module.</span>
 
@@ -1423,7 +1494,7 @@
     <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="fuzzy_import_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.fuzzy_import_from_module">[docs]</a><span class="k">def</span> <span class="nf">fuzzy_import_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="fuzzy_import_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.fuzzy_import_from_module">[docs]</a><span class="k">def</span> <span class="nf">fuzzy_import_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Import a variable based on a fuzzy path. First the literal</span>
 <span class="sd">    `path` will be tried, then all given `defaultpaths` will be</span>
@@ -1455,7 +1526,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="class_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.class_from_module">[docs]</a><span class="k">def</span> <span class="nf">class_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="class_from_module"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.class_from_module">[docs]</a><span class="k">def</span> <span class="nf">class_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a class from a module, given the class&#39; full python path. This is</span>
 <span class="sd">    primarily used to convert db_typeclass_path:s to classes.</span>
@@ -1535,7 +1606,7 @@
 <span class="n">object_from_module</span> <span class="o">=</span> <span class="n">class_from_module</span>
 
 
-<div class="viewcode-block" id="init_new_account"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.init_new_account">[docs]</a><span class="k">def</span> <span class="nf">init_new_account</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="init_new_account"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.init_new_account">[docs]</a><span class="k">def</span> <span class="nf">init_new_account</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1544,7 +1615,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;evennia.utils.utils.init_new_account is DEPRECATED and should not be used.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="string_similarity"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.string_similarity">[docs]</a><span class="k">def</span> <span class="nf">string_similarity</span><span class="p">(</span><span class="n">string1</span><span class="p">,</span> <span class="n">string2</span><span class="p">):</span>
+<div class="viewcode-block" id="string_similarity"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.string_similarity">[docs]</a><span class="k">def</span> <span class="nf">string_similarity</span><span class="p">(</span><span class="n">string1</span><span class="p">,</span> <span class="n">string2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements a &quot;cosine-similarity&quot; algorithm as described for example in</span>
 <span class="sd">    *Proceedings of the 22nd International Conference on Computation</span>
@@ -1574,7 +1645,7 @@
         <span class="k">return</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="string_suggestions"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.string_suggestions">[docs]</a><span class="k">def</span> <span class="nf">string_suggestions</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">vocabulary</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">maxnum</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="string_suggestions"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.string_suggestions">[docs]</a><span class="k">def</span> <span class="nf">string_suggestions</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">vocabulary</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">maxnum</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a `string` and a `vocabulary`, return a match or a list of</span>
 <span class="sd">    suggestions based on string similarity.</span>
@@ -1603,7 +1674,7 @@
     <span class="p">][:</span><span class="n">maxnum</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="string_partial_matching"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.string_partial_matching">[docs]</a><span class="k">def</span> <span class="nf">string_partial_matching</span><span class="p">(</span><span class="n">alternatives</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="string_partial_matching"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.string_partial_matching">[docs]</a><span class="k">def</span> <span class="nf">string_partial_matching</span><span class="p">(</span><span class="n">alternatives</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Partially matches a string based on a list of `alternatives`.</span>
 <span class="sd">    Matching is made from the start of each subword in each</span>
@@ -1655,7 +1726,7 @@
     <span class="k">return</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="format_table"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.format_table">[docs]</a><span class="k">def</span> <span class="nf">format_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">extra_space</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="format_table"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.format_table">[docs]</a><span class="k">def</span> <span class="nf">format_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">extra_space</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format a 2D array of strings into a multi-column table.</span>
 
@@ -1708,7 +1779,7 @@
     <span class="k">return</span> <span class="n">ftable</span></div>
 
 
-<div class="viewcode-block" id="percent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.percent">[docs]</a><span class="k">def</span> <span class="nf">percent</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{:3.1f}</span><span class="s2">%&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="percent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.percent">[docs]</a><span class="k">def</span> <span class="nf">percent</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{:3.1f}</span><span class="s2">%&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a value in an interval as a percentage of its position</span>
 <span class="sd">    in that interval. This also understands negative numbers.</span>
@@ -1769,7 +1840,7 @@
 <span class="kn">import</span> <span class="nn">functools</span>  <span class="c1"># noqa</span>
 
 
-<div class="viewcode-block" id="percentile"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.percentile">[docs]</a><span class="k">def</span> <span class="nf">percentile</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="percentile"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.percentile">[docs]</a><span class="k">def</span> <span class="nf">percentile</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the percentile of a list of values.</span>
 
@@ -1794,7 +1865,7 @@
     <span class="k">return</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span></div>
 
 
-<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function makes a &#39;grid&#39; output, where it distributes the given</span>
 <span class="sd">    string-elements as evenly as possible to fill out the given width.</span>
@@ -1893,7 +1964,7 @@
     <span class="k">return</span> <span class="n">rows</span></div>
 
 
-<div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>
+<div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the currently valid PIDs (Process IDs) of the Portal and</span>
 <span class="sd">    Server by trying to access a PID file.</span>
@@ -1926,7 +1997,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="deepsize"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.deepsize">[docs]</a><span class="k">def</span> <span class="nf">deepsize</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<div class="viewcode-block" id="deepsize"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.deepsize">[docs]</a><span class="k">def</span> <span class="nf">deepsize</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get not only size of the given object, but also the size of</span>
 <span class="sd">    objects referenced by the object, down to `max_depth` distance</span>
@@ -1968,7 +2039,7 @@
 <span class="n">_missing</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="lazy_property"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.lazy_property">[docs]</a><span class="k">class</span> <span class="nc">lazy_property</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="lazy_property"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.lazy_property">[docs]</a><span class="k">class</span> <span class="nc">lazy_property</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delays loading of property until first access. Credit goes to the</span>
 <span class="sd">    Implementation in the werkzeug suite:</span>
@@ -1988,7 +2059,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="lazy_property.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.lazy_property.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="lazy_property.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.lazy_property.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Store all properties for now&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__module__</span>
@@ -2012,7 +2083,7 @@
 <span class="p">)</span>  <span class="c1"># + range(127,160)])))</span>
 
 
-<div class="viewcode-block" id="strip_control_sequences"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.strip_control_sequences">[docs]</a><span class="k">def</span> <span class="nf">strip_control_sequences</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="strip_control_sequences"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.strip_control_sequences">[docs]</a><span class="k">def</span> <span class="nf">strip_control_sequences</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove non-print text sequences.</span>
 
@@ -2029,7 +2100,7 @@
     <span class="k">return</span> <span class="n">_RE_CONTROL_CHAR</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_STRIP_ANSI</span><span class="p">(</span><span class="n">string</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="calledby"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.calledby">[docs]</a><span class="k">def</span> <span class="nf">calledby</span><span class="p">(</span><span class="n">callerdepth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="calledby"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.calledby">[docs]</a><span class="k">def</span> <span class="nf">calledby</span><span class="p">(</span><span class="n">callerdepth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only to be used for debug purposes. Insert this debug function in</span>
 <span class="sd">    another function; it will print which function called it.</span>
@@ -2054,7 +2125,7 @@
     <span class="k">return</span> <span class="s2">&quot;[called by &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">frame</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="m_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.m_len">[docs]</a><span class="k">def</span> <span class="nf">m_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="m_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.m_len">[docs]</a><span class="k">def</span> <span class="nf">m_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides length checking for strings with MXP patterns, and falls</span>
 <span class="sd">    back to normal len for other objects.</span>
@@ -2075,7 +2146,7 @@
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="display_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.display_len">[docs]</a><span class="k">def</span> <span class="nf">display_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="display_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.display_len">[docs]</a><span class="k">def</span> <span class="nf">display_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the &#39;visible width&#39; of text. This is not necessarily the same as the</span>
 <span class="sd">    number of characters in the case of certain asian characters. This will also</span>
@@ -2109,7 +2180,7 @@
 <span class="c1"># Replace this hook function by changing settings.SEARCH_AT_RESULT.</span>
 
 
-<div class="viewcode-block" id="at_search_result"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.at_search_result">[docs]</a><span class="k">def</span> <span class="nf">at_search_result</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="at_search_result"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.at_search_result">[docs]</a><span class="k">def</span> <span class="nf">at_search_result</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a generic hook for handling all processing of a search</span>
 <span class="sd">    result, including error reporting. This is also called by the cmdhandler</span>
@@ -2179,7 +2250,7 @@
     <span class="k">return</span> <span class="n">matches</span></div>
 
 
-<div class="viewcode-block" id="LimitedSizeOrderedDict"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.LimitedSizeOrderedDict">[docs]</a><span class="k">class</span> <span class="nc">LimitedSizeOrderedDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
+<div class="viewcode-block" id="LimitedSizeOrderedDict"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.LimitedSizeOrderedDict">[docs]</a><span class="k">class</span> <span class="nc">LimitedSizeOrderedDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This dictionary subclass is both ordered and limited to a maximum</span>
 <span class="sd">    number of elements. Its main use is to hold a cache that can never</span>
@@ -2187,7 +2258,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LimitedSizeOrderedDict.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.LimitedSizeOrderedDict.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="LimitedSizeOrderedDict.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.LimitedSizeOrderedDict.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Limited-size ordered dict.</span>
 
@@ -2229,12 +2300,12 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_size</span><span class="p">()</span>
 
-<div class="viewcode-block" id="LimitedSizeOrderedDict.update"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.LimitedSizeOrderedDict.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="LimitedSizeOrderedDict.update"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.LimitedSizeOrderedDict.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_size</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="get_game_dir_path"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.get_game_dir_path">[docs]</a><span class="k">def</span> <span class="nf">get_game_dir_path</span><span class="p">():</span>
+<div class="viewcode-block" id="get_game_dir_path"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_game_dir_path">[docs]</a><span class="k">def</span> <span class="nf">get_game_dir_path</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called by settings_default in order to determine the path</span>
 <span class="sd">    of the game directory.</span>
@@ -2254,7 +2325,7 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;server/conf/settings.py not found: Must start from inside game dir.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_all_typeclasses"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.get_all_typeclasses">[docs]</a><span class="k">def</span> <span class="nf">get_all_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_all_typeclasses"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_all_typeclasses">[docs]</a><span class="k">def</span> <span class="nf">get_all_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List available typeclasses from all available modules.</span>
 
@@ -2287,7 +2358,7 @@
     <span class="k">return</span> <span class="n">typeclasses</span></div>
 
 
-<div class="viewcode-block" id="interactive"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.interactive">[docs]</a><span class="k">def</span> <span class="nf">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="interactive"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.interactive">[docs]</a><span class="k">def</span> <span class="nf">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator to make a method pausable with `yield(seconds)`</span>
 <span class="sd">    and able to ask for user-input with `response=yield(question)`.</span>

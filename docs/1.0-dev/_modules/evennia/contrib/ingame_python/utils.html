@@ -100,7 +100,6 @@
     <span class="n">typeclass_name</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;event_handler&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">storage</span><span class="o">.</span><span class="n">is_active</span>
         <span class="k">assert</span> <span class="n">storage</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">ScriptDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">):</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="n">EVENTS</span>

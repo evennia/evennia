@@ -1205,8 +1205,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;0 scripts started on Obj&quot;</span>
-        <span class="p">)</span>  <span class="c1"># because it&#39;s already started</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;1 scripts started on Obj&quot;</span>
+        <span class="p">)</span>  <span class="c1"># we allow running start again; this should still happen</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Stopping script&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1562,7 +1562,10 @@
 
 
 <div class="viewcode-block" id="TestBatchProcess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess">[docs]</a><span class="k">class</span> <span class="nc">TestBatchProcess</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestBatchProcess.test_batch_commands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess.test_batch_commands">[docs]</a>    <span class="k">def</span> <span class="nf">test_batch_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestBatchProcess.test_batch_commands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess.test_batch_commands">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_examples.red_button.repeat&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_examples.red_button.delay&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_batch_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_delay</span><span class="p">,</span> <span class="n">mock_repeat</span><span class="p">):</span>
         <span class="c1"># cannot test batchcode here, it must run inside the server process</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">batchprocess</span><span class="o">.</span><span class="n">CmdBatchCommands</span><span class="p">(),</span>
@@ -1573,7 +1576,8 @@
         <span class="n">confirm</span> <span class="o">=</span> <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span>
         <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="p">(),</span> <span class="s2">&quot;button&quot;</span><span class="p">,</span> <span class="s2">&quot;button was destroyed.&quot;</span><span class="p">)</span>
-        <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span> <span class="o">=</span> <span class="n">confirm</span></div></div>
+        <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span> <span class="o">=</span> <span class="n">confirm</span>
+        <span class="n">mock_repeat</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="CmdInterrupt"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CmdInterrupt">[docs]</a><span class="k">class</span> <span class="nc">CmdInterrupt</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>

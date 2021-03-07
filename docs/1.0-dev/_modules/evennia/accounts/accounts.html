@@ -64,7 +64,6 @@
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="kn">import</span> <span class="n">Throttle</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
@@ -91,6 +90,7 @@
 <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span>
 <span class="n">_CMDSET_ACCOUNT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_ACCOUNT</span>
 <span class="n">_MUDINFO_CHANNEL</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_CMDHANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># Create throttles for too many account-creations and login attempts</span>
 <span class="n">CREATION_THROTTLE</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span>
@@ -360,8 +360,6 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">session</span><span class="o">.</span><span class="n">puid</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
         <span class="n">session</span><span class="o">.</span><span class="n">puppet</span> <span class="o">=</span> <span class="n">obj</span>
-        <span class="c1"># validate/start persistent scripts on object</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
         <span class="c1"># re-cache locks to make sure superuser bypass is updated</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">cache_lock_bypass</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -973,6 +971,10 @@
 <span class="sd">                commands at run-time.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># break circular import issues</span>
+        <span class="k">global</span> <span class="n">_CMDHANDLER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CMDHANDLER</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">cmdhandler</span> <span class="k">as</span> <span class="n">_CMDHANDLER</span>
         <span class="n">raw_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
             <span class="n">raw_string</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -981,7 +983,7 @@
             <span class="n">sessions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="n">session</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">sessions</span> <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">cmdhandler</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">_CMDHANDLER</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">callertype</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
 
