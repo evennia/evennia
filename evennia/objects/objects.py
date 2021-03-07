@@ -18,7 +18,6 @@ from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
-from evennia.commands import cmdhandler
 from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
@@ -39,6 +38,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _ScriptDB = None
 _SESSIONS = None
+_CMDHANDLER = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -576,12 +576,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 command structure.
 
         """
+        # break circular import issues
+        global _CMDHANDLER
+        if not _CMDHANDLER:
+            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
+
         # nick replacement - we require full-word matching.
         # do text encoding conversion
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=True
         )
-        return cmdhandler.cmdhandler(
+        return _CMDHANDLER(
             self, raw_string, callertype="object", session=session, **kwargs
         )
 
