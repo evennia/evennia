@@ -3101,7 +3101,7 @@
 <span class="sd">    attach a script to an object</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      script[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</span>
+<span class="sd">      addscript[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</span>
 
 <span class="sd">    Switches:</span>
 <span class="sd">      start - start all non-running scripts on object, or a given script only</span>
@@ -3116,8 +3116,8 @@
 <span class="sd">    the object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;script&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;addscript&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;addscript&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;attachscript&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(script) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -3162,7 +3162,6 @@
                         <span class="o">%</span> <span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
                     <span class="p">)</span>
                     <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># rhs exists</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="c1"># adding a new script, and starting it</span>

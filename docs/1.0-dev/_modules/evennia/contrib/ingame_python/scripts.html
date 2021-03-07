@@ -88,9 +88,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Tasks</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EventHandler.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.scripts.html#evennia.contrib.ingame_python.scripts.EventHandler.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventHandler.at_server_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.scripts.html#evennia.contrib.ingame_python.scripts.EventHandler.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set up the event system when starting.</span>
 
 <span class="sd">        Note that this hook is called every time the server restarts</span>

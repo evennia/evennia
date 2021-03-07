@@ -197,12 +197,12 @@
             <span class="n">new_script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">new_script</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">found</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">!=</span> <span class="n">start_delay</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">repeats</span> <span class="o">!=</span> <span class="n">repeats</span><span class="p">)</span>
         <span class="p">):</span>
-            <span class="n">found</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
+            <span class="c1"># the setup changed</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">desc</span><span class="p">:</span>
             <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
         <span class="k">return</span> <span class="n">found</span>

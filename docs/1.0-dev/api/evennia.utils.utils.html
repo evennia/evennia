@@ -713,6 +713,63 @@ a server restart/reload, taking into account the specified delay
 </dd></dl>
 
 <dl class="py function">
+<dt id="evennia.utils.utils.repeat">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a repeating task using the TickerHandler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interval</strong> (<em>int</em>) – How often to call callback.</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – This will be called with <strong>*args, **kwargs</strong> every
+<strong>interval</strong> seconds. This must be possible to pickle regardless
+of if <strong>persistent</strong> is set or not!</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – If ticker survives a server reload.</p></li>
+<li><p><strong>idstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Separates multiple tickers. This is useful
+mainly if wanting to set up multiple repeats for the same
+interval/callback but with different args/kwargs.</p></li>
+<li><p><strong>stop</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, use the given parameters to _stop_ a running
+ticker instead of creating a new one.</p></li>
+<li><p><strong>store_key</strong> (<em>tuple</em><em>, </em><em>optional</em>) – This is only used in combination with <strong>stop</strong> and
+should be the return given from the original <strong>repeat</strong> call. If this
+is given, all other args except <strong>stop</strong> are ignored.</p></li>
+<li><p><strong>*args</strong> – Used as arguments to <strong>callback</strong>.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Used as arguments to <strong>callback</strong>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple or None</em> – This is the <strong>store_key</strong> - the identifier for the created ticker.
+Store this and pass into unrepat() in order to to stop this ticker
+later. It this lost you need to stop the ticker via <strong>TICKER_HANDLER.remove</strong>
+by supplying all the same arguments directly. No return if <strong>stop=True</strong></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>KeyError</strong> – If trying to stop a ticker that was not found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.unrepeat">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">unrepeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#unrepeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.unrepeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to stop a ticker previously started with <strong>repeat</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>store_key</strong> (<em>tuple</em>) – This is the return from <strong>repeat</strong>, used to uniquely
+identify the ticker to stop.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>bool</em> –</p>
+<dl class="simple">
+<dt>True if a ticker was stopped, False if not (for example because no</dt><dd><p>matching ticker was found or it was already stopped).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.utils.run_async">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">run_async</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_execute</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#run_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.run_async" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a function or executes a code snippet asynchronously.</p>
