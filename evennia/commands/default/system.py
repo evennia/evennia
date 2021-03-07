@@ -460,7 +460,7 @@ class ScriptEvMore(EvMore):
                 rept = "-/-"
 
             table.add_row(
-                script.id,
+                f"#{script.id}",
                 f"{script.obj.key}({script.obj.dbref})"
                 if (hasattr(script, "obj") and script.obj)
                 else "<Global>",
@@ -477,15 +477,19 @@ class ScriptEvMore(EvMore):
 
 class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
-    list and manage all running scripts
+    List and manage all running scripts. Allows for creating new global
+    scripts.
 
     Usage:
-      scripts[/switches] [#dbref, key, script.path or <obj>]
+      script[/switches] [#dbref, key, script.path or <obj>]
 
     Switches:
-      start - start a script (must supply a script path)
-      stop - stops an existing script
-      kill - kills a script - without running its cleanup hooks
+      create - create a new global script of given typeclass path. This will
+         auto-start the script's timer if it has one.
+      start - start/unpause an existing script's timer.
+      stop - stops an existing script's timer
+      pause - pause a script's timer
+      delete - deletes script. This will also stop the timer as needed
 
     If no switches are given, this command just views all active
     scripts. The argument can be either an object, at which point it
@@ -493,16 +497,41 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     or #dbref. For using the /stop switch, a unique script #dbref is
     required since whole classes of scripts often have the same name.
 
-    Use script for managing commands on objects.
+    Use the `script` build-level command for managing scripts attached to
+    objects.
+
     """
 
     key = "scripts"
-    aliases = ["globalscript", "listscripts"]
-    switch_options = ("start", "stop", "kill")
+    aliases = ["scripts"]
+    switch_options = ("create", "start", "stop", "pause", "delete")
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
     excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
+
+    switch_mapping = {
+        "create": "|gCreated|n",
+        "start": "|gStarted|n",
+        "stop": "|RStopped|n",
+        "pause": "|Paused|n",
+        "delete": "|rDeleted|n"
+    }
+
+    def _search_script(self, args):
+        # test first if this is a script match
+        scripts = ScriptDB.objects.get_all_scripts(key=args)
+        if scripts:
+            return scripts
+        # try typeclass path
+        scripts = ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
+        if scripts:
+            return scripts
+        # try to find an object instead.
+        objects = ObjectDB.objects.object_search(args)
+        if objects:
+            scripts = ScriptDB.objects.filter(db_obj__in=objects)
+        return scripts
 
     def func(self):
         """implement method"""
@@ -510,59 +539,58 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         args = self.args
 
-        if args:
-            if "start" in self.switches:
-                # global script-start mode
-                new_script = create.create_script(args)
-                if new_script:
-                    caller.msg("Global script %s was started successfully." % args)
-                else:
-                    caller.msg("Global script %s could not start correctly. See logs." % args)
+        if "create" in self.switches:
+            # global script-start mode
+            verb = self.switch_mapping['create']
+            if not args:
+                caller.msg("Usage script/create <key or typeclass>")
                 return
-
-            # test first if this is a script match
-            scripts = ScriptDB.objects.get_all_scripts(key=args)
-            if not scripts:
-                # try to find an object instead.
-                objects = ObjectDB.objects.object_search(args)
-                if objects:
-                    scripts = []
-                    for obj in objects:
-                        # get all scripts on the object(s)
-                        scripts.extend(ScriptDB.objects.get_all_scripts_on_obj(obj))
-        else:
-            # we want all scripts.
-            scripts = ScriptDB.objects.get_all_scripts()
-            if not scripts:
-                caller.msg("No scripts are running.")
-                return
-        # filter any found scripts by tag category.
-        scripts = scripts.exclude(db_typeclass_path__in=self.excluded_typeclass_paths)
-
-        if not scripts:
-            string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
-            caller.msg(string)
+            new_script = create.create_script(args)
+            if new_script:
+                caller.msg(f"Global Script {verb} - {new_script.key} ({new_script.typeclass_path})")
+                ScriptEvMore(caller, [new_script], session=self.session)
+            else:
+                caller.msg(f"Global Script |rNOT|n {verb} |r(see log)|n - arguments: {args}")
             return
 
-        if self.switches and self.switches[0] in ("stop", "del", "delete", "kill"):
-            # we want to delete something
-            if len(scripts) == 1:
-                # we have a unique match!
-                if "kill" in self.switches:
-                    string = "Killing script '%s'" % scripts[0].key
-                    scripts[0].stop(kill=True)
-                else:
-                    string = "Stopping script '%s'." % scripts[0].key
-                    scripts[0].stop()
-                # import pdb  # DEBUG
-                # pdb.set_trace()  # DEBUG
-                caller.msg(string)
-            else:
-                # multiple matches.
-                ScriptEvMore(caller, scripts, session=self.session)
-                caller.msg("Multiple script matches. Please refine your search")
+        # all other switches require existing scripts
+        if args:
+            scripts = self._search_script(args)
+            if not scripts:
+                caller.msg(f"No scripts found matching '{args}'.")
+                return
         else:
-            # No stopping or validation. We just want to view things.
+            scripts = ScriptDB.objects.all()
+            if not scripts:
+                caller.msg("No scripts found.")
+                return
+
+        if args and self.switches:
+            # global script-modifying mode
+            if scripts.count() > 1:
+                caller.msg("Multiple script matches. Please refine your search.")
+                return
+            script = scripts[0]
+            script_key = script.key
+            script_typeclass_path = script.typeclass_path
+            for switch in self.switches:
+                verb = self.switch_mapping[switch]
+                msgs = []
+                try:
+                    getattr(script, switch)()
+                except Exception:
+                    logger.log_trace()
+                    msgs.append(f"Global Script |rNOT|n {verb} |r(see log)|n - "
+                                f"{script_key} ({script_typeclass_path})|n")
+                else:
+                    msgs.append(f"Global Script {verb} - "
+                                f"{script_key} ({script_typeclass_path})")
+            caller.msg("\n".join(msgs))
+            if "delete" not in self.switches:
+                ScriptEvMore(caller, [script], session=self.session)
+            return
+        else:
+            # simply show the found scripts
             ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
 
 

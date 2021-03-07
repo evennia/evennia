@@ -515,19 +515,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         """
         self._start_task(interval=interval, start_delay=start_delay, repeats=repeats, **kwargs)
 
-    def update(self, interval=None, start_delay=None, repeats=None, **kwargs):
-        """
-        Update the Script's timer component with new settings.
-
-        Keyword Args:
-            interval (int): How often to fire `at_repeat` in seconds.
-            start_delay (int): If the start of ticking should be delayed.
-            repeats (int): How many repeats. 0 for infinite repeats.
-            **kwargs: Optional (default unused) kwargs passed on into the `at_start` hook.
-
-        """
-        self._start_task(interval=interval, start_delay=start_delay,
-                         repeats=repeats, force_restart=True, **kwargs)
+    # legacy alias
+    update = start
 
     def stop(self, **kwargs):
         """

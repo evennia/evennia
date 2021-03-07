@@ -3059,7 +3059,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     attach a script to an object
 
     Usage:
-      script[/switch] <obj> [= script_path or <scriptkey>]
+      addscript[/switch] <obj> [= script_path or <scriptkey>]
 
     Switches:
       start - start all non-running scripts on object, or a given script only
@@ -3074,8 +3074,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     the object.
     """
 
-    key = "script"
-    aliases = "addscript"
+    key = "addscript"
+    aliases = ["attachscript"]
     switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"

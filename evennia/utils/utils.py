@@ -1083,9 +1083,8 @@ def repeat(interval, callback, persistent=True, idstring="", stop=False,
     Returns:
         tuple or None: This is the `store_key` - the identifier for the created ticker.
         Store this and pass into unrepat() in order to to stop this ticker
-        later. It this lost you need to stop the ticker via TICKER_HANDLER.remove
-        by supplying all the same arguments
-        directly. No return if `stop=True`
+        later. It this lost you need to stop the ticker via `TICKER_HANDLER.remove`
+        by supplying all the same arguments directly. No return if `stop=True`
 
     Raises:
         KeyError: If trying to stop a ticker that was not found.
