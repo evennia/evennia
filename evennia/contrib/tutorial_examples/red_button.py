@@ -6,19 +6,15 @@ button typeclass.
 
 Create this button with
 
- @create/drop examples.red_button.RedButton
+ create/drop red_button.RedButton
 
 Note that you must drop the button before you can see its messages!
 
 ## Technical
 
 The button's functionality is controlled by CmdSets that gets added and removed
-depending on the 'state' the button is in. Since this is an example we have
-gone a little overboard separating the states for clarity.
+depending on the 'state' the button is in. 
 
-- The default state is the fallback state and is represented by a default cmdset with
-  the 'push' command. This is always available but acts differently depending on
-  what other state the button has:
 - Lid-closed state: In this state the button is covered by a glass cover and trying
   to 'push' it will fail. You can 'nudge', 'smash' or 'open' the lid.
 - Lid-open state: In this state the lid is open but will close again after a certain
