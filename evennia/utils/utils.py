@@ -39,6 +39,10 @@ _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
 ENCODINGS = settings.ENCODINGS
+
+_TASK_HANDLER = None
+_TICKER_HANDLER = None
+
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -1016,7 +1020,6 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-_TASK_HANDLER = None
 
 
 def delay(timedelay, callback, *args, **kwargs):
@@ -1050,10 +1053,79 @@ def delay(timedelay, callback, *args, **kwargs):
 
     """
     global _TASK_HANDLER
-    # Do some imports here to avoid circular import and speed things up
     if _TASK_HANDLER is None:
         from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+
     return _TASK_HANDLER.add(timedelay, callback, *args, **kwargs)
+
+
+def repeat(interval, callback, persistent=True, idstring="", stop=False,
+           store_key=None, *args, **kwargs):
+    """
+    Start a repeating task using the TickerHandler.
+
+    Args:
+        interval (int): How often to call callback.
+        callback (callable): This will be called with `*args, **kwargs` every
+            `interval` seconds. This must be possible to pickle regardless
+            of if `persistent` is set or not!
+        persistent (bool, optional): If ticker survives a server reload.
+        idstring (str, optional): Separates multiple tickers. This is useful
+            mainly if wanting to set up multiple repeats for the same
+            interval/callback but with different args/kwargs.
+        stop (bool, optional): If set, use the given parameters to _stop_ a running
+            ticker instead of creating a new one.
+        store_key (tuple, optional): This is only used in combination with `stop` and
+            should be the return given from the original `repeat` call. If this
+            is given, all other args except `stop` are ignored.
+        *args, **kwargs: Used as arguments to `callback`.
+
+    Returns:
+        tuple or None: This is the `store_key` - the identifier for the created ticker.
+        Store this and pass into unrepat() in order to to stop this ticker
+        later. It this lost you need to stop the ticker via TICKER_HANDLER.remove
+        by supplying all the same arguments
+        directly. No return if `stop=True`
+
+    Raises:
+        KeyError: If trying to stop a ticker that was not found.
+
+    """
+    global _TICKER_HANDLER
+    if _TICKER_HANDLER is None:
+        from evennia.scripts.tickerhandler import TICKER_HANDLER as _TICKER_HANDLER
+
+    if stop:
+        # we pass all args, but only store_key matters if given
+        _TICKER_HANDLER.remove(interval=interval,
+                               callback=callback,
+                               idstring=idstring,
+                               persistent=persistent,
+                               store_key=store_key)
+    else:
+        return _TICKER_HANDLER.add(interval=interval,
+                                   callback=callback,
+                                   idstring=idstring,
+                                   persistent=persistent)
+
+def unrepeat(store_key):
+    """
+    This is used to stop a ticker previously started with `repeat`.
+
+    Args:
+        store_key (tuple): This is the return from `repeat`, used to uniquely
+            identify the ticker to stop.
+
+    Returns:
+        bool: True if a ticker was stopped, False if not (for example because no
+            matching ticker was found or it was already stopped).
+
+    """
+    try:
+        repeat(None, None, stop=True, store_key=store_key)
+        return True
+    except KeyError:
+        return False
 
 
 _PPOOL = None

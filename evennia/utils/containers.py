@@ -155,12 +155,12 @@ class GlobalScriptContainer(Container):
             new_script.start()
             return new_script
 
-        if (
-            (found.interval != interval)
+        if ((found.interval != interval)
             or (found.start_delay != start_delay)
             or (found.repeats != repeats)
         ):
-            found.restart(interval=interval, start_delay=start_delay, repeats=repeats)
+            # the setup changed
+            found.start(interval=interval, start_delay=start_delay, repeats=repeats)
         if found.desc != desc:
             found.desc = desc
         return found

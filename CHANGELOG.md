@@ -31,6 +31,13 @@
 - Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
 - Latin (la) i18n translation (jamalainm)
 - Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
+- Make Scripts' timer component independent from script object deletion; can now start/stop
+  timer without deleting Script. The `.persistent` flag now only controls if timer survives 
+  reload - Script has to be removed with `.delete()` like other typeclassed entities.
+- Add `utils.repeat` and `utils.unrepeat` as shortcuts to TickerHandler add/remove, similar
+  to how `utils.delay` is a shortcut for TaskHandler add.
+- Refactor the classic `red_button` example to use `utils.delay/repeat` and modern recommended
+  code style and paradigms instead of relying on `Scripts` for everything. 
 
 ### Evennia 0.9.5 (2019-2020)
 

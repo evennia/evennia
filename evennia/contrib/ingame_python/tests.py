@@ -48,7 +48,7 @@ class TestEventHandler(EvenniaTest):
         """Stop the event handler."""
         OLD_EVENTS.clear()
         OLD_EVENTS.update(self.handler.ndb.events)
-        self.handler.stop()
+        self.handler.delete()
         CallbackHandler.script = None
         super().tearDown()
 
@@ -270,11 +270,11 @@ class TestCmdCallback(CommandTest):
         """Stop the callback handler."""
         OLD_EVENTS.clear()
         OLD_EVENTS.update(self.handler.ndb.events)
-        self.handler.stop()
+        self.handler.delete()
         for script in ScriptDB.objects.filter(
             db_typeclass_path="evennia.contrib.ingame_python.scripts.TimeEventScript"
         ):
-            script.stop()
+            script.delete()
 
         CallbackHandler.script = None
         super().tearDown()
@@ -449,7 +449,7 @@ class TestDefaultCallbacks(CommandTest):
         """Stop the callback handler."""
         OLD_EVENTS.clear()
         OLD_EVENTS.update(self.handler.ndb.events)
-        self.handler.stop()
+        self.handler.delete()
         CallbackHandler.script = None
         super().tearDown()
 

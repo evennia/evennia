@@ -304,7 +304,7 @@ class ServerSessionHandler(SessionHandler):
         sess.load_sync_data(portalsessiondata)
         sess.at_sync()
         # validate all scripts
-        _ScriptDB.objects.validate()
+        # _ScriptDB.objects.validate()
         self[sess.sessid] = sess
 
         if sess.logged_in and sess.uid:

@@ -31,9 +31,11 @@ class TestCreateScript(EvenniaTest):
                 self.repeats = 1
                 self.persistent = False
 
-        # script is already stopped (interval=1, start_delay=False)
+        # script should still exist even though repeats=1, start_delay=False
         script = create.create_script(TestScriptB, key="test_script")
-        assert script is None
+        assert script
+        # but the timer should be inactive now
+        assert not script.is_active
 
     def test_create_script_w_repeats_equal_1_persisted(self):
         class TestScriptB1(DefaultScript):
@@ -45,7 +47,9 @@ class TestCreateScript(EvenniaTest):
 
         # script is already stopped (interval=1, start_delay=False)
         script = create.create_script(TestScriptB1, key="test_script")
-        assert script is None
+        assert script
+        assert not script.is_active
+
 
     def test_create_script_w_repeats_equal_2(self):
         class TestScriptC(DefaultScript):

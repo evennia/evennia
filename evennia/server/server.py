@@ -143,9 +143,6 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 300 == 0:
         # check cache size every 5 minutes
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
-    if _MAINTENANCE_COUNT % 3600 == 0:
-        # validate scripts every hour
-        evennia.ScriptDB.objects.validate()
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
@@ -431,9 +428,9 @@ class Evennia:
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [
-                (s.pause(manual_pause=False), s.at_server_reload())
+                (s._pause_task(auto_pause=True), s.at_server_reload())
                 for s in ScriptDB.get_all_cached_instances()
-                if s.id and (s.is_active or s.attributes.has("_manual_pause"))
+                if s.id and s.is_active
             ]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -457,11 +454,9 @@ class Evennia:
                 ]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [
-                (
-                    s.pause(manual_pause=s.attributes.get("_manual_pause", False)),
-                    s.at_server_shutdown(),
-                )
+                (s._pause_task(auto_pause=True), s.at_server_shutdown())
                 for s in ScriptDB.get_all_cached_instances()
+                if s.id and s.is_active
             ]
             ServerConfig.objects.conf("server_restart_mode", "reset")
             self.at_server_cold_stop()
@@ -532,9 +527,8 @@ class Evennia:
 
         TICKER_HANDLER.restore(mode == "reload")
 
-        # after sync is complete we force-validate all scripts
-        # (this also starts any that didn't yet start)
-        ScriptDB.objects.validate(init_mode=mode)
+        # Un-pause all scripts, stop non-persistent timers
+        ScriptDB.objects.update_scripts_after_server_start()
 
         # start the task handler
         from evennia.scripts.taskhandler import TASK_HANDLER
@@ -591,7 +585,7 @@ class Evennia:
         from evennia.scripts.models import ScriptDB
 
         for script in ScriptDB.objects.filter(db_persistent=False):
-            script.stop()
+            script._stop_task()
 
         if GUEST_ENABLED:
             for guest in AccountDB.objects.all().filter(

@@ -1477,11 +1477,11 @@ class TestTurnBattleBasicFunc(EvenniaTest):
 
     def tearDown(self):
         super(TestTurnBattleBasicFunc, self).tearDown()
+        self.turnhandler.stop()
+        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
-        self.testroom.delete()
-        self.turnhandler.stop()
 
     # Test combat functions
     def test_tbbasicfunc(self):
@@ -1570,11 +1570,11 @@ class TestTurnBattleEquipFunc(EvenniaTest):
 
     def tearDown(self):
         super(TestTurnBattleEquipFunc, self).tearDown()
+        self.turnhandler.stop()
+        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
-        self.testroom.delete()
-        self.turnhandler.stop()
 
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
@@ -1662,11 +1662,11 @@ class TestTurnBattleRangeFunc(EvenniaTest):
 
     def tearDown(self):
         super(TestTurnBattleRangeFunc, self).tearDown()
+        self.turnhandler.stop()
+        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
-        self.testroom.delete()
-        self.turnhandler.stop()
 
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
@@ -1776,12 +1776,12 @@ class TestTurnBattleItemsFunc(EvenniaTest):
 
     def tearDown(self):
         super(TestTurnBattleItemsFunc, self).tearDown()
+        self.turnhandler.stop()
+        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
         self.user.delete()
-        self.testroom.delete()
-        self.turnhandler.stop()
 
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
@@ -1895,11 +1895,11 @@ class TestTurnBattleMagicFunc(EvenniaTest):
 
     def tearDown(self):
         super(TestTurnBattleMagicFunc, self).tearDown()
+        self.turnhandler.stop()
+        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
-        self.testroom.delete()
-        self.turnhandler.stop()
 
     # Test combat functions in tb_magic.
     def test_tbbasicfunc(self):

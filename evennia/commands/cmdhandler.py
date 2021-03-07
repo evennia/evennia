@@ -608,11 +608,6 @@ def cmdhandler(
             # since this may be different for every command when
             # merging multuple cmdsets
 
-            if hasattr(cmd, "obj") and hasattr(cmd.obj, "scripts"):
-                # cmd.obj is automatically made available by the cmdhandler.
-                # we make sure to validate its scripts.
-                yield cmd.obj.scripts.validate()
-
             if _testing:
                 # only return the command instance
                 returnValue(cmd)

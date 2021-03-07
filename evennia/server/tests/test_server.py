@@ -71,10 +71,8 @@ class TestServer(TestCase):
         ) as mocks:
             mocks["connection"].close = MagicMock()
             mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            with patch("evennia.server.server.evennia.ScriptDB.objects.validate") as mock:
-                self.server._server_maintenance()
-                mocks["_FLUSH_CACHE"].assert_called_with(1000)
-                mock.assert_called()
+            self.server._server_maintenance()
+            mocks["_FLUSH_CACHE"].assert_called_with(1000)
 
     def test__server_maintenance_channel_handler_update(self):
         with patch.multiple(

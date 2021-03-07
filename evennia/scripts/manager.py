@@ -104,112 +104,22 @@ class ScriptDBManager(TypedObjectManager):
         scripts = self.get_id(dbref)
         for script in make_iter(scripts):
             script.stop()
-
-    def remove_non_persistent(self, obj=None):
-        """
-        This cleans up the script database of all non-persistent
-        scripts. It is called every time the server restarts.
-
-        Args:
-            obj (Object, optional): Only remove non-persistent scripts
-                assigned to this object.
-
-        """
-        if obj:
-            to_stop = self.filter(db_obj=obj, db_persistent=False, db_is_active=True)
-            to_delete = self.filter(db_obj=obj, db_persistent=False, db_is_active=False)
-        else:
-            to_stop = self.filter(db_persistent=False, db_is_active=True)
-            to_delete = self.filter(db_persistent=False, db_is_active=False)
-        nr_deleted = to_stop.count() + to_delete.count()
-        for script in to_stop:
-            script.stop()
-        for script in to_delete:
             script.delete()
-        return nr_deleted
 
-    def validate(self, scripts=None, obj=None, key=None, dbref=None, init_mode=None):
+    def update_scripts_after_server_start(self):
         """
-        This will step through the script database and make sure
-        all objects run scripts that are still valid in the context
-        they are in. This is called by the game engine at regular
-        intervals but can also be initiated by player scripts.
-
-        Only one of the arguments are supposed to be supplied
-        at a time, since they are exclusive to each other.
-
-        Args:
-            scripts (list, optional): A list of script objects to
-                validate.
-            obj (Object, optional): Validate only scripts defined on
-                this object.
-            key (str): Validate only scripts with this key.
-            dbref (int): Validate only the single script with this
-                particular id.
-            init_mode (str, optional): This is used during server
-                upstart and can have three values:
-                - `None` (no init mode). Called during run.
-                - `"reset"` - server reboot. Kill non-persistent scripts
-                - `"reload"` - server reload. Keep non-persistent scripts.
-        Returns:
-            nr_started, nr_stopped (tuple): Statistics on how many objects
-                where started and stopped.
-
-        Notes:
-            This method also makes sure start any scripts it validates
-            which should be harmless, since already-active scripts have
-            the property 'is_running' set and will be skipped.
+        Update/sync/restart/delete scripts after server shutdown/restart.
 
         """
+        for script in self.filter(db_is_active=True, db_persistent=False):
+            script._stop_task()
 
-        # we store a variable that tracks if we are calling a
-        # validation from within another validation (avoids
-        # loops).
+        for script in self.filter(db_is_active=True):
+            script._unpause_task(auto_unpause=True)
+            script.at_server_start()
 
-        global VALIDATE_ITERATION
-        if VALIDATE_ITERATION > 0:
-            # we are in a nested validation. Exit.
-            VALIDATE_ITERATION -= 1
-            return None, None
-        VALIDATE_ITERATION += 1
-
-        # not in a validation - loop. Validate as normal.
-
-        nr_started = 0
-        nr_stopped = 0
-
-        if init_mode:
-            if init_mode == "reset":
-                # special mode when server starts or object logs in.
-                # This deletes all non-persistent scripts from database
-                nr_stopped += self.remove_non_persistent(obj=obj)
-            # turn off the activity flag for all remaining scripts
-            scripts = self.get_all_scripts()
-            for script in scripts:
-                script.is_active = False
-
-        elif not scripts:
-            # normal operation
-            if dbref and self.dbref(dbref, reqhash=False):
-                scripts = self.get_id(dbref)
-            elif obj:
-                scripts = self.get_all_scripts_on_obj(obj, key=key)
-            else:
-                scripts = self.get_all_scripts(key=key)
-
-        if not scripts:
-            # no scripts available to validate
-            VALIDATE_ITERATION -= 1
-            return None, None
-
-        for script in scripts:
-            if script.is_valid():
-                nr_started += script.start(force_restart=init_mode)
-            else:
-                script.stop()
-                nr_stopped += 1
-        VALIDATE_ITERATION -= 1
-        return nr_started, nr_stopped
+        for script in self.filter(db_is_active=False):
+            script.at_server_start()
 
     def search_script(self, ostring, obj=None, only_timed=False, typeclass=None):
         """
