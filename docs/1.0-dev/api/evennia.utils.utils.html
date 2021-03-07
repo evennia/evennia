@@ -738,10 +738,9 @@ is given, all other args except <strong>stop</strong> are ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>tuple or None</em> – This is the <strong>store_key</strong> - the identifier for the created ticker.
-Store this and pass into unrepat() in order to to stop this ticker
-later. It this lost you need to stop the ticker via <strong>TICKER_HANDLER.remove</strong>
-by supplying all the same arguments directly. No return if <strong>stop=True</strong></p>
+<dd class="field-even"><p><em>tuple or None</em> – The tuple is the <strong>store_key</strong> - the identifier for the
+created ticker.  Store this and pass into unrepat() in order to to stop
+this ticker later. Returns <strong>None</strong> if <strong>stop=True</strong>.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>KeyError</strong> – If trying to stop a ticker that was not found.</p>
@@ -756,7 +755,9 @@ by supplying all the same arguments directly. No return if <strong>stop=True</st
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>store_key</strong> (<em>tuple</em>) – This is the return from <strong>repeat</strong>, used to uniquely
-identify the ticker to stop.</p>
+identify the ticker to stop. Without the store_key, the ticker
+must be stopped by passing its parameters to <strong>TICKER_HANDLER.remove</strong>
+directly.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><em>bool</em> –</p>

@@ -1123,10 +1123,9 @@
 <span class="sd">        *args, **kwargs: Used as arguments to `callback`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tuple or None: This is the `store_key` - the identifier for the created ticker.</span>
-<span class="sd">        Store this and pass into unrepat() in order to to stop this ticker</span>
-<span class="sd">        later. It this lost you need to stop the ticker via `TICKER_HANDLER.remove`</span>
-<span class="sd">        by supplying all the same arguments directly. No return if `stop=True`</span>
+<span class="sd">        tuple or None: The tuple is the `store_key` - the identifier for the</span>
+<span class="sd">        created ticker.  Store this and pass into unrepat() in order to to stop</span>
+<span class="sd">        this ticker later. Returns `None` if `stop=True`.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        KeyError: If trying to stop a ticker that was not found.</span>
@@ -1155,7 +1154,9 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        store_key (tuple): This is the return from `repeat`, used to uniquely</span>
-<span class="sd">            identify the ticker to stop.</span>
+<span class="sd">            identify the ticker to stop. Without the store_key, the ticker </span>
+<span class="sd">            must be stopped by passing its parameters to `TICKER_HANDLER.remove` </span>
+<span class="sd">            directly.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if a ticker was stopped, False if not (for example because no</span>
