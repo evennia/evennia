@@ -8,7 +8,7 @@ pytz
 djangorestframework >= 3.10.3, < 3.12
 django-filter >= 2.2.0, < 2.3
 django-sekizai
-inflect
+inflect >= 5.2.0
 autobahn >= 17.9.3
 lunr == 0.5.6
 
@@ -18,8 +18,9 @@ attrs >= 19.2.0
 # testing and development
 model_mommy
 mock >= 1.0.1
-anything
-black
+anything==0.2.1
+black 
+parameterized==0.8.1
 
 # windows-specific
 pypiwin32;platform_system=="Windows"

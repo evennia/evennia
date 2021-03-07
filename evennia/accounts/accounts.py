@@ -318,8 +318,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         obj.account = self
         session.puid = obj.id
         session.puppet = obj
-        # validate/start persistent scripts on object
-        obj.scripts.validate()
 
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)

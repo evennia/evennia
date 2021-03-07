@@ -180,10 +180,10 @@ def apply_damage(defender, damage):
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
-    
+
     Args:
         defeated (obj): Fighter that's been defeated.
-    
+
     Notes:
         All this does is announce a defeat message by default, but if you
         want anything else to happen to defeated fighters (like putting them
@@ -482,6 +482,7 @@ class TBBasicTurnHandler(DefaultScript):
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
             self.stop()  # Stop this script and end combat.
+            self.delete()
             return
 
         # Check to see if only one character is left standing. If so, end combat.
@@ -497,6 +498,7 @@ class TBBasicTurnHandler(DefaultScript):
                     LastStanding = fighter  # Pick the one fighter left with HP remaining
             self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
             self.stop()  # Stop this script and end combat.
+            self.delete()
             return
 
         # Cycle to the next turn.

@@ -108,7 +108,8 @@ class ScriptHandler(object):
         scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
         num = 0
         for script in scripts:
-            num += script.start()
+            script.start()
+            num += 1
         return num
 
     def get(self, key):
@@ -143,7 +144,8 @@ class ScriptHandler(object):
             ]
         num = 0
         for script in delscripts:
-            num += script.stop()
+            script.delete()
+            num += 1
         return num
 
     # alias to delete
@@ -155,18 +157,3 @@ class ScriptHandler(object):
 
         """
         return ScriptDB.objects.get_all_scripts_on_obj(self.obj)
-
-    def validate(self, init_mode=False):
-        """
-        Runs a validation on this object's scripts only.  This should
-        be called regularly to crank the wheels.
-
-        Args:
-            init_mode (str, optional): - This is used during server
-                upstart and can have three values:
-                - `False` (no init mode). Called during run.
-                - `"reset"` - server reboot. Kill non-persistent scripts
-                - `"reload"` - server reload. Keep non-persistent scripts.
-
-        """
-        ScriptDB.objects.validate(obj=self.obj, init_mode=init_mode)

@@ -1117,7 +1117,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
-            script.stop()
+            script.delete()
 
         # Destroy any exits to and from this room, if any
         self.clear_exits()

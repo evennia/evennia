@@ -3120,7 +3120,6 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                         % (script.get_display_name(caller), obj.get_display_name(caller))
                     )
                     script.stop()
-            obj.scripts.validate()
         else:  # rhs exists
             if not self.switches:
                 # adding a new script, and starting it

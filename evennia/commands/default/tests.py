@@ -1163,8 +1163,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "Obj ", "dbref ")
 
         self.call(
-            building.CmdScript(), "/start Obj", "0 scripts started on Obj"
-        )  # because it's already started
+            building.CmdScript(), "/start Obj", "1 scripts started on Obj"
+        )  # we allow running start again; this should still happen
         self.call(building.CmdScript(), "/stop Obj", "Stopping script")
 
         self.call(
@@ -1520,7 +1520,10 @@ class TestComms(CommandTest):
 
 
 class TestBatchProcess(CommandTest):
-    def test_batch_commands(self):
+
+    @patch("evennia.contrib.tutorial_examples.red_button.repeat")
+    @patch("evennia.contrib.tutorial_examples.red_button.delay")
+    def test_batch_commands(self, mock_delay, mock_repeat):
         # cannot test batchcode here, it must run inside the server process
         self.call(
             batchprocess.CmdBatchCommands(),
@@ -1532,6 +1535,7 @@ class TestBatchProcess(CommandTest):
         building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
         building.CmdDestroy.confirm = confirm
+        mock_repeat.assert_called()
 
 
 class CmdInterrupt(Command):

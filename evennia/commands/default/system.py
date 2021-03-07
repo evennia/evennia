@@ -436,7 +436,6 @@ class ScriptEvMore(EvMore):
             "|wintval|n",
             "|wnext|n",
             "|wrept|n",
-            "|wdb",
             "|wtypeclass|n",
             "|wdesc|n",
             align="r",
@@ -448,9 +447,10 @@ class ScriptEvMore(EvMore):
 
             nextrep = script.time_until_next_repeat()
             if nextrep is None:
-                nextrep = "PAUSED" if script.db._paused_time else "--"
+                nextrep = script.db._paused_time
+                nextrep = f"PAUSED {int(nextrep)}s" if nextrep else "--"
             else:
-                nextrep = "%ss" % nextrep
+                nextrep = f"{nextrep}s"
 
             maxrepeat = script.repeats
             remaining = script.remaining_repeats() or 0
@@ -468,7 +468,6 @@ class ScriptEvMore(EvMore):
                 script.interval if script.interval > 0 else "--",
                 nextrep,
                 rept,
-                "*" if script.persistent else "-",
                 script.typeclass_path.rsplit(".", 1)[-1],
                 crop(script.desc, width=20),
             )
@@ -487,7 +486,6 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
       start - start a script (must supply a script path)
       stop - stops an existing script
       kill - kills a script - without running its cleanup hooks
-      validate - run a validation on the script(s)
 
     If no switches are given, this command just views all active
     scripts. The argument can be either an object, at which point it
@@ -500,7 +498,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
     key = "scripts"
     aliases = ["globalscript", "listscripts"]
-    switch_options = ("start", "stop", "kill", "validate")
+    switch_options = ("start", "stop", "kill")
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
@@ -558,18 +556,11 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                     scripts[0].stop()
                 # import pdb  # DEBUG
                 # pdb.set_trace()  # DEBUG
-                ScriptDB.objects.validate()  # just to be sure all is synced
                 caller.msg(string)
             else:
                 # multiple matches.
                 ScriptEvMore(caller, scripts, session=self.session)
                 caller.msg("Multiple script matches. Please refine your search")
-        elif self.switches and self.switches[0] in ("validate", "valid", "val"):
-            # run validation on all found scripts
-            nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
-            string = "Validated %s scripts. " % ScriptDB.objects.all().count()
-            string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
-            caller.msg(string)
         else:
             # No stopping or validation. We just want to view things.
             ScriptEvMore(caller, scripts.order_by("id"), session=self.session)

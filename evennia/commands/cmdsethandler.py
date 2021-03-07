@@ -421,7 +421,7 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, permanent=False, default_cmdset=False):
+    def add(self, cmdset, emit_to_obj=None, persistent=True, permanent=True, default_cmdset=False, **kwargs):
         """
         Add a cmdset to the handler, on top of the old ones, unless it
         is set as the default one (it will then end up at the bottom of the stack)
@@ -430,7 +430,9 @@ class CmdSetHandler(object):
             cmdset (CmdSet or str): Can be a cmdset object or the python path
                 to such an object.
             emit_to_obj (Object, optional): An object to receive error messages.
-            permanent (bool, optional): This cmdset will remain across a server reboot.
+            persistent (bool, optional): Let cmdset remain across server reload.
+            permanent (bool, optional): DEPRECATED. This has the same use as
+                `persistent`.
             default_cmdset (Cmdset, optional): Insert this to replace the
                 default cmdset position (there is only one such position,
                 always at the bottom of the stack).
@@ -447,6 +449,12 @@ class CmdSetHandler(object):
           it's a 'quirk' that has to be documented.
 
         """
+        if "permanent" in kwargs:
+            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed to "
+                           "'persistent' and now defaults to True.")
+
+        permanent = persistent or permanent
+
         if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
             raise Exception(string)

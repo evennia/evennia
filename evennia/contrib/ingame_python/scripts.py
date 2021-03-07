@@ -47,8 +47,9 @@ class EventHandler(DefaultScript):
 
         # Tasks
         self.db.tasks = {}
+        self.at_server_start()
 
-    def at_start(self):
+    def at_server_start(self):
         """Set up the event system when starting.
 
         Note that this hook is called every time the server restarts
