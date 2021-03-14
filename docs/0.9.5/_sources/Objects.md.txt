@@ -172,7 +172,7 @@ object).
 1. In `at_traverse`, `object.move_to(destination)` is triggered. This triggers the following hooks,
 in order:
     1. `obj.at_before_move(destination)` - if this returns False, move is aborted.
-    1. `origin.at_before_leave(obj, destination)`
+    1. `origin.at_object_leave(obj, destination)`
     1. `obj.announce_move_from(destination)`
     1. Move is performed by changing `obj.location` from source location to `destination`.
     1. `obj.announce_move_to(source)`

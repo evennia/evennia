@@ -90,24 +90,50 @@
 
 <span class="c1"># set up signal here since we are not starting the server</span>
 
-<span class="n">_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_STRIP_EVMENU</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
-
 <div class="viewcode-block" id="CommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
 <span class="k">class</span> <span class="nc">CommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Tests a command</span>
+<span class="sd">    Tests a Command by running it and comparing what messages it sends with</span>
+<span class="sd">    expected values. This tests without actually spinning up the cmdhandler</span>
+<span class="sd">    for every test, which is more controlled.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        from commands.echo import CmdEcho</span>
+
+<span class="sd">        class MyCommandTest(CommandTest):</span>
+
+<span class="sd">            def test_echo(self):</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+<span class="sd">                Test that the echo command really returns</span>
+<span class="sd">                what you pass into it.</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+<span class="sd">                self.call(MyCommand(), &quot;hello world!&quot;,</span>
+<span class="sd">                          &quot;You hear your echo: &#39;Hello world!&#39;&quot;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># formatting for .call&#39;s error message</span>
+    <span class="n">_ERROR_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">=========================== Wanted message ===================================</span>
+<span class="si">{expected_msg}</span><span class="s2"></span>
+<span class="s2">=========================== Returned message =================================</span>
+<span class="si">{returned_msg}</span><span class="s2"></span>
+<span class="s2">==============================================================================</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CommandTest.call"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmdobj</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">,</span>
+        <span class="n">input_args</span><span class="p">,</span>
         <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">noansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -119,54 +145,140 @@
         <span class="n">raw_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Test a command by assigning all the needed</span>
-<span class="sd">        properties to cmdobj and  running</span>
-<span class="sd">            cmdobj.at_pre_cmd()</span>
-<span class="sd">            cmdobj.parse()</span>
-<span class="sd">            cmdobj.func()</span>
-<span class="sd">            cmdobj.at_post_cmd()</span>
-<span class="sd">        The msgreturn value is compared to eventual</span>
-<span class="sd">        output sent to caller.msg in the game</span>
+<span class="sd">        Test a command by assigning all the needed properties to a cmdobj and</span>
+<span class="sd">        running the sequence. The resulting `.msg` calls will be mocked and</span>
+<span class="sd">        the text= calls to them compared to a expected output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdobj (Command): The command object to use.</span>
+<span class="sd">            input_args (str): This should be the full input the Command should</span>
+<span class="sd">                see, such as &#39;look here&#39;. This will become `.args` for the Command</span>
+<span class="sd">                instance to parse.</span>
+<span class="sd">            msg (str or dict, optional): This is the expected return value(s)</span>
+<span class="sd">                returned through `caller.msg(text=...)` calls in the command. If a string, the</span>
+<span class="sd">                receiver is controlled with the `receiver` kwarg (defaults to `caller`).</span>
+<span class="sd">                If this is a `dict`, it is a mapping</span>
+<span class="sd">                `{receiver1: &quot;expected1&quot;, receiver2: &quot;expected2&quot;,...}` and `receiver` is</span>
+<span class="sd">                ignored. The message(s) are compared with the actual messages returned</span>
+<span class="sd">                to the receiver(s) as the Command runs. Each check uses `.startswith`,</span>
+<span class="sd">                so you can choose to only include the first part of the</span>
+<span class="sd">                returned message if that&#39;s enough to verify a correct result. EvMenu</span>
+<span class="sd">                decorations (like borders) are stripped and should not be included. This</span>
+<span class="sd">                should also not include color tags unless `noansi=False`.</span>
+<span class="sd">                If the command returns texts in multiple separate `.msg`-</span>
+<span class="sd">                calls to a receiver, separate these with `|` if `noansi=True`</span>
+<span class="sd">                (default) and `||` if `noansi=False`. If no `msg` is given (`None`),</span>
+<span class="sd">                then no automatic comparison will be done.</span>
+<span class="sd">            cmdset (str, optional): If given, make `.cmdset` available on the Command</span>
+<span class="sd">                instance as it runs. While `.cmdset` is normally available on the</span>
+<span class="sd">                Command instance by default, this is usually only used by</span>
+<span class="sd">                commands that explicitly operates/displays cmdsets, like</span>
+<span class="sd">                `examine`.</span>
+<span class="sd">            noansi (str, optional): By default the color tags of the `msg` is</span>
+<span class="sd">                ignored, this makes them significant. If unset, `msg` must contain</span>
+<span class="sd">                the same color tags as the actual return message.</span>
+<span class="sd">            caller (Object or Account, optional): By default `self.char1` is used as the</span>
+<span class="sd">                command-caller (the `.caller` property on the Command). This allows to</span>
+<span class="sd">                execute with another caller, most commonly an Account.</span>
+<span class="sd">            receiver (Object or Account, optional): This is the object to receive the</span>
+<span class="sd">                return messages we want to test. By default this is the same as `caller`</span>
+<span class="sd">                (which in turn defaults to is `self.char1`). Note that if `msg` is</span>
+<span class="sd">                a `dict`, this is ignored since the receiver is already specified there.</span>
+<span class="sd">            cmdstring (str, optional): Normally this is the Command&#39;s `key`.</span>
+<span class="sd">                This allows for tweaking the `.cmdname` property of the</span>
+<span class="sd">                Command`.  This isb used for commands with multiple aliases,</span>
+<span class="sd">                where the command explicitly checs which alias was used to</span>
+<span class="sd">                determine its functionality.</span>
+<span class="sd">            obj (str, optional): This sets the `.obj` property of the Command - the</span>
+<span class="sd">                object on which the Command &#39;sits&#39;. By default this is the same as `caller`.</span>
+<span class="sd">                This can be used for testing on-object Command interactions.</span>
+<span class="sd">            inputs (list, optional): A list of strings to pass to functions that pause to</span>
+<span class="sd">                take input from the user (normally using `@interactive` and</span>
+<span class="sd">                `ret = yield(question)` or `evmenu.get_input`). Each  element of the</span>
+<span class="sd">                list will be passed into the command as if the user wrote that at the prompt.</span>
+<span class="sd">            raw_string (str, optional): Normally the `.raw_string` property  is set as</span>
+<span class="sd">                a combination of your `key/cmdname` and `input_args`. This allows</span>
+<span class="sd">                direct control of what this is, for example for testing edge cases</span>
+<span class="sd">                or malformed inputs.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            msg (str): The received message that was sent to the caller.</span>
+<span class="sd">            str or dict: The message sent to `receiver`, or a dict of</span>
+<span class="sd">                `{receiver: &quot;msg&quot;, ...}` if multiple are given. This is usually</span>
+<span class="sd">                only used with `msg=None` to do the validation externally.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the returns of `.msg` calls (tested with `.startswith`) does not</span>
+<span class="sd">                match `expected_input`.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            As part of the tests, all methods of the Command will be called in</span>
+<span class="sd">            the proper order:</span>
+
+<span class="sd">            - cmdobj.at_pre_cmd()</span>
+<span class="sd">            - cmdobj.parse()</span>
+<span class="sd">            - cmdobj.func()</span>
+<span class="sd">            - cmdobj.at_post_cmd()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The `self.char1` is created in the `EvenniaTest` base along with</span>
+        <span class="c1"># other helper objects like self.room and self.obj</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
-        <span class="n">receiver</span> <span class="o">=</span> <span class="n">receiver</span> <span class="k">if</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">caller</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdstring</span> <span class="k">if</span> <span class="n">cmdstring</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_cmdname</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span>  <span class="c1"># deprecated</span>
-        <span class="n">cmdobj</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">input_args</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
-        <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span> <span class="k">if</span> <span class="n">raw_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span> <span class="k">if</span> <span class="n">raw_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">input_args</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="p">(</span><span class="n">caller</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
-        <span class="c1"># test</span>
-        <span class="n">old_msg</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span> <span class="ow">or</span> <span class="p">[]</span>
 
-        <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># set up receivers</span>
+        <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># a mapping {receiver: msg, ...}</span>
+            <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">recv</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="kc">None</span>
+                                <span class="k">for</span> <span class="n">recv</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># a single expected string and thus a single receiver (defaults to caller)</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="n">receiver</span> <span class="k">if</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">caller</span>
+            <span class="n">receiver_mapping</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">unmocked_msg_methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receiver_mapping</span><span class="p">:</span>
+            <span class="c1"># save the old .msg method so we can get it back</span>
+            <span class="c1"># cleanly  after the test</span>
+            <span class="n">unmocked_msg_methods</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span>
+            <span class="c1"># replace normal `.msg` with a mock</span>
             <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+        <span class="c1"># Run the methods of the Command. This mimics what happens in the</span>
+        <span class="c1"># cmdhandler. This will have the mocked .msg be called as part of the</span>
+        <span class="c1"># execution. Mocks remembers what was sent to them so we will be able</span>
+        <span class="c1"># to retrieve what was sent later.</span>
+        <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">at_pre_cmd</span><span class="p">():</span>
                 <span class="k">return</span>
             <span class="n">cmdobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
 
-            <span class="c1"># handle func&#39;s with yield in them (generators)</span>
+            <span class="c1"># handle func&#39;s with yield in them (making them generators)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
                 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">inp</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="k">if</span> <span class="n">inputs</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="k">if</span> <span class="n">inp</span><span class="p">:</span>
                             <span class="k">try</span><span class="p">:</span>
+                                <span class="c1"># this mimics a user&#39;s reply to a prompt</span>
                                 <span class="n">ret</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
                             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                                 <span class="nb">next</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
                                 <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># non-input yield, like yield(10). We don&#39;t pause</span>
+                            <span class="c1"># but fire it immediately.</span>
                             <span class="nb">next</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
                         <span class="k">break</span>
@@ -177,40 +289,56 @@
         <span class="k">except</span> <span class="n">InterruptCommand</span><span class="p">:</span>
             <span class="k">pass</span>
 
-        <span class="c1"># clean out evtable sugar. We only operate on text-type</span>
-        <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span>
-        <span class="p">]</span>
-        <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
-        <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">)</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># to be safe, e.g. `py` command may return ints</span>
-            <span class="c1"># set our separator for returned messages based on parsing ansi or not</span>
-            <span class="n">msg_sep</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span> <span class="k">if</span> <span class="n">noansi</span> <span class="k">else</span> <span class="s2">&quot;||&quot;</span>
-            <span class="c1"># Have to strip ansi for each returned message for the regex to handle it correctly</span>
-            <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">msg_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">_RE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span> <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-                <span class="n">prt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-                    <span class="kn">import</span> <span class="nn">re</span>
+        <span class="c1"># At this point the mocked .msg methods on each receiver will have</span>
+        <span class="c1"># stored all calls made to them (that&#39;s a basic function of the Mock</span>
+        <span class="c1"># class). We will not extract them and compare to what we expected to</span>
+        <span class="c1"># go to each receiver.</span>
 
-                    <span class="n">prt</span> <span class="o">+=</span> <span class="n">char</span>
+        <span class="n">returned_msgs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">expected_msg</span> <span class="ow">in</span> <span class="n">receiver_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># get the stored messages from the Mock with Mock.mock_calls.</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span>
+            <span class="p">]</span>
+            <span class="c1"># we can return this now, we are done using the mock</span>
+            <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">unmocked_msg_methods</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span>
 
-                <span class="n">sep1</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">+</span> <span class="s2">&quot;Wanted message&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">34</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">sep2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">+</span> <span class="s2">&quot;Returned message&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">sep3</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">78</span>
-                <span class="n">retval</span> <span class="o">=</span> <span class="n">sep1</span> <span class="o">+</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">sep2</span> <span class="o">+</span> <span class="n">returned_msg</span> <span class="o">+</span> <span class="n">sep3</span>
-                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">returned_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span>
-            <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">old_msg</span>
+            <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                          <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">)</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">expected_msg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># no expected_msg; just build the returned_msgs dict</span>
 
-        <span class="k">return</span> <span class="n">returned_msg</span></div></div>
+                <span class="n">returned_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span>
+                <span class="n">returned_msgs</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># compare messages to expected</span>
+
+                <span class="c1"># set our separator for returned messages based on parsing ansi or not</span>
+                <span class="n">msg_sep</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span> <span class="k">if</span> <span class="n">noansi</span> <span class="k">else</span> <span class="s2">&quot;||&quot;</span>
+
+                <span class="c1"># We remove Evmenu decorations since that just makes it harder</span>
+                <span class="c1"># to write the comparison string. We also strip ansi before this</span>
+                <span class="c1"># comparison since otherwise it would mess with the regex.</span>
+                <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">msg_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">_RE_STRIP_EVMENU</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="c1"># this is the actual test</span>
+                <span class="k">if</span> <span class="n">expected_msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">expected_msg</span><span class="p">):</span>
+                    <span class="c1"># failed the test</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ERROR_FORMAT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">expected_msg</span><span class="o">=</span><span class="n">expected_msg</span><span class="p">,</span> <span class="n">returned_msg</span><span class="o">=</span><span class="n">returned_msg</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="c1"># passed!</span>
+                <span class="n">returned_msgs</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">returned_msg</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">returned_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">returned_msgs</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">returned_msgs</span></div></div>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
