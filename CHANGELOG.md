@@ -38,6 +38,8 @@
   to how `utils.delay` is a shortcut for TaskHandler add.
 - Refactor the classic `red_button` example to use `utils.delay/repeat` and modern recommended
   code style and paradigms instead of relying on `Scripts` for everything. 
+- Expand `CommandTest` with ability to check multipler msg-receivers; inspired by PR by 
+  user davewiththenicehat. Also add new doc string.
 
 ### Evennia 0.9.5 (2019-2020)
 
