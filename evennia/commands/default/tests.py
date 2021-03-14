@@ -48,24 +48,50 @@ from evennia.prototypes import prototypes as protlib
 
 # set up signal here since we are not starting the server
 
-_RE = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
+_RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
 
 # ------------------------------------------------------------
 # Command testing
 # ------------------------------------------------------------
 
-
 @patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
 class CommandTest(EvenniaTest):
     """
-    Tests a command
+    Tests a Command by running it and comparing what messages it sends with
+    expected values. This tests without actually spinning up the cmdhandler
+    for every test, which is more controlled.
+
+    Example:
+    ::
+
+        from commands.echo import CmdEcho
+
+        class MyCommandTest(CommandTest):
+
+            def test_echo(self):
+                '''
+                Test that the echo command really returns
+                what you pass into it.
+                '''
+                self.call(MyCommand(), "hello world!",
+                          "You hear your echo: 'Hello world!'")
+
     """
+
+    # formatting for .call's error message
+    _ERROR_FORMAT = """
+=========================== Wanted message ===================================
+{expected_msg}
+=========================== Returned message =================================
+{returned_msg}
+==============================================================================
+""".rstrip()
 
     def call(
         self,
         cmdobj,
-        args,
+        input_args,
         msg=None,
         cmdset=None,
         noansi=True,
@@ -77,54 +103,140 @@ class CommandTest(EvenniaTest):
         raw_string=None,
     ):
         """
-        Test a command by assigning all the needed
-        properties to cmdobj and  running
-            cmdobj.at_pre_cmd()
-            cmdobj.parse()
-            cmdobj.func()
-            cmdobj.at_post_cmd()
-        The msgreturn value is compared to eventual
-        output sent to caller.msg in the game
+        Test a command by assigning all the needed properties to a cmdobj and
+        running the sequence. The resulting `.msg` calls will be mocked and
+        the text= calls to them compared to a expected output.
+
+        Args:
+            cmdobj (Command): The command object to use.
+            input_args (str): This should be the full input the Command should
+                see, such as 'look here'. This will become `.args` for the Command
+                instance to parse.
+            msg (str or dict, optional): This is the expected return value(s)
+                returned through `caller.msg(text=...)` calls in the command. If a string, the
+                receiver is controlled with the `receiver` kwarg (defaults to `caller`).
+                If this is a `dict`, it is a mapping
+                `{receiver1: "expected1", receiver2: "expected2",...}` and `receiver` is
+                ignored. The message(s) are compared with the actual messages returned
+                to the receiver(s) as the Command runs. Each check uses `.startswith`,
+                so you can choose to only include the first part of the
+                returned message if that's enough to verify a correct result. EvMenu
+                decorations (like borders) are stripped and should not be included. This
+                should also not include color tags unless `noansi=False`.
+                If the command returns texts in multiple separate `.msg`-
+                calls to a receiver, separate these with `|` if `noansi=True`
+                (default) and `||` if `noansi=False`. If no `msg` is given (`None`),
+                then no automatic comparison will be done.
+            cmdset (str, optional): If given, make `.cmdset` available on the Command
+                instance as it runs. While `.cmdset` is normally available on the
+                Command instance by default, this is usually only used by
+                commands that explicitly operates/displays cmdsets, like
+                `examine`.
+            noansi (str, optional): By default the color tags of the `msg` is
+                ignored, this makes them significant. If unset, `msg` must contain
+                the same color tags as the actual return message.
+            caller (Object or Account, optional): By default `self.char1` is used as the
+                command-caller (the `.caller` property on the Command). This allows to
+                execute with another caller, most commonly an Account.
+            receiver (Object or Account, optional): This is the object to receive the
+                return messages we want to test. By default this is the same as `caller`
+                (which in turn defaults to is `self.char1`). Note that if `msg` is
+                a `dict`, this is ignored since the receiver is already specified there.
+            cmdstring (str, optional): Normally this is the Command's `key`.
+                This allows for tweaking the `.cmdname` property of the
+                Command`.  This isb used for commands with multiple aliases,
+                where the command explicitly checs which alias was used to
+                determine its functionality.
+            obj (str, optional): This sets the `.obj` property of the Command - the
+                object on which the Command 'sits'. By default this is the same as `caller`.
+                This can be used for testing on-object Command interactions.
+            inputs (list, optional): A list of strings to pass to functions that pause to
+                take input from the user (normally using `@interactive` and
+                `ret = yield(question)` or `evmenu.get_input`). Each  element of the
+                list will be passed into the command as if the user wrote that at the prompt.
+            raw_string (str, optional): Normally the `.raw_string` property  is set as
+                a combination of your `key/cmdname` and `input_args`. This allows
+                direct control of what this is, for example for testing edge cases
+                or malformed inputs.
 
         Returns:
-            msg (str): The received message that was sent to the caller.
+            str or dict: The message sent to `receiver`, or a dict of
+                `{receiver: "msg", ...}` if multiple are given. This is usually
+                only used with `msg=None` to do the validation externally.
+
+        Raises:
+            AssertionError: If the returns of `.msg` calls (tested with `.startswith`) does not
+                match `expected_input`.
+
+        Notes:
+            As part of the tests, all methods of the Command will be called in
+            the proper order:
+
+            - cmdobj.at_pre_cmd()
+            - cmdobj.parse()
+            - cmdobj.func()
+            - cmdobj.at_post_cmd()
 
         """
+        # The `self.char1` is created in the `EvenniaTest` base along with
+        # other helper objects like self.room and self.obj
         caller = caller if caller else self.char1
-        receiver = receiver if receiver else caller
         cmdobj.caller = caller
         cmdobj.cmdname = cmdstring if cmdstring else cmdobj.key
         cmdobj.raw_cmdname = cmdobj.cmdname
         cmdobj.cmdstring = cmdobj.cmdname  # deprecated
-        cmdobj.args = args
+        cmdobj.args = input_args
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.account = self.account
-        cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + args
+        cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + input_args
         cmdobj.obj = obj or (caller if caller else self.char1)
-        # test
-        old_msg = receiver.msg
         inputs = inputs or []
 
-        try:
+        # set up receivers
+        receiver_mapping = {}
+        if isinstance(msg, dict):
+            # a mapping {receiver: msg, ...}
+            receiver_mapping = {recv: str(msg).strip() if msg else None
+                                for recv, msg in msg.items()}
+        else:
+            # a single expected string and thus a single receiver (defaults to caller)
+            receiver = receiver if receiver else caller
+            receiver_mapping[receiver] = str(msg).strip() if msg else None
+
+        unmocked_msg_methods = {}
+        for receiver in receiver_mapping:
+            # save the old .msg method so we can get it back
+            # cleanly  after the test
+            unmocked_msg_methods[receiver] = receiver.msg
+            # replace normal `.msg` with a mock
             receiver.msg = Mock()
+
+        # Run the methods of the Command. This mimics what happens in the
+        # cmdhandler. This will have the mocked .msg be called as part of the
+        # execution. Mocks remembers what was sent to them so we will be able
+        # to retrieve what was sent later.
+        try:
             if cmdobj.at_pre_cmd():
                 return
             cmdobj.parse()
             ret = cmdobj.func()
 
-            # handle func's with yield in them (generators)
+            # handle func's with yield in them (making them generators)
             if isinstance(ret, types.GeneratorType):
                 while True:
                     try:
                         inp = inputs.pop() if inputs else None
                         if inp:
                             try:
+                                # this mimics a user's reply to a prompt
                                 ret.send(inp)
                             except TypeError:
                                 next(ret)
                                 ret = ret.send(inp)
                         else:
+                            # non-input yield, like yield(10). We don't pause
+                            # but fire it immediately.
                             next(ret)
                     except StopIteration:
                         break
@@ -135,40 +247,56 @@ class CommandTest(EvenniaTest):
         except InterruptCommand:
             pass
 
-        # clean out evtable sugar. We only operate on text-type
-        stored_msg = [
-            args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
-            for name, args, kwargs in receiver.msg.mock_calls
-        ]
-        # Get the first element of a tuple if msg received a tuple instead of a string
-        stored_msg = [str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
-        if msg is not None:
-            msg = str(msg)  # to be safe, e.g. `py` command may return ints
-            # set our separator for returned messages based on parsing ansi or not
-            msg_sep = "|" if noansi else "||"
-            # Have to strip ansi for each returned message for the regex to handle it correctly
-            returned_msg = msg_sep.join(
-                _RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi)) for mess in stored_msg
-            ).strip()
-            msg = msg.strip()
-            if msg == "" and returned_msg or not returned_msg.startswith(msg):
-                prt = ""
-                for ic, char in enumerate(msg):
-                    import re
+        # At this point the mocked .msg methods on each receiver will have
+        # stored all calls made to them (that's a basic function of the Mock
+        # class). We will not extract them and compare to what we expected to
+        # go to each receiver.
 
-                    prt += char
+        returned_msgs = {}
+        for receiver, expected_msg in receiver_mapping.items():
+            # get the stored messages from the Mock with Mock.mock_calls.
+            stored_msg = [
+                args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
+                for name, args, kwargs in receiver.msg.mock_calls
+            ]
+            # we can return this now, we are done using the mock
+            receiver.msg = unmocked_msg_methods[receiver]
 
-                sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
-                sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
-                sep3 = "\n" + "=" * 78
-                retval = sep1 + msg + sep2 + returned_msg + sep3
-                raise AssertionError(retval)
-        else:
-            returned_msg = "\n".join(str(msg) for msg in stored_msg)
-            returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
-        receiver.msg = old_msg
+            # Get the first element of a tuple if msg received a tuple instead of a string
+            stored_msg = [str(smsg[0])
+                          if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
+            if expected_msg is None:
+                # no expected_msg; just build the returned_msgs dict
 
-        return returned_msg
+                returned_msg = "\n".join(str(msg) for msg in stored_msg)
+                returned_msgs[receiver] = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+            else:
+                # compare messages to expected
+
+                # set our separator for returned messages based on parsing ansi or not
+                msg_sep = "|" if noansi else "||"
+
+                # We remove Evmenu decorations since that just makes it harder
+                # to write the comparison string. We also strip ansi before this
+                # comparison since otherwise it would mess with the regex.
+                returned_msg = msg_sep.join(
+                    _RE_STRIP_EVMENU.sub(
+                        "", ansi.parse_ansi(mess, strip_ansi=noansi))
+                    for mess in stored_msg).strip()
+
+                # this is the actual test
+                if expected_msg == "" and returned_msg or not returned_msg.startswith(expected_msg):
+                    # failed the test
+                    raise AssertionError(
+                        self._ERROR_FORMAT.format(
+                            expected_msg=expected_msg, returned_msg=returned_msg)
+                    )
+                # passed!
+                returned_msgs[receiver] = returned_msg
+
+        if len(returned_msgs) == 1:
+            return list(returned_msgs.values())[0]
+        return returned_msgs
 
 
 # ------------------------------------------------------------
