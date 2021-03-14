@@ -43,8 +43,6 @@ ENCODINGS = settings.ENCODINGS
 _TASK_HANDLER = None
 _TICKER_HANDLER = None
 
-_ARG_ESCAPE_SIGN = "\\"
-
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -1114,8 +1112,8 @@ def unrepeat(store_key):
 
     Args:
         store_key (tuple): This is the return from `repeat`, used to uniquely
-            identify the ticker to stop. Without the store_key, the ticker 
-            must be stopped by passing its parameters to `TICKER_HANDLER.remove` 
+            identify the ticker to stop. Without the store_key, the ticker
+            must be stopped by passing its parameters to `TICKER_HANDLER.remove`
             directly.
 
     Returns:
@@ -2392,120 +2390,3 @@ def interactive(func):
             return ret
 
     return decorator
-
-
-class FunctionArgument(object):
-    def __init__(self, name):
-        self.name = name.strip()
-
-    def __str__(self):
-        return self.name
-
-
-def parse_arguments(s, **kwargs):
-    """
-    This method takes a string and parses it as if it were an argument list to a function.
-    It supports both positional and named arguments.
-
-    Values are automatically converted to int or float if possible.
-    Values surrounded by single or double quotes are treated as strings.
-    Any other value is wrapped in a "FunctionArgument" class for later processing.
-
-    Args:
-        s (str): The string to convert.
-
-    Returns:
-        (list, dict): A tuple containing a list of arguments (list) and named arguments (dict).
-    """
-    global _ARG_ESCAPE_SIGN
-
-    args_list = []
-    args_dict = {}
-
-    # State (general)
-    inside = (False, None)  # Are we inside a quoted string? What is the quoted character?
-    skip = False  # Skip the current parameter?
-    escape = False  # Was the escape key used?
-    is_string = False  # Have we been inside a quoted string?
-    temp = ""  # Buffer
-    key = None  # Key (for named parameter)
-
-    def _parse_value(temp):
-        ret = temp.strip()
-        if not is_string:
-            try:
-                ret = int(ret)
-            except ValueError:
-                try:
-                    ret = float(ret)
-                except ValueError:
-                    if ret != "":
-                        return FunctionArgument(ret)
-
-        return ret
-
-    def _add_value(skip, key, args_list, args_dict, temp):
-        if not skip:
-            # Record value based on whether named parameters mode is set or not.
-            if key is not None:
-                args_dict[key] = _parse_value(temp)
-                key = None
-            else:
-                args_list.append(_parse_value(temp))
-
-    for c in s:
-        if c == _ARG_ESCAPE_SIGN:
-            # Escape sign used.
-            if escape:
-                # Already escaping: print escape sign itself.
-                temp += _ARG_ESCAPE_SIGN
-                escape = False
-            else:
-                # Enter escape mode.
-                escape = True
-        elif escape:
-            # Escape mode: print whatever comes after the symbol.
-            escape = False
-            temp += c
-        elif inside[0] is True:
-            # Inside single quotes or double quotes
-            # Wait for the end symbol, allow everything else through, allow escape sign for typing quotes in strings
-            if c == inside[1]:
-                # Leaving single/double quoted area
-                inside = (False, None)
-            else:
-                temp += c
-        elif c == "\"" or c == "'":
-            # Entering single/double quoted area
-            inside = (True, c)
-            is_string = True
-            continue
-        elif c == "=":
-            if is_string:
-                # Invalid syntax because we don't allow named parameters to be quoted.
-                return None
-            elif key is None:
-                # Named parameters mode and equals sign encountered. Record key and continue with value.
-                key = temp.strip()
-                temp = ""
-        elif c == ",":
-            # Comma encountered outside of quoted area.
-
-            _add_value(skip, key, args_list, args_dict, temp)
-
-            # Reset
-            temp = ""
-            skip = False
-            is_string = False
-            key = None
-        else:
-            # Any other character: add to buffer.
-            temp += c
-
-    if inside[0] is True:
-        # Invalid syntax because we are inside a quoted area.
-        return None
-    else:
-        _add_value(skip, key, args_list, args_dict, temp)
-
-    return args_list, args_dict
