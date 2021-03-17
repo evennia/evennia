@@ -614,7 +614,7 @@ INLINEFUNC_STACK_MAXSIZE = 20
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
 # Module holding handlers for ProtFuncs. These allow for embedding
 # functional code in prototypes and has the same syntax as inlinefuncs.
-PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
+PROTOTYPEFUNC_MODULES = ["evennia.prototypes.protfuncs", "server.conf.prototypefuncs"]
 
 ######################################################################
 # Global Scripts

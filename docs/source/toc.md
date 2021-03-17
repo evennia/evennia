@@ -29,6 +29,7 @@
 - [Components/EvEditor](Components/EvEditor)
 - [Components/EvMenu](Components/EvMenu)
 - [Components/EvMore](Components/EvMore)
+- [Components/FuncParser](Components/FuncParser)
 - [Components/Help System](Components/Help-System)
 - [Components/Inputfuncs](Components/Inputfuncs)
 - [Components/Locks](Components/Locks)
