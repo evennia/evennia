@@ -3,10 +3,10 @@ Unit tests for all sorts of inline text-tag parsing, like ANSI, html conversion,
 
 """
 import re
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from evennia.utils.ansi import ANSIString
 from evennia.utils.text2html import TextToHTMLparser
-from evennia.utils import inlinefuncs
+from evennia.utils import funcparser
 
 
 class ANSIStringTestCase(TestCase):
@@ -352,27 +352,33 @@ class TestTextToHTMLparser(TestCase):
 class TestInlineFuncs(TestCase):
     """Test the nested inlinefunc module"""
 
+    @override_settings(INLINEFUNC_MODULES=["evennia.utils.inlinefuncs"])
+    def setUp(self):
+        from django.conf import settings
+        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+
+
     def test_nofunc(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc("as$382ewrw w we w werw,|44943}"),
+            self.parser.parse("as$382ewrw w we w werw,|44943}"),
             "as$382ewrw w we w werw,|44943}",
         )
 
     def test_incomplete(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc("testing $blah{without an ending."),
+            self.parser.parse("testing $blah{without an ending."),
             "testing $blah{without an ending.",
         )
 
     def test_single_func(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc("this is a test with $pad(centered, 20) text in it."),
+            self.parser.parse("this is a test with $pad(centered, 20) text in it."),
             "this is a test with       centered       text in it.",
         )
 
     def test_nested(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
+            self.parser.parse(
                 "this $crop(is a test with $pad(padded, 20) text in $pad(pad2, 10) a crop, 80)"
             ),
             "this is a test with        padded        text in    pad2    a crop",
@@ -380,16 +386,16 @@ class TestInlineFuncs(TestCase):
 
     def test_escaped(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
+            self.parser.parse(
                 "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5) text., 80)"
             ),
-            "this should be                    escaped, and instead, cropped with  text.                    ",
+            "this should be              '''escaped,''' and '''instead,''' cropped with  text.              ",
         )
 
     def test_escaped2(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
+            self.parser.parse(
                 'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'
             ),
-            "this should be                    escaped, and instead, cropped with  text.                    ",
+            "this should be              \"\"\"escaped,\"\"\" and \"\"\"instead,\"\"\" cropped with  text.              ",
         )

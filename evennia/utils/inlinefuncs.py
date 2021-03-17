@@ -357,269 +357,173 @@ class ParseStack(list):
             self._string_last = False
 
 
-class InlinefuncError(RuntimeError):
-    pass
-
-
-def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False, **kwargs):
-    """
-    Parse the incoming string.
-
-    Args:
-        string (str): The incoming string to parse.
-        strip (bool, optional): Whether to strip function calls rather than
-            execute them.
-        available_funcs (dict, optional): Define an alternative source of functions to parse for.
-            If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
-        stacktrace (bool, optional): If set, print the stacktrace to log.
-    Keyword Args:
-        session (Session): This is sent to this function by Evennia when triggering
-            it. It is passed to the inlinefunc.
-        kwargs (any): All other kwargs are also passed on to the inlinefunc.
-
-
-    """
-    global _PARSING_CACHE
-    usecache = False
-    if not available_funcs:
-        available_funcs = _INLINE_FUNCS
-        usecache = True
-    else:
-        # make sure the default keys are available, but also allow overriding
-        tmp = _DEFAULT_FUNCS.copy()
-        tmp.update(available_funcs)
-        available_funcs = tmp
-
-    if usecache and string in _PARSING_CACHE:
-        # stack is already cached
-        stack = _PARSING_CACHE[string]
-    elif not _RE_STARTTOKEN.search(string):
-        # if there are no unescaped start tokens at all, return immediately.
-        return string
-    else:
-        # no cached stack; build a new stack and continue
-        stack = ParseStack()
-
-        # process string on stack
-        ncallable = 0
-        nlparens = 0
-        nvalid = 0
-
-        if stacktrace:
-            out = "STRING: {} =>".format(string)
-            print(out)
-            logger.log_info(out)
-
-        for match in _RE_TOKEN.finditer(string):
-            gdict = match.groupdict()
-
-            if stacktrace:
-                out = " MATCH: {}".format({key: val for key, val in gdict.items() if val})
-                print(out)
-                logger.log_info(out)
-
-            if gdict["singlequote"]:
-                stack.append(gdict["singlequote"])
-            elif gdict["doublequote"]:
-                stack.append(gdict["doublequote"])
-            elif gdict["leftparens"]:
-                # we have a left-parens inside a callable
-                if ncallable:
-                    nlparens += 1
-                stack.append("(")
-            elif gdict["end"]:
-                if nlparens > 0:
-                    nlparens -= 1
-                    stack.append(")")
-                    continue
-                if ncallable <= 0:
-                    stack.append(")")
-                    continue
-                args = []
-                while stack:
-                    operation = stack.pop()
-                    if callable(operation):
-                        if not strip:
-                            stack.append((operation, [arg for arg in reversed(args)]))
-                        ncallable -= 1
-                        break
-                    else:
-                        args.append(operation)
-            elif gdict["start"]:
-                funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
-                try:
-                    # try to fetch the matching inlinefunc from storage
-                    stack.append(available_funcs[funcname])
-                    nvalid += 1
-                except KeyError:
-                    stack.append(available_funcs["nomatch"])
-                    stack.append(funcname)
-                    stack.append(None)
-                ncallable += 1
-            elif gdict["escaped"]:
-                # escaped tokens
-                token = gdict["escaped"].lstrip("\\")
-                stack.append(token)
-            elif gdict["comma"]:
-                if ncallable > 0:
-                    # commas outside strings and inside a callable are
-                    # used to mark argument separation - we use None
-                    # in the stack to indicate such a separation.
-                    stack.append(None)
-                else:
-                    # no callable active - just a string
-                    stack.append(",")
-            else:
-                # the rest
-                stack.append(gdict["rest"])
-
-        if ncallable > 0:
-            # this means not all inlinefuncs were complete
-            return string
-
-        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < nvalid:
-            # if stack is larger than limit, throw away parsing
-            return string + available_funcs["stackfull"](*args, **kwargs)
-        elif usecache:
-            # cache the stack - we do this also if we don't check the cache above
-            _PARSING_CACHE[string] = stack
-
-    # run the stack recursively
-    def _run_stack(item, depth=0):
-        retval = item
-        if isinstance(item, tuple):
-            if strip:
-                return ""
-            else:
-                func, arglist = item
-                args = [""]
-                for arg in arglist:
-                    if arg is None:
-                        # an argument-separating comma - start a new arg
-                        args.append("")
-                    else:
-                        # all other args should merge into one string
-                        args[-1] += _run_stack(arg, depth=depth + 1)
-                # execute the inlinefunc at this point or strip it.
-                kwargs["inlinefunc_stack_depth"] = depth
-                retval = "" if strip else func(*args, **kwargs)
-        return utils.to_str(retval)
-
-    retval = "".join(_run_stack(item) for item in stack)
-    if stacktrace:
-        out = "STACK: \n{} => {}\n".format(stack, retval)
-        print(out)
-        logger.log_info(out)
-
-    # execute the stack
-    return retval
-
-
-def raw(string):
-    """
-    Escape all inlinefuncs in a string so they won't get parsed.
-
-    Args:
-        string (str): String with inlinefuncs to escape.
-    """
-
-    def _escape(match):
-        return "\\" + match.group(0)
-
-    return _RE_STARTTOKEN.sub(_escape, string)
-
-
+# class InlinefuncError(RuntimeError):
+#     pass
 #
-# Nick templating
 #
-
-
-"""
-This supports the use of replacement templates in nicks:
-
-This happens in two steps:
-
-1) The user supplies a template that is converted to a regex according
-   to the unix-like templating language.
-2) This regex is tested against nicks depending on which nick replacement
-   strategy is considered (most commonly inputline).
-3) If there is a template match and there are templating markers,
-   these are replaced with the arguments actually given.
-
-@desc $1 $2 $3
-
-This will be converted to the following regex:
-
-\@desc (?P<1>\w+) (?P<2>\w+) $(?P<3>\w+)
-
-Supported template markers (through fnmatch)
-   *       matches anything (non-greedy)     -> .*?
-   ?       matches any single character      ->
-   [seq]   matches any entry in sequence
-   [!seq]  matches entries not in sequence
-Custom arg markers
-   $N      argument position (1-99)
-
-"""
-_RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
-_RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
-_RE_NICK_SPACE = re.compile(r"\\ ")
-
-
-class NickTemplateInvalid(ValueError):
-    pass
-
-
-def initialize_nick_templates(in_template, out_template):
-    """
-    Initialize the nick templates for matching and remapping a string.
-
-    Args:
-        in_template (str): The template to be used for nick recognition.
-        out_template (str): The template to be used to replace the string
-            matched by the in_template.
-
-    Returns:
-        regex  (regex): Regex to match against strings
-        template (str): Template with markers {arg1}, {arg2}, etc for
-        replacement using the standard .format method.
-
-    Raises:
-        evennia.utils.inlinefuncs.NickTemplateInvalid: If the in/out template
-        does not have a matching number of $args.
-
-    """
-    # create the regex for in_template
-    regex_string = fnmatch.translate(in_template)
-    n_inargs = len(_RE_NICK_ARG.findall(regex_string))
-    regex_string = _RE_NICK_SPACE.sub("\s+", regex_string)
-    regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
-
-    # create the out_template
-    template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
-
-    # validate the tempaltes - they should at least have the same number of args
-    n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))
-    if n_inargs != n_outargs:
-        raise NickTemplateInvalid
-
-    return re.compile(regex_string), template_string
-
-
-def parse_nick_template(string, template_regex, outtemplate):
-    """
-    Parse a text using a template and map it to another template
-
-    Args:
-        string (str): The input string to processj
-        template_regex (regex): A template regex created with
-            initialize_nick_template.
-        outtemplate (str): The template to which to map the matches
-            produced by the template_regex. This should have $1, $2,
-            etc to match the regex.
-
-    """
-    match = template_regex.match(string)
-    if match:
-        return outtemplate.format(**match.groupdict())
-    return string
+# def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False, **kwargs):
+#     """
+#     Parse the incoming string.
+#
+#     Args:
+#         string (str): The incoming string to parse.
+#         strip (bool, optional): Whether to strip function calls rather than
+#             execute them.
+#         available_funcs (dict, optional): Define an alternative source of functions to parse for.
+#             If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
+#         stacktrace (bool, optional): If set, print the stacktrace to log.
+#     Keyword Args:
+#         session (Session): This is sent to this function by Evennia when triggering
+#             it. It is passed to the inlinefunc.
+#         kwargs (any): All other kwargs are also passed on to the inlinefunc.
+#
+#
+#     """
+#     global _PARSING_CACHE
+#     usecache = False
+#     if not available_funcs:
+#         available_funcs = _INLINE_FUNCS
+#         usecache = True
+#     else:
+#         # make sure the default keys are available, but also allow overriding
+#         tmp = _DEFAULT_FUNCS.copy()
+#         tmp.update(available_funcs)
+#         available_funcs = tmp
+#
+#     if usecache and string in _PARSING_CACHE:
+#         # stack is already cached
+#         stack = _PARSING_CACHE[string]
+#     elif not _RE_STARTTOKEN.search(string):
+#         # if there are no unescaped start tokens at all, return immediately.
+#         return string
+#     else:
+#         # no cached stack; build a new stack and continue
+#         stack = ParseStack()
+#
+#         # process string on stack
+#         ncallable = 0
+#         nlparens = 0
+#         nvalid = 0
+#
+#         if stacktrace:
+#             out = "STRING: {} =>".format(string)
+#             print(out)
+#             logger.log_info(out)
+#
+#         for match in _RE_TOKEN.finditer(string):
+#             gdict = match.groupdict()
+#
+#             if stacktrace:
+#                 out = " MATCH: {}".format({key: val for key, val in gdict.items() if val})
+#                 print(out)
+#                 logger.log_info(out)
+#
+#             if gdict["singlequote"]:
+#                 stack.append(gdict["singlequote"])
+#             elif gdict["doublequote"]:
+#                 stack.append(gdict["doublequote"])
+#             elif gdict["leftparens"]:
+#                 # we have a left-parens inside a callable
+#                 if ncallable:
+#                     nlparens += 1
+#                 stack.append("(")
+#             elif gdict["end"]:
+#                 if nlparens > 0:
+#                     nlparens -= 1
+#                     stack.append(")")
+#                     continue
+#                 if ncallable <= 0:
+#                     stack.append(")")
+#                     continue
+#                 args = []
+#                 while stack:
+#                     operation = stack.pop()
+#                     if callable(operation):
+#                         if not strip:
+#                             stack.append((operation, [arg for arg in reversed(args)]))
+#                         ncallable -= 1
+#                         break
+#                     else:
+#                         args.append(operation)
+#             elif gdict["start"]:
+#                 funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
+#                 try:
+#                     # try to fetch the matching inlinefunc from storage
+#                     stack.append(available_funcs[funcname])
+#                     nvalid += 1
+#                 except KeyError:
+#                     stack.append(available_funcs["nomatch"])
+#                     stack.append(funcname)
+#                     stack.append(None)
+#                 ncallable += 1
+#             elif gdict["escaped"]:
+#                 # escaped tokens
+#                 token = gdict["escaped"].lstrip("\\")
+#                 stack.append(token)
+#             elif gdict["comma"]:
+#                 if ncallable > 0:
+#                     # commas outside strings and inside a callable are
+#                     # used to mark argument separation - we use None
+#                     # in the stack to indicate such a separation.
+#                     stack.append(None)
+#                 else:
+#                     # no callable active - just a string
+#                     stack.append(",")
+#             else:
+#                 # the rest
+#                 stack.append(gdict["rest"])
+#
+#         if ncallable > 0:
+#             # this means not all inlinefuncs were complete
+#             return string
+#
+#         if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < nvalid:
+#             # if stack is larger than limit, throw away parsing
+#             return string + available_funcs["stackfull"](*args, **kwargs)
+#         elif usecache:
+#             # cache the stack - we do this also if we don't check the cache above
+#             _PARSING_CACHE[string] = stack
+#
+#     # run the stack recursively
+#     def _run_stack(item, depth=0):
+#         retval = item
+#         if isinstance(item, tuple):
+#             if strip:
+#                 return ""
+#             else:
+#                 func, arglist = item
+#                 args = [""]
+#                 for arg in arglist:
+#                     if arg is None:
+#                         # an argument-separating comma - start a new arg
+#                         args.append("")
+#                     else:
+#                         # all other args should merge into one string
+#                         args[-1] += _run_stack(arg, depth=depth + 1)
+#                 # execute the inlinefunc at this point or strip it.
+#                 kwargs["inlinefunc_stack_depth"] = depth
+#                 retval = "" if strip else func(*args, **kwargs)
+#         return utils.to_str(retval)
+#
+#     retval = "".join(_run_stack(item) for item in stack)
+#     if stacktrace:
+#         out = "STACK: \n{} => {}\n".format(stack, retval)
+#         print(out)
+#         logger.log_info(out)
+#
+#     # execute the stack
+#     return retval
+#
+#
+# def raw(string):
+#     """
+#     Escape all inlinefuncs in a string so they won't get parsed.
+#
+#     Args:
+#         string (str): String with inlinefuncs to escape.
+#     """
+#
+#     def _escape(match):
+#         return "\\" + match.group(0)
+#
+#     return _RE_STARTTOKEN.sub(_escape, string)

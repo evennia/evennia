@@ -28,7 +28,7 @@ from evennia.utils.utils import (
 from evennia.server.portal import amp
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
-from evennia.utils.inlinefuncs import parse_inlinefunc
+# from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
 _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
@@ -59,6 +59,9 @@ _DELAY_CMD_LOGINSTART = settings.DELAY_CMD_LOGINSTART
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 _MODEL_MAP = None
+_FUNCPARSER = None
+
+
 
 # input handlers
 
@@ -171,6 +174,11 @@ class SessionHandler(dict):
             applied.
 
         """
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            from evennia.utils.funcparser import FuncParser
+            _FUNCPARSER = FuncParser(settings.INLINEFUNC_MODULES, raise_errors=True)
+
         options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
         strip_inlinefunc = options.get("strip_inlinefunc", False)
@@ -204,7 +212,8 @@ class SessionHandler(dict):
 
                 if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
                     # only parse inlinefuncs on the outgoing path (sessionhandler->)
-                    data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
+                    # data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
+                    data = _FUNCPARSER.parse(data, strip=strip_inlinefunc, session=session)
 
                 return str(data)
             elif (

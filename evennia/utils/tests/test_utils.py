@@ -385,30 +385,3 @@ class TestPercent(TestCase):
         self.assertEqual(utils.percent(3, 1, 1), "0.0%")
         self.assertEqual(utils.percent(3, 0, 1), "100.0%")
         self.assertEqual(utils.percent(-3, 0, 1), "0.0%")
-
-
-class ParseArgumentsTest(TestCase):
-    def _run_test(s):
-        return utils.parse_arguments(s)
-
-    def test_happy_flow(self):
-        s = "1, \"The text \\\"Hello, world.\\\" is often used by programmers to test if their code works.\", caller, looker=\"Qwerty\""
-        args, kwargs = ParseArgumentsTest._run_test(s)
-        self.assertEqual(len(args), 3)
-        self.assertEqual(args[0], 1)
-        self.assertEqual(args[1], "The text \"Hello, world.\" is often used by programmers to test if their code works.")
-        #self.assertEqual(args[2], "caller")
-        self.assertEqual(len(kwargs), 1)
-        self.assertEqual(kwargs["looker"], "Qwerty")
-
-    def test_malformed_string(self):
-        s = ",(,),"
-        args, kwargs = ParseArgumentsTest._run_test(s)
-        self.assertEqual(len(args), 4)
-        self.assertEqual(args[0], "")
-        self.assertEqual(args[1].__class__, utils.FunctionArgument)
-        self.assertEqual(args[1].name, "(")
-        self.assertEqual(args[2].__class__, utils.FunctionArgument)
-        self.assertEqual(args[2].name, ")")
-        self.assertEqual(args[3], "")
-        self.assertEqual(len(kwargs), 0)
