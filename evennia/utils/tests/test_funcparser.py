@@ -4,6 +4,8 @@ Test the funcparser module.
 
 """
 
+import time
+from simpleeval import simple_eval
 from parameterized import parameterized
 from django.test import TestCase
 
@@ -18,11 +20,37 @@ def _test_callable(*args, **kwargs):
             ", ".join(f"{key}={val}" for key, val in kwargs.items()))
     return f"_test({argstr}{kwargstr})"
 
+def _repl_callable(*args, **kwargs):
+    if args:
+        return f"r{args[0]}r"
+    return "rr"
+
+def _double_callable(*args, **kwargs):
+    if args:
+        try:
+            return int(args[0]) * 2
+        except ValueError:
+            pass
+    return 'N/A'
+
+def _eval_callable(*args, **kwargs):
+    if args:
+        return simple_eval(args[0])
+    return ''
+
+def _clr_callable(*args, **kwargs):
+    clr, string, *rest = args
+    return f"|{clr}{string}|n"
+
 
 _test_callables = {
     "foo": _test_callable,
     "bar": _test_callable,
     "with spaces": _test_callable,
+    "repl": _repl_callable,
+    "double": _double_callable,
+    "eval": _eval_callable,
+    "clr": _clr_callable,
 }
 
 class TestFuncParser(TestCase):
@@ -30,7 +58,6 @@ class TestFuncParser(TestCase):
     Test the FuncParser class
 
     """
-
     def setUp(self):
 
         self.parser = funcparser.FuncParser(
@@ -38,24 +65,112 @@ class TestFuncParser(TestCase):
         )
 
     @parameterized.expand([
-        ("This is a normal string", "This is a normal string"),
-        ("This is $foo()", "This is _test()"),
-        ("This is $bar() etc.", "This is _test() etc."),
-        ("This is $with spaces() etc.", "This is _test() etc."),
-        ("Two $foo(), $bar() and $foo", "Two _test(), _test() and $foo"),
+        ("Test normal string", "Test normal string"),
+        ("Test noargs1 $foo()", "Test noargs1 _test()"),
+        ("Test noargs2 $bar() etc.", "Test noargs2 _test() etc."),
+        ("Test noargs3 $with spaces() etc.", "Test noargs3 _test() etc."),
+        ("Test noargs4 $foo(), $bar() and $foo", "Test noargs4 _test(), _test() and $foo"),
+        ("$foo() Test noargs5", "_test() Test noargs5"),
         ("Test args1 $foo(a,b,c)", "Test args1 _test(a, b, c)"),
-        ("Test args2 $bar(foo, bar, too)", "Test args2 _test(foo,  bar,  too)"),
+        ("Test args2 $bar(foo, bar,    too)", "Test args2 _test(foo, bar, too)"),
+        ("Test args3 $bar(foo, bar, '   too')", "Test args3 _test(foo, bar, '   too')"),
+        ("Test args4 $foo('')", "Test args4 _test('')"),
+        ("Test args4 $foo(\"\")", "Test args4 _test(\"\")"),
+        ("Test args5 $foo(\(\))", "Test args5 _test(())"),
+        ("Test args6 $foo(\()", "Test args6 _test(()"),
+        ("Test args7 $foo(())", "Test args7 _test(())"),
+        ("Test args8 $foo())", "Test args8 _test())"),
+        ("Test args9 $foo(=)", "Test args9 _test(=)"),
+        ("Test args10 $foo(\,)", "Test args10 _test(,)"),
+        ("Test args10 $foo(',')", "Test args10 _test(',')"),
+        ("Test args11 $foo(()", "Test args11 $foo(()"),  # invalid syntax
         ("Test kwarg1 $bar(foo=1, bar='foo', too=ere)",
-         "Test kwarg1 _test(foo=1,  bar=foo,  too=ere)"),
+         "Test kwarg1 _test(foo=1, bar='foo', too=ere)"),
         ("Test kwarg2 $bar(foo,bar,too=ere)",
          "Test kwarg2 _test(foo, bar, too=ere)"),
-        ("Test nest1 $foo($bar(foo, bar, too=ere))",
+        ("test kwarg3 $foo(foo = bar, bar = ere )",
+         "test kwarg3 _test(foo=bar, bar=ere)"),
+        ("test kwarg4 $foo(foo =' bar ',\" bar \"= ere )",
+         "test kwarg4 _test(foo=' bar ', \" bar \"=ere)"),
+        ("Test nest1 $foo($bar(foo,bar,too=ere))",
          "Test nest1 _test(_test(foo, bar, too=ere))"),
+        ("Test nest2 $foo(bar,$repl(a),$repl()=$repl(),a=b) etc",
+         "Test nest2 _test(bar, rar, rr=rr, a=b) etc"),
+        ("Test nest3 $foo(bar,$repl($repl($repl(c))))",
+         "Test nest3 _test(bar, rrrcrrr)"),
+        ("Test nest4 $foo($bar(a,b),$bar(a,$repl()),$bar())",
+         "Test nest4 _test(_test(a, b), _test(a, rr), _test())"),
+        ("Test escape1 \\$repl(foo)", "Test escape1 $repl(foo)"),
+        ("Test escape2 \"This is $foo() and $bar($bar())\", $repl()",
+         "Test escape2 \"This is _test() and _test(_test())\", rr"),
+        ("Test escape3 'This is $foo() and $bar($bar())', $repl()",
+         "Test escape3 'This is _test() and _test(_test())', rr"),
+        ("Test escape4 $$foo() and $$bar(a,b), $repl()",
+         "Test escape4 $foo() and $bar(a,b), rr"),
+        ("Test with color |r$foo(a,b)|n is ok",
+         "Test with color |r_test(a, b)|n is ok"),
+        ("Test malformed1 This is $foo( and $bar(",
+         "Test malformed1 This is $foo( and $bar("),
+        ("Test malformed2 This is $foo( and $bar()",
+         "Test malformed2 This is $foo( and _test()"),
+        ("Test malformed3 $", "Test malformed3 $"),
+        ("Test malformed4 This is $dummy(a, b) and $bar(",
+         "Test malformed4 This is $dummy(a, b) and $bar("),
+        ("Test malformed5 This is $foo(a=b and $bar(",
+         "Test malformed5 This is $foo(a=b and $bar("),
+        ("Test malformed6 This is $foo(a=b, and $repl()",
+         "Test malformed6 This is $foo(a=b, and rr"),
+        ("Test nonstr 4x2 = $double(4)", "Test nonstr 4x2 = 8"),
+        ("Test nonstr 4x2 = $double(foo)", "Test nonstr 4x2 = N/A"),
+        ("Test clr $clr(r, This is a red string!)", "Test clr |rThis is a red string!|n"),
+        ("Test eval1 $eval(21 + 21 - 10)", "Test eval1 32"),
+        ("Test eval2 $eval((21 + 21) / 2)", "Test eval2 21.0"),
+        ("Test eval3 $eval('21' + 'foo' + 'bar')", "Test eval3 21foobar"),
+        ("Test eval4 $eval('21' + '$repl()' + '' + str(10 // 2))", "Test eval4 21rr5"),
+        ("Test eval5 $eval('21' + '\$repl()' + '' + str(10 // 2))", "Test eval5 21$repl()5"),
+        ("Test eval6 $eval('$repl(a)' + '$repl(b)')", "Test eval6 rarrbr"),
     ])
     def test_parse(self, string, expected):
         """
         Test parsing of string.
 
         """
-        ret = self.parser.parse(string, raise_errors=True)
-        self.assertEqual(expected, ret, "Parsing mismatch")
+        t0 = time.time()
+        # from evennia import set_trace;set_trace()
+        ret = self.parser.parse(string)
+        t1 = time.time()
+        print(f"time: {(t1-t0)*1000} ms")
+        self.assertEqual(expected, ret)
+
+    def test_parse_raise(self):
+        string = "Test invalid $dummy()"
+        with self.assertRaises(funcparser.ParsingError):
+            self.parser.parse(string, raise_errors=True)
+
+
+    def test_kwargs_overrides(self):
+        """
+        Test so default kwargs are added and overridden properly
+        """
+        # default kwargs passed on initializations
+        parser = funcparser.FuncParser(
+            _test_callables,
+            test='foo'
+        )
+        ret = parser.parse("This is a $foo() string")
+        self.assertEqual("This is a _test(test=foo) string", ret)
+
+        # override in the string itself
+
+        ret = parser.parse("This is a $foo(test=bar,foo=moo) string")
+        self.assertEqual("This is a _test(test=bar, foo=moo) string", ret)
+
+        # parser kwargs override the other types
+
+        ret = parser.parse("This is a $foo(test=bar,foo=moo) string", test="override", foo="bar")
+        self.assertEqual("This is a _test(test=override, foo=bar) string", ret)
+
+        # non-overridden kwargs shine through
+
+        ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
+        self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
