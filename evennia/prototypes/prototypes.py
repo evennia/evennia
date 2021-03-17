@@ -30,6 +30,7 @@ from evennia.utils.utils import (
 )
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
+from evennia.utils.funcparser import FuncParser
 from evennia.utils import inlinefuncs, dbserialize
 from evennia.utils.evtable import EvTable
 
@@ -758,9 +759,11 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
 
-    result = inlinefuncs.parse_inlinefunc(
-        value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
-    )
+    result = FuncParser(available_functions).parse(value, raise_errors=True, **kwargs)
+
+    # result = inlinefuncs.parse_inlinefunc(
+    #     value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
+    # )
 
     err = None
     try:

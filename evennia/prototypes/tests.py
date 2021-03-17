@@ -377,7 +377,7 @@ class TestProtFuncs(EvenniaTest):
         self.assertEqual(protlib.protfunc_parser("$add(1, 2)"), 3)
         self.assertEqual(protlib.protfunc_parser("$add(10, 25)"), 35)
         self.assertEqual(
-            protlib.protfunc_parser("$add('''[1,2,3]''', '''[4,5,6]''')"), [1, 2, 3, 4, 5, 6]
+            protlib.protfunc_parser("$add('[1,2,3]', '[4,5,6]')"), [1, 2, 3, 4, 5, 6]
         )
         self.assertEqual(protlib.protfunc_parser("$add(foo, bar)"), "foo bar")
 

@@ -149,9 +149,13 @@ class FuncParser:
 
         """
         for funcname, clble in callables.items():
-            mapping = inspect.getfullargspec(clble)
-            assert mapping.varargs, f"Parse-func callable '{funcname}' does not support *args."
-            assert mapping.varkw, f"Parse-func callable '{funcname}' does not support **kwargs."
+            try:
+                mapping = inspect.getfullargspec(clble)
+            except TypeError:
+                logger.log_trace(f"Could not run getfullargspec on {funcname}: {clble}")
+            else:
+                assert mapping.varargs, f"Parse-func callable '{funcname}' does not support *args."
+                assert mapping.varkw, f"Parse-func callable '{funcname}' does not support **kwargs."
 
     def execute(self, parsedfunc, raise_errors=False, **reserved_kwargs):
         """
@@ -207,7 +211,7 @@ class FuncParser:
                 raise
             return str(parsedfunc)
 
-    def parse(self, string, raise_errors=False, **reserved_kwargs):
+    def parse(self, string, raise_errors=False, escape=False, strip=False, **reserved_kwargs):
         """
         Use parser to parse a string that may or may not have `$funcname(*args, **kwargs)`
         - style tokens in it. Only the callables used to initiate the parser
@@ -215,10 +219,14 @@ class FuncParser:
 
         Args:
             string (str): The string to parse.
-                raise_errors (bool, optional): By default, a failing parse just
+            raise_errors (bool, optional): By default, a failing parse just
                 means not parsing the string but leaving it as-is. If this is
                 `True`, errors (like not closing brackets) will lead to an
                 ParsingError.
+            escape (bool, optional): If set, escape all found functions so they 
+                are not executed by later parsing.
+            strip (bool, optional): If set, strip any inline funcs from string
+                as if they were not there.
             **reserved_kwargs: If given, these are guaranteed to _always_ pass
                 as part of each parsed callable's **kwargs. These  override
                 same-named default options given in `__init__` as well as any
@@ -371,10 +379,18 @@ class FuncParser:
                     # closing the function list - this means we have a
                     # ready function-def to run.
                     open_lparens = 0
-                    infuncstr = self.execute(
-                        curr_func, raise_errors=raise_errors, **reserved_kwargs)
 
-                    curr_func = None
+                    if strip:
+                        # remove function as if it returned empty
+                        infuncstr = ''
+                    elif escape:
+                        # get function and set it as escaped
+                        infuncstr = escape_char + curr_func.fullstr
+                    else:
+                        # execute the function
+                        infuncstr = self.execute(
+                            curr_func, raise_errors=raise_errors, **reserved_kwargs)
+
                     if callstack:
                         # unnest the higher-level funcdef from stack
                         # and continue where we were

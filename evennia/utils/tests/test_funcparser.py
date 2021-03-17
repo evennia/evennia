@@ -7,7 +7,7 @@ Test the funcparser module.
 import time
 from simpleeval import simple_eval
 from parameterized import parameterized
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from evennia.utils import funcparser
 
@@ -135,22 +135,44 @@ class TestFuncParser(TestCase):
         Test parsing of string.
 
         """
-        t0 = time.time()
+        #t0 = time.time()
         # from evennia import set_trace;set_trace()
         ret = self.parser.parse(string)
-        t1 = time.time()
-        print(f"time: {(t1-t0)*1000} ms")
+        #t1 = time.time()
+        #print(f"time: {(t1-t0)*1000} ms")
         self.assertEqual(expected, ret)
 
     def test_parse_raise(self):
+        """
+        Make sure error is raised if told to do so.
+
+        """
         string = "Test invalid $dummy()"
         with self.assertRaises(funcparser.ParsingError):
             self.parser.parse(string, raise_errors=True)
 
+    def test_parse_strip(self):
+        """
+        Test the parser's strip functionality.
+
+        """
+        string = "Test $foo(a,b, $bar()) and $repl($eval(3+2)) things"
+        ret = self.parser.parse(string, strip=True)
+        self.assertEqual("Test  and  things", ret)
+
+    def test_parse_escape(self):
+        """
+        Test the parser's escape functionality.
+
+        """
+        string = "Test $foo(a) and $bar() and $rep(c) things"
+        ret = self.parser.parse(string, escape=True)
+        self.assertEqual("Test \$foo(a) and \$bar() and \$rep(c) things", ret)
 
     def test_kwargs_overrides(self):
         """
         Test so default kwargs are added and overridden properly
+
         """
         # default kwargs passed on initializations
         parser = funcparser.FuncParser(
@@ -174,3 +196,40 @@ class TestFuncParser(TestCase):
 
         ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
         self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
+
+
+class TestDefaultCallables(TestCase):
+    """
+    Test default callables
+
+    """
+    @override_settings(INLINEFUNC_MODULES=["evennia.prototypes.protfuncs",
+                                           "evennia.utils.inlinefuncs"])
+    def setUp(self):
+        from django.conf import settings
+        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+
+    @parameterized.expand([
+        ("Test $pad(Hello, 20, c, -) there", "Test -------Hello-------- there"),
+        ("Test $crop(This is a long test, 12)", "Test This is[...]"),
+        ("Some $space(10) here", "Some            here"),
+        ("Some $clr(b, blue color) now", "Some |bblue color|n now"),
+        ("Some $add(1, 2) things", "Some 3 things"),
+        ("Some $sub(10, 2) things", "Some 8 things"),
+        ("Some $mult(3, 2) things", "Some 6 things"),
+        ("Some $div(6, 2) things", "Some 3.0 things"),
+        ("Some $toint(6) things", "Some 6 things"),
+    ])
+    def test_callable(self, string, expected):
+        """
+        Test default callables.
+
+        """
+        ret = self.parser.parse(string, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_random(self):
+        string = "$random(1,10)"
+        ret = self.parser.parse(string, raise_errors=True)
+        ret = int(ret)
+        self.assertTrue(1 <= ret <= 10)
