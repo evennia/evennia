@@ -56,14 +56,18 @@ class ParsedFunc:
     args: list = dataclasses.field(default_factory=list)
     kwargs: dict = dataclasses.field(default_factory=dict)
 
+    # state storage
+    fullstr: str = ""
+    infuncstr: str = ""
+    single_quoted: bool = False
+    double_quoted: bool = False
+    current_kwarg: str = ""
+
     def get(self):
-        return self.funcname[len(self.prefix):], self.args, self.kwargs
+        return self.funcname, self.args, self.kwargs
 
     def __str__(self):
-        argstr = ", ".join(str(arg) for arg in self.args)
-        kwargstr = ", " + ", ".join(
-            f"{key}={val}" for key, val in self.kwargs.items()) if self.kwargs else ""
-        return f"{self.prefix}{self.funcname}({argstr}{kwargstr})"
+        return self.fullstr + self.infuncstr
 
 
 class ParsingError(RuntimeError):
@@ -84,7 +88,7 @@ class FuncParser:
                  start_char=_START_CHAR,
                  escape_char=_ESCAPE_CHAR,
                  max_nesting=_MAX_NESTING,
-                 **kwargs):
+                 **default_kwargs):
         """
         Initialize the parser.
 
@@ -104,15 +108,19 @@ class FuncParser:
                 them not count as a function. Default is `\\`.
             max_nesting (int, optional): How many levels of nested function calls
                 are allowed, to avoid exploitation.
-            **kwargs: If given - these kwargs will always be passed to _every_
-                callable parsed and executed by this parser instance.
+            **default_kwargs: These kwargs will be passed into all callables. These
+                kwargs can be overridden both by kwargs passed direcetly to `.parse` _and_
+                by kwargs given directly in the string `$funcname` call. They are
+                suitable for global defaults that is intended to be changed by the
+                user. To _guarantee_ a call always gets a particular kwarg, pass it
+                into `.parse` as `**reserved_kwargs` instead.
 
         """
         if isinstance(safe_callables, dict):
             callables = {**safe_callables}
         else:
-            # load all modules/paths in sequence. Later-added will override earlier
-            # same-named callables (allows for overriding evennia defaults)
+            # load all modules/paths in sequence. Later-added will override
+            # earlier same-named callables (allows for overriding evennia defaults)
             callables = {}
             for safe_callable in make_iter(safe_callables):
                 # callables_from_module handles both paths and module instances
@@ -121,7 +129,7 @@ class FuncParser:
         self.callables = callables
         self.escape_char = escape_char
         self.start_char = start_char
-        self.default_kwargs = kwargs
+        self.default_kwargs = default_kwargs
 
     def validate_callables(self, callables):
         """
@@ -145,7 +153,7 @@ class FuncParser:
             assert mapping.varargs, f"Parse-func callable '{funcname}' does not support *args."
             assert mapping.varkw, f"Parse-func callable '{funcname}' does not support **kwargs."
 
-    def execute(self, parsedfunc, raise_errors=False):
+    def execute(self, parsedfunc, raise_errors=False, **reserved_kwargs):
         """
         Execute a parsed function
 
@@ -154,15 +162,28 @@ class FuncParser:
                 of the function.
             raise_errors (bool, optional): Raise errors. Otherwise return the
                 string with the function unparsed.
-
+            **reserved_kwargs: These kwargs are _guaranteed_ to always be passed into
+                the callable on every call. It will override any default kwargs
+                _and_ also a same-named kwarg given manually in the $funcname
+                call. This is often used by Evennia to pass required data into
+                the callable, for example the current Session for inlinefuncs.
         Returns:
             any: The result of the execution. If this is a nested function, it
                 can be anything, otherwise it will be converted to a string later.
                 Always a string on un-raised error (the unparsed function string).
 
         Raises:
-            ParsingError, any: A `ParsingError` if the function could not be found, otherwise
-                error from function definition. Only raised if `raise_errors` is `True`
+            ParsingError, any: A `ParsingError` if the function could not be
+            found, otherwise error from function definition. Only raised if
+            `raise_errors` is `True`
+
+        Notes:
+            The kwargs passed into the callable will be a mixture of the
+            `default_kwargs` passed into `FuncParser.__init__`, kwargs given
+            directly in the `$funcdef` string, and the `reserved_kwargs` this
+            function gets from `.parse()`. For colliding keys, funcdef-defined
+            kwargs will override default kwargs while reserved kwargs will always
+            override the other two.
 
         """
         funcname, args, kwargs = parsedfunc.get()
@@ -175,6 +196,9 @@ class FuncParser:
                                    f"(available: {available})")
             return str(parsedfunc)
 
+        # build kwargs in the proper priority order
+        kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs}
+
         try:
             return str(func(*args, **kwargs))
         except Exception:
@@ -183,7 +207,7 @@ class FuncParser:
                 raise
             return str(parsedfunc)
 
-    def parse(self, string, raise_errors=False, **kwargs):
+    def parse(self, string, raise_errors=False, **reserved_kwargs):
         """
         Use parser to parse a string that may or may not have `$funcname(*args, **kwargs)`
         - style tokens in it. Only the callables used to initiate the parser
@@ -191,12 +215,16 @@ class FuncParser:
 
         Args:
             string (str): The string to parse.
-            raise_errors (bool, optional): By default, a failing parse just means not parsing the
-                string but leaving it as-is. If this is `True`, errors (like not closing brackets)
-                will lead to an ParsingError.
-            **kwargs: If given, these are extra options to pass as `**kwargs` into each
-                parsed callable. These will override any same-named kwargs given earlier
-                to `FuncParser.__init__`.
+                raise_errors (bool, optional): By default, a failing parse just
+                means not parsing the string but leaving it as-is. If this is
+                `True`, errors (like not closing brackets) will lead to an
+                ParsingError.
+            **reserved_kwargs: If given, these are guaranteed to _always_ pass
+                as part of each parsed callable's **kwargs. These  override
+                same-named default options given in `__init__` as well as any
+                same-named kwarg given in the string function. This is because
+                it is often used by Evennia to pass necessary kwargs into each
+                callable (like the current Session object for inlinefuncs).
 
         Returns:
             str: The parsed string, or the same string on error (if `raise_errors` is `False`)
@@ -205,224 +233,176 @@ class FuncParser:
             ParsingError: If a problem is encountered and `raise_errors` is True.
 
         """
-        callables = self.callables
-        # prepare kwargs to pass into callables
-        callable_kwargs = {**self.default_kwargs}
-        callable_kwargs.update(kwargs)
-
         start_char = self.start_char
         escape_char = self.escape_char
+
+        # replace e.g. $$ with \$ so we only need to handle one escape method
+        string = string.replace(start_char + start_char, escape_char + start_char)
 
         # parsing state
         callstack = []
 
         single_quoted = False
         double_quoted = False
+        open_lparens = 0
         escaped = False
-        current_kwarg = None
+        current_kwarg = ""
 
         curr_func = None
-        fullstr = ''
-        workstr = ''
-
-        #from evennia import set_trace;set_trace()
+        fullstr = ''  # final string
+        infuncstr = ''  # string parts inside the current level of $funcdef (including $)
 
         for char in string:
+
             if escaped:
                 # always store escaped characters verbatim
-                workstr += char
+                if curr_func:
+                    infuncstr += char
+                else:
+                    fullstr += char
                 escaped = False
                 continue
+
             if char == escape_char:
                 # don't store the escape-char itself
                 escaped = True
                 continue
-            if char == "'":
-                # a single quote - flip status
-                single_quoted = not single_quoted
-                continue
-            if char == '"':
-                # a double quote = flip status
-                double_quoted = not double_quoted
-                continue
 
-            if not (double_quoted or single_quoted):
-                # not in a string escape
-                if char == start_char:
-                    # start a new function
-                    if curr_func:
-                        # nested func
-                        if len(callstack) >= _MAX_NESTING:
-                            # stack full - ignore this function
-                            if raise_errors:
-                                raise ParsingError("Only allows for parsing nesting function defs "
-                                                   f"to a max depth of {_MAX_NESTING}.")
-                            workstr += char
-                            continue
-                        else:
-                            # store what we have and stack it
-                            if current_kwarg:
-                                curr_func.kwargs[current_kwarg] = workstr
-                                current_kwarg = None
-                            else:
-                                curr_func.args.append(workstr)
-                            workstr = ''
-                            callstack.append(curr_func)
-                    else:
-                        # entering a funcdef, flush workstr
-                        fullstr += workstr
-                        workstr = char
-                    # start a new func
-                    curr_func = ParsedFunc(prefix=char)
-                    continue
+            if char == start_char:
+                # start a new function definition (not escaped as $$)
 
                 if curr_func:
-                    # currently parsing a func
-                    if char == '(':
-                        # end of a funcdef
-                        curr_func.funcname = workstr
-                        workstr = ''
+                    # we are starting a nested funcdef
+                    if len(callstack) > _MAX_NESTING:
+                        # stack full - ignore this function
+                        if raise_errors:
+                            raise ParsingError("Only allows for parsing nesting function defs "
+                                               f"to a max depth of {_MAX_NESTING}.")
+                        infuncstr += char
                         continue
-                    if char == '=':
-                        # beginning of a keyword argument
-                        current_kwarg = workstr
-                        curr_func.kwargs[current_kwarg] = None
-                        workstr = ''
-                        continue
-                    if char in (',', ')'):
-                        # end current arg/kwarg one way or another
-                        if current_kwarg:
-                            curr_func.kwargs[current_kwarg] = workstr
-                            current_kwarg = None
-                        else:
-                            curr_func.args.append(workstr)
-                        workstr = ''
+                    else:
+                        # store state for the current func and stack it
+                        curr_func.current_kwarg = current_kwarg
+                        curr_func.infuncstr = infuncstr
+                        curr_func.open_lparens = open_lparens
+                        curr_func.single_quoted = single_quoted
+                        curr_func.double_quoted = double_quoted
+                        current_kwarg = ""
+                        infuncstr = ""
+                        open_lparens = 0
+                        single_quoted = False
+                        double_quoted = False
+                        callstack.append(curr_func)
 
-                        if char == ')':
-                            # closing the function list - this means we have a
-                            # ready function def to run.
+                # start a new func
+                curr_func = ParsedFunc(prefix=char, fullstr=char)
+                continue
 
-                            workstr += self.execute(curr_func, raise_errors=raise_errors)
+            if not curr_func:
+                # a normal piece of string
+                fullstr += char
+                continue
 
-                            curr_func = None
-                            if callstack:
-                                # get a new func from stack, if any
-                                curr_func = callstack.pop(0)
-                            else:
-                                fullstr += workstr
-                                workstr = ''
-                        continue
+            # in a function def (can be nested)
 
-            workstr += char
+            if char == "'":  # note that this is the same as "\'"
+                # a single quote - flip status
+                single_quoted = not single_quoted
+                infuncstr += char
+                continue
 
-        fullstr += workstr
+            if char == '"':  # note that this is the same as '\"'
+                # a double quote = flip status
+                double_quoted = not double_quoted
+                infuncstr += char
+                continue
+
+            if double_quoted or single_quoted:
+                # inside a string escape
+                infuncstr += char
+                continue
+
+            # special characters detected inside function def
+            if char == '(':
+                if not curr_func.funcname:
+                    # end of a funcdef name
+                    curr_func.funcname = infuncstr
+                    curr_func.fullstr += infuncstr + char
+                    infuncstr = ''
+                else:
+                    # just a random left-parenthesis
+                    infuncstr += char
+                # track the open left-parenthesis
+                open_lparens += 1
+                continue
+
+            if char == '=':
+                # beginning of a keyword argument
+                current_kwarg = infuncstr.strip()
+                curr_func.kwargs[current_kwarg] = ""
+                curr_func.fullstr += infuncstr + char
+                infuncstr = ''
+                continue
+
+            if char in (',', ')'):
+                # commas and right-parens may indicate arguments ending
+
+                if open_lparens > 1:
+                    # inside an unclosed, nested ( - this is neither
+                    # closing the function-def nor indicating a new arg
+                    # at the funcdef level
+                    infuncstr += char
+                    open_lparens -= 1 if char == ')' else 0
+                    continue
+
+                # end current arg/kwarg one way or another
+                if current_kwarg:
+                    curr_func.kwargs[current_kwarg] = infuncstr.strip()
+                    current_kwarg = ""
+                elif infuncstr.strip():
+                    curr_func.args.append(infuncstr.strip())
+
+                # we need to store the full string so we can print it 'raw' in
+                # case this funcdef turns out to e.g. lack an ending paranthesis
+                curr_func.fullstr += infuncstr + char
+                infuncstr = ''
+
+                if char == ')':
+                    # closing the function list - this means we have a
+                    # ready function-def to run.
+                    open_lparens = 0
+                    infuncstr = self.execute(
+                        curr_func, raise_errors=raise_errors, **reserved_kwargs)
+
+                    curr_func = None
+                    if callstack:
+                        # unnest the higher-level funcdef from stack
+                        # and continue where we were
+                        curr_func = callstack.pop()
+                        current_kwarg = curr_func.current_kwarg
+                        infuncstr = curr_func.infuncstr + infuncstr
+                        curr_func.infuncstr = ''
+                        open_lparens = curr_func.open_lparens
+                        single_quoted = curr_func.single_quoted
+                        double_quoted = curr_func.double_quoted
+                    else:
+                        # back to the top-level string
+                        curr_func = None
+                        fullstr += infuncstr
+                        infuncstr = ''
+                continue
+
+            # no special char
+            infuncstr += char
+
+        if curr_func:
+            # if there is a still open funcdef or defs remaining in callstack,
+            # these are malformed (no closing bracket) and we should get their
+            # strings as-is.
+            callstack.append(curr_func)
+            for _ in range(len(callstack)):
+                infuncstr = str(callstack.pop()) + infuncstr
+
+        # add the last bit to the finished string and return
+        fullstr += infuncstr
         return fullstr
-
-
-#def parse_arguments(s, **kwargs):
-#    """
-#    This method takes a string and parses it as if it were an argument list to a function.
-#    It supports both positional and named arguments.
-#
-#    Values are automatically converted to int or float if possible.
-#    Values surrounded by single or double quotes are treated as strings.
-#    Any other value is wrapped in a "FunctionArgument" class for later processing.
-#
-#    Args:
-#        s (str): The string to convert.
-#
-#    Returns:
-#        (list, dict): A tuple containing a list of arguments (list) and named arguments (dict).
-#    """
-#    global _ARG_ESCAPE_SIGN
-#
-#    args_list = []
-#    args_dict = {}
-#
-#    # State (general)
-#    inside = (False, None)  # Are we inside a quoted string? What is the quoted character?
-#    skip = False  # Skip the current parameter?
-#    escape = False  # Was the escape key used?
-#    is_string = False  # Have we been inside a quoted string?
-#    temp = ""  # Buffer
-#    key = None  # Key (for named parameter)
-#
-#    def _parse_value(temp):
-#        ret = temp.strip()
-#        if not is_string:
-#            try:
-#                ret = int(ret)
-#            except ValueError:
-#                try:
-#                    ret = float(ret)
-#                except ValueError:
-#                    if ret != "":
-#                        return FunctionArgument(ret)
-#
-#        return ret
-#
-#    def _add_value(skip, key, args_list, args_dict, temp):
-#        if not skip:
-#            # Record value based on whether named parameters mode is set or not.
-#            if key is not None:
-#                args_dict[key] = _parse_value(temp)
-#                key = None
-#            else:
-#                args_list.append(_parse_value(temp))
-#
-#    for c in s:
-#        if c == _ARG_ESCAPE_SIGN:
-#            # Escape sign used.
-#            if escape:
-#                # Already escaping: print escape sign itself.
-#                temp += _ARG_ESCAPE_SIGN
-#                escape = False
-#            else:
-#                # Enter escape mode.
-#                escape = True
-#        elif escape:
-#            # Escape mode: print whatever comes after the symbol.
-#            escape = False
-#            temp += c
-#        elif inside[0] is True:
-#            # Inside single quotes or double quotes
-#            # Wait for the end symbol, allow everything else through, allow escape sign for typing quotes in strings
-#            if c == inside[1]:
-#                # Leaving single/double quoted area
-#                inside = (False, None)
-#            else:
-#                temp += c
-#        elif c == "\"" or c == "'":
-#            # Entering single/double quoted area
-#            inside = (True, c)
-#            is_string = True
-#            continue
-#        elif c == "=":
-#            if is_string:
-#                # Invalid syntax because we don't allow named parameters to be quoted.
-#                return None
-#            elif key is None:
-#                # Named parameters mode and equals sign encountered. Record key and continue with value.
-#                key = temp.strip()
-#                temp = ""
-#        elif c == ",":
-#            # Comma encountered outside of quoted area.
-#
-#            _add_value(skip, key, args_list, args_dict, temp)
-#
-#            # Reset
-#            temp = ""
-#            skip = False
-#            is_string = False
-#            key = None
-#        else:
-#            # Any other character: add to buffer.
-#            temp += c
-#
-#    if inside[0] is True:
-#        # Invalid syntax because we are inside a quoted area.
-#        return None
-#    else:
-#        _add_value(skip, key, args_list, args_dict, temp)
-#
-#    return args_list, args_dict
