@@ -151,7 +151,6 @@ def add(*args, **kwargs):
         val1, val2 = args[0], args[1]
         # try to convert to python structures, otherwise, keep as strings
         try:
-            print("val1", val1, type(literal_eval(val1)))
             val1 = literal_eval(val1.strip())
         except Exception:
             pass

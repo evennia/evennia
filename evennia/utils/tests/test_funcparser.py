@@ -5,6 +5,7 @@ Test the funcparser module.
 """
 
 import time
+from ast import literal_eval
 from simpleeval import simple_eval
 from parameterized import parameterized
 from django.test import TestCase, override_settings
@@ -42,6 +43,15 @@ def _clr_callable(*args, **kwargs):
     clr, string, *rest = args
     return f"|{clr}{string}|n"
 
+def _typ_callable(*args, **kwargs):
+    if args:
+        return type(literal_eval(args[0]))
+    return ''
+
+def _add_callable(*args, **kwargs):
+    if len(args) > 1:
+        return literal_eval(args[0]) + literal_eval(args[1])
+    return ''
 
 _test_callables = {
     "foo": _test_callable,
@@ -51,6 +61,8 @@ _test_callables = {
     "double": _double_callable,
     "eval": _eval_callable,
     "clr": _clr_callable,
+    "typ": _typ_callable,
+    "add": _add_callable,
 }
 
 class TestFuncParser(TestCase):
@@ -114,12 +126,10 @@ class TestFuncParser(TestCase):
         ("Test malformed2 This is $foo( and $bar()",
          "Test malformed2 This is $foo( and _test()"),
         ("Test malformed3 $", "Test malformed3 $"),
-        ("Test malformed4 This is $dummy(a, b) and $bar(",
-         "Test malformed4 This is $dummy(a, b) and $bar("),
-        ("Test malformed5 This is $foo(a=b and $bar(",
-         "Test malformed5 This is $foo(a=b and $bar("),
-        ("Test malformed6 This is $foo(a=b, and $repl()",
-         "Test malformed6 This is $foo(a=b, and rr"),
+        ("Test malformed4 This is $foo(a=b and $bar(",
+         "Test malformed4 This is $foo(a=b and $bar("),
+        ("Test malformed5 This is $foo(a=b, and $repl()",
+         "Test malformed5 This is $foo(a=b, and rr"),
         ("Test nonstr 4x2 = $double(4)", "Test nonstr 4x2 = 8"),
         ("Test nonstr 4x2 = $double(foo)", "Test nonstr 4x2 = N/A"),
         ("Test clr $clr(r, This is a red string!)", "Test clr |rThis is a red string!|n"),
@@ -129,17 +139,25 @@ class TestFuncParser(TestCase):
         ("Test eval4 $eval('21' + '$repl()' + '' + str(10 // 2))", "Test eval4 21rr5"),
         ("Test eval5 $eval('21' + '\$repl()' + '' + str(10 // 2))", "Test eval5 21$repl()5"),
         ("Test eval6 $eval('$repl(a)' + '$repl(b)')", "Test eval6 rarrbr"),
+        ("Test type1 $typ([1,2,3,4])", "Test type1 <class 'list'>"),
+        ("Test type2 $typ((1,2,3,4))", "Test type2 <class 'tuple'>"),
+        ("Test type3 $typ({1,2,3,4})", "Test type3 <class 'set'>"),
+        ("Test type4 $typ({1:2,3:4})", "Test type4 <class 'dict'>"),
+        ("Test type5 $typ(1), $typ(1.0)", "Test type5 <class 'int'>, <class 'float'>"),
+        ("Test type6 $typ('1'), $typ(\"1.0\")", "Test type6 <class 'str'>, <class 'str'>"),
+        ("Test add1 $add(1, 2)", "Test add1 3"),
+        ("Test add2 $add([1,2,3,4], [5,6])", "Test add2 [1, 2, 3, 4, 5, 6]"),
     ])
     def test_parse(self, string, expected):
         """
         Test parsing of string.
 
         """
-        #t0 = time.time()
+        t0 = time.time()
         # from evennia import set_trace;set_trace()
-        ret = self.parser.parse(string)
-        #t1 = time.time()
-        #print(f"time: {(t1-t0)*1000} ms")
+        ret = self.parser.parse(string, raise_errors=True)
+        t1 = time.time()
+        print(f"time: {(t1-t0)*1000} ms")
         self.assertEqual(expected, ret)
 
     def test_parse_raise(self):
@@ -147,7 +165,7 @@ class TestFuncParser(TestCase):
         Make sure error is raised if told to do so.
 
         """
-        string = "Test invalid $dummy()"
+        string = "Test malformed This is $dummy(a, b) and $bar("
         with self.assertRaises(funcparser.ParsingError):
             self.parser.parse(string, raise_errors=True)
 
