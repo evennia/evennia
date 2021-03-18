@@ -1,17 +1,11 @@
 """
-Generic function parser for functions embedded in a string. The
+Generic function parser for functions embedded in a string, on the form
+`$funcname(*args, **kwargs)`, for example:
 
-```
-$funcname(*args, **kwargs)
-```
+    "A string $foo() with $bar(a, b, c, $moo(), d=23) etc."
 
-Each arg/kwarg can also be another nested function. These will be executed
-from the deepest-nested first and used as arguments for the higher-level
-function:
-
-```
-$funcname($func2(), $func3(arg1, arg2), foo=bar)
-```
+Each arg/kwarg can also be another nested function. These will be executed from
+the deepest-nested first and used as arguments for the higher-level function.
 
 This is the base for all forms of embedded func-parsing, like inlinefuncs and
 protfuncs. Each function available to use must be registered as a 'safe'
@@ -22,20 +16,33 @@ regular Python functions on the form:
 # in a module whose path is passed to the parser
 
 def _helper(x):
-    # prefix with underscore to not make this function available as a
-    # parsable func
+    # use underscore to NOT make the function available as a callable
 
 def funcname(*args, **kwargs):
     # this can be accecssed as $funcname(*args, **kwargs)
+    # it must always accept *args and **kwargs.
     ...
-    return some_string
+    return something
+
 
 ```
+
+Usage:
+
+```python
+from evennia.utils.funcparser
+
+parser = FuncParser("path.to.module_with_callables")
+result = parser.parse("String with $funcname() in it")
+
+```
+
+The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`.
+
 
 """
 import dataclasses
 import inspect
-import re
 from evennia.utils import logger
 from evennia.utils.utils import make_iter, callables_from_module
 
@@ -62,6 +69,9 @@ class ParsedFunc:
     single_quoted: bool = False
     double_quoted: bool = False
     current_kwarg: str = ""
+    open_lparens: int = 0
+    open_lsquate: int = 0
+    open_lcurly: int = 0
 
     def get(self):
         return self.funcname, self.args, self.kwargs
@@ -223,7 +233,7 @@ class FuncParser:
                 means not parsing the string but leaving it as-is. If this is
                 `True`, errors (like not closing brackets) will lead to an
                 ParsingError.
-            escape (bool, optional): If set, escape all found functions so they 
+            escape (bool, optional): If set, escape all found functions so they
                 are not executed by later parsing.
             strip (bool, optional): If set, strip any inline funcs from string
                 as if they were not there.
@@ -252,7 +262,9 @@ class FuncParser:
 
         single_quoted = False
         double_quoted = False
-        open_lparens = 0
+        open_lparens = 0  # open (
+        open_lsquare = 0  # open [
+        open_lcurly = 0   # open {
         escaped = False
         current_kwarg = ""
 
@@ -292,14 +304,18 @@ class FuncParser:
                         # store state for the current func and stack it
                         curr_func.current_kwarg = current_kwarg
                         curr_func.infuncstr = infuncstr
-                        curr_func.open_lparens = open_lparens
                         curr_func.single_quoted = single_quoted
                         curr_func.double_quoted = double_quoted
+                        curr_func.open_lparens = open_lparens
+                        curr_func.open_lsquare = open_lsquare
+                        curr_func.open_lcurly = open_lcurly
                         current_kwarg = ""
                         infuncstr = ""
-                        open_lparens = 0
                         single_quoted = False
                         double_quoted = False
+                        open_lparens = 0
+                        open_lsquare = 0
+                        open_lcurly = 0
                         callstack.append(curr_func)
 
                 # start a new func
@@ -326,7 +342,7 @@ class FuncParser:
                 continue
 
             if double_quoted or single_quoted:
-                # inside a string escape
+                # inside a string escape - this escapes everything else
                 infuncstr += char
                 continue
 
@@ -344,6 +360,18 @@ class FuncParser:
                 open_lparens += 1
                 continue
 
+            if char in '[]':
+                # a square bracket - start/end of a list?
+                infuncstr += char
+                open_lsquare += -1 if char == ']' else 1
+                continue
+
+            if char in '{}':
+                # a curly bracket - start/end of dict/set?
+                infuncstr += char
+                open_lcurly += -1 if char == '}' else 1
+                continue
+
             if char == '=':
                 # beginning of a keyword argument
                 current_kwarg = infuncstr.strip()
@@ -352,15 +380,20 @@ class FuncParser:
                 infuncstr = ''
                 continue
 
-            if char in (',', ')'):
+            if char in (',)'):
                 # commas and right-parens may indicate arguments ending
 
                 if open_lparens > 1:
-                    # inside an unclosed, nested ( - this is neither
-                    # closing the function-def nor indicating a new arg
-                    # at the funcdef level
+                    # one open left-parens is ok (beginning of arglist), more
+                    # indicate we are inside an unclosed, nested (, so
+                    # we need to not count this as a new arg or end of funcdef.
                     infuncstr += char
                     open_lparens -= 1 if char == ')' else 0
+                    continue
+
+                if open_lcurly > 0 or open_lsquare > 0:
+                    # also escape inside an open [... or {... structure
+                    infuncstr += char
                     continue
 
                 # end current arg/kwarg one way or another
@@ -398,9 +431,11 @@ class FuncParser:
                         current_kwarg = curr_func.current_kwarg
                         infuncstr = curr_func.infuncstr + infuncstr
                         curr_func.infuncstr = ''
-                        open_lparens = curr_func.open_lparens
                         single_quoted = curr_func.single_quoted
                         double_quoted = curr_func.double_quoted
+                        open_lparens = curr_func.open_lparens
+                        open_lsquare = curr_func.open_lsquare
+                        open_lcurly = curr_func.open_lcurly
                     else:
                         # back to the top-level string
                         curr_func = None
