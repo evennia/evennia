@@ -72,6 +72,7 @@ class ParsedFunc:
     open_lparens: int = 0
     open_lsquate: int = 0
     open_lcurly: int = 0
+    exec_return = ""
 
     def get(self):
         return self.funcname, self.args, self.kwargs
@@ -214,7 +215,7 @@ class FuncParser:
         kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs}
 
         try:
-            return str(func(*args, **kwargs))
+            return func(*args, **kwargs)
         except Exception:
             logger.log_trace()
             if raise_errors:
@@ -267,6 +268,7 @@ class FuncParser:
         open_lcurly = 0   # open {
         escaped = False
         current_kwarg = ""
+        exec_return = ""
 
         curr_func = None
         fullstr = ''  # final string
@@ -316,6 +318,7 @@ class FuncParser:
                         open_lparens = 0
                         open_lsquare = 0
                         open_lcurly = 0
+                        exec_return = ""
                         callstack.append(curr_func)
 
                 # start a new func
@@ -328,6 +331,13 @@ class FuncParser:
                 continue
 
             # in a function def (can be nested)
+
+            if exec_return != '' and char not in (",=)"):
+                # if exec_return is followed by any other character
+                # than one demarking an arg,kwarg or function-end
+                # it must immediately merge as a string
+                infuncstr += str(exec_return)
+                exec_return = ''
 
             if char == "'":  # note that this is the same as "\'"
                 # a single quote - flip status
@@ -342,7 +352,7 @@ class FuncParser:
                 continue
 
             if double_quoted or single_quoted:
-                # inside a string escape - this escapes everything else
+                # inside a string definition - this escapes everything else
                 infuncstr += char
                 continue
 
@@ -374,6 +384,8 @@ class FuncParser:
 
             if char == '=':
                 # beginning of a keyword argument
+                if exec_return != '':
+                    infuncstr = exec_return
                 current_kwarg = infuncstr.strip()
                 curr_func.kwargs[current_kwarg] = ""
                 curr_func.fullstr += infuncstr + char
@@ -396,16 +408,28 @@ class FuncParser:
                     infuncstr += char
                     continue
 
-                # end current arg/kwarg one way or another
-                if current_kwarg:
-                    curr_func.kwargs[current_kwarg] = infuncstr.strip()
-                    current_kwarg = ""
-                elif infuncstr.strip():
-                    curr_func.args.append(infuncstr.strip())
+                if exec_return != '':
+                    # store the execution return as-received
+                    if current_kwarg:
+                        curr_func.kwargs[current_kwarg] = exec_return
+                    else:
+                        curr_func.args.append(exec_return)
+                else:
+                    # store a string instead
+                    if current_kwarg:
+                        curr_func.kwargs[current_kwarg] = infuncstr.strip()
+                    elif infuncstr.strip():
+                        # don't store the empty string
+                        curr_func.args.append(infuncstr.strip())
 
-                # we need to store the full string so we can print it 'raw' in
-                # case this funcdef turns out to e.g. lack an ending paranthesis
-                curr_func.fullstr += infuncstr + char
+                # note that at this point either exec_return or infuncstr will
+                # be empty. We need to store the full string so we can print
+                # it 'raw' in case this funcdef turns out to e.g. lack an
+                # ending paranthesis
+                curr_func.fullstr += str(exec_return) + infuncstr + char
+
+                current_kwarg = ""
+                exec_return = ''
                 infuncstr = ''
 
                 if char == ')':
@@ -415,13 +439,14 @@ class FuncParser:
 
                     if strip:
                         # remove function as if it returned empty
-                        infuncstr = ''
+                        exec_return = ''
                     elif escape:
                         # get function and set it as escaped
-                        infuncstr = escape_char + curr_func.fullstr
+                        exec_return = escape_char + curr_func.fullstr
                     else:
-                        # execute the function
-                        infuncstr = self.execute(
+                        # execute the function - the result may be a string or
+                        # something else
+                        exec_return = self.execute(
                             curr_func, raise_errors=raise_errors, **reserved_kwargs)
 
                     if callstack:
@@ -429,7 +454,11 @@ class FuncParser:
                         # and continue where we were
                         curr_func = callstack.pop()
                         current_kwarg = curr_func.current_kwarg
-                        infuncstr = curr_func.infuncstr + infuncstr
+                        if curr_func.infuncstr:
+                            # if we have an ongoing string, we must merge the
+                            # exec into this as a part of that string
+                            infuncstr = curr_func.infuncstr + str(exec_return)
+                            exec_return = ''
                         curr_func.infuncstr = ''
                         single_quoted = curr_func.single_quoted
                         double_quoted = curr_func.double_quoted
@@ -437,13 +466,14 @@ class FuncParser:
                         open_lsquare = curr_func.open_lsquare
                         open_lcurly = curr_func.open_lcurly
                     else:
-                        # back to the top-level string
+                        # back to the top-level string - this means the
+                        # exec_return should always be converted to a string.
                         curr_func = None
-                        fullstr += infuncstr
+                        fullstr += str(exec_return)
+                        exec_return = ''
                         infuncstr = ''
                 continue
 
-            # no special char
             infuncstr += char
 
         if curr_func:

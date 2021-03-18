@@ -44,13 +44,25 @@ def _clr_callable(*args, **kwargs):
     return f"|{clr}{string}|n"
 
 def _typ_callable(*args, **kwargs):
-    if args:
-        return type(literal_eval(args[0]))
-    return ''
+    try:
+        if isinstance(args[0], str):
+            return type(literal_eval(args[0]))
+        else:
+            return type(args[0])
+    except (SyntaxError, ValueError):
+        return type("")
 
 def _add_callable(*args, **kwargs):
     if len(args) > 1:
         return literal_eval(args[0]) + literal_eval(args[1])
+    return ''
+
+def _lit_callable(*args, **kwargs):
+    return literal_eval(args[0])
+
+def _lsum_callable(*args, **kwargs):
+    if isinstance(args[0], (list, tuple)):
+        return sum(val for val in args[0])
     return ''
 
 _test_callables = {
@@ -63,6 +75,8 @@ _test_callables = {
     "clr": _clr_callable,
     "typ": _typ_callable,
     "add": _add_callable,
+    "lit": _lit_callable,
+    "sum": _lsum_callable,
 }
 
 class TestFuncParser(TestCase):
@@ -147,17 +161,21 @@ class TestFuncParser(TestCase):
         ("Test type6 $typ('1'), $typ(\"1.0\")", "Test type6 <class 'str'>, <class 'str'>"),
         ("Test add1 $add(1, 2)", "Test add1 3"),
         ("Test add2 $add([1,2,3,4], [5,6])", "Test add2 [1, 2, 3, 4, 5, 6]"),
+        ("Test literal1 $sum($lit([1,2,3,4,5,6]))", "Test literal1 21"),
+        ("Test literal2 $typ($lit(1))", "Test literal2 <class 'int'>"),
+        ("Test literal3 $typ($lit(1)aaa)", "Test literal3 <class 'str'>"),
+        ("Test literal4 $typ(aaa$lit(1))", "Test literal4 <class 'str'>"),
     ])
     def test_parse(self, string, expected):
         """
         Test parsing of string.
 
         """
-        t0 = time.time()
+        # t0 = time.time()
         # from evennia import set_trace;set_trace()
         ret = self.parser.parse(string, raise_errors=True)
-        t1 = time.time()
-        print(f"time: {(t1-t0)*1000} ms")
+        # t1 = time.time()
+        # print(f"time: {(t1-t0)*1000} ms")
         self.assertEqual(expected, ret)
 
     def test_parse_raise(self):
