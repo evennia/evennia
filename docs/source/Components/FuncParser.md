@@ -2,48 +2,68 @@
 
 The [FuncParser](api:evennia.utils.funcparser.FuncParser) extracts and executes 'inline functions'
 embedded in a string on the form `$funcname(args, kwargs)`. Under the hood, this will 
-lead to a call to a same-named Python function you control. The inline function call will be 
-replaced by the return from the function.
+lead to a call to a Python function you control. The inline function call will be replaced by 
+the return from the function.
 
-A common use is to grant common players the ability to create dynamic content without access to 
-Python. But inline functions are also potentially useful for developers. 
+```python 
+from evennia.utils.funcparser import FuncParser
 
-Here are some examples:
+def _square(*args, **kwargs):
+    """This will be callable as $square(number) in string"""
+    return float(args[0]) ** 2
+
+parser = FuncParser({"square": _square})
+
+parser.parse("We have that 4 x 4 is $square(4).")
+"We have that 4 x 4 is 16."
+
+```
+
+Normally the return is always converted to a string but you can also retrieve other data types
+from the function calls:
+
+```python
+parser.parse_to_any("$square(4)")
+16
+```
+
+To show a `$func()` verbatim in your code without parsing it, escape it as either `$$func()` or `\$func()`.
+
+The point of inline-parsed functions is that they allow users to call dynamic code without giving 
+regular users full access to Python. You can supply any python function to process the users' input. 
+
+Here are some more examples: 
 
     "Let's meet at our guild hall. Here's how you get here: $route(Warrior's Guild)."
-    
-In this example, the `$route()` call would be evaluated as an inline function call. Assuming the game
-used a grid system and some path-finding mechanism, this would calculate the route to the guild
-individually for each recipient, such as: 
 
-    "Let's meet at our guild hall. Here's how you get here: north,west,north,north.
-    "Let's meet at our guild hall. Here's how you get here: south,east.
-    "Let's meet at our guild hall. Here's how you get here: south,south,south,east.
-    
-It can be used (by user or developer) to implement _Actor stance emoting_ (2nd person) so people see 
-different variations depending on who they are (the [RPSystem contrib](../Contribs/Contrib-Overview) does this in 
-a different way for _Director stance_):
+This can be parsed when sending messages, the users's current session passed into the callable. Assuming the 
+game used a grid system and some path-finding mechanism, this would calculate the route to the guild 
+individually for each recipient, such as:
+
+    player1: "Let's meet at our guild hall. Here's how you get here: north,west,north,north.
+    player2: "Let's meet at our guild hall. Here's how you get here: south,east.
+    player3: "Let's meet at our guild hall. Here's how you get here: south,south,south,east.
+
+It can be used (by user or developer) to implement _Actor stance emoting_ (2nd person) so people see
+different variations depending on who they are (the [RPSystem contrib](../Contribs/Contrib-Overview) does 
+this in a different way for _Director stance_):
 
     sendstr = "$me() $inflect(look) at the $obj(garden)."
     
-    I see: "You look at the Splendid green Garden."
-    others see: "Anna looks at the Splendid green Garden."
-    
-One could do simple mathematical operations ...
-   
-    "There are $eval(4**2) possibilities ..."
-    "There are 16 possibilities ..."    
-    
-... Or why not embedded dice rolls ...
+    I see: "You look at the Splendid Green Garden."
+    others see: "Anna looks at the Splendid Green Garden."
+
+... embedded dice rolls ...
 
     "I make a sweeping attack and roll $roll(2d6)!"
     "I make a sweeping attack and roll 8 (3+5 on 2d6)!"
-    
+
 Function calls can also be nested. Here's an example of inline formatting
 
     "This is a $fmt('-' * 20, $clr(r, red text)!, '-' * 20")
     "This is a --------------------red text!--------------------" 
-    
+
+
 ```important::
     The inline-function parser is not intended as a 'softcode' programming language. It does not
     have things like loops and conditionals, for example. While you could in principle extend it to 
@@ -51,24 +71,18 @@ Function calls can also be nested. Here's an example of inline formatting
     Evennia expects you to do in a proper text editor, outside of the game, not from inside it.
 ```
 
-
 ## Standard uses of parser
 Out of the box, Evennia applies the parser in two situations: 
 
-### Inlinefuncs 
+### Inlinefunc parsing
 
-The original use for inline function parsing. When enabled (disabled by default), Evennia will 
-apply the parser to every client-bound outgoing message. This is per-Session and 
-`session=<current_session>` is always passed into each callable. This allows for things like 
-the per-receiver `$route` in the example above.
+This is inactive by default. When active, Evennia will run the parser on _every outgoing string_
+from a character, making the current [Session](./Sessions) available to every callable. This allows for a single string 
+to appear differently to different users (see the example of `$route()` or `$me()`) above). 
 
-- To enable inlinefunc parsing, set `INLINEFUNC_ENABLED=True` in your settings file 
-  (`mygame/server/conf/settings.py`) and reload.
-- To add more functions, you can just add them to the pre-made module in 
-  `mygame/server/conf/inlinefuncs.py`. Evennia will look here and use all top-level functions you add
-  (unless their name starts with an underscore).
-- If you want to get inlinefuncs from other places, `INLINEFUNC_MODULES` is a list of the paths
-  Evennia will use to find new modules with callables. See defaults in `evennia/settings_default.py`.
+To turn on this parsing, set `INLINEFUNC_ENABLED=True` in your settings file. You can add more callables in
+`mygame/server/conf/inlinefuncs.py` and expand the list `INLINEFUNC_MODULES` with paths to modules containing
+callables.
   
 These are some example callables distributed with Evennia for inlinefunc-use.
 
@@ -85,110 +99,174 @@ These are some example callables distributed with Evennia for inlinefunc-use.
   without the preceeding `|`. If no endcolor is given, the string will go back to neutral. 
   so `$clr(r, Hello)` is equivalent to `|rHello|n`. 
 
-
 ### Protfuncs
 
 Evennia applies the parser on the keys and values of [Prototypes definitions](./Prototypes). This 
-is meant for a user of the OLC to create prototypes with dynamic content (such as random stats). 
+is mainly used for in-game protoype building. The prototype keys/values are parsed with the 
+`FuncParser.parser_to_any` method so the user can set non-strings on prototype keys.
 
 See the prototype documentation for which protfuncs are available.
-
     
 ## Using the FuncParser 
     
 You can apply inline function parsing to any string. The 
 [FuncParser](api:evennia.utils.funcparser.FuncParser) is found in `evennia.utils.funcparser.py`. 
-Here's how it's used:
 
 ```python
 from evennia.utils import funcparser
 
 parser = FuncParser(callables, **default_kwargs)
-parsed_string = parser.parser(input_string, raise_errors=False, **reserved_kwargs)
+parsed_string = parser.parser(input_string, raise_errors=False, 
+                              escape=False, strip=False, 
+                              return_str=True, **reserved_kwargs)
 
+# callables can also be passed as paths to modules
+parser = FuncParser(["game.myfuncparser_callables", "game.more_funcparser_callables"])
 ```
 
-The `callables` is either a `dict` mapping `{"funcname": callable, ...}`, a python path to 
+- `callables` - This is either a `dict` mapping `{"funcname": callable, ...}`, a python path to 
 a module or a list of such paths. If one or more paths, all top-level callables (whose name 
 does not start with an underscore) in that module are used to build the mapping automatically.
-
-By default, any errors from a callable will be quietly ignored and the result will be that 
-the un-parsed form of the callable shows in the string instead. If `raise_errors` is set, 
-then an error will stop parsing and a `evennia.utils.funcparser.ParsingError` will be raised
-with a string of info about the problem. It'd be up to you to handle this properly.
-
-The default/reserved keywords are optional and allow you to pass custom data into _every_ function
-call. This is great for including things like the current session or config options. See the next
-section for details. 
-
-
-```python
-parser = funcparser.FuncParser(callables, test='bar')
-result = parser.parse("$header(foo)")
-```
-
-Here the callable (`_header` from the first example) will be called as `_header('foo', test='bar')`. All
-callables called through this parser will get this extra keyword passed to them. These does _not_ have 
-to be strings.
-
-Default keywords will be overridden if changed in the function call: 
+- `raise_errors` - By default, any errors from a callable will be quietly ignored and the result 
+  will be that the failing function call will show as if it was escaped. If `raise_errors` is set, 
+  then parsing will stop and the error raised. It'd be up to you to handle this properly.
+- `escape` - Returns a string where every `$func(...)` has been escaped as `\$func()`. This makes the 
+  string safe from further parsing.
+- `strip` - Remove all `$func(...)` calls from string (as if each returned `''`).
+- `return_str` - When `True` (default), `parser` always returns a string. If `False`, it may return 
+  the return value of a single function call in the string. This is the same as using the `.parse_to_any` 
+  method.
+- The `**default/reserved_keywords` are optional and allow you to pass custom data into _every_ function
+  call. This is great for including things like the current session or config options. Defaults can be
+  replaced if the user gives the same-named kwarg in the string's function call. Reserved kwargs 
+  are always passed, ignoring defaults or what the user passed.
 
 ```python
-result = parser.parse("$header(foo, test=moo)")
+
+def _test(*args, **kwargs):
+    # do stuff
+    return something
+
+parser = funcparser.FuncParser({"test": _test}, mydefault=2)
+result = parser.parse("$test(foo, bar=4)", myreserved=[1, 2, 3])
+
 ```
 
-Now the callable will be called as `_header('foo', test='moo'`) instead. Note that the values passed
-in from the string will always enter the callable as strings.
+Here the callable will be called as `_test('foo', bar='4', mydefault=2, myreserved=[1, 2, 3])`. 
+Note that everything given in the `$test(...)` call will enter the callable as strings. The 
+kwargs passed outside will be passed as whatever type they were given as. The `mydef` kwarg
+could be overwritten by `$test(mydefault=...)` but `myreserved` will always be sent as-is, ignoring
+any same-named kwarg given to `$test`.
 
-If you want to _guarantee_ a certain keyword is always passed, you should pass it when you call `.parse`:
-
-``` python
-result = parser.parser("$header(foo, test=moo)", test='override')
-```
-
-The kwarg passed with `.parse` overrides the others, so now `_header('foo', test='override')` will
-be called. Like for default kwargs, these keywords do _not_ have to be strings. This is very useful 
-when you must pass something for the functionality to work. You may for example want to pass the 
-current user's Session as `session=session` so you can customize the response per-user.
-
-
-## Callables
+## Defining custom callables
 
 All callables made available to the parser must have the following signature:
 
 ```python
 def funcname(*args, **kwargs):
     # ...
-    return string
+    return something
 ```
 
-It's up to you as the dev to correctly parse all possible input. Remember that this may be called 
-by untrusted users. If the return is not a string, it will be converted to one, so make sure this
-is possible. 
+As said, the input from the top-level string call will always be a string. However, if you 
+nest functions the input may be the return from _another_ callable. This may not be a string.
+Since you should expect users to mix and match function calls, you must make sure your callables 
+gracefully can handle any input type.
 
-> Note, returning nothing is the same as returning `None` in Python, and this will convert to a 
-> string `"None"`. You usually want to return the empty string `''` instead.
+On error, return an empty/default value or raise `evennia.utils.funcparser.ParsingError` to completely 
+stop the parsing at any nesting depth (the `raise_errors` boolean will determine what happens).
 
-While the default/reserved kwargs can be any data type, the data from the parsed function call 
-itself will always be of type `str`. If you want more complex operations you need to convert 
-from the string to the data type you want.
+Any type can be returned from the callable, but if its embedded in a longer string (or parsed without 
+`return_str=True`), the final outcome will always be a string.
 
-Evennia comes with the [simpleeval](https://pypi.org/project/simpleeval/) package, which
-can be used for safe evaluation of simple (and thus safe) expressions.
+First, here are two useful tools for converting strings to other Python types in a safe way:
+
+- [ast.literal_eval](https://docs.python.org/3.8/library/ast.html#ast.literal_eval) is an in-built Python
+  function. It
+  _only_ supports strings, bytes, numbers, tuples, lists, dicts, sets, booleans and `None`. That's
+  it - no arithmetic or modifications of data is allowed. This is good for converting individual values and
+  lists/dicts from the input line to real Python objects.
+- [simpleeval](https://pypi.org/project/simpleeval/) is imported by Evennia. This allows for safe evaluation
+  of simple (and thus safe) expressions. One can operate on numbers and strings with +-/* as well 
+  as do simple comparisons like `4 > 3` and more. It does _not_ accept more complex containers like 
+  lists/dicts etc, so the two are complementary to each other.
+
+First we try `literal_eval`. This also illustrates how input types work.
+
+```python
+from ast import literal_eval
+
+def _literal(*args, **kwargs):
+    if args:
+        try:
+            return literal_eval(args[0])
+        except ValueError:
+            pass
+    return ''
+   
+def _add(*args, **kwargs):
+  if len(args) > 1:
+      return args[0] + args[1]
+  return ''
+
+parser = FuncParser({"literal": _literal, "add": _add})
+```
+
+We first try to add two numbers together straight up
+
+```python
+parser.parse("$add(5, 10)")
+"510"
+```
+The result is that we concatenated the strings "5" + "10" which is not what we wanted. This 
+because the arguments from the top level string always enter the callable as strings. We next
+try to convert each input value:
+
+```python
+parser.parse("$add($lit(5), $lit(10))")
+"15"
+parser.parse_to_any("$add($lit(5), $lit(10))")
+15
+parser.parse_to_any("$add($lit(5), $lit(10)) and extra text")
+"15 and extra text"
+```
+Now we correctly convert the strings to numbers and add them together. The result is still a string unless
+we use `parse_to_any` (or `.parse(..., return_str=False)`). If we include the call as part of a bigger string,
+the outcome is always be a string. 
+
+In this case, `simple_eval` makes things easier:
+
+```python
+from simpleeval import simple_eval
+
+def _eval((*args, **kwargs):
+    if args:
+        try:
+            return simple_eval(args[0])
+        except Exception as err:
+            return f"<Error: {err}>"
+            
+parser = FuncParser({"eval": _eval})
+parser.parse_to_any("5 + 10")
+10
+
+```
+
+This is a lot more natural in this case, but `literal_eval` can convert things like lists/dicts that the
+`simple_eval` cannot. Here we also tried out a different way to handle errors - by letting an error replace
+the `$func`-call directly in the string. This is not always suitable.
 
 ```warning::
-   Inline-func parsing can be made to operate on any string, including strings from regular users. It may 
-   be tempting to run the Python full `eval()` or `exec()` commands on the input in order to convert it 
-   from a string to regular Python objects. NEVER DO THIS. This would be a major security problem since it 
-   would allow the user to effectively run arbitrary Python code on your server. There are plenty of 
-   examples to find online showing how a malicious user could mess up your system this way. If you ever 
-   decide to use eval/exec you should be 100% sure that it operates on strings that untrusted users 
-   can't modify.
+   It may be tempting to run Python's in-built `eval()` or `exec()` commands on the input in order to convert 
+   it from a string to regular Python objects. NEVER DO THIS. The parser is intended for untrusted users (if
+   you were trusted you'd have access to Python already). Letting untrusted users pass strings to eval/exec 
+   is a MAJOR security risk. It allows the caller to effectively run arbitrary Python code on your server. 
+   This is the way to maliciously deleted hard drives. Just don't do it and sleep better at night.
 ```
 
-## Example of usage
+## Example:
 
-Here's a simple example 
+An 
 
 ```python
 from evennia.utils import funcparser
@@ -223,4 +301,3 @@ We nest the functions so the parsed result of the above would be something like 
 This is the current uptime:
 ------- 343 seconds ------- 
 ```
-
