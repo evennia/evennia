@@ -40,6 +40,8 @@
   code style and paradigms instead of relying on `Scripts` for everything. 
 - Expand `CommandTest` with ability to check multipler msg-receivers; inspired by PR by 
   user davewiththenicehat. Also add new doc string.
+- Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc` 
+  function.
 
 ### Evennia 0.9.5 (2019-2020)
 

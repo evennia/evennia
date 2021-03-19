@@ -118,7 +118,7 @@ class FuncParser:
             escape_char (str, optional): Prepend characters with this to have
                 them not count as a function. Default is `\\`.
             max_nesting (int, optional): How many levels of nested function calls
-                are allowed, to avoid exploitation.
+                are allowed, to avoid exploitation. Default is 20.
             **default_kwargs: These kwargs will be passed into all callables. These
                 kwargs can be overridden both by kwargs passed direcetly to `.parse` _and_
                 by kwargs given directly in the string `$funcname` call. They are
@@ -216,13 +216,18 @@ class FuncParser:
 
         try:
             return func(*args, **kwargs)
+        except ParsingError:
+            if raise_errors:
+                raise
+            return str(parsedfunc)
         except Exception:
             logger.log_trace()
             if raise_errors:
                 raise
             return str(parsedfunc)
 
-    def parse(self, string, raise_errors=False, escape=False, strip=False, **reserved_kwargs):
+    def parse(self, string, raise_errors=False, escape=False,
+              strip=False, return_str=True, **reserved_kwargs):
         """
         Use parser to parse a string that may or may not have `$funcname(*args, **kwargs)`
         - style tokens in it. Only the callables used to initiate the parser
@@ -238,6 +243,9 @@ class FuncParser:
                 are not executed by later parsing.
             strip (bool, optional): If set, strip any inline funcs from string
                 as if they were not there.
+            return_str (bool, optional): If set (default), always convert the
+                parse result to a string, otherwise return the result of the
+                latest called inlinefunc (if called separately).
             **reserved_kwargs: If given, these are guaranteed to _always_ pass
                 as part of each parsed callable's **kwargs. These  override
                 same-named default options given in `__init__` as well as any
@@ -246,7 +254,8 @@ class FuncParser:
                 callable (like the current Session object for inlinefuncs).
 
         Returns:
-            str: The parsed string, or the same string on error (if `raise_errors` is `False`)
+            str or any: The parsed string, or the same string on error (if
+                `raise_errors` is `False`). This is always a string
 
         Raises:
             ParsingError: If a problem is encountered and `raise_errors` is True.
@@ -295,6 +304,7 @@ class FuncParser:
 
                 if curr_func:
                     # we are starting a nested funcdef
+                    return_str = True
                     if len(callstack) > _MAX_NESTING:
                         # stack full - ignore this function
                         if raise_errors:
@@ -328,6 +338,8 @@ class FuncParser:
             if not curr_func:
                 # a normal piece of string
                 fullstr += char
+                # this must always be a string
+                return_str = True
                 continue
 
             # in a function def (can be nested)
@@ -470,7 +482,8 @@ class FuncParser:
                         # exec_return should always be converted to a string.
                         curr_func = None
                         fullstr += str(exec_return)
-                        exec_return = ''
+                        if return_str:
+                            exec_return = ''
                         infuncstr = ''
                 continue
 
@@ -484,6 +497,61 @@ class FuncParser:
             for _ in range(len(callstack)):
                 infuncstr = str(callstack.pop()) + infuncstr
 
+        if not return_str and exec_return != '':
+            # return explicit return
+            return exec_return
+
         # add the last bit to the finished string and return
         fullstr += infuncstr
         return fullstr
+
+    def parse_to_any(self, string, raise_errors=False, **reserved_kwargs):
+        """
+        This parses a string and if the string only contains a "$func(...)",
+        the return will be the return value of that function, even if it's not
+        a string. If mixed in with other strings, the result will still always
+        be a string.
+
+        Args:
+            string (str): The string to parse.
+            raise_errors (bool, optional): If unset, leave a failing (or
+                unrecognized) inline function as unparsed in the string. If set,
+                raise an ParsingError.
+            **reserved_kwargs: If given, these are guaranteed to _always_ pass
+                as part of each parsed callable's **kwargs. These  override
+                same-named default options given in `__init__` as well as any
+                same-named kwarg given in the string function. This is because
+                it is often used by Evennia to pass necessary kwargs into each
+                callable (like the current Session object for inlinefuncs).
+
+        Returns:
+            any: The return from the callable. Or string if the callable is not
+                given alone in the string.
+
+        Raises:
+            ParsingError: If a problem is encountered and `raise_errors` is True.
+
+        Notes:
+            This is a convenience wrapper for `self.parse(..., return_str=False)` which
+            accomplishes the same thing.
+
+        Examples:
+            ::
+
+                from ast import literal_eval
+                from evennia.utils.funcparser import FuncParser
+
+
+                def ret1(*args, **kwargs):
+                    return 1
+
+                parser = FuncParser({"lit": lit})
+
+                assert parser.parse_to_any("$ret1()" == 1
+                assert parser.parse_to_any("$ret1() and text" == '1 and text'
+
+        """
+        return self.parse(string, raise_errors=False, escape=False, strip=False,
+                          return_str=False, **reserved_kwargs)
+
+

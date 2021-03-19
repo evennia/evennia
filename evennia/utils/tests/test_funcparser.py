@@ -205,6 +205,40 @@ class TestFuncParser(TestCase):
         ret = self.parser.parse(string, escape=True)
         self.assertEqual("Test \$foo(a) and \$bar() and \$rep(c) things", ret)
 
+    def test_parse_lit(self):
+        """
+        Get non-strings back from parsing.
+
+        """
+        string = "$lit(123)"
+
+        # normal parse
+        ret = self.parser.parse(string)
+        self.assertEqual('123', ret)
+        self.assertTrue(isinstance(ret, str))
+
+        # parse lit
+        ret = self.parser.parse_to_any(string)
+        self.assertEqual(123, ret)
+        self.assertTrue(isinstance(ret, int))
+
+        ret = self.parser.parse_to_any("$lit([1,2,3,4])")
+        self.assertEqual([1, 2, 3, 4], ret)
+        self.assertTrue(isinstance(ret, list))
+
+        ret = self.parser.parse_to_any("$lit('')")
+        self.assertEqual("", ret)
+        self.assertTrue(isinstance(ret, str))
+
+        # mixing a literal with other chars always make a string
+        ret = self.parser.parse_to_any(string + "aa")
+        self.assertEqual('123aa', ret)
+        self.assertTrue(isinstance(ret, str))
+
+        ret = self.parser.parse_to_any("test")
+        self.assertEqual('test', ret)
+        self.assertTrue(isinstance(ret, str))
+
     def test_kwargs_overrides(self):
         """
         Test so default kwargs are added and overridden properly
