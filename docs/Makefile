@@ -86,7 +86,7 @@ _multiversion-deploy:
 _latex-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(QUICKFILES)
 
-# main target:
+install:
 	@pip install -r requirements.txt
 
 clean:
