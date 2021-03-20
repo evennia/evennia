@@ -41,13 +41,13 @@ jobs:
           make quickstrict
 
       # full game dir needed for mv-local
-      - name: Set up evennia game dir
-        run: |
-          pip install -e .
-          cd ..
-          evennia --init gamedir
-          cd gamedir
-          evennia migrate
+      # - name: Set up evennia game dir
+      #   run: |
+      #     pip install -e .
+      #     cd ..
+      #     evennia --init gamedir
+      #     cd gamedir
+      #     evennia migrate
 
       - name: Deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
