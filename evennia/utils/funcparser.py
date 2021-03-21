@@ -24,7 +24,6 @@ def funcname(*args, **kwargs):
     ...
     return something
 
-
 ```
 
 Usage:
@@ -43,9 +42,16 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 """
 import dataclasses
 import inspect
+import random
+from django.conf import settings
+from ast import literal_eval
+from simpleeval import simple_eval
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, callables_from_module
+from evennia.utils.utils import (
+    make_iter, callables_from_module, variable_from_module, pad, crop, justify)
+from evennia.utils import search
 
+_CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _MAX_NESTING = 20
 
 _ESCAPE_CHAR = "\\"
@@ -95,7 +101,7 @@ class FuncParser:
     """
 
     def __init__(self,
-                 safe_callables,
+                 callables,
                  start_char=_START_CHAR,
                  escape_char=_ESCAPE_CHAR,
                  max_nesting=_MAX_NESTING,
@@ -104,15 +110,16 @@ class FuncParser:
         Initialize the parser.
 
         Args:
-            safe_callables (str, module, list or dict): Where to find
-                'safe' functions to make available in the parser. All callables
-                in provided modules (whose names don't start with an
-                underscore) are considered valid functions to access as
-                `$funcname(*args, **kwags)` during parsing. If a `str`, this
-                should be the path to such a module. A `list` can either be a
-                list of paths or module objects. If a `dict`, this should be a
-                mapping `{"funcname": callable, ...}` - this will be used
-                directly as valid parseable functions.
+            callables (str, module, list or dict): Where to find
+                'safe' functions to make available in the parser. These modules
+                can have a dict `FUNCPARSER_CALLABLES = {"funcname": callable, ...}`.
+                If no such dict exists, all callables in provided modules (whose names
+                don't start with an underscore) will be loaded as callables. Each
+                callable will will be available to call as `$funcname(*args, **kwags)`
+                during parsing. If `callables` is a `str`, this should be the path
+                to such a module. A `list` can either be a list of paths or module
+                objects. If a `dict`, this should be a direct mapping
+                `{"funcname": callable, ...}` to use.
             start_char (str, optional): A character used to identify the beginning
                 of a parseable function. Default is `$`.
             escape_char (str, optional): Prepend characters with this to have
@@ -127,17 +134,29 @@ class FuncParser:
                 into `.parse` as `**reserved_kwargs` instead.
 
         """
-        if isinstance(safe_callables, dict):
-            callables = {**safe_callables}
+        if isinstance(callables, dict):
+            loaded_callables = {**callables}
         else:
             # load all modules/paths in sequence. Later-added will override
             # earlier same-named callables (allows for overriding evennia defaults)
-            callables = {}
-            for safe_callable in make_iter(safe_callables):
-                # callables_from_module handles both paths and module instances
-                callables.update(callables_from_module(safe_callable))
-        self.validate_callables(callables)
-        self.callables = callables
+            loaded_callables = {}
+            for module_or_path in make_iter(callables):
+                callables_mapping = variable_from_module(
+                    module_or_path, variable="FUNCPARSER_CALLABLES")
+                if callables_mapping:
+                    try:
+                        # mapping supplied in variable
+                        loaded_callables.update(callables_mapping)
+                    except ValueError:
+                        raise ParsingError(
+                            f"Failure to parse - {module_or_path}.FUNCPARSER_CALLABLES "
+                            "(must be a dict {'funcname': callable, ...})")
+                else:
+                    # use all top-level variables
+                    # (handles both paths and module instances
+                    loaded_callables.update(callables_from_module(module_or_path))
+        self.validate_callables(loaded_callables)
+        self.callables = loaded_callables
         self.escape_char = escape_char
         self.start_char = start_char
         self.default_kwargs = default_kwargs
@@ -555,3 +574,593 @@ class FuncParser:
                           return_str=False, **reserved_kwargs)
 
 
+#
+# Default funcparser callables. These are made available from this module's
+# FUNCPARSER_CALLABLES.
+#
+
+def funcparser_callable_eval(*args, **kwargs):
+    """
+    Funcparser callable. This will combine safe evaluations to try to parse the
+    incoming string into a python object. If it fails, the return will be same
+    as the input.
+
+    Args
+        string (str): The string to parse. Only simple literals or operators are allowed.
+
+    Returns:
+        any: The string parsed into its Python form, or the same as input.
+
+    Example:
+        `$py(1)`
+        `$py([1,2,3,4])`
+        `$py(3 + 4)`
+
+    """
+    if not args:
+        return ''
+    inp = args[0]
+    if not isinstance(inp, str):
+        # already converted
+        return inp
+    try:
+        return literal_eval(inp)
+    except Exception:
+        try:
+            return simple_eval(inp)
+        except Exception:
+            return inp
+
+
+def funcparser_callable_toint(*args, **kwargs):
+    """Usage: toint(43.0) -> 43"""
+    inp = funcparser_callable_eval(*args, **kwargs)
+    try:
+        return int(inp)
+    except TypeError:
+        return inp
+
+
+def _apply_operation_two_elements(*args, operator="+", **kwargs):
+    """
+    Helper operating on two arguments
+
+    Args:
+        val1 (any): First value to operate on.
+        val2 (any): Second value to operate on.
+
+    Return:
+        any: The result of val1 + val2. Values must be
+            valid simple Python structures possible to add,
+            such as numbers, lists etc. The $eval is usually
+            better for non-list arithmetic.
+
+    """
+    if not len(args) > 1:
+        return ''
+    val1, val2 = args[0], args[1]
+    # try to convert to python structures, otherwise, keep as strings
+    if isinstance(val1, str):
+        try:
+            val1 = literal_eval(val1.strip())
+        except Exception:
+            pass
+    if isinstance(val2, str):
+        try:
+            val2 = literal_eval(val2.strip())
+        except Exception:
+            pass
+    if operator == "+":
+        return val1 + val2
+    elif operator == "-":
+        return val1 - val2
+    elif operator == "*":
+        return val1 * val2
+    elif operator == "/":
+        return val1 / val2
+
+
+def funcparser_callable_add(*args, **kwargs):
+    """Usage: $add(val1, val2) -> val1 + val2"""
+    return _apply_operation_two_elements(*args, operator='+', **kwargs)
+
+
+def funcparser_callable_sub(*args, **kwargs):
+    """Usage: $sub(val1, val2) -> val1 - val2"""
+    return _apply_operation_two_elements(*args, operator='-', **kwargs)
+
+
+def funcparser_callable_mult(*args, **kwargs):
+    """Usage: $mult(val1, val2) -> val1 * val2"""
+    return _apply_operation_two_elements(*args, operator='*', **kwargs)
+
+
+def funcparser_callable_div(*args, **kwargs):
+    """Usage: $mult(val1, val2) -> val1 / val2"""
+    return _apply_operation_two_elements(*args, operator='/', **kwargs)
+
+
+def funcparser_callable_round(*args, **kwargs):
+    """
+    Funcparser callable. Rounds an incoming float to a
+    certain number of significant digits.
+
+    Args:
+        inp (str or number): If a string, it will attempt
+            to be converted to a number first.
+        significant (int): The number of significant digits.  Default is None -
+            this will turn the result into an int.
+
+    Returns:
+        any: The rounded value or inp if inp was not a number.
+
+    Examples:
+        - `$round(3.5434343, 3)` - gives 3.543
+        - `$round($random(), 2)` - rounds random result, e.g 0.22
+
+    """
+    if not args:
+        return ''
+    inp, *significant = args
+    significant = significant[0] if significant else '0'
+    lit_inp = inp
+    if isinstance(inp, str):
+        try:
+            lit_inp = literal_eval(inp)
+        except Exception:
+            return inp
+    try:
+        int(significant)
+    except Exception:
+        significant = 0
+    try:
+        round(lit_inp, significant)
+    except Exception:
+        return ''
+
+def funcparser_callable_random(*args, **kwargs):
+    """
+    Funcparser callable. Returns a random number between 0 and 1, from 0 to a
+    maximum value, or within a given range (inclusive).
+
+    Args:
+        minval (str, optional): Minimum value. If not given, assumed 0.
+        maxval (str, optional): Maximum value.
+
+    Notes:
+        If either of the min/maxvalue has a '.' in it, a floating-point random
+        value will be returned. Otherwise it will be an
+        integer value in the given range.
+
+    Examples:
+        - `$random()` - random value [0 .. 1) (float).
+        - `$random(5)` - random value [0..5] (int)
+        - `$random(5.0)` - random value [0..5] (float)
+        - `$random(5, 10)` - random value [5..10] (int)
+        - `$random(5, 10.0)` - random value [5..10] (float)
+
+    """
+    nargs = len(args)
+    if nargs == 1:
+        # only maxval given
+        minval, maxval = "0", args[0]
+    elif nargs > 1:
+        minval, maxval = args[:2]
+    else:
+        minval, maxval = ("0", "1")
+
+    if "." in minval or "." in maxval:
+        # float mode
+        try:
+            minval, maxval = float(minval), float(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return minval + maxval * random.random()
+    else:
+        # int mode
+        try:
+            minval, maxval = int(minval), int(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return random.randint(minval, maxval)
+
+def funcparser_callable_randint(*args, **kwargs):
+    """
+    Usage: $randint(start, end):
+
+    Legacy alias - alwas returns integers.
+
+    """
+    return int(funcparser_callable_random(*args, **kwargs))
+
+
+def funcparser_callable_choice(*args, **kwargs):
+    """
+    FuncParser callable. Picks a random choice from a list.
+
+    Args:
+        listing (list): A list of items to randomly choose between.
+            This will be converted from a string to a real list.
+
+    Returns:
+        any: The randomly chosen element.
+
+    Example:
+        - `$choice([key, flower, house])`
+        - `$choice([1, 2, 3, 4])`
+
+    """
+    if not args:
+        return ''
+    inp = args[0]
+    if not isinstance(inp, str):
+        inp = literal_eval(inp)
+    return random.choice(inp)
+
+
+def funcparser_callable_pad(*args, **kwargs):
+    """
+    FuncParser callable. Pads text to given width, optionally with fill-characters
+
+    Args:
+        text (str): Text to pad.
+        width (int): Width of padding.
+        align (str, optional): Alignment of padding; one of 'c', 'l' or 'r'.
+        fillchar (str, optional): Character used for padding. Defaults to a space.
+
+    Example:
+        - `$pad(text, 12, l, ' ')`
+        - `$pad(text, width=12, align=c, fillchar=-)`
+
+    """
+    if not args:
+        return ''
+    text, *rest = args
+    nargs = len(args)
+    try:
+        width = int(kwargs.get("width", rest[0] if nargs > 0 else _CLIENT_DEFAULT_WIDTH))
+    except TypeError:
+        width = _CLIENT_DEFAULT_WIDTH
+    align = kwargs.get("align", rest[1] if nargs > 1 else 'c')
+    fillchar = kwargs.get("fillchar", rest[2] if nargs > 2 else ' ')
+    if fillchar not in ('c', 'l', 'r'):
+        fillchar = 'c'
+    return pad(str(text), width=width, align=align, fillchar=fillchar)
+
+
+def funcparser_callable_space(*args, **kwarg):
+    """
+    Usage: $space(43)
+
+    Insert a length of space.
+
+    """
+    if not args:
+        return ''
+    try:
+        width = int(args[0])
+    except TypeError:
+        width = 1
+    return " " * width
+
+
+def funcparser_callable_crop(*args, **kwargs):
+    """
+    FuncParser callable. Crops ingoing text to given widths.
+
+    Args:
+        text (str, optional): Text to crop.
+        width (str, optional): Will be converted to an integer. Width of
+            crop in characters.
+        suffix (str, optional): End string to mark the fact that a part
+            of the string was cropped. Defaults to `[...]`.
+
+    Example:
+        `$crop(text, 78, [...])`
+        `$crop(text, width=78, suffix='[...]')`
+
+    """
+    if not args:
+        return ''
+    text, *rest = args
+    nargs = len(args)
+    try:
+        width = int(kwargs.get("width", rest[0] if nargs > 0 else _CLIENT_DEFAULT_WIDTH))
+    except TypeError:
+        width = _CLIENT_DEFAULT_WIDTH
+    suffix =  kwargs.get('suffix', rest[1] if nargs > 1 else "[...]")
+    return crop(str(text), width=width, suffix=str(suffix))
+
+
+def funcparser_callable_justify(*args, **kwargs):
+    """
+    Justify text across a width, default across screen width.
+
+    Args:
+        text (str): Text to justify.
+        width (int, optional): Defaults to default screen width.
+        align (str, optional): One of 'l', 'c', 'r' or 'f' for 'full'.
+        indent (int, optional): Intendation of text block, if any.
+
+    Returns:
+        str: The justified text.
+
+    Examples:
+        - $just(text, width=40)
+        - $just(text, align=r, indent=2)
+
+    """
+    if not args:
+        return ''
+    text = args[0]
+    try:
+        width = int(kwargs.get("width", _CLIENT_DEFAULT_WIDTH))
+    except TypeError:
+        width = _CLIENT_DEFAULT_WIDTH
+    align = str(kwargs.get("align", 'f'))
+    try:
+        indent = int(kwargs.get("indent", 0))
+    except TypeError:
+        indent = 0
+    return justify(str(text), width=width, align=align, indent=indent)
+
+
+# legacy for backwards compatibility
+def funcparser_callable_left_justify(*args, **kwargs):
+    "Usage: $ljust(text)"
+    return funcparser_callable_justify(*args, justify='l', **kwargs)
+
+
+def funcparser_callable_right_justify(*args, **kwargs):
+    "Usage: $rjust(text)"
+    return funcparser_callable_justify(*args, justify='r', **kwargs)
+
+
+def funcparser_callable_center_justify(*args, **kwargs):
+    "Usage: $cjust(text)"
+    return funcparser_callable_justify(*args, justify='c', **kwargs)
+
+
+def funcparser_callable_clr(*args, **kwargs):
+    """
+    FuncParser callable. Colorizes nested text.
+
+    Args:
+        startclr (str, optional): An ANSI color abbreviation without the
+            prefix `|`, such as `r` (red foreground) or `[r` (red background).
+        text (str, optional): Text
+        endclr (str, optional): The color to use at the end of the string. Defaults
+            to `|n` (reset-color).
+    Kwargs:
+        color (str, optional): If given,
+
+    Example:
+        - `$clr(r, text, n)`
+        - `$clr(r, text)`
+        - `$clr(text, start=r, end=n)`
+
+    """
+    if not args:
+        return ''
+    startclr, text, endclr = '', '', ''
+    if len(args) > 1:
+        # $clr(pre, text, post))
+        startclr, *rest = args
+        if rest:
+            text, *endclr = rest
+            if endclr:
+                endclr = endclr[0]
+    else:
+        # $clr(text, start=pre, end=post)
+        text = args[0]
+        startclr = kwargs.get("start", '')
+        endclr = kwargs.get("end", '')
+
+    startclr = "|" + startclr if startclr else ""
+    endclr = "|" + endclr if endclr else ("|n" if startclr else '')
+    return f"{startclr}{text}{endclr}"
+
+
+def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
+    """
+    FuncParser callable. Finds an object based on name or #dbref. Note that
+    this requries the parser be called with the caller's Session for proper
+    security. If called without session, the call is aborted.
+
+    Args:
+        query (str): The key or dbref to search for.
+
+    Kwargs:
+        return_list (bool): If set, return a list of objects with
+            0, 1 or more matches to `query`. Defaults to False.
+        type (str): One of 'obj', 'account', 'script'
+        caller (Entity): Supplied to Parser. This is required and will
+            be passed into the access check for the entity being searched for.
+            The 'control' permission is required.
+        access (str): Which locktype access to check. Unset to disable the
+            security check.
+
+    Returns:
+        any: An entity match or None if no match or a list if `return_list` is set.
+
+    Raise:
+        ParsingError: If zero/multimatch and `return_list` is False.
+
+    Examples:
+        - "$search(#233)"
+        - "$search(Tom, type=account)"
+        - "$search(meadow, return_list=True)"
+
+    """
+    return_list = bool(kwargs.get("return_list", "False"))
+
+    if not (args and caller):
+        return [] if return_list else None
+
+    query = str(args[0])
+
+    typ = kwargs.get("type", "obj")
+    targets = []
+    if typ == "obj":
+        targets = search.search_object(query)
+    elif typ == "account":
+        targets = search.search_account(query)
+    elif typ == "script":
+        targets = search.search_script(query)
+
+    if not targets:
+        if return_list:
+            return []
+        raise ParsingError(f"$search: Query '{query}' gave no matches.")
+
+    if len(targets) > 1 and not return_list:
+        raise ParsingError("$search: Query '{query}' found {num} matches. "
+                           "Set return_list=True to accept a list".format(
+                               query=query, num=len(targets)))
+
+    for target in targets:
+        if not target.access(caller, target, access):
+            raise ParsingError('$search Cannot add found entity - access failure.')
+
+    return list(targets) if return_list else targets[0]
+
+
+def funcparser_callable_search_list(*args, caller=None, access="control", **kwargs):
+    """
+    Usage: $objlist(#123)
+
+    Legacy alias for search with a return_list=True kwarg preset.
+
+    """
+    return funcparser_callable_search(*args, caller=caller, access=access,
+                                      return_list=True, **kwargs)
+
+
+def funcparser_callable_you(*args, you_obj=None, you_target=None, capitalize=False, **kwargs):
+    """
+    Usage: %you()
+
+    Replaces with you for the caller of the string, with the display_name
+    of the caller for others.
+
+    Kwargs:
+        you_obj (Object): The object who represents 'you' in the string.
+        you_target (Object): The recipient of the string.
+        capitalize (bool): Passed by the You helper, to capitalize you.
+
+    Returns:
+        str: The parsed string.
+
+    Raises:
+        ParsingError: If `you_obj` and `you_target` were not supplied.
+
+    Notes:
+        The kwargs must be supplied to the parse method. If not given,
+            the parsing will be aborted. Note that it will not capitalize
+
+    Examples:
+        This can be used by the say or emote hooks to pass actor stance
+        strings. This should usually be combined with the $inflect() callable.
+
+        - `With a grin, $you() $conj(jump).`
+
+        The You-object will see "With a grin, you jump."
+        Others will see "With a grin, CharName jumps."
+
+    """
+    if not (you_obj and you_target):
+        raise ParsingError("No you_obj/target supplied to $you callable")
+    capitalize = bool(capitalize)
+    if you_obj == you_target:
+        return "You" if capitalize else "you"
+    return you_obj.get_display_name(looker=you_target)
+
+
+def funcparser_callable_You(*args, you_obj=None, you_target=None, capitalize=True, **kwargs):
+    """
+    Usage: $You() - capitalizes the 'you' output.
+
+    """
+    return funcparser_callable_you(
+        *args, you_obj=you_obj, you_target=you_target, capitalize=capitalize, **kwargs)
+
+
+def funcparser_callable_conjugate(*args, you_obj=None, you_target=None, **kwargs):
+    """
+    Conjugate a verb according to if it should be 2nd or third person.  The
+    mlconjug3 package supports French, English, Italian, Portugese and Romanian
+    (see https://pypi.org/project/mlconjug3/). The function will pick the
+    language from settings.LANGUAGE_CODE, or English if an unsupported language
+    was found.
+
+    Kwargs:
+        you_obj (Object): The object who represents 'you' in the string.
+        you_target (Object): The recipient of the string.
+
+    Returns:
+        str: The parsed string.
+
+    Raises:
+        ParsingError: If `you_obj` and `you_target` were not supplied.
+
+    Notes:
+        The kwargs must be supplied to the parse method. If not given,
+            the parsing will be aborted. Note that it will not capitalize
+
+    Exampels:
+        This is often used in combination with the $you/You( callables.
+
+        - `With a grin, $you() $conj(jump)`
+
+        The You-object will see "With a grin, you jump."
+        Others will see "With a grin, CharName jumps."
+
+    """
+
+    if not (you_obj and you_target):
+        raise ParsingError("No you_obj/target supplied to $conj callable")
+    return ''
+
+
+# these are made available as callables by adding 'evennia.utils.funcparser' as
+# a callable-path when initializing the FuncParser.
+
+FUNCPARSER_CALLABLES = {
+    # eval and arithmetic
+    "eval": funcparser_callable_eval,
+    "add": funcparser_callable_add,
+    "sub": funcparser_callable_sub,
+    "mult": funcparser_callable_mult,
+    "div": funcparser_callable_div,
+    "round": funcparser_callable_round,
+    "toint": funcparser_callable_toint,
+
+    # randomizers
+    "random": funcparser_callable_random,
+    "randint": funcparser_callable_randint,
+    "choice": funcparser_callable_choice,
+
+    # string manip
+    "pad": funcparser_callable_pad,
+    "crop": funcparser_callable_crop,
+    "just": funcparser_callable_justify,
+    "ljust": funcparser_callable_left_justify,
+    "rjust": funcparser_callable_right_justify,
+    "cjust": funcparser_callable_center_justify,
+    "justify": funcparser_callable_justify,  # aliases for backwards compat
+    "justify_left": funcparser_callable_left_justify,
+    "justify_right": funcparser_callable_right_justify,
+    "justify_center": funcparser_callable_center_justify,
+    "space": funcparser_callable_space,
+    "clr": funcparser_callable_clr,
+
+    # seaching
+    "search": funcparser_callable_search,
+    "obj": funcparser_callable_search,  # aliases for backwards compat
+    "objlist": funcparser_callable_search_list,
+    "dbref": funcparser_callable_search,
+
+    # referencing
+    "you": funcparser_callable_you,
+    "You": funcparser_callable_You,
+}

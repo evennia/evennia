@@ -25,7 +25,7 @@ from evennia.utils.ansi import raw as ansi_raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
-_FUNCPARSER = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+_FUNCPARSER = None
 
 # limit symbol import for API
 __all__ = (
@@ -2381,6 +2381,10 @@ class CmdExamine(ObjManipCommand):
             value (any): Attribute value.
         Returns:
         """
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            _FUNCPARSER = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+
         if attr is None:
             return "No such attribute was found."
         value = utils.to_str(value)

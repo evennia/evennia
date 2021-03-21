@@ -13,6 +13,10 @@ autobahn >= 17.9.3
 lunr == 0.5.6
 simpleeval <= 1.0
 
+# conjugation library, py3 version
+git+https://github.com/markrogersjr/nodebox_linguistics_extended.git
+
+
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0
 
