@@ -42,6 +42,8 @@
   user davewiththenicehat. Also add new doc string.
 - Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc` 
   function.
+- Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This 
+  is useful for implementing actor-stance emoting for sending a string to different targets.
 
 ### Evennia 0.9.5 (2019-2020)
 

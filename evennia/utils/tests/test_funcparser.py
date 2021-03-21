@@ -267,8 +267,29 @@ class TestFuncParser(TestCase):
         ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
         self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
 
-
 class TestDefaultCallables(TestCase):
+    """
+    Test default callables.
+
+    """
+    @override_settings(INLINEFUNC_MODULES=["evennia.utils.funcparser"])
+    def setUp(self):
+        from django.conf import settings
+        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+
+    @parameterized.expand([
+        ("Test py1 $py('')", "Test py1 ''"),
+    ])
+    def test_callable(self, string, expected):
+        """
+        Test callables with various input strings
+
+        """
+        ret = self.parser.parse(string, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+
+class TestOldDefaultCallables(TestCase):
     """
     Test default callables
 
