@@ -322,7 +322,6 @@ def verb_is_present_participle(verb):
     return tense == "present participle"
 
 
-
 def verb_is_past(verb, person="", negated=False):
     """
     Checks whether the verb is in the past tense.
@@ -380,8 +379,9 @@ def verb_actor_stance_components(verb):
     if "participle" in tense or "plural" in tense:
         return (verb, verb)
     if tense == "infinitive" or "present" in tense:
-        return (verb_present(verb, person="2"),
-                verb_present(verb, person="3"))
+        you_str = verb_present(verb, person="2") or verb
+        them_str = verb_present(verb, person="3") or verb + "s"
     else:
-        return (verb_past(verb, person="2"),
-                verb_past(verb, person="3"))
+        you_str = verb_past(verb, person="2") or verb
+        them_str = verb_past(verb, person="3") or verb + "s"
+    return (you_str, them_str)

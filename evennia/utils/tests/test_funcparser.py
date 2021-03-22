@@ -267,6 +267,14 @@ class TestFuncParser(TestCase):
         ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
         self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
 
+class _DummyObj:
+    def __init__(self, name):
+        self.name = name
+
+    def get_display_name(self, looker=None):
+        return self.name
+
+
 class TestDefaultCallables(TestCase):
     """
     Test default callables.
@@ -276,9 +284,11 @@ class TestDefaultCallables(TestCase):
     def setUp(self):
         from django.conf import settings
         self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+        self.obj1 = _DummyObj("Char1")
+        self.obj2 = _DummyObj("Char2")
 
     @parameterized.expand([
-        ("Test py1 $py('')", "Test py1 ''"),
+        ("Test py1 $eval('')", "Test py1 "),
     ])
     def test_callable(self, string, expected):
         """
@@ -287,6 +297,21 @@ class TestDefaultCallables(TestCase):
         """
         ret = self.parser.parse(string, raise_errors=True)
         self.assertEqual(expected, ret)
+
+    @parameterized.expand([
+        ("$You() $conj(smile) at him.", "You smile at him.", "Char1 smiles at him."),
+    ])
+    def test_conjugate(self, string, expected_you, expected_them):
+        """
+        Test callables with various input strings
+
+        """
+        ret = self.parser.parse(string, you_obj=self.obj1, you_target=self.obj1,
+                                raise_errors=True)
+        self.assertEqual(expected_you, ret)
+        ret = self.parser.parse(string, you_obj=self.obj1, you_target=self.obj2,
+                                raise_errors=True)
+        self.assertEqual(expected_them, ret)
 
 
 class TestOldDefaultCallables(TestCase):

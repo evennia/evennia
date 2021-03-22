@@ -40,9 +40,11 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 
 
 """
+import re
 import dataclasses
 import inspect
 import random
+from functools import partial
 from django.conf import settings
 from ast import literal_eval
 from simpleeval import simple_eval
@@ -50,6 +52,7 @@ from evennia.utils import logger
 from evennia.utils.utils import (
     make_iter, callables_from_module, variable_from_module, pad, crop, justify)
 from evennia.utils import search
+from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 
 _CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _MAX_NESTING = 20
@@ -520,8 +523,9 @@ class FuncParser:
             # return explicit return
             return exec_return
 
-        # add the last bit to the finished string and return
+        # add the last bit to the finished string
         fullstr += infuncstr
+
         return fullstr
 
     def parse_to_any(self, string, raise_errors=False, **reserved_kwargs):
@@ -1116,10 +1120,13 @@ def funcparser_callable_conjugate(*args, you_obj=None, you_target=None, **kwargs
         Others will see "With a grin, CharName jumps."
 
     """
-
+    if not args:
+        return ''
     if not (you_obj and you_target):
         raise ParsingError("No you_obj/target supplied to $conj callable")
-    return ''
+
+    you_str, them_str = verb_actor_stance_components(args[0])
+    return you_str if you_obj == you_target else them_str
 
 
 # these are made available as callables by adding 'evennia.utils.funcparser' as
@@ -1163,4 +1170,5 @@ FUNCPARSER_CALLABLES = {
     # referencing
     "you": funcparser_callable_you,
     "You": funcparser_callable_You,
+    "conj": funcparser_callable_conjugate,
 }
