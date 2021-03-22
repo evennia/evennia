@@ -228,6 +228,10 @@ class TestVerbConjugate(TestCase):
         ("doing", ("doing", "doing")),
         ("are", ("are", "is")),
         ("had", ("had", "had")),
+        ("grin", ("grin", "grins")),
+        ("smile", ("smile", "smiles")),
+        ("vex", ("vex", "vexes")),
+        ("thrust", ("thrust", "thrusts")),
     ])
     def test_verb_actor_stance_components(self, verb, expected):
         """
