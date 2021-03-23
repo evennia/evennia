@@ -26,6 +26,11 @@ User=your-user
 #
 ExecStart=/your/path/to/pyenv/bin/python /your/path/to/evennia/bin/unix/evennia ipstart --gamedir /your/path/to/mygame
 
+#
+# Service needs to know the path to twistd binary
+# Replace /your/path/to/venv/bin with whatever is appropriate
+Environment="PATH=/your/path/to/pyenv/bin:$PATH"
+
 # restart on all failures, wait 3 seconds before doing so.
 Restart=on-failure
 RestartSec=3
