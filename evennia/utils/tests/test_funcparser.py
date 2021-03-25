@@ -10,7 +10,7 @@ from simpleeval import simple_eval
 from parameterized import parameterized
 from django.test import TestCase, override_settings
 
-from evennia.utils import funcparser
+from evennia.utils import funcparser, test_resources
 
 
 def _test_callable(*args, **kwargs):
@@ -300,33 +300,27 @@ class TestDefaultCallables(TestCase):
 
     @parameterized.expand([
         ("$You() $conj(smile) at him.", "You smile at him.", "Char1 smiles at him."),
+        ("$You() $conj(smile) at $You(char1).", "You smile at You.", "Char1 smiles at Char1."),
+        ("$You() $conj(smile) at $You(char2).", "You smile at Char2.", "Char1 smiles at You."),
+        ("$You(char2) $conj(smile) at $you(char1).", "Char2 smile at you.", "You smiles at Char1."),
     ])
     def test_conjugate(self, string, expected_you, expected_them):
         """
         Test callables with various input strings
 
         """
-        ret = self.parser.parse(string, you_obj=self.obj1, you_target=self.obj1,
+        mapping = {"char1": self.obj1, "char2": self.obj2}
+        ret = self.parser.parse(string, you=self.obj1, receiver=self.obj1, mapping=mapping,
                                 raise_errors=True)
         self.assertEqual(expected_you, ret)
-        ret = self.parser.parse(string, you_obj=self.obj1, you_target=self.obj2,
+        ret = self.parser.parse(string, you=self.obj1, receiver=self.obj2, mapping=mapping,
                                 raise_errors=True)
         self.assertEqual(expected_them, ret)
 
-
-class TestOldDefaultCallables(TestCase):
-    """
-    Test default callables
-
-    """
-    @override_settings(INLINEFUNC_MODULES=["evennia.prototypes.protfuncs",
-                                           "evennia.utils.inlinefuncs"])
-    def setUp(self):
-        from django.conf import settings
-        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
-
     @parameterized.expand([
         ("Test $pad(Hello, 20, c, -) there", "Test -------Hello-------- there"),
+        ("Test $pad(Hello, width=20, align=c, fillchar=-) there",
+         "Test -------Hello-------- there"),
         ("Test $crop(This is a long test, 12)", "Test This is[...]"),
         ("Some $space(10) here", "Some            here"),
         ("Some $clr(b, blue color) now", "Some |bblue color|n now"),
@@ -335,8 +329,13 @@ class TestOldDefaultCallables(TestCase):
         ("Some $mult(3, 2) things", "Some 6 things"),
         ("Some $div(6, 2) things", "Some 3.0 things"),
         ("Some $toint(6) things", "Some 6 things"),
+        ("Some $ljust(Hello, 30)", "Some Hello                         "),
+        ("Some $rjust(Hello, 30)", "Some                          Hello"),
+        ("Some $rjust(Hello, width=30)", "Some                          Hello"),
+        ("Some $cjust(Hello, 30)", "Some             Hello             "),
+        ("Some $eval('-'*20)Hello", "Some --------------------Hello"),
     ])
-    def test_callable(self, string, expected):
+    def test_other_callables(self, string, expected):
         """
         Test default callables.
 
@@ -349,3 +348,60 @@ class TestOldDefaultCallables(TestCase):
         ret = self.parser.parse(string, raise_errors=True)
         ret = int(ret)
         self.assertTrue(1 <= ret <= 10)
+
+
+class TestCallableSearch(test_resources.EvenniaTest):
+    """
+    Test the $search(query) callable
+
+    """
+    @override_settings(INLINEFUNC_MODULES=["evennia.utils.funcparser"])
+    def setUp(self):
+        super().setUp()
+
+        from django.conf import settings
+        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+
+    def test_search_obj(self):
+        """
+        Test searching for an object
+
+        """
+        string = "$search(Char)"
+        expected = self.char1
+
+        ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_search_account(self):
+        """
+        Test searching for an account
+
+        """
+        string = "$search(TestAccount, type=account)"
+        expected = self.account
+
+        ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_search_script(self):
+        """
+        Test searching for a script
+
+        """
+        string = "$search(Script, type=script)"
+        expected = self.script
+
+        ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_search_obj_embedded(self):
+        """
+        Test searching for an object - embedded in str
+
+        """
+        string = "This is $search(Char) the guy."
+        expected = "This is " + str(self.char1) + " the guy."
+
+        ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
+        self.assertEqual(expected, ret)

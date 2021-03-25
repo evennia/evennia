@@ -820,15 +820,16 @@ def funcparser_callable_pad(*args, **kwargs):
     if not args:
         return ''
     text, *rest = args
-    nargs = len(args)
+    nrest = len(rest)
     try:
-        width = int(kwargs.get("width", rest[0] if nargs > 0 else _CLIENT_DEFAULT_WIDTH))
+        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
-    align = kwargs.get("align", rest[1] if nargs > 1 else 'c')
-    fillchar = kwargs.get("fillchar", rest[2] if nargs > 2 else ' ')
-    if fillchar not in ('c', 'l', 'r'):
-        fillchar = 'c'
+
+    align = kwargs.get("align", rest[1] if nrest > 1 else 'c')
+    fillchar = kwargs.get("fillchar", rest[2] if nrest > 2 else ' ')
+    if align not in ('c', 'l', 'r'):
+        align = 'c'
     return pad(str(text), width=width, align=align, fillchar=fillchar)
 
 
@@ -867,12 +868,12 @@ def funcparser_callable_crop(*args, **kwargs):
     if not args:
         return ''
     text, *rest = args
-    nargs = len(args)
+    nrest = len(rest)
     try:
-        width = int(kwargs.get("width", rest[0] if nargs > 0 else _CLIENT_DEFAULT_WIDTH))
+        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
-    suffix =  kwargs.get('suffix', rest[1] if nargs > 1 else "[...]")
+    suffix = kwargs.get('suffix', rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
 
 
@@ -896,14 +897,15 @@ def funcparser_callable_justify(*args, **kwargs):
     """
     if not args:
         return ''
-    text = args[0]
+    text, *rest = args
+    lrest = len(rest)
     try:
-        width = int(kwargs.get("width", _CLIENT_DEFAULT_WIDTH))
+        width = int(kwargs.get("width", rest[0] if lrest > 0 else _CLIENT_DEFAULT_WIDTH))
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
-    align = str(kwargs.get("align", 'f'))
+    align = str(kwargs.get("align", rest[1] if lrest > 1 else 'f'))
     try:
-        indent = int(kwargs.get("indent", 0))
+        indent = int(kwargs.get("indent", rest[2] if lrest > 2 else 0))
     except TypeError:
         indent = 0
     return justify(str(text), width=width, align=align, indent=indent)
@@ -912,17 +914,17 @@ def funcparser_callable_justify(*args, **kwargs):
 # legacy for backwards compatibility
 def funcparser_callable_left_justify(*args, **kwargs):
     "Usage: $ljust(text)"
-    return funcparser_callable_justify(*args, justify='l', **kwargs)
+    return funcparser_callable_justify(*args, align='l', **kwargs)
 
 
 def funcparser_callable_right_justify(*args, **kwargs):
     "Usage: $rjust(text)"
-    return funcparser_callable_justify(*args, justify='r', **kwargs)
+    return funcparser_callable_justify(*args, align='r', **kwargs)
 
 
 def funcparser_callable_center_justify(*args, **kwargs):
     "Usage: $cjust(text)"
-    return funcparser_callable_justify(*args, justify='c', **kwargs)
+    return funcparser_callable_justify(*args, align='c', **kwargs)
 
 
 def funcparser_callable_clr(*args, **kwargs):
@@ -988,7 +990,8 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         any: An entity match or None if no match or a list if `return_list` is set.
 
     Raise:
-        ParsingError: If zero/multimatch and `return_list` is False.
+        ParsingError: If zero/multimatch and `return_list` is False, or caller was not
+            passed into parser.
 
     Examples:
         - "$search(#233)"
@@ -996,10 +999,12 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         - "$search(meadow, return_list=True)"
 
     """
-    return_list = bool(kwargs.get("return_list", "False"))
+    return_list = kwargs.get("return_list", "false").lower() == "true"
 
-    if not (args and caller):
+    if not args:
         return [] if return_list else None
+    if not caller:
+        raise ParsingError("$search requires a `caller` passed to the parser.")
 
     query = str(args[0])
 
@@ -1040,63 +1045,72 @@ def funcparser_callable_search_list(*args, caller=None, access="control", **kwar
                                       return_list=True, **kwargs)
 
 
-def funcparser_callable_you(*args, you_obj=None, you_target=None, capitalize=False, **kwargs):
+def funcparser_callable_you(*args, you=None, receiver=None, mapping=None, capitalize=False, **kwargs):
     """
-    Usage: %you()
+    Usage: $you() or $you(key)
 
     Replaces with you for the caller of the string, with the display_name
     of the caller for others.
 
     Kwargs:
-        you_obj (Object): The object who represents 'you' in the string.
-        you_target (Object): The recipient of the string.
+        you (Object): The 'you' in the string. This is used unless another
+            you-key is passed to the callable in combination with `mapping`.
+        receiver (Object): The recipient of the string.
+        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
+            used to find which object `$you(key)` refers to. If not given, the
+            `you` kwarg is used.
         capitalize (bool): Passed by the You helper, to capitalize you.
 
     Returns:
         str: The parsed string.
 
     Raises:
-        ParsingError: If `you_obj` and `you_target` were not supplied.
+        ParsingError: If `you` and `receiver` were not supplied.
 
     Notes:
-        The kwargs must be supplied to the parse method. If not given,
-            the parsing will be aborted. Note that it will not capitalize
+        The kwargs should be passed the to parser directly.
 
     Examples:
         This can be used by the say or emote hooks to pass actor stance
         strings. This should usually be combined with the $inflect() callable.
 
-        - `With a grin, $you() $conj(jump).`
+        - `With a grin, $you() $conj(jump) at $you(tommy).`
 
-        The You-object will see "With a grin, you jump."
-        Others will see "With a grin, CharName jumps."
+        The You-object will see "With a grin, you jump at Tommy."
+        Tommy will see "With a grin, CharName jumps at you."
+        Others will see "With a grin, CharName jumps at Tommy."
 
     """
-    if not (you_obj and you_target):
-        raise ParsingError("No you_obj/target supplied to $you callable")
+    if args and mapping:
+        # this would mean a $you(key) form
+        try:
+            you = mapping.get(args[0])
+        except KeyError:
+            pass
+
+    if not (you and receiver):
+        raise ParsingError("No you-object or receiver supplied to $you callable.")
+
     capitalize = bool(capitalize)
-    if you_obj == you_target:
+    if you == receiver:
         return "You" if capitalize else "you"
-    return you_obj.get_display_name(looker=you_target)
+    return you.get_display_name(looker=receiver) if hasattr(you, "get_display_name") else str(you)
 
 
-def funcparser_callable_You(*args, you_obj=None, you_target=None, capitalize=True, **kwargs):
+def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs):
     """
     Usage: $You() - capitalizes the 'you' output.
 
     """
     return funcparser_callable_you(
-        *args, you_obj=you_obj, you_target=you_target, capitalize=capitalize, **kwargs)
+        *args, you=you, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs)
 
 
-def funcparser_callable_conjugate(*args, you_obj=None, you_target=None, **kwargs):
+def funcparser_callable_conjugate(*args, you=None, receiver=None, **kwargs):
     """
-    Conjugate a verb according to if it should be 2nd or third person.  The
-    mlconjug3 package supports French, English, Italian, Portugese and Romanian
-    (see https://pypi.org/project/mlconjug3/). The function will pick the
-    language from settings.LANGUAGE_CODE, or English if an unsupported language
-    was found.
+    $conj(verb)
 
+    Conjugate a verb according to if it should be 2nd or third person.
     Kwargs:
         you_obj (Object): The object who represents 'you' in the string.
         you_target (Object): The recipient of the string.
@@ -1105,34 +1119,39 @@ def funcparser_callable_conjugate(*args, you_obj=None, you_target=None, **kwargs
         str: The parsed string.
 
     Raises:
-        ParsingError: If `you_obj` and `you_target` were not supplied.
+        ParsingError: If `you` and `recipient` were not both supplied.
 
     Notes:
-        The kwargs must be supplied to the parse method. If not given,
-            the parsing will be aborted. Note that it will not capitalize
+        Note that it will not capitalized.
+        This assumes that the active party (You) is the one performing the verb.
+        This automatic conjugation will fail if the active part is another person
+        than 'you'.
+        The you/receiver should be passed to the parser directly.
 
     Exampels:
         This is often used in combination with the $you/You( callables.
 
         - `With a grin, $you() $conj(jump)`
 
-        The You-object will see "With a grin, you jump."
+        You will see "With a grin, you jump."
         Others will see "With a grin, CharName jumps."
 
     """
     if not args:
         return ''
-    if not (you_obj and you_target):
-        raise ParsingError("No you_obj/target supplied to $conj callable")
+    if not (you and receiver):
+        raise ParsingError("No youj/receiver supplied to $conj callable")
 
-    you_str, them_str = verb_actor_stance_components(args[0])
-    return you_str if you_obj == you_target else them_str
+    second_person_str, third_person_str = verb_actor_stance_components(args[0])
+    return second_person_str if you == receiver else third_person_str
 
 
 # these are made available as callables by adding 'evennia.utils.funcparser' as
 # a callable-path when initializing the FuncParser.
 
 FUNCPARSER_CALLABLES = {
+    # 'standard' callables
+
     # eval and arithmetic
     "eval": funcparser_callable_eval,
     "add": funcparser_callable_add,
@@ -1160,14 +1179,18 @@ FUNCPARSER_CALLABLES = {
     "justify_center": funcparser_callable_center_justify,
     "space": funcparser_callable_space,
     "clr": funcparser_callable_clr,
+}
 
-    # seaching
+SEARCHING_CALLABLES = {
+    # requires `caller` and optionally `access` to be passed into parser
     "search": funcparser_callable_search,
     "obj": funcparser_callable_search,  # aliases for backwards compat
     "objlist": funcparser_callable_search_list,
     "dbref": funcparser_callable_search,
+}
 
-    # referencing
+ACTOR_STANCE_CALLABLES = {
+    # requires `you`, `receiver` and `mapping` to be passed into parser
     "you": funcparser_callable_you,
     "You": funcparser_callable_You,
     "conj": funcparser_callable_conjugate,
