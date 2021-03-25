@@ -20,6 +20,7 @@ from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.utils import funcparser
 from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
@@ -46,6 +47,12 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 
 _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
+
+_MSG_CONTENTS_PARSER = funcparser.FuncParser(
+    {"you": funcparser.funcparser_callable_you,
+     "You": funcparser.funcparser_callable_You,
+     "conj": funcparser.funcparser_callable_conjugate
+    })
 
 
 class ObjectSessionHandler(object):
@@ -717,64 +724,94 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str or tuple): Message to send. If a tuple, this should be
                 on the valid OOB outmessage form `(message, {kwargs})`,
                 where kwargs are optional data passed to the `text`
-                outputfunc.
+                outputfunc. The message will be parsed for `{key}` formatting and
+                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.
+                The `key` is taken from the `mapping` kwarg {"key": object, ...}`.
+                The `mapping[key].get_display_name(looker=recipient)` will be called
+                for that key for every recipient of the string.
             exclude (list, optional): A list of objects not to send to.
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
                 more info.
             mapping (dict, optional): A mapping of formatting keys
-                `{"key":<object>, "key2":<object2>,...}. The keys
-                must match `{key}` markers in the `text` if this is a string or
-                in the internal `message` if `text` is a tuple. These
-                formatting statements will be
-                replaced by the return of `<object>.get_display_name(looker)`
-                for every looker in contents that receives the
-                message. This allows for every object to potentially
-                get its own customized string.
-        Keyword Args:
-            Keyword arguments will be passed on to `obj.msg()` for all
-            messaged objects.
+                `{"key":<object>, "key2":<object2>,...}.
+                The keys must either match `{key}` or `$You(key)/$you(key)` markers
+                in the `text` string. If `<object>` doesn't have a `get_display_name`
+                method, it will be returned as a string. If not set, a key `you` will
+                be auto-added to point to `from_obj` if given, otherwise to `self`.
+            **kwargs: Keyword arguments will be passed on to `obj.msg()` for all
+                messaged objects.
 
         Notes:
-            The `mapping` argument is required if `message` contains
-            {}-style format syntax. The keys of `mapping` should match
-            named format tokens, and its values will have their
-            `get_display_name()` function called for  each object in
-            the room before substitution. If an item in the mapping does
-            not have `get_display_name()`, its string value will be used.
+            For 'actor-stance' reporting (You say/Name says), use the
+            `$You()/$you()/$You(key)` and `$conj(verb)` (verb-conjugation)
+            inline callables. This will use the respective `get_display_name()`
+            for all onlookers except for `from_obj or self`, which will become
+            'You/you'. If you use `$You/you(key)`, the key must be in `mapping`.
 
-        Example:
-            Say Char is a Character object and Npc is an NPC object:
+            For 'director-stance' reporting (Name says/Name says), use {key}
+            syntax directly. For both `{key}` and `You/you(key)`,
+            `mapping[key].get_display_name(looker=recipient)` may be called
+            depending on who the recipient is.
 
-            char.location.msg_contents(
-                "{attacker} kicks {defender}",
-                mapping=dict(attacker=char, defender=npc), exclude=(char, npc))
+        Examples:
 
-            This will result in everyone in the room seeing 'Char kicks NPC'
-            where everyone may potentially see different results for Char and Npc
-            depending on the results of `char.get_display_name(looker)` and
-            `npc.get_display_name(looker)` for each particular onlooker
+            Let's assume
+            - `player1.key -> "Player1"`,
+              `player1.get_display_name(looker=player2) -> "The First girl"`
+            - `player2.key -> "Player2"`,
+              `player2.get_display_name(looker=player1) -> "The Second girl"`
+
+            Actor-stance:
+            ::
+
+                char.location.msg_contents(
+                    "$You() $conj(attack) $you(defender).",
+                    mapping={"defender": player2})
+
+            - player1 will see `You attack The Second girl.`
+            - player2 will see 'The First girl attacks you.'
+
+            Director-stance:
+            ::
+
+                char.location.msg_contents(
+                    "{attacker} attacks {defender}.",
+                    mapping={"attacker:player1, "defender":player2})
+
+            - player1 will see: 'Player1 attacks The Second girl.'
+            - player2 will see: 'The First girl attacks Player2'
 
         """
         # we also accept an outcommand on the form (message, {kwargs})
         is_outcmd = text and is_iter(text)
         inmessage = text[0] if is_outcmd else text
         outkwargs = text[1] if is_outcmd and len(text) > 1 else {}
+        mapping = mapping or {}
+        you = from_obj or self
+
+        if 'you' not in mapping:
+            mapping[you] = you
 
         contents = self.contents
         if exclude:
             exclude = make_iter(exclude)
             contents = [obj for obj in contents if obj not in exclude]
-        for obj in contents:
-            if mapping:
-                substitutions = {
-                    t: sub.get_display_name(obj) if hasattr(sub, "get_display_name") else str(sub)
-                    for t, sub in mapping.items()
-                }
-                outmessage = inmessage.format(**substitutions)
-            else:
-                outmessage = inmessage
-            obj.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
+
+        for receiver in contents:
+
+            # actor-stance replacements
+            inmessage = _MSG_CONTENTS_PARSER.parse(
+                inmessage, raise_errors=True, return_string=True,
+                you=you, receiver=receiver, mapping=mapping)
+
+            # director-stance replacements
+            outmessage = inmessage.format(
+                **{key: obj.get_display_name(looker=receiver)
+                   if hasattr(obj, "get_display_name") else str(obj)
+                   for key, obj in mapping.items()})
+
+            receiver.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(
         self,

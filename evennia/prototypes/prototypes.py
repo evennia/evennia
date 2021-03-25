@@ -31,7 +31,7 @@ from evennia.utils.utils import (
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils.funcparser import FuncParser
-from evennia.utils import inlinefuncs, dbserialize
+from evennia.utils import dbserialize
 from evennia.utils.evtable import EvTable
 
 
@@ -721,7 +721,7 @@ for mod in settings.PROT_FUNC_MODULES:
         raise
 
 
-def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, caller=None, **kwargs):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -741,6 +741,8 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
         protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
         current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
+        caller (Object or Account): This is necessary for certain protfuncs that perform object
+            searches and have to check permissions.
         any (any): Passed on to the protfunc.
 
     Returns:
@@ -759,11 +761,8 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
 
-    result = FuncParser(available_functions).parse(value, raise_errors=True, **kwargs)
-
-    # result = inlinefuncs.parse_inlinefunc(
-    #     value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
-    # )
+    result = FuncParser(available_functions).parse(
+        value, raise_errors=True, caller=caller, **kwargs)
 
     err = None
     try:

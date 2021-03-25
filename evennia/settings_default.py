@@ -611,7 +611,7 @@ INLINEFUNC_STACK_MAXSIZE = 20
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
+INLINEFUNC_MODULES = ["evennia.utils.funcparser", "server.conf.inlinefuncs"]
 # Module holding handlers for ProtFuncs. These allow for embedding
 # functional code in prototypes and has the same syntax as inlinefuncs.
 PROTOTYPEFUNC_MODULES = ["evennia.prototypes.protfuncs", "server.conf.prototypefuncs"]

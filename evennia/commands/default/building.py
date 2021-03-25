@@ -2123,7 +2123,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             )
 
             if "prototype" in self.switches:
-                modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
+                modified = spawner.batch_update_objects_with_prototype(
+                    prototype, objects=[obj], caller=self.caller)
                 prototype_success = modified > 0
                 if not prototype_success:
                     caller.msg("Prototype %s failed to apply." % prototype["key"])
@@ -3559,7 +3560,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             try:
                 n_updated = spawner.batch_update_objects_with_prototype(
-                    prototype, objects=existing_objects
+                    prototype, objects=existing_objects, caller=caller,
                 )
             except Exception:
                 logger.log_trace()
@@ -3811,7 +3812,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         # proceed to spawning
         try:
-            for obj in spawner.spawn(prototype):
+            for obj in spawner.spawn(prototype, caller=self.caller):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
                 if not prototype.get("location") and not noloc:
                     # we don't hardcode the location in the prototype (unless the user

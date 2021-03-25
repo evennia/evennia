@@ -695,27 +695,27 @@ If you want there is also some |wextra|n info for where to go beyond that.
 After playing through the tutorial-world quest, if you aim to make a game with
 Evennia you are wise to take a look at the |wEvennia documentation|n at
 
-    |yhttps://github.com/evennia/evennia/wiki|n
+    |yhttps://www.evennia.com/docs/latest|n
 
 - You can start by trying to build some stuff by following the |wBuilder quick-start|n:
 
-    |yhttps://github.com/evennia/evennia/wiki/Building-Quickstart|n
+    |yhttps://www.evennia.com/docs/latest/Building-Quickstart|n
 
 - The tutorial-world may or may not be your cup of tea, but it does show off
   several |wuseful tools|n of Evennia. You may want to check out how it works:
 
-    |yhttps://github.com/evennia/evennia/wiki/Tutorial-World-Introduction|n
+    |yhttps://www.evennia.com/docs/latest/Tutorial-World-Introduction|n
 
 - You can then continue looking through the |wTutorials|n and pick one that
   fits your level of understanding.
 
-    |yhttps://github.com/evennia/evennia/wiki/Tutorials|n
+    |yhttps://www.evennia.com/docs/latest/Tutorials|n
 
 - Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
   Evennia community is very active and friendly and no question is too simple.
   You will often quickly get help. You can everything you need linked from
 
-    |yhttp://www.evennia.com|n
+    |yhttps://www.evennia.com|n
 
 # ---------------------------------------------------------------------------------
 

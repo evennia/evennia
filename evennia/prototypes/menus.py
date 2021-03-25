@@ -2115,7 +2115,8 @@ def _apply_diff(caller, **kwargs):
     objects = kwargs["objects"]
     back_node = kwargs["back_node"]
     diff = kwargs.get("diff", None)
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects)
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects,
+                                                              caller=caller)
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
     return back_node
 
@@ -2483,7 +2484,7 @@ def _spawn(caller, **kwargs):
     if not prototype.get("location"):
         prototype["location"] = caller
 
-    obj = spawner.spawn(prototype)
+    obj = spawner.spawn(prototype, caller=caller)
     if obj:
         obj = obj[0]
         text = "|gNew instance|n {key} ({dbref}) |gspawned at location |n{loc}|n|g.|n".format(
