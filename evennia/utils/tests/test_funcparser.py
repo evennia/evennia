@@ -280,10 +280,11 @@ class TestDefaultCallables(TestCase):
     Test default callables.
 
     """
-    @override_settings(INLINEFUNC_MODULES=["evennia.utils.funcparser"])
     def setUp(self):
         from django.conf import settings
-        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+        self.parser = funcparser.FuncParser({**funcparser.FUNCPARSER_CALLABLES,
+                                             **funcparser.ACTOR_STANCE_CALLABLES})
+
         self.obj1 = _DummyObj("Char1")
         self.obj2 = _DummyObj("Char2")
 
@@ -349,18 +350,57 @@ class TestDefaultCallables(TestCase):
         ret = int(ret)
         self.assertTrue(1 <= ret <= 10)
 
+    def test_nofunc(self):
+        self.assertEqual(
+            self.parser.parse("as$382ewrw w we w werw,|44943}"),
+            "as$382ewrw w we w werw,|44943}",
+        )
+
+    def test_incomplete(self):
+        self.assertEqual(
+            self.parser.parse("testing $blah{without an ending."),
+            "testing $blah{without an ending.",
+        )
+
+    def test_single_func(self):
+        self.assertEqual(
+            self.parser.parse("this is a test with $pad(centered, 20) text in it."),
+            "this is a test with       centered       text in it.",
+        )
+
+    def test_nested(self):
+        self.assertEqual(
+            self.parser.parse(
+                "this $crop(is a test with $pad(padded, 20) text in $pad(pad2, 10) a crop, 80)"
+            ),
+            "this is a test with        padded        text in    pad2    a crop",
+        )
+
+    def test_escaped(self):
+        self.assertEqual(
+            self.parser.parse(
+                "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5) text., 80)"
+            ),
+            "this should be              '''escaped,''' and '''instead,''' cropped with  text.              ",
+        )
+
+    def test_escaped2(self):
+        self.assertEqual(
+            self.parser.parse(
+                'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'
+            ),
+            "this should be              \"\"\"escaped,\"\"\" and \"\"\"instead,\"\"\" cropped with  text.              ",
+        )
+
 
 class TestCallableSearch(test_resources.EvenniaTest):
     """
     Test the $search(query) callable
 
     """
-    @override_settings(INLINEFUNC_MODULES=["evennia.utils.funcparser"])
     def setUp(self):
         super().setUp()
-
-        from django.conf import settings
-        self.parser = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+        self.parser = funcparser.FuncParser(funcparser.SEARCHING_CALLABLES)
 
     def test_search_obj(self):
         """
