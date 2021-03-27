@@ -7,7 +7,7 @@ from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
-from evennia.utils import create, utils, search, logger
+from evennia.utils import create, utils, search, logger, funcparser
 from evennia.utils.utils import (
     inherits_from,
     class_from_module,
@@ -22,9 +22,10 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw as ansi_raw
-from evennia.utils.inlinefuncs import raw as inlinefunc_raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+
+_FUNCPARSER = None
 
 # limit symbol import for API
 __all__ = (
@@ -2122,7 +2123,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             )
 
             if "prototype" in self.switches:
-                modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
+                modified = spawner.batch_update_objects_with_prototype(
+                    prototype, objects=[obj], caller=self.caller)
                 prototype_success = modified > 0
                 if not prototype_success:
                     caller.msg("Prototype %s failed to apply." % prototype["key"])
@@ -2380,12 +2382,16 @@ class CmdExamine(ObjManipCommand):
             value (any): Attribute value.
         Returns:
         """
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
+
         if attr is None:
             return "No such attribute was found."
         value = utils.to_str(value)
         if crop:
             value = utils.crop(value)
-        value = inlinefunc_raw(ansi_raw(value))
+        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
         if category:
             return f"{attr}[{category}] = {value}"
         else:
@@ -3458,7 +3464,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         "Python structures are allowed. \nMake sure to use correct "
                         "Python syntax. Remember especially to put quotes around all "
                         "strings inside lists and dicts.|n For more advanced uses, embed "
-                        "inlinefuncs in the strings."
+                        "funcparser callables ($funcs) in the strings."
                     )
                 else:
                     string = "Expected {}, got {}.".format(expect, type(prototype))
@@ -3554,7 +3560,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             try:
                 n_updated = spawner.batch_update_objects_with_prototype(
-                    prototype, objects=existing_objects
+                    prototype, objects=existing_objects, caller=caller,
                 )
             except Exception:
                 logger.log_trace()
@@ -3806,7 +3812,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         # proceed to spawning
         try:
-            for obj in spawner.spawn(prototype):
+            for obj in spawner.spawn(prototype, caller=self.caller):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
                 if not prototype.get("location") and not noloc:
                     # we don't hardcode the location in the prototype (unless the user

@@ -8,6 +8,7 @@ TODO: Not nearly all utilities are covered yet.
 import os.path
 import random
 
+from parameterized import parameterized
 import mock
 from django.test import TestCase
 from datetime import datetime
@@ -385,3 +386,43 @@ class TestPercent(TestCase):
         self.assertEqual(utils.percent(3, 1, 1), "0.0%")
         self.assertEqual(utils.percent(3, 0, 1), "100.0%")
         self.assertEqual(utils.percent(-3, 0, 1), "0.0%")
+
+
+class TestSafeConvert(TestCase):
+    """
+    Test evennia.utils.utils.safe_convert_to_types
+
+    """
+
+    @parameterized.expand([
+        (('1', '2', 3, 4, '5'), {'a': 1, 'b': '2', 'c': 3},
+         ((int, float, str, int), {'a': int, 'b': float}),   # "
+         (1, 2.0, '3', 4, '5'), {'a': 1, 'b': 2.0, 'c': 3}),
+        (('1 + 2', '[1, 2, 3]', [3, 4, 5]), {'a': '3 + 4', 'b': 5},
+         (('py', 'py', 'py'), {'a': 'py', 'b': 'py'}),
+         (3, [1, 2, 3], [3, 4, 5]), {'a': 7, 'b': 5}),
+    ])
+    def test_conversion(self, args, kwargs, converters, expected_args, expected_kwargs):
+        """
+        Test the converter with different inputs
+
+        """
+        result_args, result_kwargs = utils.safe_convert_to_types(
+            converters, *args, raise_errors=True, **kwargs)
+        self.assertEqual(expected_args, result_args)
+        self.assertEqual(expected_kwargs, result_kwargs)
+
+    def test_conversion__fail(self):
+        """
+        Test failing conversion
+
+        """
+        from evennia.utils.funcparser import ParsingError
+
+        with self.assertRaises(ValueError):
+            utils.safe_convert_to_types(
+                (int, ), *('foo', ), raise_errors=True)
+
+        with self.assertRaises(ParsingError) as err:
+            utils.safe_convert_to_types(
+                ('py', {}), *('foo', ), raise_errors=True)

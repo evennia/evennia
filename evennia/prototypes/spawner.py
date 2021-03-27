@@ -607,7 +607,8 @@ def format_diff(diff, minimal=True):
     return "\n ".join(line for line in texts if line)
 
 
-def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exact=False):
+def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
+                                        exact=False, caller=None):
     """
     Update existing objects with the latest version of the prototype.
 
@@ -624,6 +625,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
             if it's not set in the prototype. With `exact=True`, all un-specified properties of the
             objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
             between the  object and the prototype but is usually impractical.
+        caller (Object or Account, optional): This may be used by protfuncs to do permission checks.
     Returns:
         changed (int): The number of objects that had changes applied to them.
 
@@ -675,33 +677,33 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
                     do_save = True
 
                     if key == "key":
-                        obj.db_key = init_spawn_value(val, str)
+                        obj.db_key = init_spawn_value(val, str, caller=caller)
                     elif key == "typeclass":
-                        obj.db_typeclass_path = init_spawn_value(val, str)
+                        obj.db_typeclass_path = init_spawn_value(val, str, caller=caller)
                     elif key == "location":
-                        obj.db_location = init_spawn_value(val, value_to_obj)
+                        obj.db_location = init_spawn_value(val, value_to_obj, caller=caller)
                     elif key == "home":
-                        obj.db_home = init_spawn_value(val, value_to_obj)
+                        obj.db_home = init_spawn_value(val, value_to_obj, caller=caller)
                     elif key == "destination":
-                        obj.db_destination = init_spawn_value(val, value_to_obj)
+                        obj.db_destination = init_spawn_value(val, value_to_obj, caller=caller)
                     elif key == "locks":
                         if directive == "REPLACE":
                             obj.locks.clear()
-                        obj.locks.add(init_spawn_value(val, str))
+                        obj.locks.add(init_spawn_value(val, str, caller=caller))
                     elif key == "permissions":
                         if directive == "REPLACE":
                             obj.permissions.clear()
-                        obj.permissions.batch_add(*(init_spawn_value(perm, str) for perm in val))
+                        obj.permissions.batch_add(*(init_spawn_value(perm, str, caller=caller) for perm in val))
                     elif key == "aliases":
                         if directive == "REPLACE":
                             obj.aliases.clear()
-                        obj.aliases.batch_add(*(init_spawn_value(alias, str) for alias in val))
+                        obj.aliases.batch_add(*(init_spawn_value(alias, str, caller=caller) for alias in val))
                     elif key == "tags":
                         if directive == "REPLACE":
                             obj.tags.clear()
                         obj.tags.batch_add(
                             *(
-                                (init_spawn_value(ttag, str), tcategory, tdata)
+                                (init_spawn_value(ttag, str, caller=caller), tcategory, tdata)
                                 for ttag, tcategory, tdata in val
                             )
                         )
@@ -711,8 +713,8 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
                         obj.attributes.batch_add(
                             *(
                                 (
-                                    init_spawn_value(akey, str),
-                                    init_spawn_value(aval, value_to_obj),
+                                    init_spawn_value(akey, str, caller=caller),
+                                    init_spawn_value(aval, value_to_obj, caller=caller),
                                     acategory,
                                     alocks,
                                 )
@@ -723,7 +725,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
                         # we don't auto-rerun exec statements, it would be huge security risk!
                         pass
                     else:
-                        obj.attributes.add(key, init_spawn_value(val, value_to_obj))
+                        obj.attributes.add(key, init_spawn_value(val, value_to_obj, caller=caller))
                 elif directive == "REMOVE":
                     do_save = True
                     if key == "key":
@@ -836,7 +838,7 @@ def batch_create_object(*objparams):
 # Spawner mechanism
 
 
-def spawn(*prototypes, **kwargs):
+def spawn(*prototypes, caller=None, **kwargs):
     """
     Spawn a number of prototyped objects.
 
@@ -845,6 +847,7 @@ def spawn(*prototypes, **kwargs):
             prototype_key (will be used to find the prototype) or a full prototype
             dictionary. These will be batched-spawned as one object each.
     Keyword Args:
+        caller (Object or Account, optional): This may be used by protfuncs to do access checks.
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
             the global protparents dictionary accessible by the input
@@ -910,39 +913,39 @@ def spawn(*prototypes, **kwargs):
             "key",
             "Spawned-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]),
         )
-        create_kwargs["db_key"] = init_spawn_value(val, str)
+        create_kwargs["db_key"] = init_spawn_value(val, str, caller=caller)
 
         val = prot.pop("location", None)
-        create_kwargs["db_location"] = init_spawn_value(val, value_to_obj)
+        create_kwargs["db_location"] = init_spawn_value(val, value_to_obj, caller=caller)
 
         val = prot.pop("home", None)
         if val:
-            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj)
+            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, caller=caller)
         else:
             try:
-                create_kwargs["db_home"] = init_spawn_value(settings.DEFAULT_HOME, value_to_obj)
+                create_kwargs["db_home"] = init_spawn_value(settings.DEFAULT_HOME, value_to_obj, caller=caller)
             except ObjectDB.DoesNotExist:
                 # settings.DEFAULT_HOME not existing is common for unittests
                 pass
 
         val = prot.pop("destination", None)
-        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj)
+        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, caller=caller)
 
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str)
+        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, caller=caller)
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
-        permission_string = init_spawn_value(val, make_iter)
+        permission_string = init_spawn_value(val, make_iter, caller=caller)
         val = prot.pop("locks", "")
-        lock_string = init_spawn_value(val, str)
+        lock_string = init_spawn_value(val, str, caller=caller)
         val = prot.pop("aliases", [])
-        alias_string = init_spawn_value(val, make_iter)
+        alias_string = init_spawn_value(val, make_iter, caller=caller)
 
         val = prot.pop("tags", [])
         tags = []
         for (tag, category, *data) in val:
-            tags.append((init_spawn_value(tag, str), category, data[0] if data else None))
+            tags.append((init_spawn_value(tag, str, caller=caller), category, data[0] if data else None))
 
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:
@@ -950,11 +953,11 @@ def spawn(*prototypes, **kwargs):
             tags.append((prototype_key, PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
-        execs = init_spawn_value(val, make_iter)
+        execs = init_spawn_value(val, make_iter, caller=caller)
 
         # extract ndb assignments
         nattributes = dict(
-            (key.split("_", 1)[1], init_spawn_value(val, value_to_obj))
+            (key.split("_", 1)[1], init_spawn_value(val, value_to_obj, caller=caller))
             for key, val in prot.items()
             if key.startswith("ndb_")
         )
@@ -963,7 +966,7 @@ def spawn(*prototypes, **kwargs):
         val = make_iter(prot.pop("attrs", []))
         attributes = []
         for (attrname, value, *rest) in val:
-            attributes.append((attrname, init_spawn_value(value),
+            attributes.append((attrname, init_spawn_value(value, caller=caller),
                                rest[0] if rest else None, rest[1] if len(rest) > 1 else None))
 
         simple_attributes = []
@@ -975,7 +978,7 @@ def spawn(*prototypes, **kwargs):
                 continue
             else:
                 simple_attributes.append(
-                    (key, init_spawn_value(value, value_to_obj_or_any), None, None)
+                    (key, init_spawn_value(value, value_to_obj_or_any, caller=caller), None, None)
                 )
 
         attributes = attributes + simple_attributes
