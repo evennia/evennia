@@ -1,17 +1,17 @@
 """
-Inlinefunc
+Outgoing callables to apply with the FuncParser on outgoing messages.
 
-Inline functions allow for direct conversion of text users mark in a
-special way. Inlinefuncs are deactivated by default. To activate, add
+The functions in this module will become available as $funcname(args, kwargs)
+in all outgoing strings if you add
 
-    INLINEFUNC_ENABLED = True
+    FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = True
 
-to your settings file. The default inlinefuncs are found in
-evennia.utils.inlinefunc.
+to your settings file. The default inlinefuncs are found at the bottom of
+`evennia.utils.funcparser`.
 
 In text, usage is straightforward:
 
-$funcname([arg1,[arg2,...]])
+$funcname(arg1, arg2, ..., key=val, key2=val2, ...)
 
 Example 1 (using the "pad" inlinefunc):
     say This is $pad("a center-padded text", 50,c,-) of width 50.
@@ -26,26 +26,14 @@ Example 2 (using nested "pad" and "time" inlinefuncs):
 To add more inline functions, add them to this module, using
 the following call signature:
 
-    def funcname(text, *args, **kwargs)
-
-where `text` is always the part between {funcname(args) and
-{/funcname and the *args are taken from the appropriate part of the
-call. If no {/funcname is given, `text` will be the empty string.
-
-It is important that the inline function properly clean the
-incoming `args`, checking their type and replacing them with sane
-defaults if needed. If impossible to resolve, the unmodified text
-should be returned. The inlinefunc should never cause a traceback.
-
-While the inline function should accept **kwargs, the keyword is
-never accepted as a valid call - this is only intended to be used
-internally by Evennia, notably to send the `session` keyword to
-the function; this is the session of the object viewing the string
-and can be used to customize it to each session.
+    def funcname(*args, **kwargs)
+        ...
 
 """
 
-# def capitalize(text, *args, **kwargs):
-#    "Silly capitalize example. Used as {capitalize() ... {/capitalize"
+# def capitalize(*args, **kwargs):
+#    "Silly capitalize example. Used as  $capitalize
+#    if not args:
+#        return ''
 #    session = kwargs.get("session")
-#    return text.capitalize()
+#    return args[0].capitalize()

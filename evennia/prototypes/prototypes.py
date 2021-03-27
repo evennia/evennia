@@ -30,7 +30,8 @@ from evennia.utils.utils import (
 )
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
-from evennia.utils import inlinefuncs, dbserialize
+from evennia.utils.funcparser import FuncParser
+from evennia.utils import dbserialize
 from evennia.utils.evtable import EvTable
 
 
@@ -58,9 +59,12 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
 )
 PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
-PROT_FUNCS = {}
 
 _PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:all()"
+
+
+# the protfunc parser
+FUNC_PARSER = FuncParser(settings.PROT_FUNC_MODULES)
 
 
 class PermissionError(RuntimeError):
@@ -709,18 +713,7 @@ def validate_prototype(
     prototype["prototype_locks"] = prototype_locks
 
 
-# Protfunc parsing (in-prototype functions)
-
-for mod in settings.PROT_FUNC_MODULES:
-    try:
-        callables = callables_from_module(mod)
-        PROT_FUNCS.update(callables)
-    except ImportError:
-        logger.log_trace()
-        raise
-
-
-def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, caller=None, **kwargs):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -732,45 +725,27 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             protfuncs, all other types are returned as-is.
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
             If not set, use default sources.
-        testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
-            behave differently.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
 
     Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
         protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
         current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
+        caller (Object or Account): This is necessary for certain protfuncs that perform object
+            searches and have to check permissions.
         any (any): Passed on to the protfunc.
 
     Returns:
-        testresult (tuple): If `testing` is set, returns a tuple (error, result) where error is
-            either None or a string detailing the error from protfunc_parser or seen when trying to
-            run `literal_eval` on the parsed string.
-        any (any): A structure to replace the string on the prototype level. If this is a
-            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
-            it to the prototype directly. This structure is also passed through literal_eval so one
-            can get actual Python primitives out of it (not just strings). It will also identify
-            eventual object #dbrefs in the output from the protfunc.
+        any: A structure to replace the string on the prototype leve.  Note
+        that FunctionParser functions $funcname(*args, **kwargs) can return any
+        data type to insert into the prototype.
 
     """
     if not isinstance(value, str):
         return value
 
-    available_functions = PROT_FUNCS if available_functions is None else available_functions
+    result = FUNC_PARSER.parse(value, raise_errors=True, return_str=False, caller=caller, **kwargs)
 
-    result = inlinefuncs.parse_inlinefunc(
-        value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
-    )
-
-    err = None
-    try:
-        result = literal_eval(result)
-    except ValueError:
-        pass
-    except Exception as exc:
-        err = str(exc)
-    if testing:
-        return err, result
     return result
 
 
@@ -785,7 +760,7 @@ def format_available_protfuncs():
         clr (str, optional): What coloration tag to use.
     """
     out = []
-    for protfunc_name, protfunc in PROT_FUNCS.items():
+    for protfunc_name, protfunc in FUNC_PARSER.callables.items():
         out.append(
             "- |c${name}|n - |W{docs}".format(
                 name=protfunc_name, docs=protfunc.__doc__.strip().replace("\n", "")
@@ -910,7 +885,7 @@ def check_permission(prototype_key, action, default=True):
     return default
 
 
-def init_spawn_value(value, validator=None):
+def init_spawn_value(value, validator=None, caller=None):
     """
     Analyze the prototype value and produce a value useful at the point of spawning.
 
@@ -921,6 +896,8 @@ def init_spawn_value(value, validator=None):
             other - will be assigned depending on the variable type
             validator (callable, optional): If given, this will be called with the value to
                 check and guarantee the outcome is of a given type.
+            caller (Object or Account): This is necessary for certain protfuncs that perform object
+                searches and have to check permissions.
 
     Returns:
         any (any): The (potentially pre-processed value to use for this prototype key)
@@ -935,7 +912,7 @@ def init_spawn_value(value, validator=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    result = protfunc_parser(value)
+    result = protfunc_parser(value, caller=caller)
     if result != value:
         return validator(result)
     return result

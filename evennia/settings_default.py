@@ -598,23 +598,31 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc, PrototypeFuncs
+# FuncParser
+#
+# Strings parsed with the FuncParser can contain 'callables' on the
+# form $funcname(args,kwargs), which will lead to actual Python functions
+# being executed.
 ######################################################################
-# Evennia supports inline function preprocessing. This allows users
-# to supply inline calls on the form $func(arg, arg, ...) to do
-# session-aware text formatting and manipulation on the fly. If
-# disabled, such inline functions will not be parsed.
-INLINEFUNC_ENABLED = False
-# This defined how deeply nested inlinefuncs can be. Set to <=0 to
-# disable (not recommended, this is a safeguard against infinite loops).
-INLINEFUNC_STACK_MAXSIZE = 20
+# This changes the start-symbol for the funcparser callable. Note that
+# this will make a lot of documentation invalid and there may also be
+# other unexpected side effects, so change with caution.
+FUNCPARSER_START_CHAR = '$'
+# The symbol to use to escape Func
+FUNCPARSER_ESCAPE_CHAR = '\\'
+# This is the global max nesting-level for nesting functions in
+# the funcparser. This protects against infinite loops.
+FUNCPARSER_MAX_NESTING = 20
+# Activate funcparser for all outgoing strings. The current Session
+# will be passed into the parser (used to be called inlinefuncs)
+FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
-# Module holding handlers for ProtFuncs. These allow for embedding
-# functional code in prototypes and has the same syntax as inlinefuncs.
-PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
+FUNCPARSER_OUTGOING_MESSAGES_MODULES = ["evennia.utils.funcparser", "server.conf.inlinefuncs"]
+# Prototype values are also parsed with FuncParser. These modules
+# define which $func callables are available to use in prototypes.
+FUNCPARSER_PROTOTYPE_PARSING_MODULES = ["evennia.prototypes.protfuncs", "server.conf.prototypefuncs"]
 
 ######################################################################
 # Global Scripts

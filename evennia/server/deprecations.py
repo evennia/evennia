@@ -59,6 +59,21 @@ def check_errors(settings):
             "Update your settings file (see evennia/settings_default.py "
             "for more info)."
         )
+    depstring = (
+        "settings.{} was renamed to {}. Update your settings file (the FuncParser "
+        "replaces and generalizes that which inlinefuncs used to do).")
+    if hasattr(settings, "INLINEFUNC_ENABLED"):
+        raise DeprecationWarning(depstring.format(
+            "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLE"))
+    if hasattr(settings, "INLINEFUNC_STACK_MAXSIZE"):
+        raise DeprecationWarning(depstring.format(
+            "settings.INLINEFUNC_STACK_MAXSIZE", "FUNCPARSER_MAX_NESTING"))
+    if hasattr(settings, "INLINEFUNC_MODULES"):
+        raise DeprecationWarning(depstring.format(
+            "settings.INLINEFUNC_MODULES", "FUNCPARSER_OUTGOING_MESSAGES_MODULES"))
+    if hasattr(settings, "PROTFUNC_MODULES"):
+        raise DeprecationWarning(depstring.format(
+            "settings.PROTFUNC_MODULES", "FUNCPARSER_PROTOTYPE_VALUE_MODULES"))
 
     gametime_deprecation = (
         "The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,"

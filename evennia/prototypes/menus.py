@@ -177,9 +177,7 @@ def _set_property(caller, raw_string, **kwargs):
 
     if kwargs.get("test_parse", True):
         out.append(" Simulating prototype-func parsing ...")
-        err, parsed_value = protlib.protfunc_parser(value, testing=True)
-        if err:
-            out.append(" |yPython `literal_eval` warning: {}|n".format(err))
+        parsed_value = protlib.protfunc_parser(value, testing=True, prototype=prototype)
         if parsed_value != value:
             out.append(
                 " |g(Example-)value when parsed ({}):|n {}".format(type(parsed_value), parsed_value)
@@ -264,7 +262,7 @@ def _validate_prototype(prototype):
 def _format_protfuncs():
     out = []
     sorted_funcs = [
-        (key, func) for key, func in sorted(protlib.PROT_FUNCS.items(), key=lambda tup: tup[0])
+        (key, func) for key, func in sorted(protlib.FUNC_PARSER.callables.items(), key=lambda tup: tup[0])
     ]
     for protfunc_name, protfunc in sorted_funcs:
         out.append(
@@ -2115,7 +2113,8 @@ def _apply_diff(caller, **kwargs):
     objects = kwargs["objects"]
     back_node = kwargs["back_node"]
     diff = kwargs.get("diff", None)
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects)
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects,
+                                                              caller=caller)
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
     return back_node
 
@@ -2483,7 +2482,7 @@ def _spawn(caller, **kwargs):
     if not prototype.get("location"):
         prototype["location"] = caller
 
-    obj = spawner.spawn(prototype)
+    obj = spawner.spawn(prototype, caller=caller)
     if obj:
         obj = obj[0]
         text = "|gNew instance|n {key} ({dbref}) |gspawned at location |n{loc}|n|g.|n".format(
