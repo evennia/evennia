@@ -674,7 +674,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     logger.log_trace()
         kwargs["options"] = options
         try:
-            if not self.at_msg_receive(text=text, **kwargs):
+            if not self.at_msg_receive(text=text, from_obj=from_obj, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
                 return
         except Exception:
@@ -1519,7 +1519,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        location.msg_contents(string, exclude=(self,), mapping=mapping)
+        location.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
     def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
         """
@@ -1581,7 +1581,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        destination.msg_contents(string, exclude=(self,), mapping=mapping)
+        destination.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
     def at_after_move(self, source_location, **kwargs):
         """
