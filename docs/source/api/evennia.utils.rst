@@ -21,8 +21,8 @@ evennia.utils
    evennia.utils.evmenu
    evennia.utils.evmore
    evennia.utils.evtable
+   evennia.utils.funcparser
    evennia.utils.gametime
-   evennia.utils.inlinefuncs
    evennia.utils.logger
    evennia.utils.optionclasses
    evennia.utils.optionhandler
@@ -38,3 +38,4 @@ evennia.utils
    :maxdepth: 6
 
    evennia.utils.idmapper
+   evennia.utils.verb_conjugation

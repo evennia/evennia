@@ -2384,7 +2384,7 @@ class CmdExamine(ObjManipCommand):
         """
         global _FUNCPARSER
         if not _FUNCPARSER:
-            _FUNCPARSER = funcparser.FuncParser(settings.INLINEFUNC_MODULES)
+            _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
 
         if attr is None:
             return "No such attribute was found."
@@ -3464,7 +3464,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         "Python structures are allowed. \nMake sure to use correct "
                         "Python syntax. Remember especially to put quotes around all "
                         "strings inside lists and dicts.|n For more advanced uses, embed "
-                        "inlinefuncs in the strings."
+                        "funcparser callables ($funcs) in the strings."
                     )
                 else:
                     string = "Expected {}, got {}.".format(expect, type(prototype))

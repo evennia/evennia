@@ -77,6 +77,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.EvForm](api:evennia.utils.evform#evennia.utils.evform.EvForm) - text form creator
 - Evennia.EvMore - text paginator
 - [evennia.EvEditor](api:evennia.utils.eveditor#evennia.utils.eveditor.EvEditor) - in game text line editor ([docs](Components/EvEditor))
+- [evennia.utils.funcparser.Funcparser](api:evennia.utils.funcparser) - inline parsing of functions ([docs](Components/FuncParser))
 
 ### Global singleton handlers
 

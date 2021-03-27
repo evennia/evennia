@@ -2,10 +2,13 @@
 Generic function parser for functions embedded in a string, on the form
 `$funcname(*args, **kwargs)`, for example:
 
-    "A string $foo() with $bar(a, b, c, $moo(), d=23) etc."
+```
+"A string $foo() with $bar(a, b, c, $moo(), d=23) etc."
+```
 
-Each arg/kwarg can also be another nested function. These will be executed from
-the deepest-nested first and used as arguments for the higher-level function.
+Each arg/kwarg can also be another nested function. These will be executed
+inside-out and their return will used as arguments for the enclosing function
+(so the same as for regular Python function execution).
 
 This is the base for all forms of embedded func-parsing, like inlinefuncs and
 protfuncs. Each function available to use must be registered as a 'safe'
@@ -23,7 +26,6 @@ def funcname(*args, **kwargs):
     # it must always accept *args and **kwargs.
     ...
     return something
-
 ```
 
 Usage:
@@ -38,6 +40,7 @@ result = parser.parse("String with $funcname() in it")
 
 The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`.
 
+---
 
 """
 import re
@@ -53,20 +56,21 @@ from evennia.utils.utils import (
 from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 
-_CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-_MAX_NESTING = 20
+# setup
 
-_ESCAPE_CHAR = "\\"
-_START_CHAR = "$"
+_CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+_MAX_NESTING = settings.FUNCPARSER_MAX_NESTING
+_START_CHAR = settings.FUNCPARSER_START_CHAR
+_ESCAPE_CHAR = settings.FUNCPARSER_ESCAPE_CHAR
 
 
 @dataclasses.dataclass
-class ParsedFunc:
+class _ParsedFunc:
     """
     Represents a function parsed from the string
 
     """
-    prefix: str = "$"
+    prefix: str = _START_CHAR
     funcname: str = ""
     args: list = dataclasses.field(default_factory=list)
     kwargs: dict = dataclasses.field(default_factory=dict)
@@ -98,7 +102,8 @@ class ParsingError(RuntimeError):
 
 class FuncParser:
     """
-    Sets up a parser for strings containing $funcname(*args, **kwargs) substrings.
+    Sets up a parser for strings containing `$funcname(*args, **kwargs)`
+    substrings.
 
     """
 
@@ -113,26 +118,23 @@ class FuncParser:
 
         Args:
             callables (str, module, list or dict): Where to find
-                'safe' functions to make available in the parser. These modules
-                can have a dict `FUNCPARSER_CALLABLES = {"funcname": callable, ...}`.
-                If no such dict exists, all callables in provided modules (whose names
-                don't start with an underscore) will be loaded as callables. Each
-                callable will will be available to call as `$funcname(*args, **kwags)`
-                during parsing. If `callables` is a `str`, this should be the path
-                to such a module. A `list` can either be a list of paths or module
-                objects. If a `dict`, this should be a direct mapping
-                `{"funcname": callable, ...}` to use.
+                'safe' functions to make available in the parser. If a `dict`,
+                it should be a direct mapping `{"funcname": callable, ...}`. If
+                one or mode modules or module-paths, the module(s) are first checked
+                for a dict `FUNCPARSER_CALLABLES = {"funcname", callable, ...}`. If
+                no such variable exists, all callables in the module (whose name does
+                not start with an underscore) will be made available to the parser.
             start_char (str, optional): A character used to identify the beginning
                 of a parseable function. Default is `$`.
             escape_char (str, optional): Prepend characters with this to have
-                them not count as a function. Default is `\\`.
+                them not count as a function. Default is the backtick, `\\\\`.
             max_nesting (int, optional): How many levels of nested function calls
                 are allowed, to avoid exploitation. Default is 20.
             **default_kwargs: These kwargs will be passed into all callables. These
-                kwargs can be overridden both by kwargs passed direcetly to `.parse` _and_
+                kwargs can be overridden both by kwargs passed direcetly to `.parse` *and*
                 by kwargs given directly in the string `$funcname` call. They are
                 suitable for global defaults that is intended to be changed by the
-                user. To _guarantee_ a call always gets a particular kwarg, pass it
+                user. To guarantee a call always gets a particular kwarg, pass it
                 into `.parse` as `**reserved_kwargs` instead.
 
         """
@@ -194,7 +196,7 @@ class FuncParser:
         Execute a parsed function
 
         Args:
-            parsedfunc (ParsedFunc): This dataclass holds the parsed details
+            parsedfunc (_ParsedFunc): This dataclass holds the parsed details
                 of the function.
             raise_errors (bool, optional): Raise errors. Otherwise return the
                 string with the function unparsed.
@@ -254,9 +256,9 @@ class FuncParser:
     def parse(self, string, raise_errors=False, escape=False,
               strip=False, return_str=True, **reserved_kwargs):
         """
-        Use parser to parse a string that may or may not have `$funcname(*args, **kwargs)`
-        - style tokens in it. Only the callables used to initiate the parser
-          will be eligible for parsing, others will remain un-parsed.
+        Use parser to parse a string that may or may not have
+        `$funcname(*args, **kwargs)` - style tokens in it. Only the callables
+        used to initiate the parser will be eligible for parsing.
 
         Args:
             string (str): The string to parse.
@@ -357,7 +359,7 @@ class FuncParser:
                         callstack.append(curr_func)
 
                 # start a new func
-                curr_func = ParsedFunc(prefix=char, fullstr=char)
+                curr_func = _ParsedFunc(prefix=char, fullstr=char)
                 continue
 
             if not curr_func:
@@ -592,16 +594,16 @@ def funcparser_callable_eval(*args, **kwargs):
     incoming string into a python object. If it fails, the return will be same
     as the input.
 
-    Args
+    Args:
         string (str): The string to parse. Only simple literals or operators are allowed.
 
     Returns:
         any: The string parsed into its Python form, or the same as input.
 
-    Example:
-        `$py(1)`
-        `$py([1,2,3,4])`
-        `$py(3 + 4)`
+    Examples:
+        - `$py(1) -> 1`
+        - `$py([1,2,3,4] -> [1, 2, 3]`
+        - `$py(3 + 4) -> 7`
 
     """
     args, kwargs = safe_convert_to_types(("py", {}) , *args, **kwargs)
@@ -652,22 +654,22 @@ def _apply_operation_two_elements(*args, operator="+", **kwargs):
 
 
 def funcparser_callable_add(*args, **kwargs):
-    """Usage: $add(val1, val2) -> val1 + val2"""
+    """Usage: `$add(val1, val2) -> val1 + val2`"""
     return _apply_operation_two_elements(*args, operator='+', **kwargs)
 
 
 def funcparser_callable_sub(*args, **kwargs):
-    """Usage: $sub(val1, val2) -> val1 - val2"""
+    """Usage: ``$sub(val1, val2) -> val1 - val2`"""
     return _apply_operation_two_elements(*args, operator='-', **kwargs)
 
 
 def funcparser_callable_mult(*args, **kwargs):
-    """Usage: $mult(val1, val2) -> val1 * val2"""
+    """Usage: `$mult(val1, val2) -> val1 * val2`"""
     return _apply_operation_two_elements(*args, operator='*', **kwargs)
 
 
 def funcparser_callable_div(*args, **kwargs):
-    """Usage: $mult(val1, val2) -> val1 / val2"""
+    """Usage: `$mult(val1, val2) -> val1 / val2`"""
     return _apply_operation_two_elements(*args, operator='/', **kwargs)
 
 
@@ -686,8 +688,8 @@ def funcparser_callable_round(*args, **kwargs):
         any: The rounded value or inp if inp was not a number.
 
     Examples:
-        - `$round(3.5434343, 3)` - gives 3.543
-        - `$round($random(), 2)` - rounds random result, e.g 0.22
+        - `$round(3.5434343, 3) -> 3.543`
+        - `$round($random(), 2)` - rounds random result, e.g `0.22`
 
     """
     if not args:
@@ -738,7 +740,7 @@ def funcparser_callable_random(*args, **kwargs):
 
     try:
         if isinstance(minval, float) or isinstance(maxval, float):
-            return minval + maxval * random.random()
+            return minval + ((maxval - minval) * random.random())
         else:
             return random.randint(minval, maxval)
     except Exception:
@@ -794,8 +796,8 @@ def funcparser_callable_pad(*args, **kwargs):
         fillchar (str, optional): Character used for padding. Defaults to a space.
 
     Example:
-        - `$pad(text, 12, l, ' ')`
-        - `$pad(text, width=12, align=c, fillchar=-)`
+        - `$pad(text, 12, r, ' ') -> "        text"`
+        - `$pad(text, width=12, align=c, fillchar=-) -> "----text----"`
 
     """
     if not args:
@@ -829,8 +831,8 @@ def funcparser_callable_crop(*args, **kwargs):
             of the string was cropped. Defaults to `[...]`.
 
     Example:
-        `$crop(text, 78, [...])`
-        `$crop(text, width=78, suffix='[...]')`
+        - `$crop(A long text, 10, [...]) -> "A lon[...]"`
+        - `$crop(text, width=11, suffix='[...]) -> "A long[...]"`
 
     """
     if not args:
@@ -875,8 +877,8 @@ def funcparser_callable_justify(*args, **kwargs):
         str: The justified text.
 
     Examples:
-        - $just(text, width=40)
-        - $just(text, align=r, indent=2)
+        - `$just(text, width=40)`
+        - `$just(text, align=r, indent=2)`
 
     """
     if not args:
@@ -925,9 +927,9 @@ def funcparser_callable_clr(*args, **kwargs):
         color (str, optional): If given,
 
     Example:
-        - `$clr(r, text, n)`
-        - `$clr(r, text)`
-        - `$clr(text, start=r, end=n)`
+        - `$clr(r, text, n) -> "|rtext|n"`
+        - `$clr(r, text) -> "|rtext|n`
+        - `$clr(text, start=r, end=n) -> "|rtext|n"`
 
     """
     if not args:
@@ -961,7 +963,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
     Args:
         query (str): The key or dbref to search for.
 
-    Kwargs:
+    Keyword Args:
         return_list (bool): If set, return a list of objects with
             0, 1 or more matches to `query`. Defaults to False.
         type (str): One of 'obj', 'account', 'script'
@@ -1037,7 +1039,7 @@ def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, cap
     Replaces with you for the caller of the string, with the display_name
     of the caller for others.
 
-    Kwargs:
+    Keyword Args:
         caller (Object): The 'you' in the string. This is used unless another
             you-key is passed to the callable in combination with `mapping`.
         receiver (Object): The recipient of the string.
@@ -1093,10 +1095,9 @@ def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capita
 
 def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
     """
-    $conj(verb)
-
     Conjugate a verb according to if it should be 2nd or third person.
-    Kwargs:
+
+    Keyword Args:
         caller (Object): The object who represents 'you' in the string.
         receiver (Object): The recipient of the string.
 
@@ -1107,13 +1108,12 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
         ParsingError: If `you` and `recipient` were not both supplied.
 
     Notes:
-        Note that it will not capitalized.
-        This assumes that the active party (You) is the one performing the verb.
+        Note that the verb will not be capitalized. It also
+        assumes that the active party (You) is the one performing the verb.
         This automatic conjugation will fail if the active part is another person
-        than 'you'.
-        The you/receiver should be passed to the parser directly.
+        than 'you'. The caller/receiver must be passed to the parser directly.
 
-    Exampels:
+    Examples:
         This is often used in combination with the $you/You( callables.
 
         - `With a grin, $you() $conj(jump)`
