@@ -62,6 +62,7 @@
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">command</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">funcparser</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -88,6 +89,12 @@
 <span class="n">_COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 <span class="c1"># the sessid_max is based on the length of the db_sessid csv field (excluding commas)</span>
 <span class="n">_SESSID_MAX</span> <span class="o">=</span> <span class="mi">16</span> <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+
+<span class="n">_MSG_CONTENTS_PARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_you</span><span class="p">,</span>
+     <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_You</span><span class="p">,</span>
+     <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_conjugate</span>
+    <span class="p">})</span>
 
 
 <div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -759,64 +766,94 @@
 <span class="sd">            text (str or tuple): Message to send. If a tuple, this should be</span>
 <span class="sd">                on the valid OOB outmessage form `(message, {kwargs})`,</span>
 <span class="sd">                where kwargs are optional data passed to the `text`</span>
-<span class="sd">                outputfunc.</span>
+<span class="sd">                outputfunc. The message will be parsed for `{key}` formatting and</span>
+<span class="sd">                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.</span>
+<span class="sd">                The `key` is taken from the `mapping` kwarg {&quot;key&quot;: object, ...}`.</span>
+<span class="sd">                The `mapping[key].get_display_name(looker=recipient)` will be called</span>
+<span class="sd">                for that key for every recipient of the string.</span>
 <span class="sd">            exclude (list, optional): A list of objects not to send to.</span>
 <span class="sd">            from_obj (Object, optional): An object designated as the</span>
 <span class="sd">                &quot;sender&quot; of the message. See `DefaultObject.msg()` for</span>
 <span class="sd">                more info.</span>
 <span class="sd">            mapping (dict, optional): A mapping of formatting keys</span>
-<span class="sd">                `{&quot;key&quot;:&lt;object&gt;, &quot;key2&quot;:&lt;object2&gt;,...}. The keys</span>
-<span class="sd">                must match `{key}` markers in the `text` if this is a string or</span>
-<span class="sd">                in the internal `message` if `text` is a tuple. These</span>
-<span class="sd">                formatting statements will be</span>
-<span class="sd">                replaced by the return of `&lt;object&gt;.get_display_name(looker)`</span>
-<span class="sd">                for every looker in contents that receives the</span>
-<span class="sd">                message. This allows for every object to potentially</span>
-<span class="sd">                get its own customized string.</span>
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            Keyword arguments will be passed on to `obj.msg()` for all</span>
-<span class="sd">            messaged objects.</span>
+<span class="sd">                `{&quot;key&quot;:&lt;object&gt;, &quot;key2&quot;:&lt;object2&gt;,...}.</span>
+<span class="sd">                The keys must either match `{key}` or `$You(key)/$you(key)` markers</span>
+<span class="sd">                in the `text` string. If `&lt;object&gt;` doesn&#39;t have a `get_display_name`</span>
+<span class="sd">                method, it will be returned as a string. If not set, a key `you` will</span>
+<span class="sd">                be auto-added to point to `from_obj` if given, otherwise to `self`.</span>
+<span class="sd">            **kwargs: Keyword arguments will be passed on to `obj.msg()` for all</span>
+<span class="sd">                messaged objects.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            The `mapping` argument is required if `message` contains</span>
-<span class="sd">            {}-style format syntax. The keys of `mapping` should match</span>
-<span class="sd">            named format tokens, and its values will have their</span>
-<span class="sd">            `get_display_name()` function called for  each object in</span>
-<span class="sd">            the room before substitution. If an item in the mapping does</span>
-<span class="sd">            not have `get_display_name()`, its string value will be used.</span>
+<span class="sd">            For &#39;actor-stance&#39; reporting (You say/Name says), use the</span>
+<span class="sd">            `$You()/$you()/$You(key)` and `$conj(verb)` (verb-conjugation)</span>
+<span class="sd">            inline callables. This will use the respective `get_display_name()`</span>
+<span class="sd">            for all onlookers except for `from_obj or self`, which will become</span>
+<span class="sd">            &#39;You/you&#39;. If you use `$You/you(key)`, the key must be in `mapping`.</span>
 
-<span class="sd">        Example:</span>
-<span class="sd">            Say Char is a Character object and Npc is an NPC object:</span>
+<span class="sd">            For &#39;director-stance&#39; reporting (Name says/Name says), use {key}</span>
+<span class="sd">            syntax directly. For both `{key}` and `You/you(key)`,</span>
+<span class="sd">            `mapping[key].get_display_name(looker=recipient)` may be called</span>
+<span class="sd">            depending on who the recipient is.</span>
 
-<span class="sd">            char.location.msg_contents(</span>
-<span class="sd">                &quot;{attacker} kicks {defender}&quot;,</span>
-<span class="sd">                mapping=dict(attacker=char, defender=npc), exclude=(char, npc))</span>
+<span class="sd">        Examples:</span>
 
-<span class="sd">            This will result in everyone in the room seeing &#39;Char kicks NPC&#39;</span>
-<span class="sd">            where everyone may potentially see different results for Char and Npc</span>
-<span class="sd">            depending on the results of `char.get_display_name(looker)` and</span>
-<span class="sd">            `npc.get_display_name(looker)` for each particular onlooker</span>
+<span class="sd">            Let&#39;s assume</span>
+<span class="sd">            - `player1.key -&gt; &quot;Player1&quot;`,</span>
+<span class="sd">              `player1.get_display_name(looker=player2) -&gt; &quot;The First girl&quot;`</span>
+<span class="sd">            - `player2.key -&gt; &quot;Player2&quot;`,</span>
+<span class="sd">              `player2.get_display_name(looker=player1) -&gt; &quot;The Second girl&quot;`</span>
+
+<span class="sd">            Actor-stance:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                char.location.msg_contents(</span>
+<span class="sd">                    &quot;$You() $conj(attack) $you(defender).&quot;,</span>
+<span class="sd">                    mapping={&quot;defender&quot;: player2})</span>
+
+<span class="sd">            - player1 will see `You attack The Second girl.`</span>
+<span class="sd">            - player2 will see &#39;The First girl attacks you.&#39;</span>
+
+<span class="sd">            Director-stance:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                char.location.msg_contents(</span>
+<span class="sd">                    &quot;{attacker} attacks {defender}.&quot;,</span>
+<span class="sd">                    mapping={&quot;attacker:player1, &quot;defender&quot;:player2})</span>
+
+<span class="sd">            - player1 will see: &#39;Player1 attacks The Second girl.&#39;</span>
+<span class="sd">            - player2 will see: &#39;The First girl attacks Player2&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># we also accept an outcommand on the form (message, {kwargs})</span>
         <span class="n">is_outcmd</span> <span class="o">=</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">inmessage</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_outcmd</span> <span class="k">else</span> <span class="n">text</span>
         <span class="n">outkwargs</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_outcmd</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">you</span> <span class="o">=</span> <span class="n">from_obj</span> <span class="ow">or</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="s1">&#39;you&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">you</span><span class="p">]</span> <span class="o">=</span> <span class="n">you</span>
 
         <span class="n">contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
         <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
             <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
-                <span class="n">substitutions</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="n">t</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="p">}</span>
-                <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">substitutions</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">outmessage</span><span class="p">,</span> <span class="n">outkwargs</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+
+            <span class="c1"># actor-stance replacements</span>
+            <span class="n">inmessage</span> <span class="o">=</span> <span class="n">_MSG_CONTENTS_PARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+                <span class="n">inmessage</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">caller</span><span class="o">=</span><span class="n">you</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
+
+            <span class="c1"># director-stance replacements</span>
+            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="o">**</span><span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
+                   <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+
+            <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">outmessage</span><span class="p">,</span> <span class="n">outkwargs</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.move_to"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to">[docs]</a>    <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

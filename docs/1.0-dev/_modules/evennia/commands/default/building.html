@@ -49,7 +49,7 @@
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">get_and_merge_cmdsets</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">funcparser</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">inherits_from</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
@@ -64,9 +64,10 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">inlinefunc_raw</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+
+<span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
@@ -2164,7 +2165,8 @@
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="s2">&quot;prototype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-                <span class="n">modified</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">])</span>
+                <span class="n">modified</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
+                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">],</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
                 <span class="n">prototype_success</span> <span class="o">=</span> <span class="n">modified</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_success</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">%s</span><span class="s2"> failed to apply.&quot;</span> <span class="o">%</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
@@ -2422,12 +2424,16 @@
 <span class="sd">            value (any): Attribute value.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_FUNCPARSER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_FUNCPARSER</span><span class="p">:</span>
+            <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;No such attribute was found.&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">crop</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">inlinefunc_raw</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">_FUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">escape</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3500,7 +3506,7 @@
                         <span class="s2">&quot;Python structures are allowed. </span><span class="se">\n</span><span class="s2">Make sure to use correct &quot;</span>
                         <span class="s2">&quot;Python syntax. Remember especially to put quotes around all &quot;</span>
                         <span class="s2">&quot;strings inside lists and dicts.|n For more advanced uses, embed &quot;</span>
-                        <span class="s2">&quot;inlinefuncs in the strings.&quot;</span>
+                        <span class="s2">&quot;funcparser callables ($funcs) in the strings.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Expected </span><span class="si">{}</span><span class="s2">, got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expect</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">prototype</span><span class="p">))</span>
@@ -3596,7 +3602,7 @@
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">n_updated</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
-                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">existing_objects</span>
+                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">existing_objects</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
@@ -3848,7 +3854,7 @@
 
         <span class="c1"># proceed to spawning</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Spawned </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">))</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">noloc</span><span class="p">:</span>
                     <span class="c1"># we don&#39;t hardcode the location in the prototype (unless the user</span>

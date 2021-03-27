@@ -114,7 +114,8 @@ sessions in store.</p>
 <dl class="py method">
 <dt id="evennia.server.sessionhandler.SessionHandler.clean_senddata">
 <code class="sig-name descname">clean_senddata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#SessionHandler.clean_senddata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.SessionHandler.clean_senddata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up data for sending across the AMP wire. Also apply INLINEFUNCS.</p>
+<dd><p>Clean up data for sending across the AMP wire. Also apply the
+FuncParser using callables from <strong>settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES</strong>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -131,7 +132,7 @@ keyword are:
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>kwargs (dict)</em> – A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
 where the keys, args and kwargs have all been converted to
-send-safe entities (strings or numbers), and inlinefuncs have been
+send-safe entities (strings or numbers), and funcparser parsing has been
 applied.</p>
 </dd>
 </dl>

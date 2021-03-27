@@ -101,6 +101,21 @@
             <span class="s2">&quot;Update your settings file (see evennia/settings_default.py &quot;</span>
             <span class="s2">&quot;for more info).&quot;</span>
         <span class="p">)</span>
+    <span class="n">depstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;settings.</span><span class="si">{}</span><span class="s2"> was renamed to </span><span class="si">{}</span><span class="s2">. Update your settings file (the FuncParser &quot;</span>
+        <span class="s2">&quot;replaces and generalizes that which inlinefuncs used to do).&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_ENABLED&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLE&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_MAX_NESTING&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_MODULES&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_MODULES&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_OUTGOING_MESSAGES_MODULES&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;PROTFUNC_MODULES&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.PROTFUNC_MODULES&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PROTOTYPE_VALUE_MODULES&quot;</span><span class="p">))</span>
 
     <span class="n">gametime_deprecation</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,&quot;</span>
