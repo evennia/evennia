@@ -62,6 +62,8 @@
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
 <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
@@ -1120,7 +1122,8 @@
 <span class="sd">        store_key (tuple, optional): This is only used in combination with `stop` and</span>
 <span class="sd">            should be the return given from the original `repeat` call. If this</span>
 <span class="sd">            is given, all other args except `stop` are ignored.</span>
-<span class="sd">        *args, **kwargs: Used as arguments to `callback`.</span>
+<span class="sd">        *args: Used as arguments to `callback`.</span>
+<span class="sd">        **kwargs: Keyword-arguments to pass to `callback`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple or None: The tuple is the `store_key` - the identifier for the</span>
@@ -1154,8 +1157,8 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        store_key (tuple): This is the return from `repeat`, used to uniquely</span>
-<span class="sd">            identify the ticker to stop. Without the store_key, the ticker </span>
-<span class="sd">            must be stopped by passing its parameters to `TICKER_HANDLER.remove` </span>
+<span class="sd">            identify the ticker to stop. Without the store_key, the ticker</span>
+<span class="sd">            must be stopped by passing its parameters to `TICKER_HANDLER.remove`</span>
 <span class="sd">            directly.</span>
 
 <span class="sd">    Returns:</span>
@@ -2432,6 +2435,107 @@
             <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="safe_convert_to_types"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.safe_convert_to_types">[docs]</a><span class="k">def</span> <span class="nf">safe_convert_to_types</span><span class="p">(</span><span class="n">converters</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to safely convert inputs to expected data types.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        converters (tuple): A tuple `((converter, converter,...), {kwarg: converter, ...})` to</span>
+<span class="sd">            match a converter to each element in `*args` and `**kwargs`.</span>
+<span class="sd">            Each converter will will be called with the arg/kwarg-value as the only argument.</span>
+<span class="sd">            If there are too few converters given, the others will simply not be converter. If the</span>
+<span class="sd">            converter is given as the string &#39;py&#39;, it attempts to run</span>
+<span class="sd">            `safe_eval`/`literal_eval` on  the input arg or kwarg value. It&#39;s possible to</span>
+<span class="sd">            skip the arg/kwarg part of the tuple, an empty tuple/dict will then be assumed.</span>
+<span class="sd">        *args: The arguments to convert with `argtypes`.</span>
+<span class="sd">        raise_errors (bool, optional): If set, raise any errors. This will</span>
+<span class="sd">            abort the conversion at that arg/kwarg. Otherwise, just skip the</span>
+<span class="sd">            conversion of the failing arg/kwarg. This will be set by the FuncParser if</span>
+<span class="sd">            this is used as a part of a FuncParser callable.</span>
+<span class="sd">        **kwargs: The kwargs to convert with `kwargtypes`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: `(args, kwargs)` in converted form.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        utils.funcparser.ParsingError: If parsing failed in the `&#39;py&#39;`</span>
+<span class="sd">            converter. This also makes this compatible with the FuncParser</span>
+<span class="sd">            interface.</span>
+<span class="sd">        any: Any other exception raised from other converters, if raise_errors is True.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function is often used to validate/convert input from untrusted sources. For</span>
+<span class="sd">        security, the &quot;py&quot;-converter is deliberately limited and uses `safe_eval`/`literal_eval`</span>
+<span class="sd">        which  only supports simple expressions or simple containers with literals. NEVER</span>
+<span class="sd">        use the python `eval` or `exec` methods as a converter for any untrusted input! Allowing</span>
+<span class="sd">        untrusted sources to execute arbitrary python on your server is a severe security risk,</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        $funcname(1, 2, 3.0, c=[1,2,3])</span>
+
+<span class="sd">        def _funcname(*args, **kwargs):</span>
+<span class="sd">            args, kwargs = safe_convert_input(((int, int, float), {&#39;c&#39;: &#39;py&#39;}), *args, **kwargs)</span>
+<span class="sd">            # ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_safe_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># already converted</span>
+            <span class="k">return</span> <span class="n">inp</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">literal_err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">simple_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">simple_err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">ParsingError</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Errors converting &#39;</span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2">&#39; to python:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;literal_eval raised </span><span class="si">{</span><span class="n">literal_err</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;simple_eval raised </span><span class="si">{</span><span class="n">simple_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="c1"># handle an incomplete/mixed set of input converters</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">converters</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+    <span class="n">arg_converters</span><span class="p">,</span> <span class="o">*</span><span class="n">kwarg_converters</span> <span class="o">=</span> <span class="n">converters</span>
+    <span class="n">arg_converters</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">arg_converters</span><span class="p">)</span>
+    <span class="n">kwarg_converters</span> <span class="o">=</span> <span class="n">kwarg_converters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">kwarg_converters</span> <span class="k">else</span> <span class="p">{}</span>
+
+    <span class="c1"># apply the converters</span>
+    <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">arg_converters</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">arg_converters</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">arg_converters</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">iarg</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">arg_converters</span><span class="p">)]):</span>
+            <span class="n">converter</span> <span class="o">=</span> <span class="n">arg_converters</span><span class="p">[</span><span class="n">iarg</span><span class="p">]</span>
+            <span class="n">converter</span> <span class="o">=</span> <span class="n">_safe_eval</span> <span class="k">if</span> <span class="n">converter</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">converter</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">iarg</span><span class="p">]</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+                    <span class="k">raise</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwarg_converters</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg_converters</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">converter</span> <span class="ow">in</span> <span class="n">kwarg_converters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">converter</span> <span class="o">=</span> <span class="n">_safe_eval</span> <span class="k">if</span> <span class="n">converter</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">converter</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">}:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+                        <span class="k">raise</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span></div>
 </pre></div>
 
             <div class="clearer"></div>

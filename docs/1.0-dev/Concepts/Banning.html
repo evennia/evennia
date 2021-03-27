@@ -41,7 +41,7 @@
 <h1>Banning<a class="headerlink" href="#banning" title="Permalink to this headline">¶</a></h1>
 <p>Whether due to abuse, blatant breaking of your rules, or some other reason, you will eventually find
 no other recourse but to kick out a particularly troublesome player. The default command set has
-admin tools to handle this, primarily <code class="docutils literal notranslate"><span class="pre">&#64;ban</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;unban</span></code>, and <code class="docutils literal notranslate"><span class="pre">&#64;boot</span></code>.</p>
+admin tools to handle this, primarily <code class="docutils literal notranslate"><span class="pre">ban</span></code>, <code class="docutils literal notranslate"><span class="pre">unban</span></code>, and <code class="docutils literal notranslate"><span class="pre">boot</span></code>.</p>
 <div class="section" id="creating-a-ban">
 <h2>Creating a ban<a class="headerlink" href="#creating-a-ban" title="Permalink to this headline">¶</a></h2>
 <p>Say we have a troublesome player “YouSuck” - this is a person that refuses common courtesy - an
@@ -51,19 +51,19 @@ have tried to be nice. Now you just want this troll gone.</p>
 <div class="section" id="name-ban">
 <h3>Name ban<a class="headerlink" href="#name-ban" title="Permalink to this headline">¶</a></h3>
 <p>The easiest recourse is to block the account YouSuck from ever connecting again.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="n">YouSuck</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="n">YouSuck</span>
 </pre></div>
 </div>
 <p>This will lock the name YouSuck (as well as ‘yousuck’ and any other capitalization combination), and
 next time they try to log in with this name the server will not let them!</p>
 <p>You can also give a reason so you remember later why this was a good thing (the banned account will
 never see this)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">troll</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">troll</span><span class="o">.</span>
 </pre></div>
 </div>
 <p>If you are sure this is just a spam account, you might even consider deleting the player account
 outright:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@delaccount</span> <span class="n">YouSuck</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">accounts</span><span class="o">/</span><span class="n">delete</span> <span class="n">YouSuck</span>
 </pre></div>
 </div>
 <p>Generally, banning the name is the easier and safer way to stop the use of an account – if you
@@ -82,7 +82,7 @@ the <code class="docutils literal notranslate"><span class="pre">who</span></cod
 </div>
 <p>The “Host” bit is the IP address from which the account is connecting. Use this to define the ban
 instead of the name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span>
 </pre></div>
 </div>
 <p>This will stop YouSuckMore connecting from their computer. Note however that IP address might change
@@ -91,7 +91,7 @@ changing computers. You can make a more general ban by putting asterisks <code c
 groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from
 237.333.0.223, 237.333.0.225, and 237.333.0.256 (only changes in their subnet), it might be an idea
 to put down a ban like this to include any number in that subnet:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
 </pre></div>
 </div>
 <p>You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly
@@ -104,17 +104,17 @@ blocking out innocent players who just happen to connect from the same subnet as
 <h2>Booting<a class="headerlink" href="#booting" title="Permalink to this headline">¶</a></h2>
 <p>YouSuck is not really noticing all this banning yet though - and won’t until having logged out and
 trying to log back in again. Let’s help the troll along.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@boot</span> <span class="n">YouSuck</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">boot</span> <span class="n">YouSuck</span>
 </pre></div>
 </div>
 <p>Good riddance. You can give a reason for booting too (to be echoed to the player before getting
 kicked out).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@boot</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">Go</span> <span class="n">troll</span> <span class="n">somewhere</span> <span class="k">else</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">boot</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">Go</span> <span class="n">troll</span> <span class="n">somewhere</span> <span class="k">else</span><span class="o">.</span>
 </pre></div>
 </div>
 <div class="section" id="lifting-a-ban">
 <h3>Lifting a ban<a class="headerlink" href="#lifting-a-ban" title="Permalink to this headline">¶</a></h3>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">&#64;unban</span></code> (or <code class="docutils literal notranslate"><span class="pre">&#64;ban</span></code>) command without any arguments and you will see a list of all currently
+<p>Use the <code class="docutils literal notranslate"><span class="pre">unban</span></code> (or <code class="docutils literal notranslate"><span class="pre">ban</span></code>) command without any arguments and you will see a list of all currently
 active bans:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Active</span> <span class="n">bans</span>
 <span class="nb">id</span>   <span class="n">name</span><span class="o">/</span><span class="n">ip</span>       <span class="n">date</span>                      <span class="n">reason</span> 
@@ -123,7 +123,7 @@ active bans:</p>
 </pre></div>
 </div>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">id</span></code> from this list to find out which ban to lift.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@unban</span> <span class="mi">2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">unban</span> <span class="mi">2</span>
   
 <span class="n">Cleared</span> <span class="n">ban</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
 </pre></div>
@@ -167,7 +167,7 @@ case) the lock to fail.</p></li>
 <li><p><strong>type thomas = FlowerPot</strong> – Turn an annoying player into a flower pot (assuming you have a
 <code class="docutils literal notranslate"><span class="pre">FlowerPot</span></code> typeclass ready)</p></li>
 <li><p><strong>userpassword thomas = fooBarFoo</strong> – Change a user’s password</p></li>
-<li><p><strong>delaccount thomas</strong> – Delete a player account (not recommended, use <strong>ban</strong> instead)</p></li>
+<li><p><strong>accounts/delete thomas</strong> – Delete a player account (not recommended, use <strong>ban</strong> instead)</p></li>
 <li><p><strong>server</strong> – Show server statistics, such as CPU load, memory usage, and how many objects are
 cached</p></li>
 <li><p><strong>time</strong> – Gives server uptime, runtime, etc</p></li>

@@ -733,8 +733,7 @@ ticker instead of creating a new one.</p></li>
 should be the return given from the original <strong>repeat</strong> call. If this
 is given, all other args except <strong>stop</strong> are ignored.</p></li>
 <li><p><strong>*args</strong> – Used as arguments to <strong>callback</strong>.</p></li>
-<li><p><strong>**kwargs</strong> – <p>Used as arguments to <strong>callback</strong>.</p>
-</p></li>
+<li><p><strong>**kwargs</strong> – Keyword-arguments to pass to <strong>callback</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1544,6 +1543,56 @@ function has no arg or kwarg named ‘caller’.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>This turns the decorated function or method into a generator.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.safe_convert_to_types">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">safe_convert_to_types</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">converters</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#safe_convert_to_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.safe_convert_to_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to safely convert inputs to expected data types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>converters</strong> (<em>tuple</em>) – A tuple <strong>((converter, converter,…), {kwarg: converter, …})</strong> to
+match a converter to each element in <strong>*args</strong> and <strong>**kwargs</strong>.
+Each converter will will be called with the arg/kwarg-value as the only argument.
+If there are too few converters given, the others will simply not be converter. If the
+converter is given as the string ‘py’, it attempts to run
+<strong>safe_eval</strong>/<strong>literal_eval</strong> on  the input arg or kwarg value. It’s possible to
+skip the arg/kwarg part of the tuple, an empty tuple/dict will then be assumed.</p></li>
+<li><p><strong>*args</strong> – The arguments to convert with <strong>argtypes</strong>.</p></li>
+<li><p><strong>raise_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, raise any errors. This will
+abort the conversion at that arg/kwarg. Otherwise, just skip the
+conversion of the failing arg/kwarg. This will be set by the FuncParser if
+this is used as a part of a FuncParser callable.</p></li>
+<li><p><strong>**kwargs</strong> – The kwargs to convert with <strong>kwargtypes</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – <strong>(args, kwargs)</strong> in converted form.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="evennia.utils.funcparser.html#evennia.utils.funcparser.ParsingError" title="evennia.utils.funcparser.ParsingError"><strong>utils.funcparser.ParsingError</strong></a> – If parsing failed in the <strong>‘py’</strong>
+converter. This also makes this compatible with the FuncParser
+interface.</p></li>
+<li><p><strong>any</strong> – Any other exception raised from other converters, if raise_errors is True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is often used to validate/convert input from untrusted sources. For
+security, the “py”-converter is deliberately limited and uses <strong>safe_eval</strong>/<strong>literal_eval</strong>
+which  only supports simple expressions or simple containers with literals. NEVER
+use the python <strong>eval</strong> or <strong>exec</strong> methods as a converter for any untrusted input! Allowing
+untrusted sources to execute arbitrary python on your server is a severe security risk,</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$funcname(1, 2, 3.0, c=[1,2,3])
+
+def _funcname(*args, **kwargs):
+    args, kwargs = safe_convert_input(((int, int, float), {&#39;c&#39;: &#39;py&#39;}), *args, **kwargs)
+    # ...
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

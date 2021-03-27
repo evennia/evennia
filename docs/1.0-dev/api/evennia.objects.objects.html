@@ -547,47 +547,66 @@ function on.</p></li>
 <li><p><strong>text</strong> (<em>str</em><em> or </em><em>tuple</em>) – Message to send. If a tuple, this should be
 on the valid OOB outmessage form <strong>(message, {kwargs})</strong>,
 where kwargs are optional data passed to the <strong>text</strong>
-outputfunc.</p></li>
+outputfunc. The message will be parsed for <strong>{key}</strong> formatting and
+<strong>$You/$you()/$You(key)</strong> and <strong>$conj(verb)</strong> inline function callables.
+The <strong>key</strong> is taken from the <strong>mapping</strong> kwarg {“key”: object, …}**.
+The <strong>mapping[key].get_display_name(looker=recipient)</strong> will be called
+for that key for every recipient of the string.</p></li>
 <li><p><strong>exclude</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of objects not to send to.</p></li>
 <li><p><strong>from_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – An object designated as the
 “sender” of the message. See <strong>DefaultObject.msg()</strong> for
 more info.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – A mapping of formatting keys
-<strong>{“key”:&lt;object&gt;, “key2”:&lt;object2&gt;,…}. The keys
-must match **{key}</strong> markers in the <strong>text</strong> if this is a string or
-in the internal <strong>message</strong> if <strong>text</strong> is a tuple. These
-formatting statements will be
-replaced by the return of <strong>&lt;object&gt;.get_display_name(looker)</strong>
-for every looker in contents that receives the
-message. This allows for every object to potentially
-get its own customized string.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>arguments will be passed on to obj.msg</strong><strong>(</strong><strong>) </strong><strong>for all</strong> (<em>Keyword</em>) – </p></li>
-<li><p><strong>objects.</strong> (<em>messaged</em>) – </p></li>
+<strong>{“key”:&lt;object&gt;, “key2”:&lt;object2&gt;,…}.
+The keys must either match **{key}</strong> or <strong>$You(key)/$you(key)</strong> markers
+in the <strong>text</strong> string. If <strong>&lt;object&gt;</strong> doesn’t have a <strong>get_display_name</strong>
+method, it will be returned as a string. If not set, a key <strong>you</strong> will
+be auto-added to point to <strong>from_obj</strong> if given, otherwise to <strong>self</strong>.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments will be passed on to <strong>obj.msg()</strong> for all
+messaged objects.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The <strong>mapping</strong> argument is required if <strong>message</strong> contains
-{}-style format syntax. The keys of <strong>mapping</strong> should match
-named format tokens, and its values will have their
-<strong>get_display_name()</strong> function called for  each object in
-the room before substitution. If an item in the mapping does
-not have <strong>get_display_name()</strong>, its string value will be used.</p>
-<p class="rubric">Example</p>
-<p>Say Char is a Character object and Npc is an NPC object:</p>
-<dl class="simple">
-<dt>char.location.msg_contents(</dt><dd><p>“{attacker} kicks {defender}”,
-mapping=dict(attacker=char, defender=npc), exclude=(char, npc))</p>
-</dd>
-</dl>
-<p>This will result in everyone in the room seeing ‘Char kicks NPC’
-where everyone may potentially see different results for Char and Npc
-depending on the results of <strong>char.get_display_name(looker)</strong> and
-<strong>npc.get_display_name(looker)</strong> for each particular onlooker</p>
+<p>For ‘actor-stance’ reporting (You say/Name says), use the
+<strong>$You()/$you()/$You(key)</strong> and <strong>$conj(verb)</strong> (verb-conjugation)
+inline callables. This will use the respective <strong>get_display_name()</strong>
+for all onlookers except for <strong>from_obj or self</strong>, which will become
+‘You/you’. If you use <strong>$You/you(key)</strong>, the key must be in <strong>mapping</strong>.</p>
+<p>For ‘director-stance’ reporting (Name says/Name says), use {key}
+syntax directly. For both <strong>{key}</strong> and <strong>You/you(key)</strong>,
+<strong>mapping[key].get_display_name(looker=recipient)</strong> may be called
+depending on who the recipient is.</p>
+<p class="rubric">Examples</p>
+<p>Let’s assume
+- <strong>player1.key -&gt; “Player1”</strong>,</p>
+<blockquote>
+<div><p><strong>player1.get_display_name(looker=player2) -&gt; “The First girl”</strong></p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>player2.key -&gt; “Player2”</strong>,
+<strong>player2.get_display_name(looker=player1) -&gt; “The Second girl”</strong></p></li>
+</ul>
+<p>Actor-stance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+    <span class="s2">&quot;$You() $conj(attack) $you(defender).&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;defender&quot;</span><span class="p">:</span> <span class="n">player2</span><span class="p">})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>player1 will see <strong>You attack The Second girl.</strong></p></li>
+<li><p>player2 will see ‘The First girl attacks you.’</p></li>
+</ul>
+<p>Director-stance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="si">{attacker}</span><span class="s2"> attacks </span><span class="si">{defender}</span><span class="s2">.&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;attacker:player1, &quot;</span><span class="n">defender</span><span class="s2">&quot;:player2})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>player1 will see: ‘Player1 attacks The Second girl.’</p></li>
+<li><p>player2 will see: ‘The First girl attacks Player2’</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
