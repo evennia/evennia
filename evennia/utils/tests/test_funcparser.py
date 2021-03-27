@@ -348,18 +348,19 @@ class TestDefaultCallables(TestCase):
 
     def test_random(self):
         string = "$random(1,10)"
-        ret = self.parser.parse_to_any(string, raise_errors=True)
-        self.assertTrue(1 <= ret <= 10)
+        for i in range(100):
+            ret = self.parser.parse_to_any(string, raise_errors=True)
+            self.assertTrue(1 <= ret <= 10)
 
         string = "$random()"
-        ret = self.parser.parse_to_any(string, raise_errors=True)
-        self.assertTrue(0 <= ret <= 1)
+        for i in range(100):
+            ret = self.parser.parse_to_any(string, raise_errors=True)
+            self.assertTrue(0 <= ret <= 1)
 
         string = "$random(1.0, 3.0)"
-        for i in range(1000):
+        for i in range(100):
             ret = self.parser.parse_to_any(string, raise_errors=True)
             self.assertTrue(isinstance(ret, float))
-            print("ret:", ret)
             self.assertTrue(1.0 <= ret <= 3.0)
 
     def test_randint(self):

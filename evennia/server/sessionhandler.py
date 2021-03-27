@@ -28,10 +28,9 @@ from evennia.utils.utils import (
 from evennia.server.portal import amp
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
-# from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
-_INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
+_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
 
 # delayed imports
 _AccountDB = None
@@ -154,7 +153,8 @@ class SessionHandler(dict):
 
     def clean_senddata(self, session, kwargs):
         """
-        Clean up data for sending across the AMP wire. Also apply INLINEFUNCS.
+        Clean up data for sending across the AMP wire. Also apply the
+        FuncParser using callables from `settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES`.
 
         Args:
             session (Session): The relevant session instance.
@@ -170,14 +170,14 @@ class SessionHandler(dict):
         Returns:
             kwargs (dict): A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
             where the keys, args and kwargs have all been converted to
-            send-safe entities (strings or numbers), and inlinefuncs have been
+            send-safe entities (strings or numbers), and funcparser parsing has been
             applied.
 
         """
         global _FUNCPARSER
         if not _FUNCPARSER:
             from evennia.utils.funcparser import FuncParser
-            _FUNCPARSER = FuncParser(settings.INLINEFUNC_MODULES, raise_errors=True)
+            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULE, raise_errors=True)
 
         options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
@@ -210,8 +210,8 @@ class SessionHandler(dict):
             elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
-                if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
-                    # only parse inlinefuncs on the outgoing path (sessionhandler->)
+                if _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED and not raw and isinstance(self, ServerSessionHandler):
+                    # only apply funcparser on the outgoing path (sessionhandler->)
                     # data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
                     data = _FUNCPARSER.parse(data, strip=strip_inlinefunc, session=session)
 

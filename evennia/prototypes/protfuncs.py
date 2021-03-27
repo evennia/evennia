@@ -45,7 +45,12 @@ def protfunc_callable_protkey(*args, **kwargs):
 
     prototype = kwargs.get("prototype", {})
     prot_value = prototype[args[0]]
-    return funcparser.funcparser_callable_eval(prot_value, **kwargs)
+    try:
+        return funcparser.funcparser_callable_eval(prot_value, **kwargs)
+    except funcparser.ParsingError:
+        return prot_value
+
+
 
 
 # this is picked up by FuncParser

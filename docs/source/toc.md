@@ -1,5 +1,5 @@
 # Toc
-
+- [API root](api/evennia-api.rst)
 - [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
@@ -53,6 +53,8 @@
 - [Concepts/Banning](Concepts/Banning)
 - [Concepts/Bootstrap & Evennia](Concepts/Bootstrap-&-Evennia)
 - [Concepts/Building Permissions](Concepts/Building-Permissions)
+- [Concepts/Clickable Links](Concepts/Clickable-Links)
+- [Concepts/Colors](Concepts/Colors)
 - [Concepts/Concepts Overview](Concepts/Concepts-Overview)
 - [Concepts/Custom Protocols](Concepts/Custom-Protocols)
 - [Concepts/Guest Logins](Concepts/Guest-Logins)

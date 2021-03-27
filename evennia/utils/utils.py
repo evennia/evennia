@@ -1080,7 +1080,8 @@ def repeat(interval, callback, persistent=True, idstring="", stop=False,
         store_key (tuple, optional): This is only used in combination with `stop` and
             should be the return given from the original `repeat` call. If this
             is given, all other args except `stop` are ignored.
-        *args, **kwargs: Used as arguments to `callback`.
+        *args: Used as arguments to `callback`.
+        **kwargs: Keyword-arguments to pass to `callback`.
 
     Returns:
         tuple or None: The tuple is the `store_key` - the identifier for the
