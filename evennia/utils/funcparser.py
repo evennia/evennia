@@ -46,11 +46,10 @@ import inspect
 import random
 from functools import partial
 from django.conf import settings
-from ast import literal_eval
-from simpleeval import simple_eval
 from evennia.utils import logger
 from evennia.utils.utils import (
-    make_iter, callables_from_module, variable_from_module, pad, crop, justify)
+    make_iter, callables_from_module, variable_from_module, pad, crop, justify,
+    safe_convert_to_types)
 from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 
@@ -233,11 +232,15 @@ class FuncParser:
                                    f"(available: {available})")
             return str(parsedfunc)
 
+        nargs = len(args)
+
         # build kwargs in the proper priority order
-        kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs}
+        kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs,
+                  **{'funcparser': self, "raise_errors": raise_errors}}
 
         try:
-            return func(*args, **kwargs)
+            ret = func(*args, **kwargs)
+            return ret
         except ParsingError:
             if raise_errors:
                 raise
@@ -601,19 +604,8 @@ def funcparser_callable_eval(*args, **kwargs):
         `$py(3 + 4)`
 
     """
-    if not args:
-        return ''
-    inp = args[0]
-    if not isinstance(inp, str):
-        # already converted
-        return inp
-    try:
-        return literal_eval(inp)
-    except Exception:
-        try:
-            return simple_eval(inp)
-        except Exception:
-            return inp
+    args, kwargs = safe_convert_to_types(("py", {}) , *args, **kwargs)
+    return args[0] if args else ''
 
 
 def funcparser_callable_toint(*args, **kwargs):
@@ -640,28 +632,23 @@ def _apply_operation_two_elements(*args, operator="+", **kwargs):
             better for non-list arithmetic.
 
     """
+    args, kwargs = safe_convert_to_types((('py', 'py'), {}), *args, **kwargs)
     if not len(args) > 1:
         return ''
     val1, val2 = args[0], args[1]
-    # try to convert to python structures, otherwise, keep as strings
-    if isinstance(val1, str):
-        try:
-            val1 = literal_eval(val1.strip())
-        except Exception:
-            pass
-    if isinstance(val2, str):
-        try:
-            val2 = literal_eval(val2.strip())
-        except Exception:
-            pass
-    if operator == "+":
-        return val1 + val2
-    elif operator == "-":
-        return val1 - val2
-    elif operator == "*":
-        return val1 * val2
-    elif operator == "/":
-        return val1 / val2
+    try:
+        if operator == "+":
+            return val1 + val2
+        elif operator == "-":
+            return val1 - val2
+        elif operator == "*":
+            return val1 * val2
+        elif operator == "/":
+            return val1 / val2
+    except Exception:
+        if kwargs.get('raise_errors'):
+            raise
+        return ''
 
 
 def funcparser_callable_add(*args, **kwargs):
@@ -705,21 +692,15 @@ def funcparser_callable_round(*args, **kwargs):
     """
     if not args:
         return ''
-    inp, *significant = args
-    significant = significant[0] if significant else '0'
-    lit_inp = inp
-    if isinstance(inp, str):
-        try:
-            lit_inp = literal_eval(inp)
-        except Exception:
-            return inp
+    args, _ = safe_convert_to_types(((float, int), {}) *args, **kwargs)
+
+    num, *significant = args
+    significant = significant[0] if significant else 0
     try:
-        int(significant)
+        round(num, significant)
     except Exception:
-        significant = 0
-    try:
-        round(lit_inp, significant)
-    except Exception:
+        if kwargs.get('raise_errors'):
+            raise
         return ''
 
 def funcparser_callable_random(*args, **kwargs):
@@ -744,35 +725,32 @@ def funcparser_callable_random(*args, **kwargs):
         - `$random(5, 10.0)` - random value [5..10] (float)
 
     """
+    args, _ = safe_convert_to_types((('py', 'py'), {}), *args, **kwargs)
+
     nargs = len(args)
     if nargs == 1:
         # only maxval given
-        minval, maxval = "0", args[0]
+        minval, maxval = 0, args[0]
     elif nargs > 1:
         minval, maxval = args[:2]
     else:
-        minval, maxval = ("0", "1")
+        minval, maxval = 0, 1
 
-    if "." in minval or "." in maxval:
-        # float mode
-        try:
-            minval, maxval = float(minval), float(maxval)
-        except ValueError:
-            minval, maxval = 0, 1
-        return minval + maxval * random.random()
-    else:
-        # int mode
-        try:
-            minval, maxval = int(minval), int(maxval)
-        except ValueError:
-            minval, maxval = 0, 1
-        return random.randint(minval, maxval)
+    try:
+        if isinstance(minval, float) or isinstance(maxval, float):
+            return minval + maxval * random.random()
+        else:
+            return random.randint(minval, maxval)
+    except Exception:
+        if kwargs.get('raise_errors'):
+            raise
+        return ''
 
 def funcparser_callable_randint(*args, **kwargs):
     """
     Usage: $randint(start, end):
 
-    Legacy alias - alwas returns integers.
+    Legacy alias - always returns integers.
 
     """
     return int(funcparser_callable_random(*args, **kwargs))
@@ -796,10 +774,13 @@ def funcparser_callable_choice(*args, **kwargs):
     """
     if not args:
         return ''
-    inp = args[0]
-    if not isinstance(inp, str):
-        inp = literal_eval(inp)
-    return random.choice(inp)
+    args, _ = safe_convert_to_types(('py', {}), *args, **kwargs)
+    try:
+        return random.choice(args[0])
+    except Exception:
+        if kwargs.get('raise_errors'):
+            raise
+        return ''
 
 
 def funcparser_callable_pad(*args, **kwargs):
@@ -819,6 +800,9 @@ def funcparser_callable_pad(*args, **kwargs):
     """
     if not args:
         return ''
+    args, kwargs = safe_convert_to_types(
+        ((str, int, str, str), {'width': int, 'align': str, 'fillchar': str}), *args, **kwargs)
+
     text, *rest = args
     nrest = len(rest)
     try:
@@ -831,22 +815,6 @@ def funcparser_callable_pad(*args, **kwargs):
     if align not in ('c', 'l', 'r'):
         align = 'c'
     return pad(str(text), width=width, align=align, fillchar=fillchar)
-
-
-def funcparser_callable_space(*args, **kwarg):
-    """
-    Usage: $space(43)
-
-    Insert a length of space.
-
-    """
-    if not args:
-        return ''
-    try:
-        width = int(args[0])
-    except TypeError:
-        width = 1
-    return " " * width
 
 
 def funcparser_callable_crop(*args, **kwargs):
@@ -875,6 +843,22 @@ def funcparser_callable_crop(*args, **kwargs):
         width = _CLIENT_DEFAULT_WIDTH
     suffix = kwargs.get('suffix', rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
+
+
+def funcparser_callable_space(*args, **kwarg):
+    """
+    Usage: $space(43)
+
+    Insert a length of space.
+
+    """
+    if not args:
+        return ''
+    try:
+        width = int(args[0])
+    except TypeError:
+        width = 1
+    return " " * width
 
 
 def funcparser_callable_justify(*args, **kwargs):
@@ -948,6 +932,7 @@ def funcparser_callable_clr(*args, **kwargs):
     """
     if not args:
         return ''
+
     startclr, text, endclr = '', '', ''
     if len(args) > 1:
         # $clr(pre, text, post))
@@ -1045,7 +1030,7 @@ def funcparser_callable_search_list(*args, caller=None, access="control", **kwar
                                       return_list=True, **kwargs)
 
 
-def funcparser_callable_you(*args, you=None, receiver=None, mapping=None, capitalize=False, **kwargs):
+def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs):
     """
     Usage: $you() or $you(key)
 
@@ -1053,19 +1038,19 @@ def funcparser_callable_you(*args, you=None, receiver=None, mapping=None, capita
     of the caller for others.
 
     Kwargs:
-        you (Object): The 'you' in the string. This is used unless another
+        caller (Object): The 'you' in the string. This is used unless another
             you-key is passed to the callable in combination with `mapping`.
         receiver (Object): The recipient of the string.
         mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
             used to find which object `$you(key)` refers to. If not given, the
-            `you` kwarg is used.
+            `caller` kwarg is used.
         capitalize (bool): Passed by the You helper, to capitalize you.
 
     Returns:
         str: The parsed string.
 
     Raises:
-        ParsingError: If `you` and `receiver` were not supplied.
+        ParsingError: If `caller` and `receiver` were not supplied.
 
     Notes:
         The kwargs should be passed the to parser directly.
@@ -1076,7 +1061,7 @@ def funcparser_callable_you(*args, you=None, receiver=None, mapping=None, capita
 
         - `With a grin, $you() $conj(jump) at $you(tommy).`
 
-        The You-object will see "With a grin, you jump at Tommy."
+        The caller-object will see "With a grin, you jump at Tommy."
         Tommy will see "With a grin, CharName jumps at you."
         Others will see "With a grin, CharName jumps at Tommy."
 
@@ -1084,17 +1069,17 @@ def funcparser_callable_you(*args, you=None, receiver=None, mapping=None, capita
     if args and mapping:
         # this would mean a $you(key) form
         try:
-            you = mapping.get(args[0])
+            caller = mapping.get(args[0])
         except KeyError:
             pass
 
-    if not (you and receiver):
-        raise ParsingError("No you-object or receiver supplied to $you callable.")
+    if not (caller and receiver):
+        raise ParsingError("No caller or receiver supplied to $you callable.")
 
     capitalize = bool(capitalize)
-    if you == receiver:
+    if caller == receiver:
         return "You" if capitalize else "you"
-    return you.get_display_name(looker=receiver) if hasattr(you, "get_display_name") else str(you)
+    return caller.get_display_name(looker=receiver) if hasattr(caller, "get_display_name") else str(caller)
 
 
 def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs):
@@ -1106,14 +1091,14 @@ def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capita
         *args, you=you, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs)
 
 
-def funcparser_callable_conjugate(*args, you=None, receiver=None, **kwargs):
+def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
     """
     $conj(verb)
 
     Conjugate a verb according to if it should be 2nd or third person.
     Kwargs:
-        you_obj (Object): The object who represents 'you' in the string.
-        you_target (Object): The recipient of the string.
+        caller (Object): The object who represents 'you' in the string.
+        receiver (Object): The recipient of the string.
 
     Returns:
         str: The parsed string.
@@ -1139,11 +1124,11 @@ def funcparser_callable_conjugate(*args, you=None, receiver=None, **kwargs):
     """
     if not args:
         return ''
-    if not (you and receiver):
-        raise ParsingError("No youj/receiver supplied to $conj callable")
+    if not (caller and receiver):
+        raise ParsingError("No caller/receiver supplied to $conj callable")
 
     second_person_str, third_person_str = verb_actor_stance_components(args[0])
-    return second_person_str if you == receiver else third_person_str
+    return second_person_str if caller == receiver else third_person_str
 
 
 # these are made available as callables by adding 'evennia.utils.funcparser' as

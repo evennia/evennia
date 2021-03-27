@@ -20,6 +20,8 @@ import traceback
 import importlib
 import importlib.util
 import importlib.machinery
+from ast import literal_eval
+from simpleeval import simple_eval
 from unicodedata import east_asian_width
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
@@ -2390,3 +2392,104 @@ def interactive(func):
             return ret
 
     return decorator
+
+
+def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
+    """
+    Helper function to safely convert inputs to expected data types.
+
+    Args:
+        converters (tuple): A tuple `((converter, converter,...), {kwarg: converter, ...})` to
+            match a converter to each element in `*args` and `**kwargs`.
+            Each converter will will be called with the arg/kwarg-value as the only argument.
+            If there are too few converters given, the others will simply not be converter. If the
+            converter is given as the string 'py', it attempts to run
+            `safe_eval`/`literal_eval` on  the input arg or kwarg value. It's possible to
+            skip the arg/kwarg part of the tuple, an empty tuple/dict will then be assumed.
+        *args: The arguments to convert with `argtypes`.
+        raise_errors (bool, optional): If set, raise any errors. This will
+            abort the conversion at that arg/kwarg. Otherwise, just skip the
+            conversion of the failing arg/kwarg. This will be set by the FuncParser if
+            this is used as a part of a FuncParser callable.
+        **kwargs: The kwargs to convert with `kwargtypes`
+
+    Returns:
+        tuple: `(args, kwargs)` in converted form.
+
+    Raises:
+        utils.funcparser.ParsingError: If parsing failed in the `'py'`
+            converter. This also makes this compatible with the FuncParser
+            interface.
+        any: Any other exception raised from other converters, if raise_errors is True.
+
+    Notes:
+        This function is often used to validate/convert input from untrusted sources. For
+        security, the "py"-converter is deliberately limited and uses `safe_eval`/`literal_eval`
+        which  only supports simple expressions or simple containers with literals. NEVER
+        use the python `eval` or `exec` methods as a converter for any untrusted input! Allowing
+        untrusted sources to execute arbitrary python on your server is a severe security risk,
+
+    Example:
+    ::
+
+        $funcname(1, 2, 3.0, c=[1,2,3])
+
+        def _funcname(*args, **kwargs):
+            args, kwargs = safe_convert_input(((int, int, float), {'c': 'py'}), *args, **kwargs)
+            # ...
+
+    """
+    def _safe_eval(inp):
+        if not inp:
+            return ''
+        if not isinstance(inp, str):
+            # already converted
+            return inp
+
+        try:
+            return literal_eval(inp)
+        except Exception as err:
+            literal_err = f"{err.__class__.__name__}: {err}"
+            try:
+                return simple_eval(inp)
+            except Exception as err:
+                simple_err = f"{str(err.__class__.__name__)}: {err}"
+                pass
+
+        if raise_errors:
+            from evennia.utils.funcparser import ParsingError
+            err = (f"Errors converting '{inp}' to python:\n"
+                   f"literal_eval raised {literal_err}\n"
+                   f"simple_eval raised {simple_err}")
+            raise ParsingError(err)
+
+    # handle an incomplete/mixed set of input converters
+    if not converters:
+        return args, kwargs
+    arg_converters, *kwarg_converters = converters
+    arg_converters = make_iter(arg_converters)
+    kwarg_converters = kwarg_converters[0] if kwarg_converters else {}
+
+    # apply the converters
+    if args and arg_converters:
+        args = list(args)
+        arg_converters = make_iter(arg_converters)
+        for iarg, arg in enumerate(args[:len(arg_converters)]):
+            converter = arg_converters[iarg]
+            converter = _safe_eval if converter in ('py', 'python') else converter
+            try:
+                args[iarg] = converter(arg)
+            except Exception:
+                if raise_errors:
+                    raise
+        args = tuple(args)
+    if kwarg_converters and isinstance(kwarg_converters, dict):
+        for key, converter in kwarg_converters.items():
+            converter = _safe_eval if converter in ('py', 'python') else converter
+            if key in {**kwargs}:
+                try:
+                    kwargs[key] = converter(kwargs[key])
+                except Exception:
+                    if raise_errors:
+                        raise
+    return args, kwargs
