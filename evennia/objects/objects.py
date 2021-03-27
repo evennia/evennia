@@ -803,7 +803,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # actor-stance replacements
             inmessage = _MSG_CONTENTS_PARSER.parse(
                 inmessage, raise_errors=True, return_string=True,
-                you=you, receiver=receiver, mapping=mapping)
+                caller=you, receiver=receiver, mapping=mapping)
 
             # director-stance replacements
             outmessage = inmessage.format(

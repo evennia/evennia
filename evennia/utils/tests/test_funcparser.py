@@ -14,6 +14,8 @@ from evennia.utils import funcparser, test_resources
 
 
 def _test_callable(*args, **kwargs):
+    kwargs.pop('funcparser', None)
+    kwargs.pop('raise_errors', None)
     argstr = ", ".join(args)
     kwargstr = ""
     if kwargs:
@@ -311,10 +313,10 @@ class TestDefaultCallables(TestCase):
 
         """
         mapping = {"char1": self.obj1, "char2": self.obj2}
-        ret = self.parser.parse(string, you=self.obj1, receiver=self.obj1, mapping=mapping,
+        ret = self.parser.parse(string, caller=self.obj1, receiver=self.obj1, mapping=mapping,
                                 raise_errors=True)
         self.assertEqual(expected_you, ret)
-        ret = self.parser.parse(string, you=self.obj1, receiver=self.obj2, mapping=mapping,
+        ret = self.parser.parse(string, caller=self.obj1, receiver=self.obj2, mapping=mapping,
                                 raise_errors=True)
         self.assertEqual(expected_them, ret)
 
@@ -346,9 +348,25 @@ class TestDefaultCallables(TestCase):
 
     def test_random(self):
         string = "$random(1,10)"
-        ret = self.parser.parse(string, raise_errors=True)
-        ret = int(ret)
+        ret = self.parser.parse_to_any(string, raise_errors=True)
         self.assertTrue(1 <= ret <= 10)
+
+        string = "$random()"
+        ret = self.parser.parse_to_any(string, raise_errors=True)
+        self.assertTrue(0 <= ret <= 1)
+
+        string = "$random(1.0, 3.0)"
+        for i in range(1000):
+            ret = self.parser.parse_to_any(string, raise_errors=True)
+            self.assertTrue(isinstance(ret, float))
+            print("ret:", ret)
+            self.assertTrue(1.0 <= ret <= 3.0)
+
+    def test_randint(self):
+        string = "$randint(1.0, 3.0)"
+        ret = self.parser.parse_to_any(string, raise_errors=True)
+        self.assertTrue(isinstance(ret, int))
+        self.assertTrue(1.0 <= ret <= 3.0)
 
     def test_nofunc(self):
         self.assertEqual(
