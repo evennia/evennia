@@ -377,6 +377,11 @@ class Mob(tut_objects.TutorialObject):
         attack_cmd = random.choice(("thrust", "pierce", "stab", "slash", "chop"))
         self.execute_cmd("%s %s" % (attack_cmd, target))
 
+        if target.db.health is None:
+            # This is not an attackable target
+            logger.log_err(f"{self.key} found {target} had an `health` attribute of `None`.")
+            return
+
         # analyze the current state
         if target.db.health <= 0:
             # we reduced the target to <= 0 health. Move them to the

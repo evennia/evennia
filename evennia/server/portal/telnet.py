@@ -81,7 +81,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         of incoming data.
         """
         # print(f"telnet dataReceived: {data}")
-        super().dataReceived(data)
+        try:
+            super().dataReceived(data)
+        except ValueError as err:
+            from evennia.utils import logger
+            logger.log_err(f"Malformed telnet input: {err}")
 
     def connectionMade(self):
         """
@@ -355,7 +359,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Data User -> Evennia
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Options from the protocol.
 
         """
@@ -368,7 +372,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Data Evennia -> User
 
-        Kwargs:
+        Keyword Args:
             kwargs (any): Options to the protocol
         """
         self.sessionhandler.data_out(self, **kwargs)
@@ -382,19 +386,20 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Args:
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
-        Kwargs:
-            options (dict): Send-option flags
-                   - mxp: Enforce MXP link support.
-                   - ansi: Enforce no ANSI colors.
-                   - xterm256: Enforce xterm256 colors, regardless of TTYPE.
-                   - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
-                   - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
-                   - raw: Pass string through without any ansi processing
-                        (i.e. include Evennia ansi markers but do not
-                        convert them into ansi tokens)
-                   - echo: Turn on/off line echo on the client. Turn
-                        off line echo for client, for example for password.
-                        Note that it must be actively turned back on again!
+        Keyword Args:
+            options (dict): Send-option flags:
+
+                - mxp: Enforce MXP link support.
+                - ansi: Enforce no ANSI colors.
+                - xterm256: Enforce xterm256 colors, regardless of TTYPE.
+                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
+                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
+                - raw: Pass string through without any ansi processing
+                  (i.e. include Evennia ansi markers but do not
+                  convert them into ansi tokens)
+                - echo: Turn on/off line echo on the client. Turn
+                  off line echo for client, for example for password.
+                  Note that it must be actively turned back on again!
 
         """
         text = args[0] if args else ""

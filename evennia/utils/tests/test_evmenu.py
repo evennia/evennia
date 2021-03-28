@@ -18,7 +18,9 @@ To help debug the menu, turn on `debug_output`, which will print the traversal p
 """
 
 import copy
+from anything import Anything
 from django.test import TestCase
+from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import evmenu
 from evennia.utils import ansi
 from mock import MagicMock
@@ -229,7 +231,7 @@ class TestEvMenu(TestCase):
 
 class TestEvMenuExample(TestEvMenu):
 
-    menutree = "evennia.utils.evmenu"
+    menutree = "evennia.utils.tests.data.evmenu_example"
     startnode = "test_start_node"
     kwargs = {"testval": "val", "testval2": "val2"}
     debug_output = False
@@ -262,3 +264,78 @@ class TestEvMenuExample(TestEvMenu):
     def test_kwargsave(self):
         self.assertTrue(hasattr(self.menu, "testval"))
         self.assertTrue(hasattr(self.menu, "testval2"))
+
+
+def _callnode1(caller, raw_string, **kwargs):
+    return "node1"
+
+
+def _callnode2(caller, raw_string, **kwargs):
+    return "node2"
+
+
+class TestMenuTemplateParse(EvenniaTest):
+    """Test menu templating helpers"""
+
+    def setUp(self):
+        super().setUp()
+
+        self.menu_template = """
+        ## node start
+
+        Neque ea alias perferendis molestiae eligendi. Debitis exercitationem
+        exercitationem quas blanditiis quisquam officia ut. Fugit aut fugit enim quia
+        non. Earum et excepturi animi ex esse accusantium et. Id adipisci eos enim
+        ratione.
+
+        ## options
+
+        1: first option -> node1
+        2: second option -> node2
+        next: node1
+
+        ## node node1
+
+        Node 1
+
+        ## options
+
+        fwd: node2
+        call1: callnode1()
+        call2: callnode2(foo=bar, bar=22, goo="another test")
+        >: start
+
+        ## node node2
+
+        Text of node 2
+
+        ## options
+
+        > foo*: node1
+        > [0-9]+?: node2
+        > back: start
+
+        """
+        self.goto_callables = {"callnode1": _callnode1, "callnode2": _callnode2}
+
+    def test_parse_menu_template(self):
+        """EvMenu template testing"""
+
+        menutree = evmenu.parse_menu_template(self.char1, self.menu_template, self.goto_callables)
+        self.assertEqual(menutree, {"start": Anything, "node1": Anything, "node2": Anything})
+
+    def test_template2menu(self):
+        evmenu.template2menu(self.char1, self.menu_template, self.goto_callables)
+
+    def test_parse_menu_fail(self):
+        template = """
+        ## NODE
+
+        Text
+
+        ## OPTIONS
+
+        next: callnode2(invalid)
+        """
+        with self.assertRaises(RuntimeError):
+            evmenu.parse_menu_template(self.char1, template, self.goto_callables)

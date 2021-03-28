@@ -175,6 +175,16 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(True, lockfuncs.objtag(None, self.obj2, "test2", "category1"))
         self.assertEqual(False, lockfuncs.objtag(None, self.obj2, "test2"))
 
+    def test_traverse_taglock(self):
+        self.obj2.tags.add("test1", "category1")
+        self.exit.locks.add("traverse:tag(test1,category1)")
+        self.assertEqual(self.exit.access(self.obj2, "traverse"), True)
+
+    def test_traverse_taglock_fail(self):
+        self.obj2.tags.add("test1")  # missing the category
+        self.exit.locks.add("traverse:tag(test1,category1)")
+        self.assertEqual(self.exit.access(self.obj2, "traverse"), False)
+
     def test_inside_holds(self):
         self.assertEqual(True, lockfuncs.inside(self.char1, self.room1))
         self.assertEqual(False, lockfuncs.inside(self.char1, self.room2))

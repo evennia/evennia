@@ -1,12 +1,12 @@
 # Evennia dependencies
 
 # general
-django >= 2.2.5, < 2.3
-twisted >= 19.2.1, < 20.0.0
+django >= 2.2.5, < 3.0
+twisted >= 20.3.0, < 21.0.0
 pytz
 django-sekizai
 inflect
-autobahn >= 17.9.3
+autobahn >= 20.7.1, < 21.0.0
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0

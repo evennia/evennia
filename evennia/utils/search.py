@@ -26,6 +26,7 @@ Example: To reach the search method 'get_object_with_account'
 
 # Import the manager methods to be wrapped
 
+from django.db.utils import OperationalError
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
@@ -36,7 +37,6 @@ __all__ = (
     "search_message",
     "search_channel",
     "search_help_entry",
-    "search_object_tag",
     "search_script_tag",
     "search_account_tag",
     "search_channel_tag",
@@ -44,14 +44,23 @@ __all__ = (
 
 
 # import objects this way to avoid circular import problems
-ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
-ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
-Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
-Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
-HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
-Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
-
+try:
+    ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
+    AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
+    ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
+    Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
+    ChannelDB = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
+    HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
+    Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
+except OperationalError:
+    # this is a fallback used during tests/doc building
+   print("Couldn't initialize search managers - db not set up.")
+   from evennia.objects.models import ObjectDB
+   from evennia.accounts.models import AccountDB
+   from evennia.scripts.models import ScriptDB
+   from evennia.comms.models import Msg, ChannelDB
+   from evennia.help.models import HelpEntry
+   from evennia.typeclasses.tags import Tag
 
 # -------------------------------------------------------------------
 # Search manager-wrappers
@@ -171,7 +180,7 @@ messages = search_messages
 #     exact -  requires an exact ostring match (not case sensitive)
 #
 
-search_channel = Channel.objects.channel_search
+search_channel = ChannelDB.objects.channel_search
 search_channels = search_channel
 channel_search = search_channel
 channels = search_channels
@@ -205,27 +214,35 @@ help_entries = search_help
 # not the attribute object itself (this is usually what you want)
 
 
-def search_object_attribute(key=None, category=None, value=None, strvalue=None):
+def search_object_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return ObjectDB.objects.get_by_attribute(
-        key=key, category=category, value=value, strvalue=strvalue
+        key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_account_attribute(key=None, category=None, value=None, strvalue=None):
+def search_account_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return AccountDB.objects.get_by_attribute(
-        key=key, category=category, value=value, strvalue=strvalue
+        key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_script_attribute(key=None, category=None, value=None, strvalue=None):
+def search_script_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return ScriptDB.objects.get_by_attribute(
-        key=key, category=category, value=value, strvalue=strvalue
+        key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
-    return Channel.objects.get_by_attribute(
-        key=key, category=category, value=value, strvalue=strvalue
+def search_channel_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
+    return ChannelDB.objects.get_by_attribute(
+        key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
@@ -243,7 +260,7 @@ search_attribute_object = ObjectDB.objects.get_attribute
 # object itself (this is usually what you want)
 
 
-def search_object_by_tag(key=None, category=None):
+def search_object_by_tag(key=None, category=None, tagtype=None, **kwargs):
     """
     Find object based on tag or category.
 
@@ -252,6 +269,11 @@ def search_object_by_tag(key=None, category=None):
         category (str, optional): The category of tag
             to search for. If not set, uncategorized
             tags will be searched.
+        tagtype (str, optional): 'type' of Tag, by default
+            this is either `None` (a normal Tag), `alias` or
+            `permission`. This always apply to all queried tags.
+        kwargs (any): Other optional parameter that may be supported
+            by the manager method.
 
     Returns:
         matches (list): List of Objects with tags matching
@@ -259,13 +281,13 @@ def search_object_by_tag(key=None, category=None):
             matches were found.
 
     """
-    return ObjectDB.objects.get_by_tag(key=key, category=category)
+    return ObjectDB.objects.get_by_tag(key=key, category=category, tagtype=tagtype, **kwargs)
 
 
 search_tag = search_object_by_tag  # this is the most common case
 
 
-def search_account_tag(key=None, category=None):
+def search_account_tag(key=None, category=None, tagtype=None, **kwargs):
     """
     Find account based on tag or category.
 
@@ -274,6 +296,11 @@ def search_account_tag(key=None, category=None):
         category (str, optional): The category of tag
             to search for. If not set, uncategorized
             tags will be searched.
+        tagtype (str, optional): 'type' of Tag, by default
+            this is either `None` (a normal Tag), `alias` or
+            `permission`. This always apply to all queried tags.
+        kwargs (any): Other optional parameter that may be supported
+            by the manager method.
 
     Returns:
         matches (list): List of Accounts with tags matching
@@ -281,10 +308,10 @@ def search_account_tag(key=None, category=None):
             matches were found.
 
     """
-    return AccountDB.objects.get_by_tag(key=key, category=category)
+    return AccountDB.objects.get_by_tag(key=key, category=category, tagtype=tagtype, **kwargs)
 
 
-def search_script_tag(key=None, category=None):
+def search_script_tag(key=None, category=None, tagtype=None, **kwargs):
     """
     Find script based on tag or category.
 
@@ -293,6 +320,11 @@ def search_script_tag(key=None, category=None):
         category (str, optional): The category of tag
             to search for. If not set, uncategorized
             tags will be searched.
+        tagtype (str, optional): 'type' of Tag, by default
+            this is either `None` (a normal Tag), `alias` or
+            `permission`. This always apply to all queried tags.
+        kwargs (any): Other optional parameter that may be supported
+            by the manager method.
 
     Returns:
         matches (list): List of Scripts with tags matching
@@ -300,10 +332,10 @@ def search_script_tag(key=None, category=None):
             matches were found.
 
     """
-    return ScriptDB.objects.get_by_tag(key=key, category=category)
+    return ScriptDB.objects.get_by_tag(key=key, category=category, tagtype=tagtype, **kwargs)
 
 
-def search_channel_tag(key=None, category=None):
+def search_channel_tag(key=None, category=None, tagtype=None, **kwargs):
     """
     Find channel based on tag or category.
 
@@ -312,6 +344,11 @@ def search_channel_tag(key=None, category=None):
         category (str, optional): The category of tag
             to search for. If not set, uncategorized
             tags will be searched.
+        tagtype (str, optional): 'type' of Tag, by default
+            this is either `None` (a normal Tag), `alias` or
+            `permission`. This always apply to all queried tags.
+        kwargs (any): Other optional parameter that may be supported
+            by the manager method.
 
     Returns:
         matches (list): List of Channels with tags matching
@@ -319,7 +356,7 @@ def search_channel_tag(key=None, category=None):
             matches were found.
 
     """
-    return Channel.objects.get_by_tag(key=key, category=category)
+    return ChannelDB.objects.get_by_tag(key=key, category=category, tagtype=tagtype, **kwargs)
 
 
 # search for tag objects (not the objects they are attached to

@@ -229,6 +229,12 @@ class _SaverMutable(object):
     def __ne__(self, other):
         return self._data != other
 
+    def __lt__(self, other):
+        return self._data < other
+
+    def __gt__(self, other):
+        return self._data > other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -274,6 +280,13 @@ class _SaverList(_SaverMutable, MutableSequence):
     def index(self, value, *args):
         return self._data.index(value, *args)
 
+    @_save
+    def sort(self, *, key=None, reverse=False):
+        self._data.sort(key=key, reverse=reverse)
+
+    def copy(self):
+        return self._data.copy()
+
 
 class _SaverDict(_SaverMutable, MutableMapping):
     """
@@ -286,6 +299,10 @@ class _SaverDict(_SaverMutable, MutableMapping):
 
     def has_key(self, key):
         return key in self._data
+
+    @_save
+    def update(self, *args, **kwargs):
+        self._data.update(*args, **kwargs)
 
 
 class _SaverSet(_SaverMutable, MutableSet):
@@ -591,7 +608,7 @@ def from_pickle(data, db_obj=None):
     object was removed (or changed in-place) in the database, None will be
     returned.
 
-    Args_
+    Args:
         data (any): Pickled data to unpickle.
         db_obj (Atribute, any): This is the model instance (normally
             an Attribute) that _Saver*-type iterables (_SaverList etc)
@@ -599,7 +616,7 @@ def from_pickle(data, db_obj=None):
             that saves assigned data to the database. Skip if not
             serializing onto a given object.  If db_obj is given, this
             function will convert lists, dicts and sets to their
-            _SaverList, _SaverDict and _SaverSet counterparts.
+            `_SaverList`, `_SaverDict` and `_SaverSet` counterparts.
 
     Returns:
         data (any): Unpickled data.

@@ -7,6 +7,7 @@ down in the text (the name comes from the traditional 'more' unix
 command).
 
 To use, simply pass the text through the EvMore object:
+::
 
     from evennia.utils.evmore import EvMore
 
@@ -14,23 +15,28 @@ To use, simply pass the text through the EvMore object:
     EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
 
 One can also use the convenience function msg from this module:
+::
 
     from evennia.utils import evmore
 
     text = some_long_text_output()
     evmore.msg(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
 
-Where always_page decides if the pager is used also if the text is not
-long enough to need to scroll, session is used to determine which session to relay to
-and justify_kwargs are kwargs to pass to utils.utils.justify in order to change the formatting
-of the text. The remaining **kwargs will be passed on to the
-caller.msg() construct every time the page is updated.
+Where always_page decides if the pager is used also if the text is not long
+enough to need to scroll, session is used to determine which session to relay
+to and `justify_kwargs` are kwargs to pass to `utils.utils.justify` in order to
+change the formatting of the text. The remaining `**kwargs` will be passed on to
+the `caller.msg()` construct every time the page is updated.
+
+----
 
 """
 from django.conf import settings
+from django.db.models.query import QuerySet
+from django.core.paginator import Paginator
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
-from evennia.utils.utils import justify, make_iter
+from evennia.utils.utils import make_iter, inherits_from, justify
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -117,47 +123,56 @@ class CmdSetMore(CmdSet):
         self.add(CmdMoreLook())
 
 
-class EvMore(object):
+# resources for handling queryset inputs
+def queryset_maxsize(qs):
+    return qs.count()
+
+
+class EvMore:
     """
-    The main pager object
+    The main pager object.
+
     """
 
     def __init__(
         self,
         caller,
-        text,
+        inp,
         always_page=False,
         session=None,
         justify=False,
         justify_kwargs=None,
         exit_on_lastpage=False,
         exit_cmd=None,
+        page_formatter=str,
         **kwargs,
     ):
 
         """
-        Initialization of the text handler.
+        Initialization of the Evmore input handler.
 
         Args:
             caller (Object or Account): Entity reading the text.
-            text (str, EvTable or iterator): The text or data to put under paging.
+            inp (str, EvTable, Paginator or iterator): The text or data to put under paging.
+
                 - If a string, paginage normally. If this text contains
-                   one or more `\f` format symbol, automatic pagination and justification
-                   are force-disabled and page-breaks will only happen after each `\f`.
+                  one or more \\\\f (backslash + f) format symbols, automatic
+                  pagination and justification are force-disabled and
+                  page-breaks will only happen after each \\\\f.
                 - If `EvTable`, the EvTable will be paginated with the same
-                   setting on each page if it is too long. The table
-                   decorations will be considered in the size of the page.
-                - Otherwise `text` is converted to an iterator, where each step is
-                   expected to be a line in the final display. Each line
-                   will be run through repr() (so one could pass a list of objects).
-            always_page (bool, optional): If `False`, the
-                pager will only kick in if `text` is too big
-                to fit the screen.
+                  setting on each page if it is too long. The table
+                  decorations will be considered in the size of the page.
+                - Otherwise `inp` is converted to an iterator, where each step is
+                  expected to be a line in the final display. Each line
+                  will be run through `iter_callable`.
+
+            always_page (bool, optional): If `False`, the pager will only kick
+                in if `inp` is too big to fit the screen.
             session (Session, optional): If given, this session will be used
                 to determine the screen width and will receive all output.
             justify (bool, optional): If set, auto-justify long lines. This must be turned
                 off for fixed-width or formatted output, like tables. It's force-disabled
-                if `text` is an EvTable.
+                if `inp` is an EvTable.
             justify_kwargs (dict, optional): Keywords for the justifiy function. Used only
                 if `justify` is True. If this is not set, default arguments will be used.
             exit_on_lastpage (bool, optional): If reaching the last page without the
@@ -168,31 +183,55 @@ class EvMore(object):
                 the caller when the more page exits. Note that this will be using whatever
                 cmdset the user had *before* the evmore pager was activated (so none of
                 the evmore commands will be available when this is run).
-            kwargs (any, optional): These will be passed on to the `caller.msg` method.
+            kwargs (any, any): These will be passed on to the `caller.msg` method.
 
         Examples:
-            super_long_text = " ... "
-            EvMore(caller, super_long_text)
+            Basic use:
+            ::
 
-            from django.core.paginator import Paginator
-            query = ObjectDB.objects.all()
-            pages = Paginator(query, 10)  # 10 objs per page
-            EvMore(caller, pages)   # will repr() each object per line, 10 to a page
+                super_long_text = " ... "
+                EvMore(caller, super_long_text)
 
-            multi_page_table = [ [[..],[..]], ...]
-            EvMore(caller, multi_page_table, use_evtable=True,
-                   evtable_args=("Header1", "Header2"),
-                   evtable_kwargs={"align": "r", "border": "tablecols"})
+            Paginated query data - this is an optimization to avoid fetching
+            database data until it's actually paged to.
+            ::
+
+                from django.core.paginator import Paginator
+
+                query = ObjectDB.objects.all()
+                pages = Paginator(query, 10)  # 10 objs per page
+                EvMore(caller, pages)
+
+            Automatic split EvTable over multiple EvMore pages
+            ::
+
+                table = EvMore(*header, table=tabledata)
+                EvMore(caller, table)
+
+            Every page a separate EvTable (optimization for very large data sets)
+            ::
+
+                from evennia import EvTable, EvMore
+
+                class TableEvMore(EvMore):
+                    def init_pages(self, data):
+                        pages = # depends on data type
+                        super().init_pages(pages)
+
+                    def page_formatter(self, page):
+                        table = EvTable()
+
+                        for line in page:
+                            cols = # split raw line into columns
+                            table.add_row(*cols)
+
+                        return str(table)
+
+                TableEvMore(caller, pages)
 
         """
         self._caller = caller
-        self._kwargs = kwargs
-        self._pages = []
-        self._npages = 1
-        self._npos = 0
-        self.exit_on_lastpage = exit_on_lastpage
-        self.exit_cmd = exit_cmd
-        self._exit_msg = "Exited |wmore|n pager."
+        self._always_page = always_page
 
         if not session:
             # if not supplied, use the first session to
@@ -203,81 +242,45 @@ class EvMore(object):
             session = sessions[0]
         self._session = session
 
+        self._justify = justify
+        self._justify_kwargs = justify_kwargs
+        self.exit_on_lastpage = exit_on_lastpage
+        self.exit_cmd = exit_cmd
+        self._exit_msg = "Exited |wmore|n pager."
+        self._kwargs = kwargs
+
+        self._data = None
+
+        self._pages = []
+        self._npos = 0
+
+        self._npages = 1
+        self._paginator = self.paginator_index
+        self._page_formatter = str
+
         # set up individual pages for different sessions
         height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
-        width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
+        self.width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
+        # always limit number of chars to 10 000 per page
+        self.height = min(10000 // max(1, self.width), height)
 
-        if hasattr(text, "table") and hasattr(text, "get"):
-            # This is an EvTable.
+        # does initial parsing of input
+        self.init_pages(inp)
 
-            table = text
+        # kick things into gear
+        self.start()
 
-            if table.height:
-                # enforced height of each paged table, plus space for evmore extras
-                height = table.height - 4
-
-            # convert table to string
-            text = str(text)
-            justify_kwargs = None  # enforce
-
-        if not isinstance(text, str):
-            # not a string - pre-set pages of some form
-            text = "\n".join(str(repr(element)) for element in make_iter(text))
-
-        if "\f" in text:
-            # we use \f to indicate the user wants to enforce their line breaks
-            # on their own. If so, we do no automatic line-breaking/justification
-            # at all.
-            self._pages = text.split("\f")
-            self._npages = len(self._pages)
-        else:
-            if justify:
-                # we must break very long lines into multiple ones. Note that this
-                # will also remove spurious whitespace.
-                justify_kwargs = justify_kwargs or {}
-                width = justify_kwargs.get("width", width)
-                justify_kwargs["width"] = width
-                justify_kwargs["align"] = justify_kwargs.get("align", "l")
-                justify_kwargs["indent"] = justify_kwargs.get("indent", 0)
-
-                lines = []
-                for line in text.split("\n"):
-                    if len(line) > width:
-                        lines.extend(justify(line, **justify_kwargs).split("\n"))
-                    else:
-                        lines.append(line)
-            else:
-                # no justification. Simple division by line
-                lines = text.split("\n")
-
-            # always limit number of chars to 10 000 per page
-            height = min(10000 // max(1, width), height)
-
-            # figure out the pagination
-            self._pages = ["\n".join(lines[i : i + height]) for i in range(0, len(lines), height)]
-            self._npages = len(self._pages)
-
-        if self._npages <= 1 and not always_page:
-            # no need for paging; just pass-through.
-            caller.msg(text=self._get_page(0), session=self._session, **kwargs)
-        else:
-            # go into paging mode
-            # first pass on the msg kwargs
-            caller.ndb._more = self
-            caller.cmdset.add(CmdSetMore)
-
-            # goto top of the text
-            self.page_top()
-
-    def _get_page(self, pos):
-        return self._pages[pos]
+    # EvMore functional methods
 
     def display(self, show_footer=True):
         """
         Pretty-print the page.
         """
-        pos = self._npos
-        text = self._get_page(pos)
+        pos = 0
+        text = "[no content]"
+        if self._npages > 0:
+            pos = self._npos
+            text = self.page_formatter(self.paginator(pos))
         if show_footer:
             page = _DISPLAY.format(text=text, pageno=pos + 1, pagemax=self._npages)
         else:
@@ -340,6 +343,195 @@ class EvMore(object):
         if self.exit_cmd:
             self._caller.execute_cmd(self.exit_cmd, session=self._session)
 
+    def start(self):
+        """
+        Starts the pagination
+        """
+        if self._npages <= 1 and not self._always_page:
+            # no need for paging; just pass-through.
+            self.display(show_footer=False)
+        else:
+            # go into paging mode
+            # first pass on the msg kwargs
+            self._caller.ndb._more = self
+            self._caller.cmdset.add(CmdSetMore)
+
+            # goto top of the text
+            self.page_top()
+
+    # default paginators - responsible for extracting a specific page number
+
+    def paginator_index(self, pageno):
+        """Paginate to specific, known index"""
+        return self._data[pageno]
+
+    def paginator_slice(self, pageno):
+        """
+        Paginate by slice. This is done with an eye on memory efficiency (usually for
+        querysets); to avoid fetching all objects at the same time.
+        """
+        return self._data[pageno * self.height : pageno * self.height + self.height]
+
+    def paginator_django(self, pageno):
+        """
+        Paginate using the django queryset Paginator API. Note that his is indexed from 1.
+        """
+        return self._data.page(pageno + 1)
+
+    # default helpers to set up particular input types
+
+    def init_evtable(self, table):
+        """The input is an EvTable."""
+        if table.height:
+            # enforced height of each paged table, plus space for evmore extras
+            self.height = table.height - 4
+
+        # convert table to string
+        text = str(table)
+        self._justify = False
+        self._justify_kwargs = None  # enforce
+        self.init_str(text)
+
+    def init_queryset(self, qs):
+        """The input is a queryset"""
+        nsize = qs.count()  # we assume each will be a line
+        self._npages = nsize // self.height + (0 if nsize % self.height == 0 else 1)
+        self._data = qs
+
+    def init_django_paginator(self, pages):
+        """
+        The input is a django Paginator object.
+        """
+        self._npages = pages.num_pages
+        self._data = pages
+
+    def init_iterable(self, inp):
+        """The input is something other than a string - convert to iterable of strings"""
+        inp = make_iter(inp)
+        nsize = len(inp)
+        self._npages = nsize // self.height + (0 if nsize % self.height == 0 else 1)
+        self._data = inp
+
+    def init_f_str(self, text):
+        """
+        The input contains \\\\f (backslash + f) markers. We use \\\\f to indicate
+        the user wants to enforce their line breaks on their own. If so, we do
+        no automatic line-breaking/justification at all.
+
+        """
+        self._data = text.split("\f")
+        self._npages = len(self._data)
+
+    def init_str(self, text):
+        """The input is a string"""
+
+        if self._justify:
+            # we must break very long lines into multiple ones. Note that this
+            # will also remove spurious whitespace.
+            justify_kwargs = self._justify_kwargs or {}
+            width = self._justify_kwargs.get("width", self.width)
+            justify_kwargs["width"] = width
+            justify_kwargs["align"] = self._justify_kwargs.get("align", "l")
+            justify_kwargs["indent"] = self._justify_kwargs.get("indent", 0)
+
+            lines = []
+            for line in text.split("\n"):
+                if len(line) > width:
+                    lines.extend(justify(line, **justify_kwargs).split("\n"))
+                else:
+                    lines.append(line)
+        else:
+            # no justification. Simple division by line
+            lines = text.split("\n")
+
+        self._data = [
+            "\n".join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
+        ]
+        self._npages = len(self._data)
+
+    # Hooks for customizing input handling and formatting (override in a child class)
+
+    def init_pages(self, inp):
+        """
+        Initialize the pagination. By default, will analyze input type to determine
+        how pagination automatically.
+
+        Args:
+            inp (any): Incoming data to be paginated. By default, handles pagination of
+                strings, querysets, django.Paginator, EvTables and any iterables with strings.
+
+        Notes:
+            If overridden, this method must perform the following  actions:
+
+            - read and re-store `self._data` (the incoming data set) if needed
+              for pagination to work.
+            - set `self._npages` to the total number of pages. Default is 1.
+            - set `self._paginator` to a callable that will take a page number 1...N and return
+              the data to display on that page (not any decorations or next/prev buttons). If only
+              wanting to change the paginator, override `self.paginator` instead.
+            - set `self._page_formatter` to a callable that will receive the
+              page from `self._paginator` and format it with one element per
+              line. Default is `str`. Or override `self.page_formatter`
+              directly instead.
+
+            By default, helper methods are called that perform these actions
+            depending on supported inputs.
+
+        """
+        if inherits_from(inp, "evennia.utils.evtable.EvTable"):
+            # an EvTable
+            self.init_evtable(inp)
+            self._paginator = self.paginator_index
+        elif isinstance(inp, QuerySet):
+            # a queryset
+            self.init_queryset(inp)
+            self._paginator = self.paginator_slice
+        elif isinstance(inp, Paginator):
+            self.init_django_paginator(inp)
+            self._paginator = self.paginator_django
+        elif not isinstance(inp, str):
+            # anything else not a str
+            self.init_iterable(inp)
+            self._paginator = self.paginator_slice
+        elif "\f" in inp:
+            # string with \f line-break markers in it
+            self.init_f_str(inp)
+            self._paginator = self.paginator_index
+        else:
+            # a string
+            self.init_str(inp)
+            self._paginator = self.paginator_index
+
+    def paginator(self, pageno):
+        """
+        Paginator. The data operated upon is in `self._data`.
+
+        Args:
+            pageno (int): The page number to view, from 0...N-1
+        Returns:
+            str: The page to display (without any decorations, those are added
+                by EvMore).
+
+        """
+        return self._paginator(pageno)
+
+    def page_formatter(self, page):
+        """
+        Page formatter. Every page passes through this method. Override
+        it to customize behvaior per-page. A common use is to generate a new
+        EvTable for every page (this is more efficient than to generate one huge
+        EvTable across many pages and feed it into EvMore all at once).
+
+        Args:
+            page (any): A piece of data representing one page to display. This must
+
+        Returns:
+            str: A ready-formatted page to display. Extra footer with help about
+                switching to the next/prev page will be added automatically
+
+        """
+        return self._page_formatter(page)
+
 
 # helper function
 
@@ -360,15 +552,17 @@ def msg(
     Args:
         caller (Object or Account): Entity reading the text.
         text (str, EvTable or iterator): The text or data to put under paging.
+
             - If a string, paginage normally. If this text contains
-              one or more `\f` format symbol, automatic pagination is disabled
-              and page-breaks will only happen after each `\f`.
+              one or more \\\\f (backslash + f) format symbol, automatic pagination is disabled
+              and page-breaks will only happen after each \\\\f.
             - If `EvTable`, the EvTable will be paginated with the same
-                setting on each page if it is too long. The table
-                decorations will be considered in the size of the page.
+              setting on each page if it is too long. The table
+              decorations will be considered in the size of the page.
             - Otherwise `text` is converted to an iterator, where each step is
               is expected to be a line in the final display, and each line
               will be run through repr().
+
         always_page (bool, optional): If `False`, the
             pager will only kick in if `text` is too big
             to fit the screen.

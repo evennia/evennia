@@ -2,20 +2,18 @@
 Inline functions (nested form).
 
 This parser accepts nested inlinefunctions on the form
+::
 
-```
-$funcname(arg, arg, ...)
-```
+    $funcname(arg, arg, ...)
 
-embedded in any text where any arg can be another $funcname{} call.
+embedded in any text where any arg can be another `$funcname{}` call.
 This functionality is turned off by default - to activate,
 `settings.INLINEFUNC_ENABLED` must be set to `True`.
 
-Each token starts with "$funcname(" where there must be no space
-between the $funcname and (. It ends with a matched ending parentesis.
-")".
+Each token starts with `$funcname(` where there must be no space between the
+$funcname and "(". It ends with a matched ending parentesis ")".
 
-Inside the inlinefunc definition, one can use `\` to escape. This is
+Inside the inlinefunc definition, one can use \\\\ to escape. This is
 mainly needed for escaping commas in flowing text (which would
 otherwise be interpreted as an argument separator), or to escape `}`
 when not intended to close the function block. Enclosing text in
@@ -27,11 +25,10 @@ The available inlinefuncs are defined as global-level functions in
 modules defined by `settings.INLINEFUNC_MODULES`. They are identified
 by their function name (and ignored if this name starts with `_`). They
 should be on the following form:
+::
 
-```python
-def funcname (*args, **kwargs):
+    def funcname (*args, **kwargs):
     # ...
-```
 
 Here, the arguments given to `$funcname(arg1,arg2)` will appear as the
 `*args` tuple. This will be populated by the arguments given to the
@@ -44,30 +41,85 @@ the string is sent to a non-puppetable object. The inlinefunc should
 never raise an exception.
 
 There are two reserved function names:
+
 - "nomatch": This is called if the user uses a functionname that is
-    not registered. The nomatch function will get the name of the
-    not-found function as its first argument followed by the normal
-    arguments to the given function. If not defined the default effect is
-    to print `<UNKNOWN>` to replace the unknown function.
+  not registered. The nomatch function will get the name of the
+  not-found function as its first argument followed by the normal
+  arguments to the given function. If not defined the default effect is
+  to print `<UNKNOWN>` to replace the unknown function.
 - "stackfull": This is called when the maximum nested function stack is reached.
   When this happens, the original parsed string is returned and the result of
   the `stackfull` inlinefunc is appended to the end. By default this is an
   error message.
 
-Error handling:
-   Syntax errors, notably not completely closing all inlinefunc
-   blocks, will lead to the entire string remaining unparsed.
+Syntax errors, notably not completely closing all inlinefunc blocks, will lead
+to the entire string remaining unparsed.
+
+----
 
 """
 
 import re
 import fnmatch
+import random as base_random
 from django.conf import settings
 
 from evennia.utils import utils, logger
 
+# The stack size is a security measure. Set to <=0 to disable.
+_STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
+
 
 # example/testing inline functions
+
+
+def random(*args, **kwargs):
+    """
+    Inlinefunc. Returns a random number between
+    0 and 1, from 0 to a maximum value, or within a given range (inclusive).
+
+    Args:
+        minval (str, optional): Minimum value. If not given, assumed 0.
+        maxval (str, optional): Maximum value.
+
+    Keyword argumuents:
+        session (Session): Session getting the string.
+
+    Notes:
+        If either of the min/maxvalue has a '.' in it, a floating-point random
+        value will be returned. Otherwise it will be an integer value in the
+        given range.
+
+    Example:
+
+        - `$random()`
+        - `$random(5)`
+        - `$random(5, 10)`
+
+    """
+    nargs = len(args)
+    if nargs == 1:
+        # only maxval given
+        minval, maxval = "0", args[0]
+    elif nargs > 1:
+        minval, maxval = args[:2]
+    else:
+        minval, maxval = ("0", "1")
+
+    if "." in minval or "." in maxval:
+        # float mode
+        try:
+            minval, maxval = float(minval), float(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return "{:.2f}".format(minval + maxval * base_random.random())
+    else:
+        # int mode
+        try:
+            minval, maxval = int(minval), int(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return str(base_random.randint(minval, maxval))
 
 
 def pad(*args, **kwargs):
@@ -79,9 +131,10 @@ def pad(*args, **kwargs):
         width (str, optional): Will be converted to integer. Width
             of padding.
         align (str, optional): Alignment of padding; one of 'c', 'l' or 'r'.
-        fillchar (str, optional): Character used for padding. Defaults to a space.
+        fillchar (str, optional): Character used for padding. Defaults to a
+            space.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the pad.
 
     Example:
@@ -111,7 +164,7 @@ def crop(*args, **kwargs):
             crop in characters.
         suffix (str, optional): End string to mark the fact that a part
             of the string was cropped. Defaults to `[...]`.
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the crop.
 
     Example:
@@ -136,7 +189,7 @@ def space(*args, **kwargs):
     Args:
         spaces (int, optional): The number of spaces to insert.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the crop.
 
     Example:
@@ -159,7 +212,7 @@ def clr(*args, **kwargs):
         text (str, optional): Text
         endclr (str, optional): The color to use at the end of the string. Defaults
             to `|n` (reset-color).
-    Kwargs:
+    Keyword Args:
         session (Session): Session object triggering inlinefunc.
 
     Example:
@@ -226,12 +279,6 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         else:
             raise
 
-
-# The stack size is a security measure. Set to <=0 to disable.
-try:
-    _STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
-except AttributeError:
-    _STACK_MAXSIZE = 20
 
 # regex definitions
 
@@ -322,7 +369,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
         available_funcs (dict, optional): Define an alternative source of functions to parse for.
             If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
         stacktrace (bool, optional): If set, print the stacktrace to log.
-    Kwargs:
+    Keyword Args:
         session (Session): This is sent to this function by Evennia when triggering
             it. It is passed to the inlinefunc.
         kwargs (any): All other kwargs are also passed on to the inlinefunc.
@@ -465,6 +512,20 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
     return retval
 
 
+def raw(string):
+    """
+    Escape all inlinefuncs in a string so they won't get parsed.
+
+    Args:
+        string (str): String with inlinefuncs to escape.
+    """
+
+    def _escape(match):
+        return "\\" + match.group(0)
+
+    return _RE_STARTTOKEN.sub(_escape, string)
+
+
 #
 # Nick templating
 #
@@ -513,15 +574,15 @@ def initialize_nick_templates(in_template, out_template):
     Args:
         in_template (str): The template to be used for nick recognition.
         out_template (str): The template to be used to replace the string
-            matched by the in_template.
+            matched by the `in_template`.
 
     Returns:
-        regex  (regex): Regex to match against strings
-        template (str): Template with markers {arg1}, {arg2}, etc for
-            replacement using the standard .format method.
+        regex, template (regex, str): Regex to match against strings and a
+        template with markers `{arg1}`, `{arg2}`, etc for replacement using the
+        standard `.format` method.
 
     Raises:
-        NickTemplateInvalid: If the in/out template does not have a matching
+        inlinefuncs.NickTemplateInvalid: If the in/out template does not have a matching
             number of $args.
 
     """

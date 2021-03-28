@@ -19,7 +19,8 @@ from evennia.utils import create, logger, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
-CHANNEL_DEFAULT_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+CHANNEL_DEFAULT_TYPECLASS = class_from_module(
+    settings.BASE_CHANNEL_TYPECLASS, fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
 
 
 # limit symbol import for API
@@ -37,7 +38,9 @@ __all__ = (
     "CmdCdesc",
     "CmdPage",
     "CmdIRC2Chan",
+    "CmdIRCStatus",
     "CmdRSS2Chan",
+    "CmdGrapevine2Chan",
 )
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -806,17 +809,48 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 lastpages = pages[-number:]
             else:
                 lastpages = pages
-            template = "|w%s|n |c%s|n to |c%s|n: %s"
-            lastpages = "\n ".join(
-                template
-                % (
-                    utils.datetime_format(page.date_created),
-                    ",".join(obj.key for obj in page.senders),
-                    "|n,|c ".join([obj.name for obj in page.receivers]),
-                    page.message,
+            to_template = "|w{date}{clr} {sender}|nto{clr}{receiver}|n:> {message}"
+            from_template = "|w{date}{clr} {receiver}|nfrom{clr}{sender}|n:< {message}"
+            listing = []
+            prev_selfsend = False
+            for page in lastpages:
+                multi_send = len(page.senders) > 1
+                multi_recv = len(page.receivers) > 1
+                sending = self.caller in page.senders
+                # self-messages all look like sends, so we assume they always
+                # come in close pairs and treat the second of the pair as the recv.
+                selfsend = sending and self.caller in page.receivers
+                if selfsend:
+                    if prev_selfsend:
+                        # this is actually a receive of a self-message
+                        sending = False
+                        prev_selfsend = False
+                    else:
+                        prev_selfsend = True
+
+                clr = "|c" if sending else "|g"
+
+                sender = f"|n,{clr}".join(obj.key for obj in page.senders)
+                receiver = f"|n,{clr}".join([obj.name for obj in page.receivers])
+                if sending:
+                    template = to_template
+                    sender = f"{sender} " if multi_send else ""
+                    receiver = f" {receiver}" if multi_recv else f" {receiver}"
+                else:
+                    template = from_template
+                    receiver = f"{receiver} " if multi_recv else ""
+                    sender = f" {sender} " if multi_send else f" {sender}"
+
+                listing.append(
+                    template.format(
+                        date=utils.datetime_format(page.date_created),
+                        clr=clr,
+                        sender=sender,
+                        receiver=receiver,
+                        message=page.message,
+                    )
                 )
-                for page in lastpages
-            )
+            lastpages = "\n ".join(listing)
 
             if lastpages:
                 string = "Your latest pages:\n %s" % lastpages

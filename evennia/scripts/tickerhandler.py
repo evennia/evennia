@@ -73,16 +73,22 @@ from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
-from evennia.utils import variable_from_module
+from evennia.utils import variable_from_module, inherits_from
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
 _ERROR_ADD_TICKER = """TickerHandler: Tried to add an invalid ticker:
-{storekey}
+{store_key}
 Ticker was not added."""
 
+_ERROR_ADD_TICKER_SUB_SECOND = """You are trying to add a ticker running faster
+than once per second. This is not supported and also probably not useful:
+Spamming messages to the user faster than once per second serves no purpose in
+a text-game, and if you want to update some property, consider doing so
+on-demand rather than using a ticker.
+"""
 
 class Ticker(object):
     """
@@ -183,7 +189,7 @@ class Ticker(object):
             store_key (str): Unique storage hash for this ticker subscription.
             args (any, optional): Arguments to call the hook method with.
 
-        Kwargs:
+        Keyword Args:
             _start_delay (int): If set, this will be
                 used to delay the start of the trigger instead of
                 `interval`.
@@ -319,7 +325,6 @@ class TickerHandler(object):
             callback (function or method): This is either a stand-alone
                 function or class method on a typeclassed entitye (that is,
                 an entity that can be saved to the database).
-
         Returns:
             ret (tuple): This is a tuple of the form `(obj, path, callfunc)`,
                 where `obj` is the database object the callback is defined on
@@ -327,6 +332,8 @@ class TickerHandler(object):
                 the python-path to the stand-alone function (`None` if a method).
                 The `callfunc` is either the name of the method to call or the
                 callable function object itself.
+        Raises:
+            TypeError: If the callback is of an unsupported type.
 
         """
         outobj, outpath, outcallfunc = None, None, None
@@ -337,8 +344,17 @@ class TickerHandler(object):
             elif inspect.isfunction(callback):
                 outpath = "%s.%s" % (callback.__module__, callback.__name__)
                 outcallfunc = callback
+            else:
+                raise TypeError(f"{callback} is not a method or function.")
         else:
-            raise TypeError("%s is not a callable function or method." % callback)
+            raise TypeError(f"{callback} is not a callable function or method.")
+
+        if outobj and not inherits_from(outobj, "evennia.typeclasses.models.TypedObject"):
+            raise TypeError(
+                f"{callback} is a method on a normal object - it must "
+                "be either a method on a typeclass, or a stand-alone function."
+            )
+
         return outobj, outpath, outcallfunc
 
     def _store_key(self, obj, path, interval, callfunc, idstring="", persistent=True):
@@ -349,7 +365,8 @@ class TickerHandler(object):
             obj (Object, tuple or None): Subscribing object if any. If a tuple, this is
                 a packed_obj tuple from dbserialize.
             path (str or None): Python-path to callable, if any.
-            interval (int): Ticker interval.
+            interval (int): Ticker interval. Floats will be converted to
+                nearest lower integer value.
             callfunc (callable or str): This is either the callable function or
                 the name of the method to call. Note that the callable is never
                 stored in the key; that is uniquely identified with the python-path.
@@ -368,6 +385,9 @@ class TickerHandler(object):
                 `idstring` and `persistent` are integers, strings and bools respectively.
 
         """
+        if interval < 1:
+            raise RuntimeError(_ERROR_ADD_TICKER_SUB_SECOND)
+
         interval = int(interval)
         persistent = bool(persistent)
         packed_obj = pack_dbobj(obj)
@@ -504,12 +524,6 @@ class TickerHandler(object):
             when wanting to modify/remove the ticker later.
 
         """
-        if isinstance(callback, int):
-            raise RuntimeError(
-                "TICKER_HANDLER.add has changed: "
-                "the interval is now the first argument, callback the second."
-            )
-
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         kwargs["_obj"] = obj

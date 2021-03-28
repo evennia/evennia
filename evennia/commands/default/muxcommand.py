@@ -206,12 +206,6 @@ class MuxCommand(Command):
         """
         Update of parent class's get_command_info() for MuxCommand.
         """
-        self.get_command_info()
-
-    def get_command_info(self):
-        """
-        Update of parent class's get_command_info() for MuxCommand.
-        """
         variables = "\n".join(
             " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
         )

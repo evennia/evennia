@@ -15,38 +15,40 @@ Features of the editor:
 
 To use the editor, just import EvEditor from this module
 and initialize it:
+::
 
     from evennia.utils.eveditor import EvEditor
-
     EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="", persistent=True)
 
- - caller is the user of the editor, the one to see all feedback.
- - loadfunc(caller) is called when the editor is first launched; the
-   return from this function is loaded as the starting buffer in the
-   editor.
- - safefunc(caller, buffer) is called with the current buffer when
-   saving in the editor. The function should return True/False depending
-   on if the saving was successful or not.
- - quitfunc(caller) is called when the editor exits. If this is given,
-   no automatic quit messages will be given.
- - key is an optional identifier for the editing session, to be
-   displayed in the editor.
- - persistent means the editor state will be saved to the database making it
-   survive a server reload. Note that using this mode, the load- save-
-   and quit-funcs must all be possible to pickle - notable unusable
-   callables are class methods and functions defined inside other
-   functions. With persistent=False, no such restriction exists.
- - code set to True activates features on the EvEditor to enter Python code.
+- `caller` is the user of the editor, the one to see all feedback.
+- `loadfunc(caller)` is called when the editor is first launched; the
+  return from this function is loaded as the starting buffer in the
+  editor.
+- `safefunc(caller, buffer)` is called with the current buffer when
+  saving in the editor. The function should return True/False depending
+  on if the saving was successful or not.
+- `quitfunc(caller)` is called when the editor exits. If this is given,
+  no automatic quit messages will be given.
+- `key` is an optional identifier for the editing session, to be
+  displayed in the editor.
+- `persistent` means the editor state will be saved to the database making it
+  survive a server reload. Note that using this mode, the load- save-
+  and quit-funcs must all be possible to pickle - notable unusable
+  callables are class methods and functions defined inside other
+  functions. With persistent=False, no such restriction exists.
+- `code` set to True activates features on the EvEditor to enter Python code.
 
 In addition, the EvEditor can be used to enter Python source code,
 and offers basic handling of indentation.
+
+----
 
 """
 import re
 
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent, logger, justify, to_str
+from evennia.utils import is_iter, fill, dedent, logger, justify, to_str, utils
 from evennia.utils.ansi import raw
 from evennia.commands import cmdhandler
 
@@ -56,6 +58,7 @@ _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
 _RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
+_COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # use NAWS in the future?
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -169,7 +172,7 @@ _MSG_REDO = "Redid one step."
 # -------------------------------------------------------------
 
 
-class CmdSaveYesNo(Command):
+class CmdSaveYesNo(_COMMAND_DEFAULT_CLASS):
     """
     Save the editor state on quit. This catches
     nomatches (defaults to Yes), and avoid saves only if
@@ -200,7 +203,7 @@ class SaveYesNoCmdSet(CmdSet):
     """Stores the yesno question"""
 
     key = "quitsave_yesno"
-    priority = 1
+    priority = 150  # override other cmdsets.
     mergetype = "Replace"
 
     def at_cmdset_creation(self):
@@ -215,7 +218,7 @@ class SaveYesNoCmdSet(CmdSet):
 # -------------------------------------------------------------
 
 
-class CmdEditorBase(Command):
+class CmdEditorBase(_COMMAND_DEFAULT_CLASS):
     """
     Base parent for editor commands
     """
@@ -229,14 +232,16 @@ class CmdEditorBase(Command):
         """
         Handles pre-parsing
 
-        Editor commands are on the form
+        Usage:
             :cmd [li] [w] [txt]
 
         Where all arguments are optional.
-            li  - line number (int), starting from 1. This could also
-                  be a range given as <l>:<l>.
-            w   - word(s) (string), could be encased in quotes.
-            txt - extra text (string), could be encased in quotes.
+
+        - li - line number (int), starting from 1. This could also
+          be a range given as <l>:<l>.
+        - w - word(s) (string), could be encased in quotes.
+        - txt - extra text (string), could be encased in quotes.
+
         """
 
         editor = self.caller.ndb._eveditor

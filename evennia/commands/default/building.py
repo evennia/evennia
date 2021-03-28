@@ -7,19 +7,22 @@ from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
-from evennia.utils import create, utils, search
+from evennia.utils import create, utils, search, logger
 from evennia.utils.utils import (
     inherits_from,
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
     dbref,
+    interactive,
+    list_to_string,
+    display_len,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
-from evennia.utils.ansi import raw
-from evennia.prototypes.menus import _format_diff_text_and_options
+from evennia.utils.ansi import raw as ansi_raw
+from evennia.utils.inlinefuncs import raw as inlinefunc_raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -250,20 +253,14 @@ class CmdCopy(ObjManipCommand):
     copy an object and its properties
 
     Usage:
-      copy[/reset] <original obj> [= <new_name>][;alias;alias..]
+      copy <original obj> [= <new_name>][;alias;alias..]
       [:<new_location>] [,<new_name2> ...]
-
-    switch:
-      reset - make a 'clean' copy off the object, thus
-              removing any changes that might have been made to the original
-              since it was first created.
 
     Create one or more copies of an object. If you don't supply any targets,
     one exact copy of the original object will be created with the name *_copy.
     """
 
     key = "copy"
-    switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -1412,6 +1409,7 @@ class CmdOpen(ObjManipCommand):
     locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
+    new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
     # a custom member method to chug out exits and do checks
     def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
@@ -1457,10 +1455,16 @@ class CmdOpen(ObjManipCommand):
 
         else:
             # exit does not exist before. Create a new one.
+            lockstring = self.new_obj_lockstring.format(id=caller.id)
             if not typeclass:
                 typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(
-                typeclass, key=exit_name, location=location, aliases=exit_aliases, report_to=caller
+                typeclass,
+                key=exit_name,
+                location=location,
+                aliases=exit_aliases,
+                locks=lockstring,
+                report_to=caller,
             )
             if exit_obj:
                 # storing a destination is what makes it an exit!
@@ -2099,10 +2103,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             # to confirm changes.
             if "prototype" in self.switches:
                 diff, _ = spawner.prototype_diff_from_object(prototype, obj)
-                txt, options = _format_diff_text_and_options(diff, objects=[obj])
+                txt = spawner.format_diff(diff)
                 prompt = (
                     "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n"
-                    % (prototype["key"], obj.name, "\n".join(txt))
+                    % (prototype["key"], obj.name, txt)
                 )
                 if not reset:
                     prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
@@ -2360,120 +2364,188 @@ class CmdExamine(ObjManipCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     account_mode = False
+    detail_color = "|c"
+    header_color = "|w"
+    quell_color = "|r"
+    separator = "-"
 
     def list_attribute(self, crop, attr, category, value):
         """
         Formats a single attribute line.
+
+        Args:
+            crop (bool): If output should be cropped if too long.
+            attr (str): Attribute key.
+            category (str): Attribute category.
+            value (any): Attribute value.
+        Returns:
         """
+        if attr is None:
+            return "No such attribute was found."
+        value = utils.to_str(value)
         if crop:
-            if not isinstance(value, str):
-                value = utils.to_str(value)
             value = utils.crop(value)
+        value = inlinefunc_raw(ansi_raw(value))
         if category:
-            string = "\n %s[%s] = %s" % (attr, category, value)
+            return f"{attr}[{category}] = {value}"
         else:
-            string = "\n %s = %s" % (attr, value)
-        string = raw(string)
-        return string
+            return f"{attr} = {value}"
 
     def format_attributes(self, obj, attrname=None, crop=True):
         """
         Helper function that returns info about attributes and/or
         non-persistent data stored on object
-        """
 
+        """
         if attrname:
-            db_attr = [(attrname, obj.attributes.get(attrname), None)]
+            if obj.attributes.has(attrname):
+                db_attr = [(attrname, obj.attributes.get(attrname), None)]
+            else:
+                db_attr = None
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
                 ndb_attr = None
+            if not (db_attr or ndb_attr):
+                return {"Attribue(s)": f"\n  No Attribute '{attrname}' found on {obj.name}"}
         else:
             db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = obj.nattributes.all(return_tuples=True)
             except Exception:
-                ndb_attr = None
-        string = ""
-        if db_attr and db_attr[0]:
-            string += "\n|wPersistent attributes|n:"
-            for attr, value, category in db_attr:
-                string += self.list_attribute(crop, attr, category, value)
-        if ndb_attr and ndb_attr[0]:
-            string += "\n|wNon-Persistent attributes|n:"
-            for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, None, value)
-        return string
+                ndb_attr = (None, None, None)
 
-    def format_output(self, obj, avail_cmdset):
+        output = {}
+        if db_attr and db_attr[0]:
+            output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
+                sorted(
+                    self.list_attribute(crop, attr, category, value)
+                    for attr, value, category in db_attr
+                )
+            )
+        if ndb_attr and ndb_attr[0]:
+            output["Non-Persistent attribute(s)"] = "  \n" + "  \n".join(
+                sorted(self.list_attribute(crop, attr, None, value) for attr, value in ndb_attr)
+            )
+        return output
+
+    def format_output(self, obj, current_cmdset):
         """
         Helper function that creates a nice report about an object.
 
-        returns a string.
+        Args:
+            obj (any): Object to analyze.
+            current_cmdset (CmdSet): Current cmdset for object.
+
+        Returns:
+            str: The formatted string.
+
         """
-        string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
+        hclr = self.header_color
+        dclr = self.detail_color
+        qclr = self.quell_color
+
+        output = {}
+        # main key
+        output["Name/key"] = f"{dclr}{obj.name}|n ({obj.dbref})"
+        # aliases
         if hasattr(obj, "aliases") and obj.aliases.all():
-            string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
+            output["Aliases"] = ", ".join(utils.make_iter(str(obj.aliases)))
+        # typeclass
+        output["Typeclass"] = f"{obj.typename} ({obj.typeclass_path})"
+        # sessions
         if hasattr(obj, "sessions") and obj.sessions.all():
-            string += "\n|wSession id(s)|n: %s" % (
-                ", ".join("#%i" % sess.sessid for sess in obj.sessions.all())
-            )
+            output["Session id(s)"] = ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
+        # email, if any
         if hasattr(obj, "email") and obj.email:
-            string += "\n|wEmail|n: |c%s|n" % obj.email
+            output["Email"] = f"{dclr}{obj.email}|n"
+        # account, for puppeted objects
         if hasattr(obj, "has_account") and obj.has_account:
-            string += "\n|wAccount|n: |c%s|n" % obj.account.name
+            output["Account"] = f"{dclr}{obj.account.name}|n ({obj.account.dbref})"
+            # account typeclass
+            output["  Account Typeclass"] = f"{obj.account.typename} ({obj.account.typeclass_path})"
+            # account permissions
             perms = obj.account.permissions.all()
             if obj.account.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]
-            string += "\n|wAccount Perms|n: %s" % (", ".join(perms))
+            perms = ", ".join(perms)
             if obj.account.attributes.has("_quell"):
-                string += " |r(quelled)|n"
-        string += "\n|wTypeclass|n: %s (%s)" % (obj.typename, obj.typeclass_path)
+                perms += f" {qclr}(quelled)|n"
+            output["  Account Permissions"] = perms
+        # location
         if hasattr(obj, "location"):
-            string += "\n|wLocation|n: %s" % obj.location
+            loc = str(obj.location)
             if obj.location:
-                string += " (#%s)" % obj.location.id
+                loc += f" (#{obj.location.id})"
+            output["Location"] = loc
+        # home
         if hasattr(obj, "home"):
-            string += "\n|wHome|n: %s" % obj.home
+            home = str(obj.home)
             if obj.home:
-                string += " (#%s)" % obj.home.id
+                home += f" (#{obj.home.id})"
+            output["Home"] = home
+        # destination, for exits
         if hasattr(obj, "destination") and obj.destination:
-            string += "\n|wDestination|n: %s" % obj.destination
+            dest = str(obj.destination)
             if obj.destination:
-                string += " (#%s)" % obj.destination.id
+                dest += f" (#{obj.destination.id})"
+            output["Destination"] = dest
+        # main permissions
         perms = obj.permissions.all()
+        perms_string = ""
         if perms:
             perms_string = ", ".join(perms)
-        else:
-            perms_string = "<None>"
         if obj.is_superuser:
-            perms_string += " [Superuser]"
-
-        string += "\n|wPermissions|n: %s" % perms_string
-
+            perms_string += " <Superuser>"
+        if perms_string:
+            output["Permissions"] = perms_string
+        # locks
         locks = str(obj.locks)
         if locks:
-            locks_string = utils.fill("; ".join([lock for lock in locks.split(";")]), indent=6)
+            locks_string = "\n" + utils.fill(
+                "; ".join([lock for lock in locks.split(";")]), indent=2
+            )
         else:
             locks_string = " Default"
-        string += "\n|wLocks|n:%s" % locks_string
-
+        output["Locks"] = locks_string
+        # cmdsets
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
-            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            string += "\n|wStored Cmdset(s)|n:\n %s" % (
-                "\n ".join(
-                    "%s [%s] (%s, prio %s)"
-                    % (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                    for cmdset in stored_cmdsets
-                    if cmdset.key != "_EMPTY_CMDSET"
+
+            def _format_options(cmdset):
+                """helper for cmdset-option display"""
+
+                def _truefalse(string, value):
+                    if value is None:
+                        return ""
+                    if value:
+                        return f"{string}: T"
+                    return f"{string}: F"
+
+                options = ", ".join(
+                    _truefalse(opt, getattr(cmdset, opt))
+                    for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+                    if getattr(cmdset, opt) is not None
                 )
-            )
+                options = ", " + options if options else ""
+                return options
+
+            # cmdset stored on us
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
+            stored = []
+            for cmdset in stored_cmdsets:
+                if cmdset.key == "_EMPTY_CMDSET":
+                    continue
+                options = _format_options(cmdset)
+                stored.append(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})"
+                )
+            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(stored)
 
             # this gets all components of the currently merged set
-            all_cmdsets = [(cmdset.key, cmdset) for cmdset in avail_cmdset.merged_from]
+            all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
             # we always at least try to add account- and session sets since these are ignored
             # if we merge on the object level.
             if hasattr(obj, "account") and obj.account:
@@ -2503,40 +2575,39 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            string += "\n|wMerged Cmdset(s)|n:\n %s" % (
-                "\n ".join(
-                    "%s [%s] (%s, prio %s)"
-                    % (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                    for cmdset in all_cmdsets
+
+            # the resulting merged cmdset
+            options = _format_options(current_cmdset)
+            merged = [
+                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"
+            ]
+
+            # the merge stack
+            for cmdset in all_cmdsets:
+                options = _format_options(cmdset)
+                merged.append(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})"
                 )
-            )
+            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(merged)
 
             # list the commands available to this object
-            avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
+            current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
+            cmdsetstr = "\n" + utils.fill(", ".join(current_commands), indent=2)
+            output[f"Commands available to {obj.key} (result of Merged CmdSets)"] = str(cmdsetstr)
 
-            cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
-            string += "\n|wCommands available to %s (result of Merged CmdSets)|n:\n %s" % (
-                obj.key,
-                cmdsetstr,
-            )
-
+        # scripts
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            string += "\n|wScripts|n:\n %s" % obj.scripts
+            output["Scripts"] = "\n  " + f"{obj.scripts}"
         # add the attributes
-        string += self.format_attributes(obj)
-
-        # display Tags
-        tags_string = utils.fill(
-            ", ".join(
-                "%s[%s]" % (tag, category)
-                for tag, category in obj.tags.all(return_key_and_category=True)
-            ),
-            indent=5,
+        output.update(self.format_attributes(obj))
+        # Tags
+        tags = obj.tags.all(return_key_and_category=True)
+        tags_string = "\n" + utils.fill(
+            ", ".join(sorted(f"{tag}[{category}]" for tag, category in tags)), indent=2,
         )
-        if tags_string:
-            string += "\n|wTags[category]|n: %s" % tags_string.strip()
-
-        # add the contents
+        if tags:
+            output["Tags[category]"] = tags_string
+        # Contents of object
         exits = []
         pobjs = []
         things = []
@@ -2549,24 +2620,28 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n|wExits|n: %s" % ", ".join(
-                    ["%s(%s)" % (exit.name, exit.dbref) for exit in exits]
+                output["Exits (has .destination)"] = ", ".join(
+                    f"{exit.name}({exit.dbref})" for exit in exits
                 )
             if pobjs:
-                string += "\n|wCharacters|n: %s" % ", ".join(
-                    ["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs]
+                output["Characters"] = ", ".join(
+                    f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs
                 )
             if things:
-                string += "\n|wContents|n: %s" % ", ".join(
-                    [
-                        "%s(%s)" % (cont.name, cont.dbref)
-                        for cont in obj.contents
-                        if cont not in exits and cont not in pobjs
-                    ]
+                output["Contents"] = ", ".join(
+                    f"{cont.name}({cont.dbref})"
+                    for cont in obj.contents
+                    if cont not in exits and cont not in pobjs
                 )
-        separator = "-" * _DEFAULT_WIDTH
-        # output info
-        return "%s\n%s\n%s" % (separator, string.strip(), separator)
+        # format output
+        max_width = -1
+        for block in output.values():
+            max_width = max(max_width, max(display_len(line) for line in block.split("\n")))
+        max_width = max(0, min(self.client_width(), max_width))
+
+        sep = self.separator * max_width
+        mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
+        return f"{sep}\n{mainstr}\n{sep}"
 
     def func(self):
         """Process command"""
@@ -2581,8 +2656,7 @@ class CmdExamine(ObjManipCommand):
             that function finishes. Taking the resulting cmdset, we continue
             to format and output the result.
             """
-            string = self.format_output(obj, cmdset)
-            self.msg(string.strip())
+            self.msg(self.format_output(obj, cmdset).strip())
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
@@ -2636,7 +2710,13 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes
-                    caller.msg(self.format_attributes(obj, attrname, crop=False))
+                    ret = "\n".join(
+                        f"{self.header_color}{header}|n:{value}"
+                        for header, value in self.format_attributes(
+                            obj, attrname, crop=False
+                        ).items()
+                    )
+                    self.caller.msg(ret)
             else:
                 session = None
                 if obj.sessions.count():
@@ -3031,9 +3111,10 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 result.append("No scripts defined on %s." % obj.get_display_name(caller))
             elif not self.switches:
                 # view all scripts
-                from evennia.commands.default.system import format_script_list
+                from evennia.commands.default.system import ScriptEvMore
 
-                result.append(format_script_list(scripts))
+                ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
+                return
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
                 result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
@@ -3227,6 +3308,9 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             self.caller.msg(string)
 
 
+# helper functions for spawn
+
+
 class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
     spawn objects from prototype
@@ -3237,6 +3321,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
       spawn/search [prototype_keykey][;tag[,tag]]
       spawn/list [tag, tag, ...]
+      spawn/list modules    - list only module-based prototypes
       spawn/show [<prototype_key>]
       spawn/update <prototype_key>
 
@@ -3250,13 +3335,14 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       search - search prototype by name or tags.
       list - list available prototypes, optionally limit by tags.
       show, examine - inspect prototype by key. If not given, acts like list.
+      raw - show the raw dict of the prototype as a one-line string for manual editing.
       save - save a prototype to the database. It will be listable by /list.
       delete - remove a prototype from database, if allowed to.
       update - find existing objects with the same prototype_key and update
                them with latest version of given prototype. If given with /save,
                will auto-update all objects with the old version of the prototype
                without asking first.
-      edit, olc - create/manipulate prototype in a menu interface.
+      edit, menu, olc - create/manipulate prototype in a menu interface.
 
     Example:
       spawn GOBLIN
@@ -3298,6 +3384,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         "search",
         "list",
         "show",
+        "raw",
         "examine",
         "save",
         "delete",
@@ -3309,56 +3396,202 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
+    def _search_prototype(self, prototype_key, quiet=False):
+        """
+        Search for prototype and handle no/multi-match and access.
+
+        Returns a single found prototype or None - in the
+        case, the caller has already been informed of the
+        search error we need not do any further action.
+
+        """
+        prototypes = protlib.search_prototype(prototype_key)
+        nprots = len(prototypes)
+
+        # handle the search result
+        err = None
+        if not prototypes:
+            err = f"No prototype named '{prototype_key}' was found."
+        elif nprots > 1:
+            err = "Found {} prototypes matching '{}':\n  {}".format(
+                nprots,
+                prototype_key,
+                ", ".join(proto.get("prototype_key", "") for proto in prototypes),
+            )
+        else:
+            # we have a single prototype, check access
+            prototype = prototypes[0]
+            if not self.caller.locks.check_lockstring(
+                self.caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
+            ):
+                err = "You don't have access to use this prototype."
+
+        if err:
+            # return None on any error
+            if not quiet:
+                self.caller.msg(err)
+            return
+        return prototype
+
+    def _parse_prototype(self, inp, expect=dict):
+        """
+        Parse a prototype dict or key from the input and convert it safely
+        into a dict if appropriate.
+
+        Args:
+            inp (str): The input from user.
+            expect (type, optional):
+        Returns:
+            prototype (dict, str or None): The parsed prototype. If None, the error
+                was already reported.
+
+        """
+        eval_err = None
+        try:
+            prototype = _LITERAL_EVAL(inp)
+        except (SyntaxError, ValueError) as err:
+            # treat as string
+            eval_err = err
+            prototype = utils.to_str(inp)
+        finally:
+            # it's possible that the input was a prototype-key, in which case
+            # it's okay for the LITERAL_EVAL to fail. Only if the result does not
+            # match the expected type do we have a problem.
+            if not isinstance(prototype, expect):
+                if eval_err:
+                    string = (
+                        f"{inp}\n{eval_err}\n|RCritical Python syntax error in argument. Only primitive "
+                        "Python structures are allowed. \nMake sure to use correct "
+                        "Python syntax. Remember especially to put quotes around all "
+                        "strings inside lists and dicts.|n For more advanced uses, embed "
+                        "inlinefuncs in the strings."
+                    )
+                else:
+                    string = "Expected {}, got {}.".format(expect, type(prototype))
+                self.caller.msg(string)
+                return
+
+        if expect == dict:
+            # an actual prototype. We need to make sure it's safe,
+            # so don't allow exec.
+            # TODO: Exec support is deprecated. Remove completely for 1.0.
+            if "exec" in prototype and not self.caller.check_permstring("Developer"):
+                self.caller.msg(
+                    "Spawn aborted: You are not allowed to " "use the 'exec' prototype key."
+                )
+                return
+            try:
+                # we homogenize the protoype first, to be more lenient with free-form
+                protlib.validate_prototype(protlib.homogenize_prototype(prototype))
+            except RuntimeError as err:
+                self.caller.msg(str(err))
+                return
+        return prototype
+
+    def _get_prototype_detail(self, query=None, prototypes=None):
+        """
+        Display the detailed specs of one or more prototypes.
+
+        Args:
+            query (str, optional): If this is given and `prototypes` is not, search for
+                the prototype(s) by this query. This may be a partial query which
+                may lead to multiple matches, all being displayed.
+            prototypes (list, optional): If given, ignore `query` and only show these
+                prototype-details.
+        Returns:
+            display (str, None): A formatted string of one or more prototype details.
+                If None, the caller was already informed of the error.
+
+
+        """
+        if not prototypes:
+            # we need to query. Note that if query is None, all prototypes will
+            # be returned.
+            prototypes = protlib.search_prototype(key=query)
+        if prototypes:
+            return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
+        elif query:
+            self.caller.msg(f"No prototype named '{query}' was found.")
+        else:
+            self.caller.msg("No prototypes found.")
+
+    def _list_prototypes(self, key=None, tags=None):
+        """Display prototypes as a list, optionally limited by key/tags. """
+        protlib.list_prototypes(self.caller, key=key, tags=tags, session=self.session)
+
+    @interactive
+    def _update_existing_objects(self, caller, prototype_key, quiet=False):
+        """
+        Update existing objects (if any) with this prototype-key to the latest
+        prototype version.
+
+        Args:
+            caller (Object): This is necessary for @interactive to work.
+            prototype_key (str): The prototype to update.
+            quiet (bool, optional): If set, don't report to user if no
+                old objects were found to update.
+        Returns:
+            n_updated (int): Number of updated objects.
+
+        """
+        prototype = self._search_prototype(prototype_key)
+        if not prototype:
+            return
+
+        existing_objects = protlib.search_objects_with_prototype(prototype_key)
+        if not existing_objects:
+            if not quiet:
+                caller.msg("No existing objects found with an older version of this prototype.")
+            return
+
+        if existing_objects:
+            n_existing = len(existing_objects)
+            slow = " (note that this may be slow)" if n_existing > 10 else ""
+            string = (
+                f"There are {n_existing} existing object(s) with an older version "
+                f"of prototype '{prototype_key}'. Should it be re-applied to them{slow}? [Y]/N"
+            )
+            answer = yield (string)
+            if answer.lower() in ["n", "no"]:
+                caller.msg(
+                    "|rNo update was done of existing objects. "
+                    "Use spawn/update <key> to apply later as needed.|n"
+                )
+                return
+            try:
+                n_updated = spawner.batch_update_objects_with_prototype(
+                    prototype, objects=existing_objects
+                )
+            except Exception:
+                logger.log_trace()
+            caller.msg(f"{n_updated} objects were updated.")
+        return
+
+    def _parse_key_desc_tags(self, argstring, desc=True):
+        """
+        Parse ;-separated input list.
+        """
+        key, desc, tags = "", "", []
+        if ";" in argstring:
+            parts = [part.strip().lower() for part in argstring.split(";")]
+            if len(parts) > 1 and desc:
+                key = parts[0]
+                desc = parts[1]
+                tags = parts[2:]
+            else:
+                key = parts[0]
+                tags = parts[1:]
+        else:
+            key = argstring.strip().lower()
+        return key, desc, tags
+
     def func(self):
         """Implements the spawner"""
 
-        def _parse_prototype(inp, expect=dict):
-            err = None
-            try:
-                prototype = _LITERAL_EVAL(inp)
-            except (SyntaxError, ValueError) as err:
-                # treat as string
-                prototype = utils.to_str(inp)
-            finally:
-                if not isinstance(prototype, expect):
-                    if err:
-                        string = (
-                            "{}\n|RCritical Python syntax error in argument. Only primitive "
-                            "Python structures are allowed. \nYou also need to use correct "
-                            "Python syntax. Remember especially to put quotes around all "
-                            "strings inside lists and dicts.|n For more advanced uses, embed "
-                            "inline functions in the strings.".format(err)
-                        )
-                    else:
-                        string = "Expected {}, got {}.".format(expect, type(prototype))
-                    self.caller.msg(string)
-                    return None
-            if expect == dict:
-                # an actual prototype. We need to make sure it's safe. Don't allow exec
-                if "exec" in prototype and not self.caller.check_permstring("Developer"):
-                    self.caller.msg(
-                        "Spawn aborted: You are not allowed to " "use the 'exec' prototype key."
-                    )
-                    return None
-                try:
-                    # we homogenize first, to be more lenient
-                    protlib.validate_prototype(protlib.homogenize_prototype(prototype))
-                except RuntimeError as err:
-                    self.caller.msg(str(err))
-                    return
-            return prototype
-
-        def _search_show_prototype(query, prototypes=None):
-            # prototype detail
-            if not prototypes:
-                prototypes = protlib.search_prototype(key=query)
-            if prototypes:
-                return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
-            else:
-                return False
-
         caller = self.caller
+        noloc = "noloc" in self.switches
 
+        # run the menu/olc
         if (
             self.cmdstring == "olc"
             or "menu" in self.switches
@@ -3368,94 +3601,133 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # OLC menu mode
             prototype = None
             if self.lhs:
-                key = self.lhs
-                prototype = protlib.search_prototype(key=key)
-                if len(prototype) > 1:
-                    caller.msg(
-                        "More than one match for {}:\n{}".format(
-                            key, "\n".join(proto.get("prototype_key", "") for proto in prototype)
-                        )
-                    )
-                    return
-                elif prototype:
-                    # one match
-                    prototype = prototype[0]
-                else:
-                    # no match
-                    caller.msg("No prototype '{}' was found.".format(key))
+                prototype_key = self.lhs
+                prototype = self._search_prototype(prototype_key)
+                if not prototype:
                     return
             olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
         if "search" in self.switches:
-            # query for a key match
+            # query for a key match. The arg is a search query or nothing.
+
             if not self.args:
-                self.switches.append("list")
-            else:
-                key, tags = self.args.strip(), None
-                if ";" in self.args:
-                    key, tags = (part.strip().lower() for part in self.args.split(";", 1))
-                    tags = [tag.strip() for tag in tags.split(",")] if tags else None
-                EvMore(
-                    caller,
-                    str(protlib.list_prototypes(caller, key=key, tags=tags)),
-                    exit_on_lastpage=True,
-                )
+                # an empty search returns the full list
+                self._list_prototypes()
                 return
+
+            # search for key;tag combinations
+            key, _, tags = self._parse_key_desc_tags(self.args, desc=False)
+            self._list_prototypes(key, tags)
+            return
+
+        if "raw" in self.switches:
+            # query for key match and return the prototype as a safe one-liner string.
+            if not self.args:
+                caller.msg("You need to specify a prototype-key to get the raw data for.")
+            prototype = self._search_prototype(self.args)
+            if not prototype:
+                return
+            caller.msg(str(prototype))
+            return
 
         if "show" in self.switches or "examine" in self.switches:
-            # the argument is a key in this case (may be a partial key)
+            # show a specific prot detail. The argument is a search query or empty.
             if not self.args:
-                self.switches.append("list")
-            else:
-                matchstring = _search_show_prototype(self.args)
-                if matchstring:
-                    caller.msg(matchstring)
-                else:
-                    caller.msg("No prototype '{}' was found.".format(self.args))
+                # we don't show the list of all details, that's too spammy.
+                caller.msg("You need to specify a prototype-key to show.")
                 return
 
-        if "list" in self.switches:
-            # for list, all optional arguments are tags
-            # import pudb; pudb.set_trace()
+            detail_string = self._get_prototype_detail(self.args)
+            if not detail_string:
+                return
+            caller.msg(detail_string)
+            return
 
-            EvMore(
-                caller,
-                str(protlib.list_prototypes(caller, tags=self.lhslist)),
-                exit_on_lastpage=True,
-                justify_kwargs=False,
-            )
+        if "list" in self.switches:
+            # for list, all optional arguments are tags.
+            tags = self.lhslist
+            err = self._list_prototypes(tags=tags)
+            if err:
+                caller.msg(
+                    "No prototypes found with prototype-tag(s): {}".format(
+                        list_to_string(tags, "or")
+                    )
+                )
             return
 
         if "save" in self.switches:
             # store a prototype to the database store
             if not self.args:
                 caller.msg(
-                    "Usage: spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>"
+                    "Usage: spawn/save [<key>[;desc[;tag,tag[,...][;lockstring]]]] = <prototype_dict>"
                 )
                 return
+            if self.rhs:
+                # input on the form key = prototype
+                prototype_key, prototype_desc, prototype_tags = self._parse_key_desc_tags(self.lhs)
+                prototype_key = None if not prototype_key else prototype_key
+                prototype_desc = None if not prototype_desc else prototype_desc
+                prototype_tags = None if not prototype_tags else prototype_tags
+                prototype_input = self.rhs.strip()
+            else:
+                prototype_key = prototype_desc = None
+                prototype_tags = None
+                prototype_input = self.lhs.strip()
 
-            # handle rhs:
-            prototype = _parse_prototype(self.lhs.strip())
+            # handle parsing
+            prototype = self._parse_prototype(prototype_input)
             if not prototype:
                 return
 
-            # present prototype to save
-            new_matchstring = _search_show_prototype("", prototypes=[prototype])
-            string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
-            question = "\nDo you want to continue saving? [Y]/N"
+            prot_prototype_key = prototype.get("prototype_key")
 
-            prototype_key = prototype.get("prototype_key")
-            if not prototype_key:
-                caller.msg("\n|yTo save a prototype it must have the 'prototype_key' set.")
+            if not (prototype_key or prot_prototype_key):
+                caller.msg(
+                    "A prototype_key must be given, either as `prototype_key = <prototype>` "
+                    "or as a key 'prototype_key' inside the prototype structure."
+                )
                 return
 
-            # check for existing prototype,
-            old_matchstring = _search_show_prototype(prototype_key)
+            if prototype_key is None:
+                prototype_key = prot_prototype_key
 
-            if old_matchstring:
-                string += "\n|yExisting saved prototype found:|n\n{}".format(old_matchstring)
-                question = "\n|yDo you want to replace the existing prototype?|n [Y]/N"
+            if prot_prototype_key != prototype_key:
+                caller.msg("(Replacing `prototype_key` in prototype with given key.)")
+                prototype["prototype_key"] = prototype_key
+
+            if prototype_desc is not None and prot_prototype_key != prototype_desc:
+                caller.msg("(Replacing `prototype_desc` in prototype with given desc.)")
+                prototype["prototype_desc"] = prototype_desc
+            if prototype_tags is not None and prototype.get("prototype_tags") != prototype_tags:
+                caller.msg("(Replacing `prototype_tags` in prototype with given tag(s))")
+                prototype["prototype_tags"] = prototype_tags
+
+            string = ""
+            # check for existing prototype (exact match)
+            old_prototype = self._search_prototype(prototype_key, quiet=True)
+
+            diff = spawner.prototype_diff(old_prototype, prototype, homogenize=True)
+            diffstr = spawner.format_diff(diff)
+            new_prototype_detail = self._get_prototype_detail(prototypes=[prototype])
+
+            if old_prototype:
+                if not diffstr:
+                    string = f"|yAlready existing Prototype:|n\n{new_prototype_detail}\n"
+                    question = (
+                        "\nThere seems to be no changes. Do you still want to (re)save? [Y]/N"
+                    )
+                else:
+                    string = (
+                        f'|yExisting prototype "{prototype_key}" found. Change:|n\n{diffstr}\n'
+                        f"|yNew changed prototype:|n\n{new_prototype_detail}"
+                    )
+                    question = (
+                        "\n|yDo you want to apply the change to the existing prototype?|n [Y]/N"
+                    )
+            else:
+                string = f"|yCreating new prototype:|n\n{new_prototype_detail}"
+                question = "\nDo you want to continue saving? [Y]/N"
 
             answer = yield (string + question)
             if answer.lower() in ["n", "no"]:
@@ -3474,82 +3746,55 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             caller.msg("|gSaved prototype:|n {}".format(prototype_key))
 
             # check if we want to update existing objects
-            existing_objects = protlib.search_objects_with_prototype(prototype_key)
-            if existing_objects:
-                if "update" not in self.switches:
-                    n_existing = len(existing_objects)
-                    slow = " (note that this may be slow)" if n_existing > 10 else ""
-                    string = (
-                        "There are {} objects already created with an older version "
-                        "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
-                            n_existing, prototype_key, slow
-                        )
-                    )
-                    answer = yield (string)
-                    if answer.lower() in ["n", "no"]:
-                        caller.msg(
-                            "|rNo update was done of existing objects. "
-                            "Use spawn/update <key> to apply later as needed.|n"
-                        )
-                        return
-                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
-                caller.msg("{} objects were updated.".format(n_updated))
+
+            self._update_existing_objects(self.caller, prototype_key, quiet=True)
             return
 
         if not self.args:
+            # all switches beyond this point gets a common non-arg return
             ncount = len(protlib.search_prototype())
             caller.msg(
                 "Usage: spawn <prototype-key> or {{key: value, ...}}"
-                "\n ({} existing prototypes. Use /list to inspect)".format(ncount)
+                f"\n ({ncount} existing prototypes. Use /list to inspect)"
             )
             return
 
         if "delete" in self.switches:
             # remove db-based prototype
-            matchstring = _search_show_prototype(self.args)
-            if matchstring:
-                string = "|rDeleting prototype:|n\n{}".format(matchstring)
-                question = "\nDo you want to continue deleting? [Y]/N"
-                answer = yield (string + question)
-                if answer.lower() in ["n", "no"]:
-                    caller.msg("|rDeletion cancelled.|n")
-                    return
-                try:
-                    success = protlib.delete_prototype(self.args)
-                except protlib.PermissionError as err:
-                    caller.msg("|rError deleting:|R {}|n".format(err))
-                caller.msg(
-                    "Deletion {}.".format(
-                        "successful" if success else "failed (does the prototype exist?)"
-                    )
-                )
+            prototype_detail = self._get_prototype_detail(self.args)
+            if not prototype_detail:
                 return
+
+            string = f"|rDeleting prototype:|n\n{prototype_detail}"
+            question = "\nDo you want to continue deleting? [Y]/N"
+            answer = yield (string + question)
+            if answer.lower() in ["n", "no"]:
+                caller.msg("|rDeletion cancelled.|n")
+                return
+
+            try:
+                success = protlib.delete_prototype(self.args)
+            except protlib.PermissionError as err:
+                retmsg = f"|rError deleting:|R {err}|n"
             else:
-                caller.msg("Could not find prototype '{}'".format(key))
+                retmsg = (
+                    "Deletion successful"
+                    if success
+                    else "Deletion failed (does the prototype exist?)"
+                )
+            caller.msg(retmsg)
+            return
 
         if "update" in self.switches:
             # update existing prototypes
-            key = self.args.strip().lower()
-            existing_objects = protlib.search_objects_with_prototype(key)
-            if existing_objects:
-                n_existing = len(existing_objects)
-                slow = " (note that this may be slow)" if n_existing > 10 else ""
-                string = (
-                    "There are {} objects already created with an older version "
-                    "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
-                        n_existing, key, slow
-                    )
-                )
-                answer = yield (string)
-                if answer.lower() in ["n", "no"]:
-                    caller.msg("|rUpdate cancelled.")
-                    return
-                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
-                caller.msg("{} objects were updated.".format(n_updated))
+            prototype_key = self.args.strip().lower()
+            self._update_existing_objects(self.caller, prototype_key)
+            return
 
-        # A direct creation of an object from a given prototype
+        # If we get to this point, we use not switches but are trying a
+        # direct creation of an object from a given prototype or -key
 
-        prototype = _parse_prototype(
+        prototype = self._parse_prototype(
             self.args, expect=dict if self.args.strip().startswith("{") else str
         )
         if not prototype:
@@ -3559,35 +3804,20 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         key = "<unnamed>"
         if isinstance(prototype, str):
             # A prototype key we are looking to apply
-            key = prototype
-            prototypes = protlib.search_prototype(prototype)
-            nprots = len(prototypes)
-            if not prototypes:
-                caller.msg("No prototype named '%s'." % prototype)
-                return
-            elif nprots > 1:
-                caller.msg(
-                    "Found {} prototypes matching '{}':\n  {}".format(
-                        nprots,
-                        prototype,
-                        ", ".join(proto.get("prototype_key", "") for proto in prototypes),
-                    )
-                )
-                return
-            # we have a prototype, check access
-            prototype = prototypes[0]
-            if not caller.locks.check_lockstring(
-                caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
-            ):
-                caller.msg("You don't have access to use this prototype.")
-                return
+            prototype_key = prototype
+            prototype = self._search_prototype(prototype_key)
 
-        if "noloc" not in self.switches and "location" not in prototype:
-            prototype["location"] = self.caller.location
+            if not prototype:
+                return
 
         # proceed to spawning
         try:
             for obj in spawner.spawn(prototype):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+                if not prototype.get("location") and not noloc:
+                    # we don't hardcode the location in the prototype (unless the user
+                    # did so manually) - that would lead to it having to be 'removed' every
+                    # time we try to update objects with this prototype in the future.
+                    obj.location = caller.location
         except RuntimeError as err:
             caller.msg(err)
