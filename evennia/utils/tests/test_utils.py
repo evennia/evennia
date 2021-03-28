@@ -98,6 +98,34 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
 
 
+class TestDisplayLen(TestCase):
+    """
+    Verifies that display_len behaves like m_len in all situations except those
+    where asian characters are involved.
+    """
+
+    def test_non_mxp_string(self):
+        self.assertEqual(utils.display_len("Test_string"), 11)
+
+    def test_mxp_string(self):
+        self.assertEqual(utils.display_len("|lclook|ltat|le"), 2)
+
+    def test_mxp_ansi_string(self):
+        self.assertEqual(utils.display_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
+
+    def test_non_mxp_ansi_string(self):
+        self.assertEqual(utils.display_len(ANSIString("|gHello|n")), 5)
+
+    def test_list(self):
+        self.assertEqual(utils.display_len([None, None]), 2)
+
+    def test_dict(self):
+        self.assertEqual(utils.display_len({"hello": True, "Goodbye": False}), 2)
+
+    def test_east_asian(self):
+        self.assertEqual(utils.display_len("서서서"), 6)
+
+
 class TestANSIString(TestCase):
     """
     Verifies that ANSIString's string-API works as intended.

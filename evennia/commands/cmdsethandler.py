@@ -184,7 +184,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                         raise exc.with_traceback(tb)
                     else:
                         # try next suggested path
-                        errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
+                        errstring += _("\n(Unsuccessfully tried '{path}').").format(
+                            path=python_path
+                        )
                         continue
                 try:
                     cmdsetclass = getattr(module, classname)
@@ -194,7 +196,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                         dum, dum, tb = sys.exc_info()
                         raise exc.with_traceback(tb)
                     else:
-                        errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
+                        errstring += _("\n(Unsuccessfully tried '{path}').").format(
+                            path=python_path
+                        )
                         continue
                 _CACHED_CMDSETS[python_path] = cmdsetclass
 
@@ -289,7 +293,10 @@ class CmdSetHandler(object):
 
         # the id of the "merged" current cmdset for easy access.
         self.key = None
-        # this holds the "merged" current command set
+        # this holds the "merged" current command set. Note that while the .update
+        # method updates this field in order to have it synced when operating on
+        # cmdsets in-code, when the game runs, this field is kept up-to-date by
+        # the cmdsethandler's get_and_merge_cmdsets!
         self.current = None
         # this holds a history of CommandSets
         self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
@@ -307,27 +314,13 @@ class CmdSetHandler(object):
         Display current commands
         """
 
-        string = ""
+        strings = ["<CmdSetHandler> stack:"]
         mergelist = []
         if len(self.cmdset_stack) > 1:
             # We have more than one cmdset in stack; list them all
             for snum, cmdset in enumerate(self.cmdset_stack):
-                mergetype = self.mergetype_stack[snum]
-                permstring = "non-perm"
-                if cmdset.permanent:
-                    permstring = "perm"
-                if mergetype != cmdset.mergetype:
-                    mergetype = "%s^" % (mergetype)
-                string += "\n %i: <%s (%s, prio %i, %s)>: %s" % (
-                    snum,
-                    cmdset.key,
-                    mergetype,
-                    cmdset.priority,
-                    permstring,
-                    cmdset,
-                )
-                mergelist.append(str(snum))
-            string += "\n"
+                mergelist.append(str(snum + 1))
+                strings.append(f" {snum + 1}: {cmdset}")
 
         # Display the currently active cmdset, limited by self.obj's permissions
         mergetype = self.mergetype_stack[-1]
@@ -335,27 +328,15 @@ class CmdSetHandler(object):
             merged_on = self.cmdset_stack[-2].key
             mergetype = _("custom {mergetype} on cmdset '{cmdset}'")
             mergetype = mergetype.format(mergetype=mergetype, cmdset=merged_on)
+
         if mergelist:
-            tmpstring = _(" <Merged {mergelist} {mergetype}, prio {prio}>: {current}")
-            string += tmpstring.format(
-                mergelist="+".join(mergelist),
-                mergetype=mergetype,
-                prio=self.current.priority,
-                current=self.current,
-            )
+            # current is a result of mergers
+            mergelist = "+".join(mergelist)
+            strings.append(f" <Merged {mergelist}>: {self.current}")
         else:
-            permstring = "non-perm"
-            if self.current.permanent:
-                permstring = "perm"
-            tmpstring = _(" <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}")
-            string += tmpstring.format(
-                key=self.current.key,
-                mergetype=mergetype,
-                prio=self.current.priority,
-                permstring=permstring,
-                keylist=", ".join(cmd.key for cmd in sorted(self.current, key=lambda o: o.key)),
-            )
-        return string.strip()
+            # current is a single cmdset
+            strings.append(" " + str(self.current))
+        return "\n".join(strings).rstrip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
         """
@@ -377,12 +358,22 @@ class CmdSetHandler(object):
     def update(self, init_mode=False):
         """
         Re-adds all sets in the handler to have an updated current
-        set.
 
         Args:
             init_mode (bool, optional): Used automatically right after
                 this handler was created; it imports all permanent cmdsets
                 from the database.
+
+        Notes:
+            This method is necessary in order to always have a `.current`
+            cmdset when working with the cmdsethandler in code. But the
+            CmdSetHandler doesn't (cannot) consider external cmdsets and game
+            state. This means that the .current calculated from this method
+            will likely not match the true current cmdset as determined at
+            run-time by `cmdhandler.get_and_merge_cmdsets()`. So in a running
+            game the responsibility of keeping `.current` upt-to-date belongs
+            to the central `cmdhandler.get_and_merge_cmdsets()`!
+
         """
         if init_mode:
             # reimport all permanent cmdsets

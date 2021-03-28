@@ -13,34 +13,32 @@ absolute size of the field and will be filled with an `evtable.EvCell`
 object when displaying the form.
 
 Example of input file `testform.py`:
+::
 
-```python
-FORMCHAR = "x"
-TABLECHAR = "c"
+    FORMCHAR = "x"
+    TABLECHAR = "c"
 
-FORM = '''
-.------------------------------------------------.
-|                                                |
-|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
-|        xxxxxxxxxxx                             |
-|                                                |
- >----------------------------------------------<
-|                                                |
-| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |
-|        xxxxx3xxxxx    INT: x6x    STA: x7x     |
-|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
-|                                                |
- >----------------------------------------------<
-|          |                                     |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccAcccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | cccccccccccccccccBccccccccccccccccc |
-|          |                                     |
--------------------------------------------------
-'''
-```
+    FORM = '''
+    .------------------------------------------------.
+    |                                                |
+    |  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
+    |        xxxxxxxxxxx                             |
+    |                                                |
+     >----------------------------------------------<
+    |                                                |
+    | Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |
+    |        xxxxx3xxxxx    INT: x6x    STA: x7x     |
+    |        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
+    |                                                |
+     >----------------------------------------------<
+    |          |                                     |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccAcccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | cccccccccccccccccBccccccccccccccccc |
+    |          |                                     |
+    -------------------------------------------------
 
 The first line of the `FORM` string is ignored. The forms and table
 markers must mark out complete, unbroken rectangles, each containing
@@ -54,8 +52,8 @@ character's width.
 
 
 Use as follows:
+::
 
-```python
     from evennia import EvForm, EvTable
 
     # create a new form from the template
@@ -87,32 +85,32 @@ Use as follows:
                      "B": tableB})
 
     print(form)
-```
+
 
 This produces the following result:
+::
 
-```
-.------------------------------------------------.
-|                                                |
-|  Name: Tom the        Player: Griatch          |
-|        Bouncer                                 |
-|                                                |
- >----------------------------------------------<
-|                                                |
-| Desc:  A sturdy       STR: 12     DEX: 10      |
-|        fellow         INT: 5      STA: 18      |
-|                       LUC: 10     MAG: 3       |
-|                                                |
- >----------------------------------------------<
-|          |                                     |
-| HP|MV|MP | Skill      |Value      |Exp         |
-| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
-| **|**|** | Shooting   |12         |550/1200    |
-|   |**|*  | Herbalism  |14         |990/1400    |
-|   |* |   | Smithing   |9          |205/900     |
-|          |                                     |
- ------------------------------------------------
-```
+    .------------------------------------------------.
+    |                                                |
+    |  Name: Tom the        Player: Griatch          |
+    |        Bouncer                                 |
+    |                                                |
+     >----------------------------------------------<
+    |                                                |
+    | Desc:  A sturdy       STR: 12     DEX: 10      |
+    |        fellow         INT: 5      STA: 18      |
+    |                       LUC: 10     MAG: 3       |
+    |                                                |
+     >----------------------------------------------<
+    |          |                                     |
+    | HP|MV|MP | Skill      |Value      |Exp         |
+    | ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
+    | **|**|** | Shooting   |12         |550/1200    |
+    |   |**|*  | Herbalism  |14         |990/1400    |
+    |   |* |   | Smithing   |9          |205/900     |
+    |          |                                     |
+     ------------------------------------------------
+
 
 The marked forms have been replaced with EvCells of text and with
 EvTables. The form can be updated by simply re-applying `form.map()`
@@ -126,6 +124,8 @@ template, so it will resize to fit (or crop text if the area is too
 small for it). If you try to fit a table into an area it cannot fit
 into (when including its borders and at least one line of text), the
 form will raise an error.
+
+----
 
 """
 
@@ -163,9 +163,12 @@ def _to_rect(lines):
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    if isinstance(obj, str):
+    if isinstance(obj, ANSIString):
+        return obj
+    elif isinstance(obj, str):
         # since ansi will be parsed twice (here and in the normal ansi send), we have to
-        # escape the |-structure twice.
+        # escape the |-structure twice. TODO: This is tied to the default color-tag syntax
+        # which is not ideal for those wanting to replace/extend it ...
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
@@ -175,7 +178,7 @@ def _to_ansi(obj, regexable=False):
         return ANSIString(obj, regexable=regexable)
 
 
-class EvForm(object):
+class EvForm:
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
@@ -186,16 +189,15 @@ class EvForm(object):
 
     def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
         """
-        Initiate the form
+        Initiate the form.
 
-        Kwargs:
+        Keyword Args:
             filename (str): Path to template file.
-            cells (dict): A dictionary mapping of {id:text}
-            tables (dict): A dictionary mapping of {id:EvTable}.
-            form (dict): A dictionary of {"FORMCHAR":char,
-                                          "TABLECHAR":char,
-                                          "FORM":templatestring}
-                    if this is given, filename is not read.
+            cells (dict): A dictionary mapping of `{id:text}`.
+            tables (dict): A dictionary mapping of `{id:EvTable}`.
+            form (dict): A dictionary of
+              `{"FORMCHAR":char, "TABLECHAR":char, "FORM":templatestring}`.
+              if this is given, filename is not read.
         Notes:
             Other kwargs are fed as options to the EvCells and EvTables
             (see `evtable.EvCell` and `evtable.EvTable` for more info).
@@ -461,40 +463,3 @@ class EvForm(object):
     def __str__(self):
         "Prints the form"
         return str(ANSIString("\n").join([line for line in self.form]))
-
-
-def _test():
-    "test evform. This is used by the unittest system."
-    form = EvForm("evennia.utils.tests.data.evform_example")
-
-    # add data to each tagged form cell
-    form.map(
-        cells={
-            "AA": "|gTom the Bouncer",
-            2: "|yGriatch",
-            3: "A sturdy fellow",
-            4: 12,
-            5: 10,
-            6: 5,
-            7: 18,
-            8: 10,
-            9: 3,
-            "F": "rev 1",
-        }
-    )
-    # create the EvTables
-    tableA = EvTable("HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols")
-    tableB = EvTable(
-        "Skill",
-        "Value",
-        "Exp",
-        table=[
-            ["Shooting", "Herbalism", "Smithing"],
-            [12, 14, 9],
-            ["550/1200", "990/1400", "205/900"],
-        ],
-        border="incols",
-    )
-    # add the tables to the proper ids in the form
-    form.map(tables={"A": tableA, "B": tableB})
-    return str(form)

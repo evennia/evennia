@@ -24,6 +24,7 @@ from evennia.utils.utils import to_str, mod_import
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
+from autobahn.exception import Disconnected
 
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
@@ -38,6 +39,8 @@ CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
 # Status Code 1001: Going Away
 #   called when the browser is navigating away from the page
 GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
+
+STATE_CLOSING = WebSocketServerProtocol.STATE_CLOSING
 
 
 class WebSocketClient(WebSocketServerProtocol, Session):
@@ -116,6 +119,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
 
+        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        self.protocol_flags["UTF-8"] = True
+        self.protocol_flags["OOB"] = True
+
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
         # actually do the connection
@@ -150,7 +157,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        self.sendClose(CLOSE_NORMAL, reason)
+        ret = self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
@@ -191,7 +198,12 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             line (str): Text to send.
 
         """
-        return self.sendMessage(line.encode())
+        try:
+            return self.sendMessage(line.encode())
+        except Disconnected:
+            # this can happen on an unclean close of certain browsers.
+            # it means this link is actually already closed.
+            self.disconnect(reason="Browser already closed.")
 
     def at_login(self):
         csession = self.get_client_session()
@@ -234,7 +246,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         Args:
             text (str): Text to send.
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Clean out all color.
@@ -249,6 +261,8 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                 return
         else:
             return
+        # just to be sure
+        text = to_str(text)
 
         flags = self.protocol_flags
 
@@ -287,7 +301,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
-        Kwargs:
+        Keyword Args:
             options (dict): These are ignored for oob commands. Use command
                 arguments (which can hold dicts) to send instructions to the
                 client instead.

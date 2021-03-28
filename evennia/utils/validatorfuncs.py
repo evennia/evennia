@@ -11,10 +11,9 @@ They can employ more paramters at your leisure.
 import re as _re
 import pytz as _pytz
 import datetime as _dt
-from django.core.exceptions import ValidationError as _error
-from django.core.validators import validate_email as _val_email
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import string_partial_matching as _partial
+from evennia.utils.utils import string_partial_matching as _partial, validate_email_address
+from django.utils.translation import gettext as _
 
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 
@@ -40,8 +39,8 @@ def color(entry, option_key="Color", **kwargs):
 
 def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs):
     """
-    Process a datetime string in standard forms while accounting for the inputer's timezone. Always
-    returns a result in UTC.
+    Process a datetime string in standard forms while accounting for the
+    inputer's timezone. Always returns a result in UTC.
 
     Args:
         entry (str): A date string from a user.
@@ -49,16 +48,18 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
         account (AccountDB): The Account performing this lookup. Unless `from_tz` is provided,
             the account's timezone option will be used.
         from_tz (pytz.timezone): An instance of a pytz timezone object from the
-            user. If not provided, tries to use the timezone option of the `account'.
+            user. If not provided, tries to use the timezone option of the `account`.
             If neither one is provided, defaults to UTC.
+
     Returns:
         datetime in UTC.
+
     Raises:
         ValueError: If encountering a malformed timezone, date string or other format error.
 
     """
     if not entry:
-        raise ValueError(f"No {option_key} entered!")
+        raise ValueError(_("No {option_key} entered!").format(option_key=option_key))
     if not from_tz:
         from_tz = _pytz.UTC
         if account:
@@ -66,7 +67,11 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
             try:
                 from_tz = _pytz.timezone(acct_tz)
             except Exception as err:
-                raise ValueError(f"Timezone string '{acct_tz}' is not a valid timezone ({err})")
+                raise ValueError(
+                    _("Timezone string '{acct_tz}' is not a valid timezone ({err})").format(
+                        acct_tz=acct_tz, err=err
+                    )
+                )
         else:
             from_tz = _pytz.UTC
 
@@ -209,9 +214,8 @@ def timezone(entry, option_key="Timezone", **kwargs):
 def email(entry, option_key="Email Address", **kwargs):
     if not entry:
         raise ValueError("Email address field empty!")
-    try:
-        _val_email(str(entry))  # offloading the hard work to Django!
-    except _error:
+    valid = validate_email_address(entry)
+    if not valid:
         raise ValueError(f"That isn't a valid {option_key}!")
     return entry
 

@@ -29,7 +29,7 @@ LIMBO_DESC = _(
     """
 Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
-As Account #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
+As Account #1 you can create a demo/tutorial area with '|wbatchcommand tutorial_world.build|n'.
     """
 )
 
@@ -95,7 +95,8 @@ def create_objects():
     god_character.locks.add(
         "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()"
     )
-    god_character.permissions.add("Developer")
+    # we set this low so that quelling is more useful
+    god_character.permissions.add("Player")
 
     god_account.attributes.add("_first_login", True)
     god_account.attributes.add("_last_puppet", god_character)

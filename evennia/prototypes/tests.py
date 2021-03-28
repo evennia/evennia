@@ -3,15 +3,17 @@ Unit tests for the prototypes and spawner
 
 """
 
-from random import randint
+from random import randint, sample
 import mock
+import uuid
+from time import time
 from anything import Something
 from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
 from evennia.prototypes import menus as olc_menus
-from evennia.prototypes import protfuncs as protofuncs
+from evennia.prototypes import protfuncs as protofuncs, spawner
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -212,22 +214,21 @@ class TestUtils(EvenniaTest):
                     "puppet:pperm(Developer);tell:perm(Admin);view:all()",
                     "KEEP",
                 ),
-                "prototype_tags": {},
+                "prototype_tags": (None, None, "KEEP"),
                 "attrs": {
                     "oldtest": (
                         ("oldtest", "to_keep", None, ""),
                         ("oldtest", "to_keep", None, ""),
                         "KEEP",
                     ),
-                    "test": (("test", "testval", None, ""), None, "REMOVE"),
-                    "desc": (("desc", "changed desc", None, ""), None, "REMOVE"),
-                    "fooattr": (None, ("fooattr", "fooattrval", None, ""), "ADD"),
+                    "desc": (("desc", "changed desc", None, ""), None, "KEEP"),
+                    "fooattr": (Something, ("fooattr", "fooattrval", None, ""), "ADD"),
                     "test": (
                         ("test", "testval", None, ""),
                         ("test", "testval_changed", None, ""),
                         "UPDATE",
                     ),
-                    "new": (None, ("new", "new_val", None, ""), "ADD"),
+                    "new": (Something, ("new", "new_val", None, ""), "ADD"),
                 },
                 "key": ("Obj", "Obj", "KEEP"),
                 "typeclass": (
@@ -246,7 +247,7 @@ class TestUtils(EvenniaTest):
             spawner.flatten_diff(pdiff),
             {
                 "aliases": "REMOVE",
-                "attrs": "REPLACE",
+                "attrs": "UPDATE",
                 "home": "KEEP",
                 "key": "KEEP",
                 "location": "KEEP",
@@ -270,7 +271,9 @@ class TestUtils(EvenniaTest):
         new_prot = spawner.prototype_from_object(self.obj1)
         self.assertEqual(
             {
+                "aliases": ["foo"],
                 "attrs": [
+                    ("desc", "changed desc", None, ""),
                     ("fooattr", "fooattrval", None, ""),
                     ("new", "new_val", None, ""),
                     ("oldtest", "to_keep", None, ""),
@@ -293,6 +296,7 @@ class TestUtils(EvenniaTest):
                         "view:all()",
                     ]
                 ),
+                "tags": [("footag", "foocategory", None), (Something, "from_prototype", None)],
                 "permissions": ["builder"],
                 "prototype_desc": "Built from Obj",
                 "prototype_key": Something,
@@ -626,8 +630,8 @@ class TestPrototypeStorage(EvenniaTest):
 
         # partial match
         with mock.patch("evennia.prototypes.prototypes._MODULE_PROTOTYPES", {}):
-            self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
-            self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
+            self.assertCountEqual(protlib.search_prototype("prot"), [prot1b, prot2, prot3])
+            self.assertCountEqual(protlib.search_prototype(tags="foo1"), [prot1b, prot2, prot3])
 
         self.assertTrue(str(str(protlib.list_prototypes(self.char1))))
 
@@ -851,7 +855,7 @@ class TestMenuModule(EvenniaTest):
 
         self.assertEqual(obj.typeclass_path, "evennia.objects.objects.DefaultObject")
         self.assertEqual(
-            obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY), self.test_prot["prototype_key"]
+            obj.tags.get(category=spawner.PROTOTYPE_TAG_CATEGORY), self.test_prot["prototype_key"]
         )
 
         # update helpers
@@ -912,24 +916,20 @@ class TestMenuModule(EvenniaTest):
 
         texts, options = olc_menus._format_diff_text_and_options(obj_diff)
         self.assertEqual(
-            "\n".join(texts),
-            "- |wattrs:|n \n"
-            "   |gKEEP|W:|n desc |W=|n This is User #1. |W(category:|n None|W, locks:|n |W)|n\n"
-            "   |c[1] |yADD|n|W:|n None |W->|n foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n\n"
-            "   |gKEEP|W:|n prelogout_location |W=|n #2 |W(category:|n None|W, locks:|n |W)|n\n"
-            "- |whome:|n    |gKEEP|W:|n #2\n"
-            "- |wkey:|n    |gKEEP|W:|n TestChar\n"
-            "- |wlocks:|n    |gKEEP|W:|n boot:false();call:false();control:perm(Developer);delete:false();edit:false();examine:perm(Developer);get:false();msg:all();puppet:false();tell:perm(Admin);view:all()\n"
-            "- |wpermissions:|n \n"
-            "   |gKEEP|W:|n developer\n"
-            "- |wprototype_desc:|n    |c[2] |rREMOVE|n|W:|n Testobject build |W->|n None\n"
-            "- |wprototype_key:|n    |gKEEP|W:|n TestDiffKey\n"
-            "- |wprototype_locks:|n    |gKEEP|W:|n spawn:all();edit:all()\n"
-            "- |wprototype_tags:|n \n"
-            "- |wtags:|n \n"
-            "   |c[3] |yADD|n|W:|n None |W->|n foo |W(category:|n None|W)|n\n"
-            "- |wtypeclass:|n    |gKEEP|W:|n typeclasses.characters.Character",
+            "\n".join(txt.strip() for txt in texts),
+            "- |wattrs:|n    |c[1] |yADD|n: foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n"
+            "\n- |whome:|n"
+            "\n- |wkey:|n"
+            "\n- |wlocks:|n"
+            "\n- |wpermissions:|n"
+            "\n- |wprototype_desc:|n    |c[2] |rREMOVE|n: Testobject build"
+            "\n- |wprototype_key:|n"
+            "\n- |wprototype_locks:|n"
+            "\n- |wprototype_tags:|n"
+            "\n- |wtags:|n    |c[3] |yADD|n: foo |W(category:|n None|W)|n"
+            "\n- |wtypeclass:|n",
         )
+
         self.assertEqual(
             options,
             [
@@ -1075,3 +1075,30 @@ class TestOLCMenu(TestEvMenu):
             ["node_index", "node_index", "node_index"],
         ],
     ]
+
+
+class PrototypeCrashTest(EvenniaTest):
+
+    # increase this to 1000 for optimization testing
+    num_prototypes = 10
+
+    def create(self, num=None):
+        if not num:
+            num = self.num_prototypes
+        # print(f"Creating {num} additional prototypes...")
+        for x in range(num):
+            prot = {
+                "prototype_key": str(uuid.uuid4()),
+                "some_attributes": [str(uuid.uuid4()) for x in range(10)],
+                "prototype_tags": list(sample(["demo", "test", "stuff"], 2)),
+            }
+            protlib.save_prototype(prot)
+
+    def test_prototype_dos(self, *args, **kwargs):
+        num_prototypes = self.num_prototypes
+        for x in range(2):
+            self.create(num_prototypes)
+            # print("Attempting to list prototypes...")
+            # start_time = time()
+            self.char1.execute_cmd("spawn/list")
+            # print(f"Prototypes listed in {time()-start_time} seconds.")

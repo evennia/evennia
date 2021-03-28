@@ -10,6 +10,7 @@ import time
 from calendar import monthrange
 from datetime import datetime, timedelta
 
+from django.db.utils import OperationalError
 from django.conf import settings
 from evennia import DefaultScript
 from evennia.server.models import ServerConfig
@@ -23,7 +24,11 @@ IGNORE_DOWNTIMES = settings.TIME_IGNORE_DOWNTIMES
 
 
 # Only set if gametime_reset was called at some point.
-GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
+try:
+    GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
+except OperationalError:
+    print("Gametime offset could not load - db not set up.")
+    GAME_TIME_OFFSET = 0
 
 # Common real-life time measure, in seconds.
 # You should not change this.

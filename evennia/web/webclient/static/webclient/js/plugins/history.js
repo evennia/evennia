@@ -39,7 +39,6 @@ let history = (function () {
             history[history.length-1] = input;
             history[history.length] = "";
         }
-        historyPos = 0;
     }
 
     // Public
@@ -49,6 +48,7 @@ let history = (function () {
     var onKeydown = function(event) {
         var code = event.which;
         var historyEntry = null;
+        var startingPos = historyPos;
 
         // Only process up/down arrow if cursor is at the end of the line.
         if (code === 38 && event.shiftKey) { // Shift + Arrow up
@@ -69,6 +69,13 @@ let history = (function () {
             if( inputfield.length < 1 ) { // pre-goldenlayout backwards compatibility
                 inputfield = $("#inputfield");
             }
+
+            // store any partially typed line as a new history item before replacement
+            var line = inputfield.val();
+            if( line !== "" && startingPos === 0 ) {
+                add(line);
+            }
+
             inputfield.val("");
             inputfield.blur().focus().val(historyEntry);
             event.preventDefault();
@@ -82,6 +89,7 @@ let history = (function () {
     // Listen for onSend lines to add to history
     var onSend = function (line) {
         add(line);
+        historyPos = 0;
         return null;
     }
 

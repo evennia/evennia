@@ -539,7 +539,11 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     Only true if accessed_obj has the specified tag and optional
     category.
     """
-    return bool(accessed_obj.tags.get(*args))
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
+    tagkey = args[0] if args else None
+    category = args[1] if len(args) > 1 else None
+    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
@@ -553,6 +557,8 @@ def inside(accessing_obj, accessed_obj, *args, **kwargs):
     want also nested objects to pass the lock, use the `insiderecursive`
     lockfunc.
     """
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
     return accessing_obj.location == accessed_obj
 
 
@@ -565,6 +571,9 @@ def inside_rec(accessing_obj, accessed_obj, *args, **kwargs):
     of recursion (so if this lock is on a room, then an object inside a box
     in your inventory will also pass the lock).
     """
+
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
 
     def _recursive_inside(obj, accessed_obj, lvl=1):
         if obj.location:

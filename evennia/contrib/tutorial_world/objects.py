@@ -22,7 +22,7 @@ WeaponRack
 import random
 
 from evennia import DefaultObject, DefaultExit, Command, CmdSet
-from evennia.utils import search, delay
+from evennia.utils import search, delay, dedent
 from evennia.prototypes.spawner import spawn
 
 # -------------------------------------------------------------
@@ -647,7 +647,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """called when the object is first created."""
         super().at_object_creation()
 
-        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret door"])
+        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret"])
 
         # starting root positions. H1/H2 are the horizontally hanging roots,
         # V1/V2 the vertically hanging ones. Each can have three positions:
@@ -688,6 +688,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # start a 45 second timer before closing again. We store the deferred so it can be
         # killed in unittesting.
         self.deferred = delay(45, self.reset)
+        return True
 
     def _translate_position(self, root, ipos):
         """Translates the position into words"""
@@ -740,7 +741,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
                 "The wall is old and covered with roots that here and there have permeated the stone. "
                 "The roots (or whatever they are - some of them are covered in small nondescript flowers) "
                 "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could "
-                "try to |wshift|n or |wmove|n them.\n"
+                "try to |wshift|n or |wmove|n them (like '|wshift red up|n').\n"
             ]
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
@@ -833,6 +834,7 @@ class CmdAttack(Command):
         "stab",
         "slash",
         "chop",
+        "bash",
         "parry",
         "defend",
     ]
@@ -875,7 +877,7 @@ class CmdAttack(Command):
             tstring = "%s stabs at you with %s. " % (self.caller.key, self.obj.key)
             ostring = "%s stabs at %s with %s. " % (self.caller.key, target.key, self.obj.key)
             self.caller.db.combat_parry_mode = False
-        elif cmdstring in ("slash", "chop"):
+        elif cmdstring in ("slash", "chop", "bash"):
             hit = float(self.obj.db.hit)  # un modified due to slash
             damage = self.obj.db.damage  # un modified due to slash
             string = "You slash with %s. " % self.obj.key
@@ -1150,7 +1152,15 @@ class WeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
-        self.db.get_weapon_msg = "You find |c%s|n."
+        self.db.get_weapon_msg = dedent(
+            """
+            You find |c%s|n. While carrying this weapon, these actions are available:
+              |wstab/thrust/pierce <target>|n - poke at the enemy. More damage but harder to hit.
+              |wslash/chop/bash <target>|n - swipe at the enemy. Less damage but easier to hit.
+              |wdefend/parry|n - protect yourself and make yourself harder to hit.)
+            """
+        ).strip()
+
         self.db.no_more_weapons_msg = "you find nothing else of use."
         self.db.available_weapons = ["knife", "dagger", "sword", "club"]
 

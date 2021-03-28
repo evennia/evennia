@@ -437,7 +437,7 @@ class DefaultScript(ScriptBase):
         if self.is_active and not force_restart:
             # The script is already running, but make sure we have a _task if
             # this is after a cache flush
-            if not self.ndb._task and self.db_interval >= 0:
+            if not self.ndb._task and self.db_interval > 0:
                 self.ndb._task = ExtendedLoopingCall(self._step_task)
                 try:
                     start_delay, callcount = SCRIPT_FLUSH_TIMERS[self.id]

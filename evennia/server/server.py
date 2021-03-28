@@ -26,6 +26,7 @@ import evennia
 evennia._init()
 
 from django.db import connection
+from django.db.utils import OperationalError
 from django.conf import settings
 
 from evennia.accounts.models import AccountDB
@@ -105,6 +106,7 @@ _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 
 def _server_maintenance():
@@ -113,6 +115,8 @@ def _server_maintenance():
     the server needs to do. It is called every minute.
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
+    global _LAST_SERVER_TIME_SNAPSHOT
+
     if not _FLUSH_CACHE:
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
     if not _GAMETIME_MODULE:
@@ -125,8 +129,13 @@ def _server_maintenance():
         # first call after a reload
         _GAMETIME_MODULE.SERVER_START_TIME = now
         _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+        _LAST_SERVER_TIME_SNAPSHOT = now
     else:
-        _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
+        # adjust the runtime not with 60s but with the actual elapsed time
+        # in case this may varies slightly from 60s.
+        _GAMETIME_MODULE.SERVER_RUNTIME += now - _LAST_SERVER_TIME_SNAPSHOT
+    _LAST_SERVER_TIME_SNAPSHOT = now
+
     # update game time and save it across reloads
     _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
     ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
@@ -197,7 +206,10 @@ class Evennia(object):
         self.start_time = time.time()
 
         # initialize channelhandler
-        channelhandler.CHANNELHANDLER.update()
+        try:
+            channelhandler.CHANNELHANDLER.update()
+        except OperationalError:
+            print("channelhandler couldn't update - db not set up")
 
         # wrap the SIGINT handler to make sure we empty the threadpool
         # even when we reload and we have long-running requests in queue.
@@ -391,17 +403,18 @@ class Evennia(object):
         """
         Shuts down the server from inside it.
 
-        mode - sets the server restart mode.
-               'reload' - server restarts, no "persistent" scripts
-                          are stopped, at_reload hooks called.
-               'reset' - server restarts, non-persistent scripts stopped,
-                         at_shutdown hooks called but sessions will not
-                         be disconnected.
-               'shutdown' - like reset, but server will not auto-restart.
-        _reactor_stopping - this is set if server is stopped by a kill
-                            command OR this method was already called
-                             once - in both cases the reactor is
-                             dead/stopping already.
+        Keyword Args:
+            mode (str): Sets the server restart mode:
+            - 'reload': server restarts, no "persistent" scripts
+              are stopped, at_reload hooks called.
+            - 'reset' - server restarts, non-persistent scripts stopped,
+              at_shutdown hooks called but sessions will not
+              be disconnected.
+            -'shutdown' - like reset, but server will not auto-restart.
+            _reactor_stopping: This is set if server is stopped by a kill
+                command OR this method was already called
+                once - in both cases the reactor is dead/stopping already.
+
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method
@@ -607,7 +620,11 @@ class Evennia(object):
 
 
 # Tell the system the server is starting up; some things are not available yet
-ServerConfig.objects.conf("server_starting_mode", True)
+try:
+    ServerConfig.objects.conf("server_starting_mode", True)
+except OperationalError:
+    print("Server server_starting_mode couldn't be set - database not set up.")
+
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.
@@ -719,4 +736,7 @@ for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
         print(f"Could not load plugin module {plugin_module}")
 
 # clear server startup mode
-ServerConfig.objects.conf("server_starting_mode", delete=True)
+try:
+    ServerConfig.objects.conf("server_starting_mode", delete=True)
+except OperationalError:
+    print("Server server_starting_mode couldn't unset - db not set up.")

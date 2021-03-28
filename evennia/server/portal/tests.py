@@ -12,12 +12,16 @@ import sys
 import string
 import mock
 import pickle
+import json
+
 from mock import Mock, MagicMock
 from evennia.server.portal import irc
+from evennia.utils.test_resources import EvenniaTest
 
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
+from twisted.internet.base import DelayedCall
 
 from .telnet import TelnetServerFactory, TelnetProtocol
 from .portal import PORTAL_SESSIONS
@@ -31,6 +35,9 @@ from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
 
 from .amp import AMPMultiConnectionProtocol, MsgServer2Portal, MsgPortal2Server, AMP_MAXLEN
 from .amp_server import AMPServerFactory
+
+from autobahn.twisted.websocket import WebSocketServerFactory
+from .webclient import WebSocketClient
 
 
 class TestAMPServer(TwistedTestCase):
@@ -219,10 +226,12 @@ class TestTelnet(TwistedTestCase):
         self.transport = proto_helpers.StringTransport()
         self.addCleanup(factory.sessionhandler.disconnect_all)
 
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_mudlet_ttype(self):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()
         d = self.proto.makeConnection(self.transport)
+
         # test suppress_ga
         self.assertTrue(self.proto.protocol_flags["NOGOAHEAD"])
         self.proto.dataReceived(IAC + DONT + SUPPRESS_GA)
@@ -269,3 +278,43 @@ class TestTelnet(TwistedTestCase):
         self.proto.nop_keep_alive.stop()
         self.proto._handshake_delay.cancel()
         return d
+
+
+class TestWebSocket(EvenniaTest):
+    def setUp(self):
+        super().setUp()
+        self.proto = WebSocketClient()
+        self.proto.factory = WebSocketServerFactory()
+        self.proto.factory.sessionhandler = PORTAL_SESSIONS
+        self.proto.sessionhandler = PORTAL_SESSIONS
+        self.proto.sessionhandler.portal = Mock()
+        self.proto.transport = proto_helpers.StringTransport()
+        # self.proto.transport = proto_helpers.FakeDatagramTransport()
+        self.proto.transport.client = ["localhost"]
+        self.proto.transport.setTcpKeepAlive = Mock()
+        self.proto.state = MagicMock()
+        self.addCleanup(self.proto.factory.sessionhandler.disconnect_all)
+        DelayedCall.debug = True
+
+    def tearDown(self):
+        super().tearDown()
+
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_data_in(self):
+        self.proto.sessionhandler.data_in = MagicMock()
+        self.proto.onOpen()
+        msg = json.dumps(["logged_in", (), {}]).encode()
+        self.proto.onMessage(msg, isBinary=False)
+        self.proto.sessionhandler.data_in.assert_called_with(self.proto, logged_in=[[], {}])
+        sendStr = "You can get anything you want at Alice's Restaurant."
+        msg = json.dumps(["text", (sendStr,), {}]).encode()
+        self.proto.onMessage(msg, isBinary=False)
+        self.proto.sessionhandler.data_in.assert_called_with(self.proto, text=[[sendStr], {}])
+
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_data_out(self):
+        self.proto.onOpen()
+        self.proto.sendLine = MagicMock()
+        msg = json.dumps(["logged_in", (), {}])
+        self.proto.sessionhandler.data_out(self.proto, text=[["Excepting Alice"], {}])
+        self.proto.sendLine.assert_called_with(json.dumps(["text", ["Excepting Alice"], {}]))

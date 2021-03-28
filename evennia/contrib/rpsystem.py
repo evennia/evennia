@@ -283,7 +283,7 @@ def parse_language(speaker, emote):
             the markers and a tuple (langname, saytext), where
             langname can be None.
     Raises:
-        LanguageError: If an invalid language was specified.
+        rplanguage.LanguageError: If an invalid language was specified.
 
     Notes:
         Note that no errors are raised if the wrong language identifier
@@ -1420,7 +1420,7 @@ class ContribRPObject(DefaultObject):
             looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
-        Kwargs:
+        Keyword Args:
             pose (bool): Include the pose (if available) in the return.
 
         Returns:
@@ -1508,7 +1508,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
-        Kwargs:
+        Keyword Args:
             pose (bool): Include the pose (if available) in the return.
 
         Returns:
@@ -1557,7 +1557,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         Args:
             message (str): The suggested say/whisper text spoken by self.
-        Kwargs:
+        Keyword Args:
             whisper (bool): If True, this is a whisper rather than a say.
 
         """

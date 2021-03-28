@@ -397,7 +397,7 @@ class EventHandler(DefaultScript):
             callback_name (str): the callback name to call.
             *args: additional variables for this callback.
 
-        Kwargs:
+        Keyword Args:
             number (int, optional): call just a specific callback.
             parameters (str, optional): call a callback with parameters.
             locals (dict, optional): a locals replacement.

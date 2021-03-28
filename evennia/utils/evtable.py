@@ -1,66 +1,61 @@
 """
 This is an advanced ASCII table creator. It was inspired by
-[prettytable](https://code.google.com/p/prettytable/) but shares no
-code.
+[prettytable](https://code.google.com/p/prettytable/) but shares no code.
 
 Example usage:
+::
 
-```python
-  from evennia.utils import evtable
+    from evennia.utils import evtable
 
-  table = evtable.EvTable("Heading1", "Heading2",
+    table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-  table.add_column("This is long data", "This is even longer data")
-  table.add_row("This is a single row")
-  print table
-```
+    table.add_column("This is long data", "This is even longer data")
+    table.add_row("This is a single row")
+    print table
 
 Result:
+::
 
-```
-+----------------------+----------+---+--------------------------+
-|       Heading1       | Heading2 |   |                          |
-+~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
-|           1          |     4    | 7 |     This is long data    |
-+----------------------+----------+---+--------------------------+
-|           2          |     5    | 8 | This is even longer data |
-+----------------------+----------+---+--------------------------+
-|           3          |     6    | 9 |                          |
-+----------------------+----------+---+--------------------------+
-| This is a single row |          |   |                          |
-+----------------------+----------+---+--------------------------+
-```
+    +----------------------+----------+---+--------------------------+
+    |       Heading1       | Heading2 |   |                          |
+    +~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
+    |           1          |     4    | 7 |     This is long data    |
+    +----------------------+----------+---+--------------------------+
+    |           2          |     5    | 8 | This is even longer data |
+    +----------------------+----------+---+--------------------------+
+    |           3          |     6    | 9 |                          |
+    +----------------------+----------+---+--------------------------+
+    | This is a single row |          |   |                          |
+    +----------------------+----------+---+--------------------------+
 
 As seen, the table will automatically expand with empty cells to make
 the table symmetric. Tables can be restricted to a given width:
+::
 
-```python
-  table.reformat(width=50, align="l")
-```
+    table.reformat(width=50, align="l")
 
 (We could just have added these keywords to the table creation call)
 
 This yields the following result:
+::
 
-```
-+-----------+------------+-----------+-----------+
-| Heading1  | Heading2   |           |           |
-+~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
-| 1         | 4          | 7         | This is   |
-|           |            |           | long data |
-+-----------+------------+-----------+-----------+
-|           |            |           | This is   |
-| 2         | 5          | 8         | even      |
-|           |            |           | longer    |
-|           |            |           | data      |
-+-----------+------------+-----------+-----------+
-| 3         | 6          | 9         |           |
-+-----------+------------+-----------+-----------+
-| This is a |            |           |           |
-|  single   |            |           |           |
-| row       |            |           |           |
-+-----------+------------+-----------+-----------+
-```
+    +-----------+------------+-----------+-----------+
+    | Heading1  | Heading2   |           |           |
+    +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
+    | 1         | 4          | 7         | This is   |
+    |           |            |           | long data |
+    +-----------+------------+-----------+-----------+
+    |           |            |           | This is   |
+    | 2         | 5          | 8         | even      |
+    |           |            |           | longer    |
+    |           |            |           | data      |
+    +-----------+------------+-----------+-----------+
+    | 3         | 6          | 9         |           |
+    +-----------+------------+-----------+-----------+
+    | This is a |            |           |           |
+    |  single   |            |           |           |
+    | row       |            |           |           |
+    +-----------+------------+-----------+-----------+
 
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
@@ -68,29 +63,25 @@ will not affect this column (this may lead to the full table being too
 wide, so be careful mixing fixed-width columns with auto- balancing).
 Here we change the width and alignment of the column at index 3
 (Python starts from 0):
+::
 
-```python
+    table.reformat_column(3, width=30, align="r")
+    print table
 
-table.reformat_column(3, width=30, align="r")
-print table
-```
-
-```
-+-----------+-------+-----+-----------------------------+---------+
-| Heading1  | Headi |     |                             |         |
-|           | ng2   |     |                             |         |
-+~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
-| 1         | 4     | 7   |           This is long data | Test1   |
-+-----------+-------+-----+-----------------------------+---------+
-| 2         | 5     | 8   |    This is even longer data | Test3   |
-+-----------+-------+-----+-----------------------------+---------+
-| 3         | 6     | 9   |                             | Test4   |
-+-----------+-------+-----+-----------------------------+---------+
-| This is a |       |     |                             |         |
-|  single   |       |     |                             |         |
-| row       |       |     |                             |         |
-+-----------+-------+-----+-----------------------------+---------+
-```
+    +-----------+-------+-----+-----------------------------+---------+
+    | Heading1  | Headi |     |                             |         |
+    |           | ng2   |     |                             |         |
+    +~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
+    | 1         | 4     | 7   |           This is long data | Test1   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 2         | 5     | 8   |    This is even longer data | Test3   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 3         | 6     | 9   |                             | Test4   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | This is a |       |     |                             |         |
+    |  single   |       |     |                             |         |
+    | row       |       |     |                             |         |
+    +-----------+-------+-----+-----------------------------+---------+
 
 When adding new rows/columns their data can have its own alignments
 (left/center/right, top/center/bottom).
@@ -109,12 +100,14 @@ eventual colour outside the table will not transfer "across" a table,
 you need to re-set the color to have it appear on both sides of the
 table string.
 
+----
+
 """
 
 from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from evennia.utils.utils import m_len, is_iter
+from evennia.utils.utils import is_iter, display_len as d_len
 from evennia.utils.ansi import ANSIString
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -228,7 +221,7 @@ class ANSITextWrapper(TextWrapper):
                 indent = self.initial_indent
 
             # Maximum width for this line.
-            width = self.width - m_len(indent)
+            width = self.width - d_len(indent)
 
             # First chunk on line is whitespace -- drop it, unless this
             # is the very beginning of the text (ie. no lines started yet).
@@ -236,7 +229,7 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = m_len(chunks[-1])
+                l = d_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
                 if cur_len + l <= width:
@@ -249,7 +242,7 @@ class ANSITextWrapper(TextWrapper):
 
             # The current line is full, and the next chunk is too big to
             # fit on *any* line (not just this one).
-            if chunks and m_len(chunks[-1]) > width:
+            if chunks and d_len(chunks[-1]) > width:
                 self._handle_long_word(chunks, cur_line, cur_len, width)
 
             # If the last chunk on this line is all whitespace, drop it.
@@ -282,7 +275,7 @@ def wrap(text, width=_DEFAULT_WIDTH, **kwargs):
         text (str): Text to wrap.
         width (int, optional): Width to wrap `text` to.
 
-    Kwargs:
+    Keyword Args:
         See TextWrapper class for available keyword args to customize
         wrapping behaviour.
 
@@ -303,7 +296,7 @@ def fill(text, width=_DEFAULT_WIDTH, **kwargs):
         text (str): Text to fill.
         width (int, optional): Width of fill area.
 
-    Kwargs:
+    Keyword Args:
         See TextWrapper class for available keyword args to customize
         filling behaviour.
 
@@ -328,7 +321,7 @@ class EvCell(object):
         Args:
             data (str): The un-padded data of the entry.
 
-        Kwargs:
+        Keyword Args:
             width (int): Desired width of cell. It will pad
                 to this size.
             height (int): Desired height of cell. it will pad
@@ -439,7 +432,7 @@ class EvCell(object):
         self.valign = kwargs.get("valign", "c")
 
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(m_len(line) for line in self.data)
+        self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
         # this is extra trimming required for cels in the middle of a table only
@@ -478,9 +471,9 @@ class EvCell(object):
             width (int): The width to crop `text` to.
 
         """
-        if m_len(text) > width:
+        if d_len(text) > width:
             crop_string = self.crop_string
-            return text[: width - m_len(crop_string)] + crop_string
+            return text[: width - d_len(crop_string)] + crop_string
         return text
 
     def _reformat(self):
@@ -521,7 +514,7 @@ class EvCell(object):
         width = self.width
         adjusted_data = []
         for line in data:
-            if 0 < width < m_len(line):
+            if 0 < width < d_len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
@@ -564,7 +557,7 @@ class EvCell(object):
             text (str): Centered text.
 
         """
-        excess = width - m_len(text)
+        excess = width - d_len(text)
         if excess <= 0:
             return text
         if excess % 2:
@@ -603,13 +596,13 @@ class EvCell(object):
                     if line.startswith(" ") and not line.startswith("  ")
                     else line
                 )
-                + hfill_char * (width - m_len(line))
+                + hfill_char * (width - d_len(line))
                 for line in data
             ]
             return lines
         elif align == "r":
             return [
-                hfill_char * (width - m_len(line))
+                hfill_char * (width - d_len(line))
                 + (
                     " " + line.rstrip(" ")
                     if line.endswith(" ") and not line.endswith("  ")
@@ -750,7 +743,7 @@ class EvCell(object):
             natural_width (int): Width of cell.
 
         """
-        return m_len(self.formatted[0])  # if self.formatted else 0
+        return d_len(self.formatted[0])  # if self.formatted else 0
 
     def replace_data(self, data, **kwargs):
         """
@@ -765,7 +758,7 @@ class EvCell(object):
 
         """
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(m_len(line) for line in self.data)
+        self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
 
@@ -773,7 +766,7 @@ class EvCell(object):
         """
         Reformat the EvCell with new options
 
-        Kwargs:
+        Keyword Args:
             The available keyword arguments are the same as for `EvCell.__init__`.
 
         Raises:
@@ -932,7 +925,7 @@ class EvColumn(object):
         Args:
             Text for each row in the column
 
-        Kwargs:
+        Keyword Args:
             All `EvCell.__init_` keywords are available, these
             settings will be persistently applied to every Cell in the
             column.
@@ -947,7 +940,7 @@ class EvColumn(object):
         coherent and lined-up column. Will enforce column-specific
         options to cells.
 
-        Kwargs:
+        Keyword Args:
             Extra keywords to modify the column setting. Same keywords
             as in `EvCell.__init__`.
 
@@ -979,7 +972,7 @@ class EvColumn(object):
                 use `ypos=0`. If not given, data will be inserted at the end
                 of the column.
 
-        Kwargs:
+        Keyword Args:
             Available keywods as per `EvCell.__init__`.
 
         """
@@ -998,7 +991,7 @@ class EvColumn(object):
         """
         Change the options for the column.
 
-        Kwargs:
+        Keyword Args:
             Keywords as per `EvCell.__init__`.
 
         """
@@ -1013,7 +1006,7 @@ class EvColumn(object):
             index (int): Index location of the cell in the column,
                 starting from 0 for the first row to Nrows-1.
 
-        Kwargs:
+        Keyword Args:
             Keywords as per `EvCell.__init__`.
 
         """
@@ -1053,7 +1046,7 @@ class EvTable(object):
         Args:
             Header texts for the table.
 
-        Kwargs:
+        Keyword Args:
             table (list of lists or list of `EvColumns`, optional):
                 This is used to build the table in a quick way.  If not
                 given, the table will start out empty and `add_` methods
@@ -1207,7 +1200,7 @@ class EvTable(object):
             nx (int): x size of table.
             ny (int): y size of table.
 
-        Kwargs:
+        Keyword Args:
             Keywords as per `EvTable.__init__`.
 
         Returns:
@@ -1534,7 +1527,7 @@ class EvTable(object):
         Args:
             args (str): These strings will be used as the header texts.
 
-        Kwargs:
+        Keyword Args:
             Same keywords as per `EvTable.__init__`. Will be applied
             to the new header's cells.
 
@@ -1558,7 +1551,7 @@ class EvTable(object):
                to input new column. If not given, column will be added to the end
                of the table. Uses Python indexing (so first column is `xpos=0`)
 
-        Kwargs:
+        Keyword Args:
             Other keywords as per `Cell.__init__`.
 
         """
@@ -1622,7 +1615,7 @@ class EvTable(object):
                  input new row. If not given, will be added to the end of the table.
                  Uses Python indexing (so first row is `ypos=0`)
 
-        Kwargs:
+        Keyword Args:
             Other keywords are as per `EvCell.__init__`.
 
         """
@@ -1661,7 +1654,7 @@ class EvTable(object):
         """
         Force a re-shape of the entire table.
 
-        Kwargs:
+        Keyword Args:
             Table options as per `EvTable.__init__`.
 
         """
@@ -1697,7 +1690,7 @@ class EvTable(object):
             index (int): Which column to reformat. The column index is
                 given from 0 to Ncolumns-1.
 
-        Kwargs:
+        Keyword Args:
             Column options as per `EvCell.__init__`.
 
         Raises:

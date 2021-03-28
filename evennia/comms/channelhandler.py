@@ -24,7 +24,7 @@ does this for you.
 
 """
 from django.conf import settings
-from evennia.commands import cmdset, command
+from evennia.commands import cmdset
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
 from django.utils.translation import gettext as _
@@ -35,9 +35,9 @@ from django.utils.translation import gettext as _
 _CHANNEL_HANDLER_CLASS = None
 _CHANNEL_COMMAND_CLASS = None
 _CHANNELDB = None
+_COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
-
-class ChannelCommand(command.Command):
+class ChannelCommand(_COMMAND_DEFAULT_CLASS):
     """
     {channelkey} channel
 
@@ -119,17 +119,17 @@ class ChannelCommand(command.Command):
             caller = caller if not hasattr(caller, "account") else caller.account
             unmuted = channel.unmute(caller)
             if unmuted:
-                self.msg("You start listening to %s." % channel)
+                self.msg(_("You start listening to %s.") % channel)
                 return
-            self.msg("You were already listening to %s." % channel)
+            self.msg(_("You were already listening to %s.") % channel)
             return
         if msg == "off":
             caller = caller if not hasattr(caller, "account") else caller.account
             muted = channel.mute(caller)
             if muted:
-                self.msg("You stop listening to %s." % channel)
+                self.msg(_("You stop listening to %s.") % channel)
                 return
-            self.msg("You were already not listening to %s." % channel)
+            self.msg(_("You were already not listening to %s.") % channel)
             return
         if self.history_start is not None:
             # Try to view history
@@ -144,7 +144,7 @@ class ChannelCommand(command.Command):
         else:
             caller = caller if not hasattr(caller, "account") else caller.account
             if caller in channel.mutelist:
-                self.msg("You currently have %s muted." % channel)
+                self.msg(_("You currently have %s muted.") % channel)
                 return
             channel.msg(msg, senders=self.caller, online=True)
 

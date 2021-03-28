@@ -1,3 +1,9 @@
+"""
+Option classes store user- or server Options in a generic way
+while also providing validation.
+
+"""
+
 import datetime
 from evennia import logger
 from evennia.utils.ansi import strip_ansi
@@ -6,7 +12,7 @@ from evennia.utils.utils import crop
 from evennia.utils import validatorfuncs
 
 
-class BaseOption(object):
+class BaseOption:
     """
     Abstract Class to deal with encapsulating individual Options. An Option has
     a name/key, a description to display in relevant commands and menus, and a
@@ -109,11 +115,11 @@ class BaseOption(object):
 
     def save(self, **kwargs):
         """
-        Stores the current value using .handler.save_handler(self.key, value, **kwargs)
+        Stores the current value using `.handler.save_handler(self.key, value, **kwargs)`
         where kwargs are a combination of those passed into this function and the
         ones specified by the OptionHandler.
 
-        Kwargs:
+        Keyword Args:
             any (any): Not used by default. These are passed in from self.set
                 and allows the option to let the caller customize saving by
                 overriding or extend the default save kwargs
@@ -173,7 +179,7 @@ class BaseOption(object):
         """
         Renders the Option's value as something pretty to look at.
 
-        Kwargs:
+        Keyword Args:
             any (any): These are options passed by the caller to potentially
                 customize display dynamically.
 

@@ -289,7 +289,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         proto_parts = [proto_def(obj) for obj in parts]
         proto_results = [proto_def(obj) for obj in results]
 
-        puzzle = create_script(PuzzleRecipe, key=puzzle_name)
+        puzzle = create_script(PuzzleRecipe, key=puzzle_name, persistent=True)
         puzzle.save_recipe(puzzle_name, proto_parts, proto_results)
         puzzle.locks.add("control:id(%s) or perm(Builder)" % caller.dbref[1:])
 
@@ -488,7 +488,7 @@ class CmdArmPuzzle(MuxCommand):
 
     Notes:
         Create puzzles with `@puzzle`; get list of
-        defined puzzles using `@lspuzlerecipies`.
+        defined puzzles using `@lspuzzlerecipes`.
 
     """
 
@@ -589,12 +589,26 @@ def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
 
 class CmdUsePuzzleParts(MuxCommand):
     """
+    Use an object, or a group of objects at once.
+
+
+    Example:
+      You look around you and see a pole, a long string, and a needle.
+
+      use pole, long string, needle
+
+      Genius! You built a fishing pole.
+
+
+    Usage:
+        use <obj1> [,obj2,...]
+    """
+
+    # Technical explanation
+    """
     Searches for all puzzles whose parts match the given set of objects. If there are matching
     puzzles, the result objects are spawned in their corresponding location if all parts have been
     passed in.
-
-    Usage:
-        use <part1[,part2,...>]
     """
 
     key = "use"

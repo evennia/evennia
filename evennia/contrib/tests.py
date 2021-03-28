@@ -874,20 +874,17 @@ class TestCustomGameTime(EvenniaTest):
 
 # Test dice module
 
+from evennia.contrib import dice  # noqa
 
-@patch("random.randint", return_value=5)
+
+@patch("evennia.contrib.dice.randint", return_value=5)
 class TestDice(CommandTest):
     def test_roll_dice(self, mocked_randint):
-        # we must import dice here for the mocked randint to apply correctly.
-        from evennia.contrib import dice
-
         self.assertEqual(dice.roll_dice(6, 6, modifier=("+", 4)), mocked_randint() * 6 + 4)
         self.assertEqual(dice.roll_dice(6, 6, conditional=("<", 35)), True)
         self.assertEqual(dice.roll_dice(6, 6, conditional=(">", 33)), False)
 
     def test_cmddice(self, mocked_randint):
-        from evennia.contrib import dice
-
         self.call(
             dice.CmdDice(), "3d6 + 4", "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19."
         )
@@ -898,7 +895,7 @@ class TestDice(CommandTest):
 # Test email-login
 
 
-from evennia.contrib import email_login
+from evennia.contrib import email_login  # noqa
 
 
 class TestEmailLogin(CommandTest):

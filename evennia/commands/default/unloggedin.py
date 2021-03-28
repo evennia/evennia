@@ -294,7 +294,6 @@ You are not yet logged into the game. Commands available at this point:
   |wquit|n - abort the connection
 
 First create an account e.g. with |wcreate Anna c67jHL8p|n
-(If you have spaces in your name, use double quotes: |wcreate "Anna the Barbarian" c67jHL8p|n
 Next you can connect to the game: |wconnect Anna c67jHL8p|n
 
 You can use the |wlook|n command if you want to see the connect screen again.

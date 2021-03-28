@@ -4,7 +4,7 @@ Master configuration file for Evennia.
 NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!
 
 All settings changes should be done by copy-pasting the variable and
-its value to <gamedir>/conf/settings.py.
+its value to <gamedir>/server/conf/settings.py.
 
 Hint: Don't copy&paste over more from this file than you actually want
 to change.  Anything you don't copy&paste will thus retain its default
@@ -375,29 +375,41 @@ DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # tuples mapping the exact tag (not a regex!) to the ANSI convertion, like
 # `(r"%c%r", ansi.ANSI_RED)` (the evennia.utils.ansi module contains all
 # ANSI escape sequences). Default is to use `|` and `|[` -prefixes.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_EXTRA_MAP = []
 # Extend the available regexes for adding XTERM256 colors in-game. This is given
 # as a list of regexes, where each regex must contain three anonymous groups for
 # holding integers 0-5 for the red, green and blue components Default is
 # is r'\|([0-5])([0-5])([0-5])', which allows e.g. |500 for red.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
+COLOR_ANSI_EXTRA_MAP = []
 # XTERM256 foreground color replacement
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_FG = []
 # XTERM256 background color replacement. Default is \|\[([0-5])([0-5])([0-5])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_BG = []
 # Extend the available regexes for adding XTERM256 grayscale values in-game. Given
 # as a list of regexes, where each regex must contain one anonymous group containing
 # a single letter a-z to mark the level from white to black. Default is r'\|=([a-z])',
 # which allows e.g. |=k for a medium gray.
 # XTERM256 grayscale foreground
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GFG = []
 # XTERM256 grayscale background. Default is \|\[=([a-z])'
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
-# ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
+# ansi tag (not a regex!) to a valid XTERM256 tag, such as `(r'|o', r'|531')`
+# for orange. By default this is only used for bright backgrounds but
+# both bright and dark colors can be mapped this way, and is a way to add
+# new shortcuts to xterm colors without having to write the RGB value.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
+# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_NO_DEFAULT = False
 
 
@@ -505,6 +517,18 @@ START_LOCATION = "#2"
 # out of sync between the processes. Keep on unless you face such
 # issues.
 TYPECLASS_AGGRESSIVE_CACHE = True
+# These are fallbacks for BASE typeclasses failing to load. Usually needed only
+# during doc building. The system expects these to *always* load correctly, so
+# only modify if you are making fundamental changes to how objects/accounts
+# work and know what you are doing
+FALLBACK_ACCOUNT_TYPECLASS = "evennia.accounts.accounts.DefaultAccount"
+FALLBACK_OBJECT_TYPECLASS = "evennia.objects.objects.DefaultObject"
+FALLBACK_CHARACTER_TYPECLASS = "evennia.objects.objects.DefaultCharacter"
+FALLBACK_ROOM_TYPECLASS = "evennia.objects.objects.DefaultRoom"
+FALLBACK_EXIT_TYPECLASS = "evennia.objects.objects.DefaultExit"
+FALLBACK_CHANNEL_TYPECLASS = "evennia.comms.comms.DefaultChannel"
+FALLBACK_SCRIPT_TYPECLASS = "evennia.scripts.scripts.DefaultScript"
+
 
 ######################################################################
 # Options and validators
@@ -583,12 +607,15 @@ TIME_IGNORE_DOWNTIMES = False
 # session-aware text formatting and manipulation on the fly. If
 # disabled, such inline functions will not be parsed.
 INLINEFUNC_ENABLED = False
+# This defined how deeply nested inlinefuncs can be. Set to <=0 to
+# disable (not recommended, this is a safeguard against infinite loops).
+INLINEFUNC_STACK_MAXSIZE = 20
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
-# Module holding handlers for OLCFuncs. These allow for embedding
-# functional code in prototypes
+# Module holding handlers for ProtFuncs. These allow for embedding
+# functional code in prototypes and has the same syntax as inlinefuncs.
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
 
 ######################################################################
@@ -727,9 +754,9 @@ CHANNEL_CONNECTINFO = None
 GAME_INDEX_ENABLED = False
 # This dict
 GAME_INDEX_LISTING = {
-    "game_name": SERVERNAME,
+    "game_name": "Mygame",  # usually SERVERNAME
     "game_status": "pre-alpha",  # pre-alpha, alpha, beta or launched
-    "short_description": GAME_SLOGAN,
+    "short_description": "",  # could be GAME_SLOGAN
     "long_description": "",
     "listing_contact": "",  # email
     "telnet_hostname": "",  # mygame.com
@@ -965,7 +992,7 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 try:
     import django_extensions  # noqa
 
-    INSTALLED_APPS = INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS += ["django_extensions"]
 except ImportError:
     # Django extensions are not installed in all distros.
     pass

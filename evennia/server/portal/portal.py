@@ -13,6 +13,7 @@ import time
 
 from os.path import dirname, abspath
 from twisted.application import internet, service
+from twisted.internet.task import LoopingCall
 from twisted.internet import protocol, reactor
 from twisted.python.log import ILogObserver
 
@@ -20,6 +21,7 @@ import django
 
 django.setup()
 from django.conf import settings
+from django.db import connection
 
 import evennia
 
@@ -29,7 +31,6 @@ from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
-from django.db import connection
 
 
 # we don't need a connection to the database so close it right away
@@ -101,8 +102,27 @@ except ImportError:
     WEB_PLUGINS_MODULE = None
     INFO_DICT["errors"] = (
         "WARNING: settings.WEB_PLUGINS_MODULE not found - "
-        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+        "copy 'evennia/game_template/server/conf/web_plugins.py to "
+        "mygame/server/conf."
     )
+
+
+_MAINTENANCE_COUNT = 0
+
+
+def _portal_maintenance():
+    """
+    Repeated maintenance tasks for the portal.
+
+    """
+    global _MAINTENANCE_COUNT
+
+    _MAINTENANCE_COUNT += 1
+
+    if _MAINTENANCE_COUNT % (3600 * 7) == 0:
+        # drop database connection every 7 hrs to avoid default timeouts on MySQL
+        # (see https://github.com/evennia/evennia/issues/1376)
+        connection.close()
 
 
 # -------------------------------------------------------------
@@ -142,6 +162,9 @@ class Portal(object):
         self.server_info_dict = {}
 
         self.start_time = time.time()
+
+        self.maintenance_task = LoopingCall(_portal_maintenance)
+        self.maintenance_task.start(60, now=True)  # call every minute
 
         # in non-interactive portal mode, this gets overwritten by
         # cmdline sent by the evennia launcher
@@ -370,7 +393,7 @@ if WEBSERVER_ENABLED:
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ""
                     if w_interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
-                        w_ifacestr = "-%s" % interface
+                        w_ifacestr = "-%s" % w_interface
                     port = WEBSOCKET_CLIENT_PORT
 
                     class Websocket(WebSocketServerFactory):
@@ -407,4 +430,6 @@ if WEBSERVER_ENABLED:
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
-    plugin_module.start_plugin_services(PORTAL)
+    if plugin_module:
+        plugin_module.start_plugin_services(PORTAL)
+

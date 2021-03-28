@@ -38,17 +38,19 @@ def unload_module(module):
             an object, the module in which that object sits will be unloaded. A string
             should directly give the module pathname to unload.
 
-    Example: 
-        # (in a test method)
-        unload_module(foo)
-        with mock.patch("foo.GLOBALTHING", "mockval"):
-            import foo
-            ... # test code using foo.GLOBALTHING, now set to 'mockval'
+    Example:
+        ::
 
+            # (in a test method)
+            unload_module(foo)
+            with mock.patch("foo.GLOBALTHING", "mockval"):
+                import foo
+                ... # test code using foo.GLOBALTHING, now set to 'mockval'
 
-    This allows for mocking constants global to the module, since
-    otherwise those would not be mocked (since a module is only
-    loaded once).
+    Notes:
+        This allows for mocking constants global to the module, since
+        otherwise those would not be mocked (since a module is only
+        loaded once).
 
     """
     if isinstance(module, str):
@@ -157,3 +159,17 @@ class EvenniaTest(TestCase):
         self.account.delete()
         self.account2.delete()
         super().tearDown()
+
+
+class LocalEvenniaTest(EvenniaTest):
+    """
+    This test class is intended for inheriting in mygame tests.
+    It helps ensure your tests are run with your own objects.
+    """
+
+    account_typeclass = settings.BASE_ACCOUNT_TYPECLASS
+    object_typeclass = settings.BASE_OBJECT_TYPECLASS
+    character_typeclass = settings.BASE_CHARACTER_TYPECLASS
+    exit_typeclass = settings.BASE_EXIT_TYPECLASS
+    room_typeclass = settings.BASE_ROOM_TYPECLASS
+    script_typeclass = settings.BASE_SCRIPT_TYPECLASS
