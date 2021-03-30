@@ -140,16 +140,16 @@ def _server_maintenance():
     _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
     ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
 
-    if _MAINTENANCE_COUNT % 300 == 0:
+    if _MAINTENANCE_COUNT % 5 == 0:
         # check cache size every 5 minutes
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
-    if _MAINTENANCE_COUNT % 3600 == 0:
+    if _MAINTENANCE_COUNT % 60 == 0:
         # validate scripts every hour
         evennia.ScriptDB.objects.validate()
-    if _MAINTENANCE_COUNT % 3700 == 0:
+    if _MAINTENANCE_COUNT % 61 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
-    if _MAINTENANCE_COUNT % (3600 * 7) == 0:
+    if _MAINTENANCE_COUNT % (60 * 7) == 0:
         # drop database connection every 7 hrs to avoid default timeouts on MySQL
         # (see https://github.com/evennia/evennia/issues/1376)
         connection.close()
