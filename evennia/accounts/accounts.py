@@ -1500,7 +1500,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     )
                 )
             result.append("\n\n |whelp|n - more commands")
-            result.append("\n |wooc <Text>|n - talk on public channel")
+            result.append("\n |wpublic <Text>|n - talk on public channel")
 
             charmax = _MAX_NR_CHARACTERS
 
