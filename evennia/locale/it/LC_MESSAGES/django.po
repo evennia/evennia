@@ -9,175 +9,349 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Evennia\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 22:23+0100\n"
-"PO-Revision-Date: 2015-03-03 23:42+0100\n"
+"POT-Creation-Date: 2021-02-16 10:19+0000\n"
+"PO-Revision-Date: 2021-02-16 11:55+0100\n"
+"Last-Translator: Roberto PM <rpolverelli [at] gmail>\n"
+"Language-Team: Tristano Ajmone <tajmone@gmail.com>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Tristano Ajmone <tajmone@gmail.com>\n"
-"Language-Team: Tristano Ajmone <tajmone@gmail.com>\n"
-"X-Generator: Poedit 1.7.4\n"
-"Language: it\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: .\commands\cmdhandler.py:452
+#: accounts/accounts.py:278
+msgid "You are already puppeting this object."
+msgstr "Stai già manovrando questo oggetto."
+
+#: accounts/accounts.py:282
+#, python-brace-format
+msgid "You don't have permission to puppet '{key}'."
+msgstr "Non ti è consentito manovrare '{key}'."
+
+#: accounts/accounts.py:303
+#, python-brace-format
+msgid "|c{key}|R is already puppeted by another Account."
+msgstr "|c{key}|R è già manovrato da un altro Account."
+
+#: accounts/accounts.py:499
+msgid "Too many login failures; please try again in a few minutes."
+msgstr "Troppi tentativi di login; per favore riprova tra qualche minuto."
+
+#: accounts/accounts.py:512 accounts/accounts.py:772
+msgid ""
+"|rYou have been banned and cannot continue from here.\n"
+"If you feel this ban is in error, please email an admin.|x"
+msgstr ""
+"|rSei stato bannato e non ti è possibile continuare.\n"
+"Se ritieni ciò sia avvenuto per errore, per favore contatta un "
+"amministratore.|x"
+
+#: accounts/accounts.py:524
+msgid "Username and/or password is incorrect."
+msgstr "L'username e/o la password sono errati."
+
+#: accounts/accounts.py:743
+msgid ""
+"You are creating too many accounts. Please log into an existing account."
+msgstr ""
+"Stai creando troppi account. Per favore effettua il login con un account "
+"esistente."
+
+#: accounts/accounts.py:789
+msgid ""
+"There was an error creating the Account. If this problem persists, contact "
+"an admin."
+msgstr ""
+"Si è verificato un errore durante la creazione dell'Account. Se questo "
+"problema persiste, contatta un amministratore."
+
+#: accounts/accounts.py:824 accounts/accounts.py:1635
+msgid "An error occurred. Please e-mail an admin if the problem persists."
+msgstr ""
+"Si è verificato un errore. Per favore contatta un amministratore se il "
+"problema persiste."
+
+#: accounts/accounts.py:851
+msgid "Account being deleted."
+msgstr "Cancellazione account in corso."
+
+#: accounts/accounts.py:1303 accounts/accounts.py:1652
+#, python-brace-format
+msgid "|G{key} connected|n"
+msgstr "|G{key} si è connesso|n"
+
+#: accounts/accounts.py:1310 accounts/accounts.py:1317
+msgid "The Character does not exist."
+msgstr "Personaggio inesistente."
+
+#: accounts/accounts.py:1356
+#, python-brace-format
+msgid "|R{key} disconnected{reason}|n"
+msgstr "|R{key} si è disconnesso{reason}|n"
+
+#: accounts/accounts.py:1463
+#, python-brace-format
+msgid "{target} has no in-game appearance."
+msgstr "{target} non ha un'apparenza in gioco."
+
+#: accounts/accounts.py:1507
+msgid ""
+"\n"
+"\n"
+" You don't have any characters yet. See |whelp @charcreate|n for creating "
+"one."
+msgstr ""
+"\n"
+"\n"
+"Attualmente non possiedi alcun personaggio. Vedi |whelp @charcreate|n per "
+"crearne uno."
+
+#: accounts/accounts.py:1588
+msgid "Guest accounts are not enabled on this server."
+msgstr "Su questo server non è abilitato alcun account ospite"
+
+#: accounts/accounts.py:1598
+msgid "All guest accounts are in use. Please try again later."
+msgstr ""
+"Tutti gli account ospite stanno venendo utilizzati. Per favore riprova più "
+"tardi."
+
+#: accounts/bots.py:333
+#, python-brace-format
+msgid ""
+"Nicks at {chstr}:\n"
+" {nicklist}"
+msgstr ""
+"Nicks associati a {chstr}:\n"
+"{nicklist}"
+
+#: accounts/bots.py:344
+#, python-brace-format
+msgid "IRC ping return from {chstr} took {time}s."
+msgstr "IRC ping di ritorno da {chstr} ha impiegato {time}s."
+
+#: commands/cmdhandler.py:738
 msgid "There were multiple matches."
 msgstr "Sono state trovate diverse corrispondenze."
 
-#: .\commands\cmdhandler.py:480
-#, python-format
-msgid "Command '%s' is not available."
-msgstr "Il comando '%s' non è disponibile."
+#: commands/cmdhandler.py:763
+#, python-brace-format
+msgid "Command '{command}' is not available."
+msgstr "Il comando '{command}' non è disponibile."
 
-#: .\commands\cmdhandler.py:485
-#, python-format
-msgid " Maybe you meant %s?"
-msgstr " Forse intendevi dire %s?"
+#: commands/cmdhandler.py:773
+#, python-brace-format
+msgid " Maybe you meant {command}?"
+msgstr " Forse intendevi dire {command}?"
 
-#: .\commands\cmdhandler.py:485
+#: commands/cmdhandler.py:774
 msgid "or"
 msgstr "oppure"
 
-#: .\commands\cmdhandler.py:487
+#: commands/cmdhandler.py:777
 msgid " Type \"help\" for help."
 msgstr " Digita \"help\" per ottenere aiuto."
 
-#: .\commands\cmdparser.py:159
-#, python-format
-msgid "Could not find '%s'."
-msgstr "Impossibile trovare '%s'."
+#: commands/cmdsethandler.py:88
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Errore nel caricamento del cmdset '{path}'\n"
+"(Traceback è stato registrato {timestamp})"
 
-# EN: not easy to translate unless I know exactly what is meant by location (different words available in Italian for different contexts).
-# IT: traduzione approssimativa, mi mancava il contesto esatto del termine: Collocazione? Posizione? Luogo? Punto?
-#: .\commands\cmdparser.py:180
-#, fuzzy
-msgid "location"
-msgstr "collocazione"
+#: commands/cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"Errore nel caricamento del cmdset: Nessuna classe cmdset '{classname}' in "
+"'{path}'.\n"
+"(Traceback è stato registrato {timestamp})"
 
-# EN: Would like to check it better, to be sure about the context.
-# IT: Vorrei verificarlo meglio, capire il contesto.
-#: .\commands\cmdparser.py:181
-#, fuzzy
-msgid " (carried)"
-msgstr " (trasportato)"
+#: commands/cmdsethandler.py:99
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Riscontrato Errore di Sintassi durante il caricamento del cmdset '{path}'.\n"
+"(Traceback è stato registrato {timestamp})"
 
-#: .\commands\cmdparser.py:261
-msgid " (channel)"
-msgstr " (canale)"
+#: commands/cmdsethandler.py:105
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Errore Compile/Run durante il caricamento del cmdset '{path}'.\",\n"
+"(Traceback è stato registrato {timestamp})"
 
-#: .\commands\cmdsethandler.py:127
-#, python-format
-msgid "Error loading cmdset '%s': %s."
-msgstr "Errore durante il caricamento del cmdset '%s': %s."
-
-#: .\commands\cmdsethandler.py:131
-#, python-format
-msgid "Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s."
-msgstr "Errore nel caricamento del cmdset: Nessuna classe cmdset '%(classname)s' in %(modulepath)s."
-
-#: .\commands\cmdsethandler.py:136
-#, python-format
-msgid "SyntaxError encountered when loading cmdset '%s': %s."
-msgstr "Riscontrato Errore di Sintassi durante il caricamento del cmdset '%s': %s."
-
-#: .\commands\cmdsethandler.py:140
-#, python-format
-msgid "Compile/Run error when loading cmdset '%s': %s."
-msgstr "Errore di Compilazione/Esecuzione durante il caricamento del cmdset '%s': %s."
-
-#: .\commands\cmdsethandler.py:150
+#: commands/cmdsethandler.py:111
+#, python-brace-format
 msgid ""
 "\n"
-" (See log for details.)"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
 msgstr ""
 "\n"
-" (Per ulteriori dettagli esaminare il log.)"
+"Errore riscontrato per il cmdset in '{path}'.\n"
+"Rimpiazzato con fallback '{fallback_path}'.\n"
 
-#: .\commands\cmdsethandler.py:217
-#, python-format
-msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
-msgstr "%(mergetype)s personalizzato sul cmdset '%(merged_on)s'"
+#: commands/cmdsethandler.py:117
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr ""
+"Destinazione Fallback '{fallback_path}' ha fallito nel generare un cmdset."
 
-# EN: maybe "Merged" could have been left untraslated?
-# IT: forse si poteva anche non tradurre?
-#: .\commands\cmdsethandler.py:220
-#, fuzzy, python-format
-msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
-msgstr " <Unito %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+#: commands/cmdsethandler.py:187 commands/cmdsethandler.py:199
+#, python-brace-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '{path}')."
+msgstr ""
+"\n"
+"(Tentativo insuccessoso di utilizzare '{path}')."
 
-#: .\commands\cmdsethandler.py:228
-#, python-format
-msgid " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
-msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+#: commands/cmdsethandler.py:329
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "{mergetype} personalizzato sul cmdset '{cmdset}'"
 
-#: .\commands\cmdsethandler.py:302 .\commands\cmdsethandler.py:335
+#: commands/cmdsethandler.py:451
 msgid "Only CmdSets can be added to the cmdsethandler!"
 msgstr "Si possono aggiungere solamente CmdSets al cmdsethandler!"
 
-#: .\locks\lockhandler.py:218
+#: comms/channelhandler.py:103
+msgid "Say what?"
+msgstr "Cosa vorresti dire?"
+
+#: comms/channelhandler.py:108
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Canale '%s' non trovato."
+
+#: comms/channelhandler.py:111
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Non sei connesso al canale '%s'."
+
+#: comms/channelhandler.py:115
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "Non ti è consentito scrivere nel canale '%s'."
+
+#: comms/channelhandler.py:122
+#, python-format
+msgid "You start listening to %s."
+msgstr "Inizi ad ascoltare %s."
+
+#: comms/channelhandler.py:124
+#, python-format
+msgid "You were already listening to %s."
+msgstr "Stavi già ascoltando %s."
+
+#: comms/channelhandler.py:130
+#, python-format
+msgid "You stop listening to %s."
+msgstr "Smetti di ascoltare %s."
+
+#: comms/channelhandler.py:132
+#, python-format
+msgid "You were already not listening to %s."
+msgstr "Stavi già ignorando %s."
+
+#: comms/channelhandler.py:147
+#, python-format
+msgid "You currently have %s muted."
+msgstr "Al momento hai %s mutato."
+
+#: comms/channelhandler.py:161
+msgid " (channel)"
+msgstr " (canale)"
+
+#: help/manager.py:134
+#, python-brace-format
+msgid "Help database moved to category {default_category}"
+msgstr "Database di aiuto spostato alla categoria {default_category}"
+
+#: locks/lockhandler.py:236
 #, python-format
 msgid "Lock: lock-function '%s' is not available."
 msgstr "Lock: la funzione di lock '%s' non è disponibile."
 
-#: .\locks\lockhandler.py:231
-#, python-format
-msgid "Lock: definition '%s' has syntax errors."
-msgstr "Lock: la definizione '%s' contiene errori di sintassi."
+#: locks/lockhandler.py:256
+#, python-brace-format
+msgid "Lock: definition '{lock_string}' has syntax errors."
+msgstr "Lock: la definizione '{lock_string}' contiene errori di sintassi."
 
-#: .\locks\lockhandler.py:235
+#: locks/lockhandler.py:265
 #, python-format
-msgid "LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
-msgstr "LockHandler per %(obj)s: l'access type '%(access_type)s' è mutato da '%(source)s' a '%(goal)s' "
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"LockHandler per %(obj)s: l'access type '%(access_type)s' è mutato da "
+"'%(source)s' a '%(goal)s' "
 
-#: .\locks\lockhandler.py:275
-#, python-format
-msgid "Lock: '%s' contains no colon (:)."
-msgstr "Lock: '%s' non contiene due punti (:)."
+#: locks/lockhandler.py:339
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Lock: '{lockdef}' non contiene i due punti (:)."
 
-#: .\locks\lockhandler.py:279
-#, python-format
-msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
-msgstr "Lock: '%s' non ha un access_type (la parte a sinistra dei due punti è vuota)."
+#: locks/lockhandler.py:348
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr ""
+"Lock: '{lockdef}' non ha un access_type (la parte a sinistra dei due punti è "
+"vuota)."
 
-#: .\locks\lockhandler.py:282
-#, python-format
-msgid "Lock: '%s' has mismatched parentheses."
-msgstr "Lock: '%s' presenta irregolarità nell'uso delle parentesi."
+#: locks/lockhandler.py:356
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Lock: '{lockdef}' presenta irregolarità nell'uso delle parentesi."
 
-#: .\locks\lockhandler.py:285
-#, python-format
-msgid "Lock: '%s' has no valid lock functions."
-msgstr "Lock: '%s' non contiene funzioni di lock valide."
+#: locks/lockhandler.py:363
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Lock: '{lockdef}' non contiene funzioni di lock valide."
 
-#: .\objects\objects.py:596
+#: objects/objects.py:795
 #, python-format
 msgid "Couldn't perform move ('%s'). Contact an admin."
 msgstr "Spostamento non riuscito ('%s'). Contatta un amministratore."
 
-#: .\objects\objects.py:606
+#: objects/objects.py:805
 msgid "The destination doesn't exist."
 msgstr "Destinazione inesistente."
 
-#: .\objects\objects.py:719
+#: objects/objects.py:896
 #, python-format
 msgid "Could not find default home '(#%d)'."
-msgstr "Non è stata trovata la home prefedinita '(#%d)'."
+msgstr "Non è stata trovata la home predefinita '(#%d)'."
 
-#: .\objects\objects.py:735
+#: objects/objects.py:912
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
-msgstr "Qualcosa è andato storto! Sei stato gettato nel nulla. Contatta un amministratore."
+msgstr ""
+"Qualcosa è andato storto! Sei stato gettato nel nulla. Contatta un "
+"amministratore."
 
-#: .\objects\objects.py:808
-#, python-format
-msgid "Your character %s has been destroyed."
-msgstr "Il tuo personaggio %s è stato distrutto."
+#: objects/objects.py:1061
+#, python-brace-format
+msgid "Your character {key} has been destroyed."
+msgstr "Il tuo personaggio {key} è stato distrutto."
 
-#: .\players\players.py:321
-msgid "Player being deleted."
-msgstr "Cancellazione del giocatore."
-
-#: .\scripts\scripthandler.py:45
+#: scripts/scripthandler.py:52
 #, python-format
 msgid ""
 "\n"
@@ -186,92 +360,213 @@ msgstr ""
 "\n"
 " '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
 
-#: .\scripts\scripts.py:158
+#: scripts/scripts.py:198
 #, python-format
-msgid "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
-msgstr "Script %(key)s(#%(dbid)s) del tipo '%(cname)s': at_repeat() error '%(err)s'."
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Script %(key)s(#%(dbid)s) del tipo '%(cname)s': at_repeat() error '%(err)s'."
 
-#: .\scripts\scripts.py:534
-msgid "This is an empty placeholder script."
-msgstr "Questo è uno script segnaposto vuoto."
-
-# EN: Not clear if 'storage' refers to disk- or database-storage, or if it relates to game-world objects/containers.
-# IT: Non è chiaro se se si riferisce a 'storage' nel sendo di dati su disco (o database) oppure a contenitori quali oggetti del MUD!
-#: .\scripts\scripts.py:542
-#, fuzzy
-msgid "This is a generic storage container."
-msgstr "Questo è un contenitore per immagazzinamento generico."
-
-#: .\scripts\scripts.py:550
-msgid "Checks sessions so they are live."
-msgstr "Verifica che le sessioni siano attive."
-
-#: .\scripts\scripts.py:571
-msgid "Restrains size of idmapper cache."
-msgstr "Limita le dimensioni cache dello idmapper."
-
-#: .\scripts\scripts.py:587
-msgid "Validates all scripts regularly."
-msgstr "Convalida regolarmente tutti gli script."
-
-#: .\scripts\scripts.py:602
-msgid "Updates the channel handler"
-msgstr "Aggiorna l'handler del canale."
-
-#: .\server\initial_setup.py:29
+#: server/initial_setup.py:29
 msgid ""
 "\n"
-"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
 "help, want to contribute, report issues or just join the community.\n"
-"As Player #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.\n"
+"As Account #1 you can create a demo/tutorial area with '|wbatchcommand "
+"tutorial_world.build|n'.\n"
 "    "
 msgstr ""
 "\n"
-"Benvenuto al tuo nuovo gioco creato con |wEvennia|n! Visita http://www.evennia.com se ti\n"
-"serve aiuto, se vuoi collaborare, segnalare errori o se desideri unirti alla comunità online.\n"
-"In qualità di Giocatore #1 puoi creare un'area dimostrativa/tutorial digitando il comando:\n"
+"Benvenuto al tuo nuovo gioco creato con |wEvennia|n! Visita http://www."
+"evennia.com se ti\n"
+"serve aiuto, se vuoi collaborare, segnalare errori o se desideri unirti alla "
+"comunità online.\n"
+"In qualità di Account #1 puoi creare un'area dimostrativa/tutorial digitando "
+"il comando:\n"
 "|w@batchcommand tutorial_world.build|n.\n"
 "    "
 
-#: .\server\initial_setup.py:99
+#: server/initial_setup.py:94
 msgid "This is User #1."
 msgstr "Questo è l'Utente #1."
 
-#: .\server\initial_setup.py:108
+#: server/initial_setup.py:110
 msgid "Limbo"
 msgstr "Limbo"
 
-#: .\server\sessionhandler.py:192
-#, python-format
-msgid "Connection dropped: %s %s (%s)"
-msgstr "Connessione caduta: %s %s (%s)"
+#: server/server.py:158
+msgid "idle timeout exceeded"
+msgstr "Timeout di inattività superato"
 
-#: .\server\sessionhandler.py:229
+#: server/sessionhandler.py:402
 msgid " ... Server restarted."
 msgstr " ... Server riavviato."
 
-# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
-# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
-#: .\server\sessionhandler.py:293
-#, fuzzy, python-format
-msgid "Logged in: %s %s (%s)"
-msgstr "Connesso: %s %s (%s)"
-
-# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
-# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
-#: .\server\sessionhandler.py:317
-#, fuzzy, python-format
-msgid "Logged out: %s %s (%s)"
-msgstr "Disconnesso: %s %s (%s)"
-
-#: .\server\sessionhandler.py:337
-msgid "You have been disconnected."
-msgstr "Sei stato disconnesso."
-
-#: .\server\sessionhandler.py:350
+#: server/sessionhandler.py:627
 msgid "Logged in from elsewhere. Disconnecting."
 msgstr "Connesso da altrove. Disconnesione in corso."
 
-#: .\server\sessionhandler.py:368
+#: server/sessionhandler.py:655
 msgid "Idle timeout exceeded, disconnecting."
-msgstr "Timeout di inattività superato: disconnesione avviata."
+msgstr "Timeout di inattività: disconnesione in corso."
+
+#: server/validators.py:31
+msgid "Sorry, that username is reserved."
+msgstr "Spiacente, quell'username è riservato."
+
+#: server/validators.py:38
+msgid "Sorry, that username is already taken."
+msgstr "Spiacente, quell'username è già in uso."
+
+#: server/validators.py:88
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Da una finestra di terminale, puoi usare anche una frase segreta "
+"(composta da più parole separate da spazio), avendo l'accortezza di "
+"racchiuderla tra virgolette."
+
+#: utils/evmenu.py:292
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice or try 'q' to abort."
+msgstr ""
+"Nodo del Menu '{nodename}' è alternativamente non implementato o ha causato "
+"un errore. Fai un'altra scelta o prova 'q' per annullare."
+
+#: utils/evmenu.py:295
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Errore nel nodo del Menu '{nodename}'."
+
+#: utils/evmenu.py:296
+msgid "No description."
+msgstr "Senza descrizione."
+
+# here I assume non-translated quit and help cmds
+#: utils/evmenu.py:297
+msgid "Commands: <menu option>, help, quit"
+msgstr "Comandi: <opzione del menu>, help, quit"
+
+#: utils/evmenu.py:298
+msgid "Commands: <menu option>, help"
+msgstr "Comandi: <opzione del menu>, help"
+
+#: utils/evmenu.py:299
+msgid "Commands: help, quit"
+msgstr "Comandi: help, quit"
+
+#: utils/evmenu.py:300
+msgid "Commands: help"
+msgstr "Comandi: help"
+
+#: utils/evmenu.py:301 utils/evmenu.py:1665
+msgid "Choose an option or try 'help'."
+msgstr "Scegli una opzione o prova 'help'."
+
+#: utils/utils.py:1906
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Impossibile trovare '%s'."
+
+#: utils/utils.py:1913
+#, python-brace-format
+msgid "More than one match for '{query}' (please narrow target):\n"
+msgstr ""
+"Più di una corrispondenza trovata per '{query}' (per favore restringi il "
+"campo):\n"
+
+#: utils/validatorfuncs.py:62
+#, python-brace-format
+msgid "No {option_key} entered!"
+msgstr "Non hai specificato {option_key}!"
+
+#: utils/validatorfuncs.py:71
+#, python-brace-format
+msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
+msgstr "La dicitura '{acct_tz}' non rappresenta una timezone valida ({err})"
+
+# EN: not easy to translate unless I know exactly what is meant by location (different words available in Italian for different contexts).
+# IT: traduzione approssimativa, mi mancava il contesto esatto del termine: Collocazione? Posizione? Luogo? Punto?
+#, fuzzy
+#~ msgid "location"
+#~ msgstr "collocazione"
+
+# EN: Would like to check it better, to be sure about the context.
+# IT: Vorrei verificarlo meglio, capire il contesto.
+#, fuzzy
+#~ msgid " (carried)"
+#~ msgstr " (trasportato)"
+
+#, python-format
+#~ msgid "Error loading cmdset '%s': %s."
+#~ msgstr "Errore durante il caricamento del cmdset '%s': %s."
+
+#, python-format
+#~ msgid "Compile/Run error when loading cmdset '%s': %s."
+#~ msgstr ""
+#~ "Errore di Compilazione/Esecuzione durante il caricamento del cmdset '%s': "
+#~ "%s."
+
+#~ msgid ""
+#~ "\n"
+#~ " (See log for details.)"
+#~ msgstr ""
+#~ "\n"
+#~ " (Per ulteriori dettagli esaminare il log.)"
+
+# EN: maybe "Merged" could have been left untraslated?
+# IT: forse si poteva anche non tradurre?
+#, fuzzy, python-format
+#~ msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+#~ msgstr " <Unito %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+
+#, python-format
+#~ msgid ""
+#~ " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+#~ msgstr ""
+#~ " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+
+#~ msgid "This is an empty placeholder script."
+#~ msgstr "Questo è uno script segnaposto vuoto."
+
+# EN: Not clear if 'storage' refers to disk- or database-storage, or if it relates to game-world objects/containers.
+# IT: Non è chiaro se se si riferisce a 'storage' nel sendo di dati su disco (o database) oppure a contenitori quali oggetti del MUD!
+#, fuzzy
+#~ msgid "This is a generic storage container."
+#~ msgstr "Questo è un contenitore per immagazzinamento generico."
+
+#~ msgid "Checks sessions so they are live."
+#~ msgstr "Verifica che le sessioni siano attive."
+
+#~ msgid "Restrains size of idmapper cache."
+#~ msgstr "Limita le dimensioni cache dello idmapper."
+
+#~ msgid "Validates all scripts regularly."
+#~ msgstr "Convalida regolarmente tutti gli script."
+
+#~ msgid "Updates the channel handler"
+#~ msgstr "Aggiorna l'handler del canale."
+
+#, python-format
+#~ msgid "Connection dropped: %s %s (%s)"
+#~ msgstr "Connessione caduta: %s %s (%s)"
+
+# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
+# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
+#, fuzzy, python-format
+#~ msgid "Logged in: %s %s (%s)"
+#~ msgstr "Connesso: %s %s (%s)"
+
+# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
+# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
+#, fuzzy, python-format
+#~ msgid "Logged out: %s %s (%s)"
+#~ msgstr "Disconnesso: %s %s (%s)"
+
+#~ msgid "You have been disconnected."
+#~ msgstr "Sei stato disconnesso."
