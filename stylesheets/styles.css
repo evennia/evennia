@@ -351,6 +351,15 @@ a.github {
 }
 
 
+.loglink {
+  position: fixed;
+  margin-top: -35px;
+  margin-left: 124px;
+  scale: 80%;
+}
+
+
+
 /* Section - for main page content */
 
 section {
@@ -513,7 +522,7 @@ footer {
     float: none;
     position: absolute;
     top: -2px;
-    right: 167px;
+    right: 270px;
   }
 
   .buttonsidetext {
