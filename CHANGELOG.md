@@ -44,6 +44,7 @@
   function.
 - Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This 
   is useful for implementing actor-stance emoting for sending a string to different targets.
+- New version of Italian translation (rpolve)
 
 ### Evennia 0.9.5 (2019-2020)
 
