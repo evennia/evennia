@@ -84,7 +84,7 @@ class TestServer(TestCase):
             _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
             _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=3700 - 1,
+            _MAINTENANCE_COUNT=62 - 1,
             _LAST_SERVER_TIME_SNAPSHOT=0,
             ServerConfig=DEFAULT,
         ) as mocks:
