@@ -149,6 +149,8 @@ class TaskHandler(object):
             callback = self.do_task
             args = [task_id]
             kwargs = {}
+            deferLater(reactor, timedelay, callback, *args, **kwargs)
+            return task_id
 
         return deferLater(reactor, timedelay, callback, *args, **kwargs)
 
