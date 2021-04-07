@@ -47,7 +47,7 @@ class TestServer(TestCase):
             _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
             _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=600 - 1,
+            _MAINTENANCE_COUNT=5 - 1,
             ServerConfig=DEFAULT,
         ) as mocks:
             mocks["connection"].close = MagicMock()
@@ -65,7 +65,7 @@ class TestServer(TestCase):
             _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
             _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=3600 - 1,
+            _MAINTENANCE_COUNT=60 - 1,
             _LAST_SERVER_TIME_SNAPSHOT=0,
             ServerConfig=DEFAULT,
         ) as mocks:
@@ -84,7 +84,7 @@ class TestServer(TestCase):
             _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
             _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=62 - 1,
+            _MAINTENANCE_COUNT=61 - 1,
             _LAST_SERVER_TIME_SNAPSHOT=0,
             ServerConfig=DEFAULT,
         ) as mocks:
@@ -102,7 +102,7 @@ class TestServer(TestCase):
             _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
             _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=(3600 * 7) - 1,
+            _MAINTENANCE_COUNT=(60 * 7) - 1,
             _LAST_SERVER_TIME_SNAPSHOT=0,
             ServerConfig=DEFAULT,
         ) as mocks:
