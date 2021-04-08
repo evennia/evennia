@@ -1,5 +1,9 @@
 # The Inline Function Parser
 
+```
+
+```
+
 The [FuncParser](api:evennia.utils.funcparser#evennia.utils.funcparser.FuncParser) extracts and executes 
 'inline functions'
 embedded in a string on the form `$funcname(args, kwargs)`. Under the hood, this will 
@@ -65,7 +69,7 @@ The FuncParser can be applied to any string. Out of the box it's applied in a fe
 ## Using the FuncParser 
     
 You can apply inline function parsing to any string. The 
-[FuncParser](api:evennia.utils.funcparser.FuncParser) is found in `evennia.utils.funcparser.py`. 
+[FuncParser](api:evennia.utils.funcparser.FuncParser) is imported as `evennia.utils.funcparser`. 
 
 ```python
 from evennia.utils import funcparser
@@ -85,7 +89,7 @@ available to the parser as you parse strings with it. It can either be
   to include and how they should be named. Do you want a callable to be available under more than one name?
   Just add it multiple times to the dict, with a different key.
 - A `module` or (more commonly) a `python-path` to a module. This module can define a dict 
-  `FUNCPARSER_CALLABLES = {"funcname": callable, ...}` - this will be imported and used like ther `dict` above.
+  `FUNCPARSER_CALLABLES = {"funcname": callable, ...}` - this will be imported and used like the `dict` above.
   If no such variable is defined, _every_ top-level function in the module (whose name doesn't start with 
   an underscore `_`) will be considered a suitable callable. The name of the function will be the `$funcname` 
   by which it can be called.
@@ -123,7 +127,7 @@ Here the callable will be called as
 
 ```python
 _test('foo', bar='4', mydefault=2, myreserved=[1, 2, 3], 
-      funcparser=<FuncParser>, raise_errrors=False) 
+      funcparser=<FuncParser>, raise_errors=False) 
 ```
 
 The `mydefault=2` kwarg could be overwritten if we made the call as `$test(mydefault=...)` 
