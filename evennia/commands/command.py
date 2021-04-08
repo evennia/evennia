@@ -16,6 +16,13 @@ from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
 
 
+class InterruptCommand(Exception):
+
+    """Cleanly interrupt a command."""
+
+    pass
+
+
 def _init_command(cls, **kwargs):
     """
     Helper command.
@@ -666,10 +673,3 @@ Command {self} has no defined `func()` - showing on-command variables:
         if "mode" not in kwargs:
             kwargs["mode"] = "footer"
         return self._render_decoration(*args, **kwargs)
-
-
-class InterruptCommand(Exception):
-
-    """Cleanly interrupt a command."""
-
-    pass
