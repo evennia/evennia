@@ -233,6 +233,21 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         return objs
 
+    def get_display_name(self, looker, **kwargs):
+        """
+        This is used by channels and other OOC communications methods to give a
+        custom display of this account's input.
+
+        Args:
+            looker (Account): The one that will see this name.
+            **kwargs: Unused by default, can be used to pass game-specific data.
+
+        Returns:
+            str: The name, possibly modified.
+
+        """
+        return f"|c{self.key}|n"
+
     # session-related methods
 
     def disconnect_session_from_account(self, session, reason=None):
@@ -973,11 +988,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         if senders:
-            sender_string = ', '.join(sender.key for sender in senders)
+            sender_string = ', '.join(sender.get_display_name(self) for sender in senders)
             message_lstrip = message.lstrip()
             if message_lstrip.startswith((':', ';')):
                 # this is a pose, should show as e.g. "User1 smiles to channel"
-                spacing = "" if message_lstrip.startswith((':', '\'', ',')) else " "
+                spacing = "" if message_lstrip[1:].startswith((':', '\'', ',')) else " "
                 message = f"{sender_string}{spacing}{message_lstrip[1:]}"
             else:
                 # normal message

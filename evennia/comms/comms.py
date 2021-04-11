@@ -329,18 +329,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         Hook method. How the channel should prefix itself for users.
 
-        Args:
-            msg (str, optional): Prefix text
-            emit (bool, optional): Switches to emit mode, which usually
-                means to not prefix the channel's info.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
         Returns:
-            prefix (str): The created channel prefix.
-
-        Notes:
-            This is normally retrieved from the hooks on the receiver.
+            str: The channel prefix.
 
         """
         return self.channel_prefix_string.format(channel_key=self.key)
@@ -399,7 +389,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         else:
             receivers = self.subscriptions.all()
         if not bypass_mute:
-            receivers = receivers.exclude(id__in=[muted.id for muted in self.mutelist])
+            receivers = [receiver for receiver in receivers if receiver not in self.mutelist]
 
         send_kwargs = {'senders': senders, 'bypass_mute': bypass_mute, **kwargs}
 
@@ -411,16 +401,13 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         for receiver in receivers:
             # send to each individual subscriber
             try:
-                recv_msg = receiver.at_pre_channel_msg(message, self, **send_kwargs)
-                if recv_msg in (None, False):
-                    continue
-                receiver.channel_msg(recv_msg, self, **send_kwargs)
-                receiver.at_post_channel_msg(recv_msg, **send_kwargs)
-
+                # this will in turn call receiver.at_pre/post_channel_msg
+                receiver.channel_msg(message, self, **send_kwargs)
             except Exception:
                 logger.log_trace(f"Cannot send channel message to {receiver}.")
 
-        self.at_post_msg(self, message, **send_kwargs)
+        # post-send hook
+        self.at_post_msg(message, **send_kwargs)
 
     def at_post_msg(self, message, **kwargs):
         """
@@ -437,280 +424,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                             if self.log_to_file else None)
         log_file = self.attributes.get("log_file", default=default_log_file)
         if log_file:
-            senders = ",".join(kwargs.get("senders", []))
+            senders = ",".join(sender.key for sender in kwargs.get("senders", []))
             senders = f"{senders}: " if senders else ""
             message = f"{senders}{message}"
             logger.log_file(message, log_file)
-
-    # def message_transform(
-    #     self, msgobj, emit=False, prefix=True, sender_strings=None, external=False, **kwargs
-    # ):
-    #     """
-    #     Generates the formatted string sent to listeners on a channel.
-
-    #     Args:
-    #         msgobj (Msg): Message object to send.
-    #         emit (bool, optional): In emit mode the message is not associated
-    #             with a specific sender name.
-    #         prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.
-    #         sender_strings (list, optional): Used by bots etc, one string per external sender.
-    #         external (bool, optional): If this is an external sender or not.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     """
-    #     if sender_strings or external:
-    #         body = self.format_external(msgobj, sender_strings, emit=emit)
-    #     else:
-    #         body = self.format_message(msgobj, emit=emit)
-    #     if prefix:
-    #         body = "%s%s" % (self.channel_prefix(msgobj, emit=emit), body)
-    #     msgobj.message = body
-    #     return msgobj
-
-    # def distribute_message(self, msgobj, online=False, **kwargs):
-    #     """
-    #     Method for grabbing all listeners that a message should be
-    #     sent to on this channel, and sending them a message.
-
-    #     Args:
-    #         msgobj (Msg or TempMsg): Message to distribute.
-    #         online (bool): Only send to receivers who are actually online
-    #             (not currently used):
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Notes:
-    #         This is also where logging happens, if enabled.
-
-    #     """
-    #     # get all accounts or objects connected to this channel and send to them
-    #     if online:
-    #         subs = self.subscriptions.online()
-    #     else:
-    #         subs = self.subscriptions.all()
-    #     for entity in subs:
-    #         # if the entity is muted, we don't send them a message
-    #         if entity in self.mutelist:
-    #             continue
-    #         try:
-    #             # note our addition of the from_channel keyword here. This could be checked
-    #             # by a custom account.msg() to treat channel-receives differently.
-    #             entity.msg(
-    #                 msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id}
-    #             )
-    #         except AttributeError as e:
-    #             logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
-
-    #     if msgobj.keep_log:
-    #         # log to file
-    #         logger.log_file(
-    #             msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key
-    #         )
-
-    # def msg(
-    #     self,
-    #     msgobj,
-    #     header=None,
-    #     senders=None,
-    #     sender_strings=None,
-    #     keep_log=None,
-    #     online=False,
-    #     emit=False,
-    #     external=False,
-    # ):
-    #     """
-    #     Send the given message to all accounts connected to channel. Note that
-    #     no permission-checking is done here; it is assumed to have been
-    #     done before calling this method. The optional keywords are not used if
-    #     persistent is False.
-
-    #     Args:
-    #         msgobj (Msg, TempMsg or str): If a Msg/TempMsg, the remaining
-    #             keywords will be ignored (since the Msg/TempMsg object already
-    #             has all the data). If a string, this will either be sent as-is
-    #             (if persistent=False) or it will be used together with `header`
-    #             and `senders` keywords to create a Msg instance on the fly.
-    #         header (str, optional): A header for building the message.
-    #         senders (Object, Account or list, optional): Optional if persistent=False, used
-    #             to build senders for the message.
-    #         sender_strings (list, optional): Name strings of senders. Used for external
-    #             connections where the sender is not an account or object.
-    #             When this is defined, external will be assumed. The list will be
-    #             filtered so each sender-string only occurs once.
-    #         keep_log (bool or None, optional): This allows to temporarily change the logging status of
-    #             this channel message. If `None`, the Channel's `keep_log` Attribute will
-    #             be used. If `True` or `False`, that logging status will be used for this
-    #             message only (note that for unlogged channels, a `True` value here will
-    #             create a new log file only for this message).
-    #         online (bool, optional) - If this is set true, only messages people who are
-    #             online. Otherwise, messages all accounts connected. This can
-    #             make things faster, but may not trigger listeners on accounts
-    #             that are offline.
-    #         emit (bool, optional) - Signals to the message formatter that this message is
-    #             not to be directly associated with a name.
-    #         external (bool, optional): Treat this message as being
-    #             agnostic of its sender.
-
-    #     Returns:
-    #         success (bool): Returns `True` if message sending was
-    #             successful, `False` otherwise.
-
-    #     """
-    #     senders = make_iter(senders) if senders else []
-    #     if isinstance(msgobj, str):
-    #         # given msgobj is a string - convert to msgobject (always TempMsg)
-    #         msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
-    #     # we store the logging setting for use in distribute_message()
-    #     msgobj.keep_log = keep_log if keep_log is not None else self.db.keep_log
-
-    #     # start the sending
-    #     msgobj = self.pre_send_message(msgobj)
-
-    #     if not msgobj:
-    #         return False
-    #     if sender_strings:
-    #         sender_strings = list(set(make_iter(sender_strings)))
-    #     msgobj = self.message_transform(
-    #         msgobj, emit=emit, sender_strings=sender_strings, external=external
-    #     )
-    #     self.distribute_message(msgobj, online=online)
-    #     self.post_send_message(msgobj)
-    #     return True
-
-    # def tempmsg(self, message, header=None, senders=None):
-    #     """
-    #     A wrapper for sending non-persistent messages.
-
-    #     Args:
-    #         message (str): Message to send.
-    #         header (str, optional): Header of message to send.
-    #         senders (Object or list, optional): Senders of message to send.
-
-    #     """
-    #     self.msg(message, senders=senders, header=header, keep_log=False)
-
-    # # hooks
-
-    # def channel_prefix(self, msg=None, emit=False, **kwargs):
-    #     """
-    #     Hook method. How the channel should prefix itself for users.
-
-    #     Args:
-    #         msg (str, optional): Prefix text
-    #         emit (bool, optional): Switches to emit mode, which usually
-    #             means to not prefix the channel's info.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Returns:
-    #         prefix (str): The created channel prefix.
-
-    #     """
-    #     return "" if emit else "[%s] " % self.key
-
-    # def format_senders(self, senders=None, **kwargs):
-    #     """
-    #     Hook method. Function used to format a list of sender names.
-
-    #     Args:
-    #         senders (list): Sender object names.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Returns:
-    #         formatted_list (str): The list of names formatted appropriately.
-
-    #     Notes:
-    #         This function exists separately so that external sources
-    #         can use it to format source names in the same manner as
-    #         normal object/account names.
-
-    #     """
-    #     if not senders:
-    #         return ""
-    #     return ", ".join(senders)
-
-    # def pose_transform(self, msgobj, sender_string, **kwargs):
-    #     """
-    #     Hook method. Detects if the sender is posing, and modifies the
-    #     message accordingly.
-
-    #     Args:
-    #         msgobj (Msg or TempMsg): The message to analyze for a pose.
-    #         sender_string (str): The name of the sender/poser.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Returns:
-    #         string (str): A message that combines the `sender_string`
-    #             component with `msg` in different ways depending on if a
-    #             pose was performed or not (this must be analyzed by the
-    #             hook).
-
-    #     """
-    #     pose = False
-    #     message = msgobj.message
-    #     message_start = message.lstrip()
-    #     if message_start.startswith((":", ";")):
-    #         pose = True
-    #         message = message[1:]
-    #         if not message.startswith((":", "'", ",")):
-    #             if not message.startswith(" "):
-    #                 message = " " + message
-    #     if pose:
-    #         return "%s%s" % (sender_string, message)
-    #     else:
-    #         return "%s: %s" % (sender_string, message)
-
-    # def format_external(self, msgobj, senders, emit=False, **kwargs):
-    #     """
-    #     Hook method. Used for formatting external messages. This is
-    #     needed as a separate operation because the senders of external
-    #     messages may not be in-game objects/accounts, and so cannot
-    #     have things like custom user preferences.
-
-    #     Args:
-    #         msgobj (Msg or TempMsg): The message to send.
-    #         senders (list): Strings, one per sender.
-    #         emit (bool, optional): A sender-agnostic message or not.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Returns:
-    #         transformed (str): A formatted string.
-
-    #     """
-    #     if emit or not senders:
-    #         return msgobj.message
-    #     senders = ", ".join(senders)
-    #     return self.pose_transform(msgobj, senders)
-
-    # def format_message(self, msgobj, emit=False, **kwargs):
-    #     """
-    #     Hook method. Formats a message body for display.
-
-    #     Args:
-    #         msgobj (Msg or TempMsg): The message object to send.
-    #         emit (bool, optional): The message is agnostic of senders.
-    #         **kwargs (dict): Arbitrary, optional arguments for users
-    #             overriding the call (unused by default).
-
-    #     Returns:
-    #         transformed (str): The formatted message.
-
-    #     """
-    #     # We don't want to count things like external sources as senders for
-    #     # the purpose of constructing the message string.
-    #     senders = [sender for sender in msgobj.senders if hasattr(sender, "key")]
-    #     if not senders:
-    #         emit = True
-    #     if emit:
-    #         return msgobj.message
-    #     else:
-    #         senders = [sender.key for sender in msgobj.senders]
-    #         senders = ", ".join(senders)
-    #         return self.pose_transform(msgobj, senders)
 
     def pre_join_channel(self, joiner, **kwargs):
         """
@@ -762,35 +479,6 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         Args:
             leaver (object): The leaving object.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        """
-        pass
-
-    def pre_send_message(self, msg, **kwargs):
-        """
-        Hook method.  Runs before a message is sent to the channel and
-        should return the message object, after any transformations.
-        If the message is to be discarded, return a false value.
-
-        Args:
-            msg (Msg or TempMsg): Message to send.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        Returns:
-            result (Msg, TempMsg or bool): If False, abort send.
-
-        """
-        return msg
-
-    def post_send_message(self, msg, **kwargs):
-        """
-        Hook method. Run after a message is sent to the channel.
-
-        Args:
-            msg (Msg or TempMsg): Message sent.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -961,3 +649,33 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     # Used by Django Sites/Admin
     get_absolute_url = web_get_detail_url
+
+    # TODO Evennia 1.0+ removed hooks. Remove in 1.1.
+    def message_transform(self, *args, **kwargs):
+        raise RuntimeError("Channel.message_transform is no longer used in 1.0+. "
+                           "Use Account/Object.at_pre_channel_msg instead.")
+
+    def distribute_message(self, msgobj, online=False, **kwargs):
+        raise RuntimeError("Channel.distribute_message is no longer used in 1.0+.")
+
+    def format_senders(self, senders=None, **kwargs):
+        raise RuntimeError("Channel.format_senders is no longer used in 1.0+. "
+                           "Use Account/Object.at_pre_channel_msg instead.")
+
+    def pose_transform(self, msgobj, sender_string, **kwargs):
+        raise RuntimeError("Channel.pose_transform is no longer used in 1.0+. "
+                           "Use Account/Object.at_pre_channel_msg instead.")
+
+    def format_external(self, msgobj, senders, emit=False, **kwargs):
+        raise RuntimeError("Channel.format_external is no longer used in 1.0+. "
+                           "Use Account/Object.at_pre_channel_msg instead.")
+
+    def format_message(self, msgobj, emit=False, **kwargs):
+        raise RuntimeError("Channel.format_message is no longer used in 1.0+. "
+                           "Use Account/Object.at_pre_channel_msg instead.")
+
+    def pre_send_message(self, msg, **kwargs):
+        raise RuntimeError("Channel.pre_send_message was renamed to Channel.at_pre_msg.")
+
+    def post_send_message(self, msg, **kwargs):
+        raise RuntimeError("Channel.post_send_message was renamed to Channel.at_post_msg.")

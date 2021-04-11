@@ -60,7 +60,7 @@ class ChannelCommand(_COMMAND_DEFAULT_CLASS):
 
     """
 
-    # ^note that channeldesc and lower_channelkey will be filled
+    # note that channeldesc and lower_channelkey will be filled
     # automatically by ChannelHandler
 
     # this flag is what identifies this cmd as a channel cmd
@@ -156,7 +156,8 @@ class ChannelCommand(_COMMAND_DEFAULT_CLASS):
             caller (TypedObject): A Character or Account who has entered an ambiguous command.
 
         Returns:
-            A string with identifying information to disambiguate the object, conventionally with a preceding space.
+            A string with identifying information to disambiguate the object,
+            conventionally with a preceding space.
         """
         return _(" (channel)")
 
