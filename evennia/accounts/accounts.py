@@ -945,6 +945,98 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             self, raw_string, callertype="account", session=session, **kwargs
         )
 
+    # channel receive hooks
+
+    def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        Called by `self.channel_msg` before sending a channel message to the
+        user. This allows for customizing messages per-user and also to abort
+        the receive on the receiver-level.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message.
+            **kwargs: These are additional keywords passed into `channel_msg`.
+                If `no_prefix=True` or `emit=True` are passed, the channel
+                prefix will not be added (`[channelname]: ` by default)
+
+        Returns:
+            str or None: Allows for customizing the message for this recipient.
+                If returning `None` (or `False`) message-receiving is aborted.
+                The returning string will be passed into `self.channel_msg`.
+
+        Notes:
+            This support posing/emotes by starting channel-send with : or ;.
+
+        """
+        if senders:
+            sender_string = ', '.join(sender.key for sender in senders)
+            message_lstrip = message.lstrip()
+            if message_lstrip.startswith((':', ';')):
+                # this is a pose, should show as e.g. "User1 smiles to channel"
+                spacing = "" if message_lstrip.startswith((':', '\'', ',')) else " "
+                message = f"{sender_string}{spacing}{message_lstrip[1:]}"
+            else:
+                # normal message
+                message = f"{sender_string}: {message}"
+
+        if not kwargs.get("no_prefix") or not kwargs.get("emit"):
+            message = channel.channel_prefix() + message
+
+        return message
+
+    def channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        This performs the actions of receiving a message to an un-muted
+        channel.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message or
+                similar.
+            **kwargs: These are additional keywords originally passed into
+                `Channel.msg`.
+
+        Notes:
+            Before this, `Channel.at_before_msg` will fire, which offers a way
+            to customize the message for the receiver on the channel-level.
+
+        """
+        # channel pre-msg hook
+        message = self.at_pre_channel_msg(message, channel, senders=senders, **kwargs)
+        if message in (None, False):
+            return
+
+        # the actual sending
+        self.msg(text=(message, {"from_channel": channel.id}),
+                 from_obj=senders, options={"from_channel": channel.id})
+
+        # channel post-msg hook
+        self.at_post_channel_msg(message, channel, senders=senders, **kwargs)
+
+    def at_post_channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        Called by `self.channel_msg` after message was received.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message.
+            **kwargs: These are additional keywords passed into `channel_msg`.
+
+        """
+        pass
+
+    # search method
+
     def search(
         self,
         searchdata,
