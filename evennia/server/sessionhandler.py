@@ -177,7 +177,7 @@ class SessionHandler(dict):
         global _FUNCPARSER
         if not _FUNCPARSER:
             from evennia.utils.funcparser import FuncParser
-            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULE, raise_errors=True)
+            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES, raise_errors=True)
 
         options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
