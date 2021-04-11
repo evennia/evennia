@@ -81,6 +81,7 @@ CMD_CHANNEL = "__send_to_channel_command"
 # (is expected to display the login screen)
 CMD_LOGINSTART = "__unloggedin_look_command"
 
+
 # Function for handling multiple command matches.
 _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 
