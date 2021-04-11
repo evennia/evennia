@@ -64,7 +64,7 @@ def check_errors(settings):
         "replaces and generalizes that which inlinefuncs used to do).")
     if hasattr(settings, "INLINEFUNC_ENABLED"):
         raise DeprecationWarning(depstring.format(
-            "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLE"))
+            "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED"))
     if hasattr(settings, "INLINEFUNC_STACK_MAXSIZE"):
         raise DeprecationWarning(depstring.format(
             "settings.INLINEFUNC_STACK_MAXSIZE", "FUNCPARSER_MAX_NESTING"))
