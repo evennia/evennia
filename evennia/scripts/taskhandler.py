@@ -19,8 +19,11 @@ class TaskHandler(object):
     A light singleton wrapper allowing to access permanent tasks.
 
     When `utils.delay` is called, the task handler is used to create
-    the task.  If `utils.delay`  is called with `persistent=True`, the
-    task handler stores the new task and saves.
+    the task.
+    If `utils.delay` is called with `persistent=True`. The
+    task handler creates the task. It saves the delay time, callback,
+    arguments and kwa to the database. Each of these variables are
+    serialized to do this.
 
     It's easier to access these tasks (should it be necessary) using
     `evennia.scripts.taskhandler.TASK_HANDLER`, which contains one
@@ -101,9 +104,27 @@ class TaskHandler(object):
             any (any): any additional positional arguments to send to the callback
 
         Keyword Args:
-            persistent (bool, optional): persist the task (store it).
+            persistent (bool, optional): persist the task (stores it).
+                Add will return the task's id for use with the global TASK_HANDLER.
             any (any): additional keyword arguments to send to the callback
 
+        Returns:
+            twisted.internet.defer.Deferred instance of the deferred task
+            task_id (int), the task's id intended for use with this class.
+
+        Notes:
+            This method has two return types.
+            An instance of twisted's Deferred class is standard.
+            If the persistent kwarg is truthy instead a task ID will be returned.
+            This task id can be used with task handler's do_task and remove methods.
+
+            If the persistent kwarg is truthy:
+            The callback, args and values for kwarg will be serialized. Type
+            and attribute errors during the serialization will be logged,
+            but will not throw exceptions.
+            Do not use memory references in the callback function or arguments.
+            As those memory references will no longer acurately point to
+            the variable desired.
         """
         persistent = kwargs.get("persistent", False)
         if persistent:

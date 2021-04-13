@@ -6,13 +6,15 @@ TODO: Not nearly all utilities are covered yet.
 """
 
 import os.path
-
 import mock
+
 from django.test import TestCase
 from datetime import datetime
+from twisted.internet import task, reactor
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
+from evennia.utils.test_resources import EvenniaTest
 
 
 class TestIsIter(TestCase):
@@ -292,3 +294,41 @@ class LatinifyTest(TestCase):
         byte_str = utils.to_bytes(self.example_str)
         result = utils.latinify(byte_str)
         self.assertEqual(result, self.expected_output)
+
+
+_TASK_HANDLER = None
+
+
+def dummy_func(obj):
+    """
+    Used in TestDelay.
+
+    A function that:
+        can be serialized
+        uses no memory references
+        uses evennia objects
+    """
+    # get a reference of object
+    from evennia.objects.models import ObjectDB
+    obj = ObjectDB.objects.object_search(obj)
+    obj = obj[0]
+    # make changes to object
+    obj.ndb.dummy_var = 'dummy_func ran'
+
+
+class TestDelay(EvenniaTest):
+    """
+    Test utils.delay.
+    """
+
+    def test_delay(self):
+        # get a reference of TASK_HANDLER
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        self.char1.ndb.dummy_var = False
+        # test a persistent deferral
+        task_id = utils.delay(1, dummy_func, self.char1.dbref, persistent=True)
+        _TASK_HANDLER.do_task(task_id)  # run the deferred task
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
