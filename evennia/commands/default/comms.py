@@ -16,6 +16,7 @@ from evennia.accounts import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.locks.lockhandler import LockException
 from evennia.utils import create, logger, utils, evtable
+from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import make_iter, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -25,6 +26,7 @@ CHANNEL_DEFAULT_TYPECLASS = class_from_module(
 
 # limit symbol import for API
 __all__ = (
+    "CmdChannel",
     "CmdAddCom",
     "CmdDelCom",
     "CmdAllCom",
@@ -44,31 +46,386 @@ __all__ = (
 )
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
+# helper functions to make it easier to override the main CmdChannel
+# command and to keep the legacy addcom etc commands around.
 
-def find_channel(caller, channelname, silent=False, noaliases=False):
+def search_channel(caller, channelname, exact=False):
     """
-    Helper function for searching for a single channel with
-    some error handling.
+    Helper function for searching for a single channel with some error
+    handling.
+
+    Args:
+        channelname (str): Name, alias #dbref or partial name/alias to search
+            for.
+        exact (bool, optional): If an exact or fuzzy-match of the name should be done.
+            Note that even for a fuzzy match, an exactly given, unique channel name
+            will always be returned.
+    Returns:
+        list: A list of zero, one or more channels found.
+
+    Notes:
+        No permission checks will be done here.
+
     """
-    channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname)
+    # first see if this is a personal alias
+    channelname = caller.nicks.get(key=channelname, category="channel") or channelname
+
+    # always try the exact match first.
+    channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname, exact=True)
+
+    if not channels and not exact:
+        # try fuzzy matching as well
+        channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname, exact=exact)
+
+
+    # check permissions
+    channels = [channel for channel in channels
+                if channel.access(caller, 'listen') or channel.access(caller, 'control')]
+
     if not channels:
-        if not noaliases:
-            channels = [
-                chan
-                for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
-                if channelname in chan.aliases.all()
-            ]
-        if channels:
-            return channels[0]
-        if not silent:
-            caller.msg("Channel '%s' not found." % channelname)
-        return None
+        return []
     elif len(channels) > 1:
-        matches = ", ".join(["%s(%s)" % (chan.key, chan.id) for chan in channels])
-        if not silent:
-            caller.msg("Multiple channels match (be more specific): \n%s" % matches)
-        return None
-    return channels[0]
+        return list(channels)
+    return [channels[0]]
+
+
+def msg_channel(caller, channel, message, **kwargs):
+    """
+    Send a message to a given channel. At this point
+    any permissions should already be done.
+
+    Args:
+        caller (Object or Account): The entity sending the message.
+        channel (Channel): The channel to send to.
+        message (str): The message to send.
+        **kwargs: Unused by default. These kwargs will be passed into
+            all channel messaging hooks for custom overriding.
+
+    """
+    channel.msg(message, senders=caller, **kwargs)
+
+
+def get_channel_history(caller, channel, start_index=0):
+    """
+    View a channel's history.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to access.
+        message (str): The message to send.
+        **kwargs: Unused by default. These kwargs will be passed into
+            all channel messaging hooks for custom overriding.
+
+    """
+    log_file = channel.attributes.get(
+        "log_file", default=channel.log_file.format(channelkey=channel.key))
+
+    def send_msg(lines):
+        return caller.msg(
+            "".join(line.split("[-]", 1)[1] if "[-]" in line else line for line in lines)
+        )
+    # asynchronously tail the log file
+    tail_log_file(log_file, start_index, 20, callback=send_msg)
+
+def sub_to_channel(caller, channel):
+    """
+    Subscribe to a channel. Note that all permissions should
+    be checked before this step.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to access.
+
+    Returns:
+        bool, str: True, None if connection failed. If False,
+            the second part is an error string.
+
+    """
+    if channel.has_connection(caller):
+        return False, f"Already listening to channel {channel.key}."
+    result = channel.connect(caller)
+    return result, "" if result else f"Were not allowed to subscribe to channel {channel.key}"
+
+
+def unsub_to_channel(caller, channel):
+    """
+    Un-Subscribe to a channel. Note that all permissions should
+    be checked before this step.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to unsub from.
+
+    Returns:
+        bool, str: True, None if un-connection succeeded. If False,
+            the second part is an error string.
+
+    """
+    if not channel.has_connection(caller):
+        return False, f"Not listening to channel {channel.key}."
+    # clear nicks
+    chkey = channel.key
+    for nick in [
+        nick
+        for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+        if nick and nick.pk and nick.value[3].lower() == chkey
+    ]:
+        nick.delete()
+    result = channel.disconnect(caller)
+    return result, "" if result else f"Could not unsubscribe from channel {channel.key}"
+
+
+def add_alias(caller, channel, alias):
+    """
+    Add a new alias for the user to use with this channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to alias.
+        alias (str): The personal alias to use for this channel.
+
+    """
+    caller.nicks.add(alias, channel.key, category="channel")
+
+
+def remove_alias(caller, alias):
+    """
+    Remove an alias from a given channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        alias (str, optional): The alias to remove, or `None` for all.
+
+    Returns:
+        bool, str: True, None if removal succeeded. If False,
+            the second part is an error string.
+
+    """
+    channame = caller.nicks.get(key=alias, category="channel")
+    if channame:
+        caller.nicks.remove(key=alias, category="channel")
+        return True, ""
+    return False, "No such alias was defined."
+
+
+def mute_channel(caller, channel):
+    """
+    Temporarily mute a channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to alias.
+
+    Returns:
+        bool, str: True, None if muting successful. If False,
+            the second part is an error string.
+    """
+    if channel.mute(caller):
+        return True, ""
+    return False, f"Channel {channel.key} was already muted."
+
+
+def unmute_channel(caller, channel):
+    """
+    Unmute a channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to alias.
+
+    Returns:
+        bool, str: True, None if unmuting successful. If False,
+            the second part is an error string.
+
+    """
+    if channel.unmute(caller):
+        return True, ""
+    return False, f"Channel {channel.key} was already unmuted."
+
+
+def create_channel(caller, name, description, aliases=None):
+    """
+    Create a new channel. Its name must not previously exist
+    (users can alias as needed). Will also connect to the
+    new channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        name (str): The new channel name/key.
+        description (str): This is used in listings.
+        aliases (list): A list of strings - alternative aliases for the channel
+            (not to be confused with per-user aliases; these are available for
+            everyone).
+
+    Returns:
+        channel, str: new_channel, "" if creation successful. If False,
+            the second part is an error string.
+
+    """
+    if CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(name, exact=True):
+        return False, f"Channel {name} already exists."
+    # set up the new channel
+    lockstring = "send:all();listen:all();control:id(%s)" % caller.id
+    new_chan = create.create_channel(name, aliases=aliases,desc=description, locks=lockstring)
+    new_chan.connect(caller)
+    return new_chan, ""
+
+def destroy_channel(caller, channel, message=None):
+    """
+    Destroy an existing channel. Access should be checked before
+    calling this function.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to alias.
+        message (str, optional): Final message to send onto the channel
+            before destroying it. If not given, a default message is
+            used. Set to the empty string for no message.
+
+    """
+    channel_key = channel.key
+    if message is None:
+        message = (f"|rChannel {channel_key} is being destroyed. "
+                   "Make sure to clean any channel aliases.|n")
+    if message:
+        channel.msg(message, senders=caller, bypass_mute=True)
+    channel.delete()
+    logger.log_sec(
+        "Channel {} was deleted by {}".format(channel_key, caller)
+    )
+
+
+def set_lock(caller, channel, lockstring):
+    """
+    Set a lockstring on a channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to operate on.
+        lockstring (str): A lockstring on the form 'type:lockfunc();...'
+
+    Returns:
+        bool, str: True, None if setting lock was successful. If False,
+            the second part is an error string.
+
+    """
+    try:
+        channel.locks.add(lockstring)
+    except LockException as err:
+        return False, err
+    return True, ""
+
+
+def set_desc(caller, channel, description):
+    """
+    Set a channel description. This is shown in listings etc.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to operate on.
+        description (str): A short description of the channel.
+
+    Returns:
+        bool, str: True, None if setting lock was successful. If False,
+            the second part is an error string.
+
+    """
+    channel.db.desc = description
+
+def boot_user(caller, channel, target, quiet=False, reason=""):
+    """
+    Boot a user from a channel, with optional reason. This will
+    also remove all their aliases for this channel.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to operate on.
+        target (Object or Account): The entity to boot.
+        quiet (bool, optional): Whether or not to announce to channel.
+        reason (str, optional): A reason for the boot.
+
+    Returns:
+        bool, str: True, None if setting lock was successful. If False,
+            the second part is an error string.
+
+    """
+    if not channel.subscriptions.has(target):
+        return False, f"{target} is not connected to channel {channel.key}."
+    # find all of target's nicks linked to this channel and delete them
+    for nick in [
+        nick
+        for nick in target.nicks.get(category="channel") or []
+        if nick.value[3].lower() == channel.key
+    ]:
+        nick.delete()
+    channel.disconnect(target)
+    reason = f" Reason: {reason}" if reason else ""
+    target.msg(f"You were booted from channel {channel.key} by {caller.key}.{reason}")
+    if not quiet:
+        channel.msg(f"{target.key} was booted from channel by {caller.key}.{reason}")
+
+    logger.log_sec(f"Channel Boot: {target} (Channel: {channel}, "
+                   f"Reason: {reason}, Caller: {caller}")
+
+
+def ban_user(caller, channel, target, quiet=False, reason=""):
+    """
+    Ban a user from a channel, by locking them out. This will also
+    boot them, if they are currently connected.
+
+    Args:
+        caller (Object or Account): The entity performing the action.
+        channel (Channel): The channel to operate on.
+        target (Object or Account): The entity to ban
+        quiet (bool, optional): Whether or not to announce to channel.
+        reason (str, optional): A reason for the ban
+
+    """
+    result, err = boot_user(caller, channel, target, quiet=quiet, reason=reason)
+
+
+
+
+class CmdChannel(COMMAND_DEFAULT_CLASS):
+    """
+    Talk on and manage in-game channels.
+
+    Usage:
+        channel channelname [= <msg>]
+        channel/history channelname [= index]
+        channel/sub channelname [= alias]
+        channel/unsub channelname[,channelname, ...]
+        channel/alias channelname = alias
+        channel/unalias channelname = alias
+        channel/mute channelname[,channelname,...]
+        channel/unmute channelname[,channelname,...]
+        channel/create channelname [= description]
+        channel/destroy channelname [: reason]
+        channel/lock channelname = lockstring
+        channel/desc channelname = description
+        channel/boot[/quiet] channelname = subscribername [: reason]
+        channel/who channelname
+        channel/list
+        channels
+
+    This handles all operations on channels.
+
+    """
+    key = "channel"
+    aliases = ["chan", "channels"]
+    locks = "cmd: not pperm(channel_banned)"
+    switch_options = (
+        "history", "sub", "unsub", "mute", "alias", "unalias", "create",
+        "destroy", "desc", "boot", "who")
+
+    def parse(self):
+        super().parse()
+        self.channelnames = self.lhslist
+
+    def func(self):
+        pass
+
+
 
 
 class CmdAddCom(COMMAND_DEFAULT_CLASS):
