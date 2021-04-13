@@ -125,6 +125,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         return self.db.mute_list or []
 
     @property
+    def banlist(self):
+        return self.db.ban_list or []
+
+    @property
     def wholist(self):
         subs = self.subscriptions.all()
         muted = list(self.mutelist)
@@ -152,6 +156,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Returns:
+            bool: True if muting was successful, False if we were already
+                muted.
+
         """
         mutelist = self.mutelist
         if subscriber not in mutelist:
@@ -162,7 +170,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     def unmute(self, subscriber, **kwargs):
         """
-        Removes an entity to the list of muted subscribers.  A muted subscriber
+        Removes an entity from the list of muted subscribers.  A muted subscriber
         will no longer see channel messages, but may use channel commands.
 
         Args:
@@ -170,11 +178,57 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Returns:
+            bool: True if unmuting was successful, False if we were already
+                unmuted.
+
         """
         mutelist = self.mutelist
         if subscriber in mutelist:
             mutelist.remove(subscriber)
-            self.db.mute_list = mutelist
+            return True
+        return False
+
+    def ban(self, target, **kwargs):
+        """
+        Ban a given user from connecting to the channel. This will not stop
+        users already connected, so the user must be booted for this to take
+        effect.
+
+        Args:
+            target (Object or Account): The entity to unmute. This need not
+                be a subscriber.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: True if banning was successful, False if target was already
+                banned.
+        """
+        banlist = self.banlist
+        if target not in banlist:
+            banlist.append(target)
+            return True
+        return False
+
+    def unban(self, target, **kwargs):
+        """
+        Un-Ban a given user. This will not reconnect them - they will still
+        have to reconnect and set up aliases anew.
+
+        Args:
+            target (Object or Account): The entity to unmute. This need not
+                be a subscriber.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: True if unbanning was successful, False if target was not
+                previously banned.
+        """
+        banlist = self.banlist
+        if target not in banlist:
+            banlist.append(target)
             return True
         return False
 
