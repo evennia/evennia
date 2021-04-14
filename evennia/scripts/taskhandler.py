@@ -29,11 +29,17 @@ class TaskHandler(object):
     `evennia.scripts.taskhandler.TASK_HANDLER`, which contains one
     instance of this class, and use its `add` and `remove` methods.
 
+    Dev notes:
+    deferLater creates an instance of IDelayedCall using reactor.callLater.
+    deferLater uses the cancel method on the IDelayedCall instance to create
+    the defer instance it returns.
+
     """
 
     def __init__(self):
         self.tasks = {}
         self.to_save = {}
+        self.clock = reactor
 
     def load(self):
         """Load from the ServerConfig.
@@ -170,10 +176,10 @@ class TaskHandler(object):
             callback = self.do_task
             args = [task_id]
             kwargs = {}
-            deferLater(reactor, timedelay, callback, *args, **kwargs)
+            deferLater(self.clock, timedelay, callback, *args, **kwargs)
             return task_id
 
-        return deferLater(reactor, timedelay, callback, *args, **kwargs)
+        return deferLater(self.clock, timedelay, callback, *args, **kwargs)
 
     def remove(self, task_id):
         """Remove a persistent task without executing it.
@@ -219,7 +225,7 @@ class TaskHandler(object):
         now = datetime.now()
         for task_id, (date, callbac, args, kwargs) in self.tasks.items():
             seconds = max(0, (date - now).total_seconds())
-            deferLater(reactor, seconds, self.do_task, task_id)
+            deferLater(self.clock, seconds, self.do_task, task_id)
 
 
 # Create the soft singleton

@@ -326,9 +326,15 @@ class TestDelay(EvenniaTest):
         global _TASK_HANDLER
         if _TASK_HANDLER is None:
             from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        _TASK_HANDLER.clock = task.Clock()
         self.char1.ndb.dummy_var = False
-        # test a persistent deferral
+        # test a persistent deferral, that completes after delay time
         task_id = utils.delay(1, dummy_func, self.char1.dbref, persistent=True)
-        _TASK_HANDLER.do_task(task_id)  # run the deferred task
+        _TASK_HANDLER.clock.advance(1)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
+        # test a non persisten deferral, that completes after delay time.
+        deferal_inst = utils.delay(1, dummy_func, self.char1.dbref)
+        _TASK_HANDLER.clock.advance(1)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
