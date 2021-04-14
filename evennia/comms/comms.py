@@ -248,7 +248,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         # check access
-        if not self.access(subscriber, "listen"):
+        if subscriber in self.banlist or not self.access(subscriber, "listen"):
             return False
         # pre-join hook
         connect = self.pre_join_channel(subscriber)
