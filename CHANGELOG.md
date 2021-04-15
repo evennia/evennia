@@ -45,6 +45,8 @@
 - Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This 
   is useful for implementing actor-stance emoting for sending a string to different targets.
 - New version of Italian translation (rpolve)
+- `utils.evmenu.ask_yes_no` is a helper function that makes it easy to ask a yes/no question
+  to the user and respond to their input. This complements the existing `get_input` helper.
 
 ### Evennia 0.9.5 (2019-2020)
 
