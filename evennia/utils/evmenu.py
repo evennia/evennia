@@ -1554,7 +1554,7 @@ class InputCmdSet(CmdSet):
         self.add(CmdGetInput())
 
 
-class _Prompt(object):
+class _Prompt:
     """Dummy holder"""
 
     pass
@@ -1618,6 +1618,174 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     caller.ndb._getinput._args = args
     caller.ndb._getinput._kwargs = kwargs
     caller.cmdset.add(InputCmdSet)
+    caller.msg(prompt, session=session)
+
+
+class CmdYesNoQuestion(Command):
+    """
+    Handle a prompt for yes or no. Press [return] for the default choice.
+
+    """
+
+    key = _CMD_NOINPUT
+    aliases = [_CMD_NOMATCH, "yes", "no", 'y', 'n', 'a', 'abort']
+    arg_regex = r"^$"
+
+    def _clean(self):
+        del self.caller.ndb._yes_no_question
+        self.caller.cmdset.remove(YesNoQuestionCmdSet)
+
+
+    def func(self):
+        """This is called when user enters anything."""
+        caller = self.caller
+        try:
+            yes_no_question = caller.ndb._yes_no_question
+            if not yes_no_question and hasattr(caller, "account"):
+                yes_no_question = caller.account.ndb._yes_no_question
+                caller = caller.account
+
+            inp = self.cmdname
+
+            if inp == _CMD_NOINPUT:
+                raw = self.raw_cmdname.strip()
+                if not raw:
+                    # use default
+                    inp = yes_no_question.default
+                else:
+                    inp = raw
+
+            if inp in ('a', 'abort') and yes_no_question.allow_abort:
+                caller.msg("Aborted.")
+                self._clean()
+                return
+
+            caller.ndb._yes_no_question.session = self.session
+
+            args = yes_no_question.args
+            kwargs = yes_no_question.kwargs
+            kwargs['caller_session'] = self.session
+
+            ok = False
+            if inp in ('yes', 'y'):
+                yes_no_question.yes_callable(caller, *args, **kwargs)
+            elif inp in ('no', 'n'):
+                yes_no_question.no_callable(caller, *args, **kwargs)
+            else:
+                # invalid input. Resend prompt without cleaning
+                caller.msg(yes_no_question.prompt, session=self.session)
+                return
+
+            # cleanup
+            self._clean()
+        except Exception:
+            # make sure to clean up cmdset if something goes wrong
+            caller.msg("|rError in ask_yes_no. Choice not confirmed (report to admin)|n")
+            logger.log_trace("Error in ask_yes_no")
+            self._clean()
+
+
+class YesNoQuestionCmdSet(CmdSet):
+    """
+    This stores the input command
+    """
+
+    key = "yes_no_question_cmdset"
+    priority = 1
+    mergetype = "Replace"
+    no_objs = True
+    no_exits = True
+    no_channels = False
+
+    def at_cmdset_creation(self):
+        """called once at creation"""
+        self.add(CmdYesNoQuestion())
+
+
+def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
+               allow_abort=False, session=None, *args, **kwargs):
+    """
+    A helper question for asking a simple yes/no question. This will cause
+    the system to pause and wait for input from the player.
+
+    Args:
+        prompt (str): The yes/no question to ask. This takes an optional formatting
+            marker `{suffix}` which will be filled with 'Y/N', [Y]/N or Y/[N]
+            depending on the setting of `default`. If `allow_abort`, then the
+            `A(bort)` will also be available.
+        yes_action (callable or str): If a callable, this will be called
+            with `(caller, *args, **kwargs) when the yes-choice is made.
+            If a string, this string will be echoed back to the caller.
+        no_action (callable or str): If a callable, this will be called
+            with `(caller, *args, **kwargs)` when the no-choice is made.
+            If a string, this string will be echoed back to the caller.
+        default (str optional): One of "N", "Y", "A" or None for no default.
+            If "A" is given, `allow_abort` is assumed set. The user can choose
+            the default option just by pressing return.
+        allow_abort (bool, optional): If set, the Q(uit) option is available,
+            which is neither yes or no.
+        session (Session, optional): This allows to specify the
+            session to send the prompt to. It's usually only needed if `caller`
+            is an Account in multisession modes greater than 2. The session is
+            then updated by the command and is available (for example in
+            callbacks) through `caller.ndb._yes_no_question.session`.
+        *args, **kwargs: These are passed into the callables, if any.
+
+    Raises:
+        RuntimeError: If default and allow_abort clashes.
+
+    Example:
+
+        ask_yes_no(caller, "Are you happy {suffix}?",
+                   "you answered yes", "you answered no")
+        ask_yes_no(caller, "Are you sad {suffix}?",
+                   _callable_yes, _callable_no, allow_abort=True)
+
+    """
+    def _callable_yes_txt(caller, *args, **kwargs):
+        yes_txt = kwargs['yes_txt']
+        session = kwargs['caller_session']
+        caller.msg(yes_txt, session=session)
+
+    def _callable_no_txt(caller, *args, **kwargs):
+        no_txt = kwargs['no_txt']
+        session = kwargs['caller_session']
+        caller.msg(no_txt, session=session)
+
+    if not callable(yes_action):
+        kwargs['yes_txt'] = str(yes_action)
+        yes_action = _callable_yes_txt
+
+    if not callable(no_action):
+        kwargs['no_txt'] = str(no_action)
+        no_action = _callable_no_txt
+
+    # prepare the prompt with suffix
+    suffix = "Y/N"
+    abort_txt = "/Abort" if allow_abort else ""
+    if default:
+        default = default.lower()
+        if default == "y":
+            suffix = "[Y]/N"
+        elif default == "n":
+            suffix = "Y/[N]"
+        elif default == "a":
+            allow_abort = True
+            abort_txt = "/[A]bort"
+    suffix += abort_txt
+    prompt = prompt.format(suffix=suffix)
+
+    caller.ndb._yes_no_question = _Prompt()
+    caller.ndb._yes_no_question.session = session
+    caller.ndb._yes_no_question.prompt = prompt
+    caller.ndb._yes_no_question.default = default
+    caller.ndb._yes_no_question.allow_abort = allow_abort
+    caller.ndb._yes_no_question.yes_callable = yes_action
+    caller.ndb._yes_no_question.no_callable = no_action
+    caller.ndb._yes_no_question.args = args
+    caller.ndb._yes_no_question.kwargs = kwargs
+
+    caller.cmdset.add(YesNoQuestionCmdSet)
     caller.msg(prompt, session=session)
 
 
