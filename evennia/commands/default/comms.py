@@ -7,18 +7,17 @@ make sure to homogenize self.caller to always be the account object
 for easy handling.
 
 """
-import hashlib
-import time
 from django.conf import settings
-from evennia.comms.models import ChannelDB, Msg
+from evennia.comms.models import Msg
 from evennia.accounts.models import AccountDB
 from evennia.accounts import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.locks.lockhandler import LockException
-from evennia.utils import create, logger, utils, evtable
+from evennia.utils import create, logger, utils
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import make_iter, class_from_module
 from evennia.utils import evmore
+from evennia.utils.evmenu import ask_yes_no
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 CHANNEL_DEFAULT_TYPECLASS = class_from_module(
@@ -68,7 +67,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         channel/mute channelname[,channelname,...]
         channel/unmute channelname[,channelname,...]
         channel/create channelname;alias;alias:typeclass [= description]
-        channel/destroy channelname [: reason]
+        channel/destroy channelname [= reason]
         channel/lock channelname = lockstring
         channel/desc channelname = description
         channel/boot[/quiet] channelname = subscribername [: reason]
@@ -291,13 +290,19 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         caller = self.caller
         if typeclass:
-           pass
+            typeclass = class_from_module(typeclass)
+        else:
+            typeclass = CHANNEL_DEFAULT_TYPECLASS
 
-        if CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(name, exact=True):
+        if typeclass.objects.channel_search(name, exact=True):
             return False, f"Channel {name} already exists."
+
         # set up the new channel
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
-        new_chan = create.create_channel(name, aliases=aliases,desc=description, locks=lockstring)
+
+        new_chan = create.create_channel(
+            name, aliases=aliases,desc=description, locks=lockstring,
+            typeclass=typeclass)
         new_chan.connect(caller)
         return new_chan, ""
 
@@ -317,9 +322,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         caller = self.caller
-
-        # set up the new channel
-        lockstring = "send:all();listen:all();control:id(%s)" % caller.id
 
         channel_key = channel.key
         if message is None:
@@ -615,8 +617,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             typeclass = typeclass[0] if typeclass else None
             name, *aliases = name.rsplit(";")
             description = self.rhs or ""
-            self.create_channel(name, description, typeclass=typeclass, aliases=aliases)
-
+            chan, err = self.create_channel(name, description, typeclass=typeclass, aliases=aliases)
+            if chan:
+                self.msg(f"Created (and joined) new channel '{chan.key}'.")
+            else:
+                self.msg(err)
+            return
 
         channels = []
         for channel_name in channel_names:
@@ -720,9 +726,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(err)
             return
 
+        if 'destroy' in switches or 'delete' in switches:
+            # destroy a channel we control
+            reason = self.rhs or None
 
-            new_chan, err = self.create_channel()
+            if not channel.access(caller, "control"):
+                self.msg("You can only delete channels you control.")
+                return
 
+            def _perform_delete(caller, prompt, result):
+                self.destroy_channel(channel, message=reason)
 
 
 class CmdAddCom(COMMAND_DEFAULT_CLASS):
