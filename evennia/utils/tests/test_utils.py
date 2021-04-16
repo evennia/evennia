@@ -10,7 +10,7 @@ import mock
 
 from django.test import TestCase
 from datetime import datetime
-from twisted.internet import task, reactor
+from twisted.internet import task
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
@@ -337,4 +337,10 @@ class TestDelay(EvenniaTest):
         deferal_inst = utils.delay(1, dummy_func, self.char1.dbref)
         _TASK_HANDLER.clock.advance(1)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
+        # test canceling a deferral.
+        deferal_inst = utils.delay(1, dummy_func, self.char1.dbref)
+        deferal_inst.cancel()
+        _TASK_HANDLER.clock.advance(1)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, False)
         self.char1.ndb.dummy_var = False

@@ -6,11 +6,23 @@ from datetime import datetime, timedelta
 
 from twisted.internet import reactor
 from twisted.internet.task import deferLater
+from twisted.internet.defer import CancelledError as DefCancelledError
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize
 
 TASK_HANDLER = None
+
+
+def handle_error(*args, **kwargs):
+    """
+    Handle errors withing deferred objects.
+    """
+    for arg in args:
+        # suppress cancel errors
+        if arg.type == DefCancelledError:
+            continue
+        raise arg
 
 
 class TaskHandler(object):
@@ -179,7 +191,9 @@ class TaskHandler(object):
             deferLater(self.clock, timedelay, callback, *args, **kwargs)
             return task_id
 
-        return deferLater(self.clock, timedelay, callback, *args, **kwargs)
+        d = deferLater(self.clock, timedelay, callback, *args, **kwargs)
+        d.addErrback(handle_error)
+        return d
 
     def remove(self, task_id):
         """Remove a persistent task without executing it.
