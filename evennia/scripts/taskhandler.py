@@ -212,22 +212,35 @@ class TaskHandler(object):
         return task_id
 
     def remove(self, task_id):
-        """Remove a persistent task without executing it.
+        """
+        Remove a task without executing it.
+        Deletes the instance of the task's deferral.
 
         Args:
             task_id (int): an existing task ID.
 
-        Note:
-            A non-persistent task doesn't have a task_id, it is not stored
-            in the TaskHandler.
+        Returns:
+            True (bool), if the removal completed successfully.
+            None, if there was a raise error
 
         """
+        d = None
+        # delete the task from the tasks dictionary
         if task_id in self.tasks:
-            del self.tasks[task_id]
+            # if the task has not been run, cancel it
+            d = self.get_deferred(task_id)
+            if d:  # it is remotely possible for a task to not have a deferral
+                if not d.called:
+                    d.cancel()
+            del self.tasks[task_id]  # delete the task from the tasks dictionary
+        # remove the task from the persistent dictionary and ServerConfig
         if task_id in self.to_save:
             del self.to_save[task_id]
-
-        self.save()
+            self.save()  # remove from ServerConfig.objects
+        # delete the instance of the deferral
+        if d:
+            del d
+        return True
 
     def do_task(self, task_id):
         """Execute the task (call its callback).
