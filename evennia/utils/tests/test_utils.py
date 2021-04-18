@@ -351,3 +351,17 @@ class TestDelay(EvenniaTest):
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
         self.char1.ndb.dummy_var = False
+        # test removing an active task
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        success = _TASK_HANDLER.remove(task_id)
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        self.char1.ndb.dummy_var = False
+        # test removing a canceled active task
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        deferal_inst = _TASK_HANDLER.get_deferred(task_id)
+        deferal_inst.cancel()
+        success = _TASK_HANDLER.remove(task_id)
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        self.char1.ndb.dummy_var = False
