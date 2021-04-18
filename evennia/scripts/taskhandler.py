@@ -230,6 +230,32 @@ class TaskHandler(object):
         else:
             return False
 
+    def active(self, task_id):
+        """
+        Check if a task is active (has not been called yet).
+
+        Args:
+            task_id (int): an existing task ID.
+
+        Returns:
+            True (bool): If a task is active (has not been called yet).
+            False (bool): if the task
+                is not active (has already been called),
+                does not exist
+        """
+        if task_id in self.tasks:
+            # if the task has not been run, cancel it
+            d = self.get_deferred(task_id)
+            if d:  # it is remotely possible for a task to not have a deferral
+                if d.called:
+                    return False
+                else:  # the callback has not been called yet.
+                    return True
+            else:  # this task has no deferral, and could not have been called
+                return True
+        else:
+            return False
+
 
     def cancel(self, task_id):
         """
