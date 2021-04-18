@@ -323,24 +323,31 @@ class TestDelay(EvenniaTest):
 
     def test_delay(self):
         # get a reference of TASK_HANDLER
+        timedelay = 5
         global _TASK_HANDLER
         if _TASK_HANDLER is None:
             from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
         _TASK_HANDLER.clock = task.Clock()
         self.char1.ndb.dummy_var = False
         # test a persistent deferral, that completes after delay time
-        task_id = utils.delay(1, dummy_func, self.char1.dbref, persistent=True)
-        _TASK_HANDLER.clock.advance(1)  # make time pass
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a non persisten deferral, that completes after delay time.
-        deferal_inst = utils.delay(1, dummy_func, self.char1.dbref)
-        _TASK_HANDLER.clock.advance(1)  # make time pass
+        utils.delay(timedelay, dummy_func, self.char1.dbref)
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
+        # test a non persisten deferral, with a short timedelay
+        utils.delay(.1, dummy_func, self.char1.dbref)
+        _TASK_HANDLER.clock.advance(.1)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test canceling a deferral.
-        deferal_inst = utils.delay(1, dummy_func, self.char1.dbref)
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        deferal_inst = _TASK_HANDLER.get_deferred(task_id)
         deferal_inst.cancel()
-        _TASK_HANDLER.clock.advance(1)  # make time pass
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
         self.char1.ndb.dummy_var = False

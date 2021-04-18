@@ -31,6 +31,7 @@ from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
 from evennia.utils.utils import to_bytes
+from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
@@ -127,8 +128,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         from evennia.utils.utils import delay
 
-        # timeout the handshakes in case the client doesn't reply at all
-        self._handshake_delay = delay(2, callback=self.handshake_done, timeout=True)
+        task_id = delay(2, callback=self.handshake_done, timeout=True)
+        self._handshake_delay = _TASK_HANDLER.get_deferred(task_id)
 
         # TCP/IP keepalive watches for dead links
         self.transport.setTcpKeepAlive(1)
