@@ -256,7 +256,6 @@ class TaskHandler(object):
         else:
             return False
 
-
     def cancel(self, task_id):
         """
         Stop a task from automatically executing.
@@ -298,7 +297,7 @@ class TaskHandler(object):
         Returns:
             True (bool): if the removal completed successfully or if the a
             task with the id does not exist.
-            None, if there was a raised exception
+            None: if there was a raised exception
 
         """
         d = None
@@ -317,22 +316,41 @@ class TaskHandler(object):
         return True
 
     def do_task(self, task_id):
-        """Execute the task (call its callback).
+        """
+        Execute the task (call its callback).
+        If calling before timedelay cancel the deferral affliated to this task.
+        Remove the task from the dictionary of current tasks on a successful
+        callback.
 
         Args:
             task_id (int): a valid task ID.
 
+        Returns:
+            False (bool): if the:
+                task no longer exists,
+                has no affliated instance of deferral
+            The return of the callback passed on task creation.
+                This makes it possible for the callback to also return False
+            None: if there was a raised exception
+
         Note:
-            This will also remove it from the list of current tasks.
+            On a successful call the task will be removed from the dictionary
+            of current tasks.
 
         """
-        date, callback, args, kwargs, persistent, d = self.tasks.pop(task_id)
-
-        if task_id in self.to_save:
-            del self.to_save[task_id]
-
-        self.save()
-        callback(*args, **kwargs)
+        callback_return = False
+        if task_id in self.tasks:
+            date, callback, args, kwargs, persistent, d = self.tasks.get(task_id)
+        else:  # the task does not exist
+            return False
+        if d:  # it is remotely possible for a task to not have a deferral
+            if not d.called:  # the task has not been called yet
+                d.cancel()  # cancel the automated callback
+        else:  # this task has no deferral, and should not be called
+            return False
+        callback_return = callback(*args, **kwargs)
+        self.remove(task_id)
+        return callback_return
 
     def get_deferred(self, task_id):
         """
