@@ -331,71 +331,87 @@ class TestDelay(EvenniaTest):
         _TASK_HANDLER.clock = task.Clock()
         self.char1.ndb.dummy_var = False
         # test a persistent deferral, that completes after delay time
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        self.assertTrue(_TASK_HANDLER.active(t.get_id()))  # test Task.get_id
+        self.assertTrue(t.active())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertTrue(t.called)  # test Task.called property
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a persistent deferral, that completes on a manual call
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
-        result = _TASK_HANDLER.do_task(task_id)
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        self.assertTrue(t.active())
+        result = t.do_task()
         self.assertTrue(result)
-        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        self.assertFalse(t.exists())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass, important keep
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a non persisten deferral, that completes after delay time.
-        utils.delay(timedelay, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a non-persistent deferral, that completes on a manual call
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
-        result = _TASK_HANDLER.do_task(task_id)
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
+        result = t.do_task()
         self.assertTrue(result)
-        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        self.assertFalse(t.exists())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass, important keep
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a non persisten deferral, with a short timedelay
-        utils.delay(.1, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
+        t = utils.delay(.1, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
         _TASK_HANDLER.clock.advance(.1)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test canceling a deferral.
         # after this the task_id 1 remains used by this canceled but unused task
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
-        success = _TASK_HANDLER.cancel(task_id)
-        self.assertFalse(_TASK_HANDLER.active(task_id))
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
+        success = t.cancel()
+        self.assertFalse(t.active())
         self.assertTrue(success)
-        self.assertTrue(_TASK_HANDLER.exists(task_id))
+        self.assertTrue(t.exists())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
         self.char1.ndb.dummy_var = False
         # test removing an active task
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
-        success = _TASK_HANDLER.remove(task_id)
-        self.assertFalse(_TASK_HANDLER.active(task_id))
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
+        success = t.remove()
+        self.assertFalse(t.active())
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
-        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        self.assertFalse(t.exists())
         self.char1.ndb.dummy_var = False
         # test removing a canceled task
-        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
-        self.assertTrue(_TASK_HANDLER.active(task_id))
-        deferal_inst = _TASK_HANDLER.get_deferred(task_id)
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
+        deferal_inst = t.get_deferred()
         deferal_inst.cancel()
-        self.assertFalse(_TASK_HANDLER.active(task_id))
-        success = _TASK_HANDLER.remove(task_id)
+        self.assertFalse(t.active())
+        success = t.remove()
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
-        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        self.assertFalse(t.exists())
+        self.char1.ndb.dummy_var = False
+        # test pause, paused and unpause
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(t.active())
+        t.pause()
+        self.assertTrue(t.paused)
+        t.unpause()
+        self.assertFalse(t.paused)
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        t.pause()
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        t.unpause()
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # restart condictions
         # cancel a diferall directly, without calling task handler's cancel
