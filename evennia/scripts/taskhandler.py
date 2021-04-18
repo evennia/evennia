@@ -211,6 +211,56 @@ class TaskHandler(object):
             return False
         return task_id
 
+    def exists(self, task_id):
+        """
+        Test if a task exists.
+
+        Args:
+            task_id (int): an existing task ID.
+
+        Returns:
+            True (bool): if the task exists.
+            False (bool): if the task does not exist.
+
+        Note:
+            Most task handler methods check for existence for you.
+        """
+        if task_id in self.tasks:
+            return True
+        else:
+            return False
+
+
+    def cancel(self, task_id):
+        """
+        Stop a task from automatically executing.
+        This will not remove the task.
+
+        Args:
+            task_id (int): an existing task ID.
+
+        Returns:
+            True (bool): if the removal completed successfully.
+            False (bool): if the task:
+                does not exist,
+                has already run,
+                does not have a deferral instance created for the task.
+            None, if there was a raised exception
+        """
+        if task_id in self.tasks:
+            # if the task has not been run, cancel it
+            d = self.get_deferred(task_id)
+            if d:  # it is remotely possible for a task to not have a deferral
+                if d.called:
+                    return False
+                else:  # the callback has not been called yet.
+                    d.cancel()
+                    return True
+            else:  # this task has no deferral
+                return False
+        else:
+            return False
+
     def remove(self, task_id):
         """
         Remove a task without executing it.
@@ -220,18 +270,16 @@ class TaskHandler(object):
             task_id (int): an existing task ID.
 
         Returns:
-            True (bool), if the removal completed successfully.
-            None, if there was a raise error
+            True (bool): if the removal completed successfully or if the a
+            task with the id does not exist.
+            None, if there was a raised exception
 
         """
         d = None
         # delete the task from the tasks dictionary
         if task_id in self.tasks:
             # if the task has not been run, cancel it
-            d = self.get_deferred(task_id)
-            if d:  # it is remotely possible for a task to not have a deferral
-                if not d.called:
-                    d.cancel()
+            self.cancel(task_id)
             del self.tasks[task_id]  # delete the task from the tasks dictionary
         # remove the task from the persistent dictionary and ServerConfig
         if task_id in self.to_save:

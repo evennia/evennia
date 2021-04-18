@@ -345,9 +345,11 @@ class TestDelay(EvenniaTest):
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test canceling a deferral.
+        # after this the task_id 1 remains used by this canceled but unused task
         task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
-        deferal_inst = _TASK_HANDLER.get_deferred(task_id)
-        deferal_inst.cancel()
+        success = _TASK_HANDLER.cancel(task_id)
+        self.assertTrue(success)
+        self.assertTrue(_TASK_HANDLER.exists(task_id))
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
         self.char1.ndb.dummy_var = False
@@ -356,6 +358,7 @@ class TestDelay(EvenniaTest):
         success = _TASK_HANDLER.remove(task_id)
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
+        self.assertFalse(_TASK_HANDLER.exists(task_id))
         self.char1.ndb.dummy_var = False
         # test removing a canceled active task
         task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
@@ -364,4 +367,7 @@ class TestDelay(EvenniaTest):
         success = _TASK_HANDLER.remove(task_id)
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, False)
+        self.assertFalse(_TASK_HANDLER.exists(task_id))
         self.char1.ndb.dummy_var = False
+        # restart condictions
+        # cancel a diferall directly, without calling task handler's cancel
