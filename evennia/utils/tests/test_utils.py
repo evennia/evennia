@@ -314,6 +314,7 @@ def dummy_func(obj):
     obj = obj[0]
     # make changes to object
     obj.ndb.dummy_var = 'dummy_func ran'
+    return True
 
 
 class TestDelay(EvenniaTest):
@@ -335,10 +336,28 @@ class TestDelay(EvenniaTest):
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
+        # test a persistent deferral, that completes on a manual call
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        self.assertTrue(_TASK_HANDLER.active(task_id))
+        result = _TASK_HANDLER.do_task(task_id)
+        self.assertTrue(result)
+        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass, important keep
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
         # test a non persisten deferral, that completes after delay time.
         utils.delay(timedelay, dummy_func, self.char1.dbref)
         self.assertTrue(_TASK_HANDLER.active(task_id))
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        self.char1.ndb.dummy_var = False
+        # test a non-persistent deferral, that completes on a manual call
+        task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(_TASK_HANDLER.active(task_id))
+        result = _TASK_HANDLER.do_task(task_id)
+        self.assertTrue(result)
+        self.assertFalse(_TASK_HANDLER.exists(task_id))
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass, important keep
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
         # test a non persisten deferral, with a short timedelay
@@ -367,7 +386,7 @@ class TestDelay(EvenniaTest):
         self.assertEqual(self.char1.ndb.dummy_var, False)
         self.assertFalse(_TASK_HANDLER.exists(task_id))
         self.char1.ndb.dummy_var = False
-        # test removing a canceled active task
+        # test removing a canceled task
         task_id = utils.delay(timedelay, dummy_func, self.char1.dbref)
         self.assertTrue(_TASK_HANDLER.active(task_id))
         deferal_inst = _TASK_HANDLER.get_deferred(task_id)
