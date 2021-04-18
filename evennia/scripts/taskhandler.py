@@ -209,7 +209,7 @@ class TaskHandler(object):
             self.tasks[task_id] = task
         else:  # the task already completed
             return False
-        return task_id
+        return Task(task_id)
 
     def exists(self, task_id):
         """
@@ -388,3 +388,150 @@ class TaskHandler(object):
 
 # Create the soft singleton
 TASK_HANDLER = TaskHandler()
+
+
+class Task:
+    """
+    A light
+    """
+    def __init__(self, task_id):
+        self.task_id = task_id
+
+    def get_deferred(self):
+        """
+        Return the instance of the deferred the task id is using.
+
+        Returns:
+            An instance of a deferral or False if there is no task with the id.
+            None is returned if there is no deferral affiliated with this id.
+        """
+        return TASK_HANDLER.get_deferred(self.task_id)
+
+    def pause(self):
+        """
+        Pause the callback of a task.
+        To resume use Task.unpause
+        """
+        d = TASK_HANDLER.get_deferred(self.task_id)
+        if d:
+            d.pause()
+
+    def unpause(self):
+        """
+        Process all callbacks made since pause() was called.
+        """
+        d = TASK_HANDLER.get_deferred(self.task_id)
+        if d:
+            d.unpause()
+
+    @property
+    def paused(self):
+        """
+        A task attribute to check if the deferral of a task has been paused.
+
+        This exists to mock usage of a twisted deferred object.
+
+        This will return None if the deferred object for the task does not
+        exist or if the task no longer exists.
+        """
+        d = TASK_HANDLER.get_deferred(self.task_id)
+        if d:
+            return d.paused
+        else:
+            return None
+
+    def do_task(self):
+        """
+        Execute the task (call its callback).
+        If calling before timedelay cancel the deferral affliated to this task.
+        Remove the task from the dictionary of current tasks on a successful
+        callback.
+
+        Returns:
+            False (bool): if the:
+                task no longer exists,
+                has no affliated instance of deferral
+            The return of the callback passed on task creation.
+                This makes it possible for the callback to also return False
+            None: if there was a raised exception
+
+        Note:
+            On a successful call the task will be removed from the dictionary
+            of current tasks.
+
+        """
+        return TASK_HANDLER.do_task(self.task_id)
+
+    def remove(self):
+        """
+        Remove a task without executing it.
+        Deletes the instance of the task's deferral.
+
+        Returns:
+            True (bool): if the removal completed successfully or if the a
+            task with the id does not exist.
+            None: if there was a raised exception
+
+        """
+        return TASK_HANDLER.remove(self.task_id)
+
+    def cancel(self):
+        """
+        Stop a task from automatically executing.
+        This will not remove the task.
+
+        Returns:
+            True (bool): if the removal completed successfully.
+            False (bool): if the task:
+                does not exist,
+                has already run,
+                does not have a deferral instance created for the task.
+            None, if there was a raised exception
+        """
+        return TASK_HANDLER.cancel(self.task_id)
+
+    def active(self):
+        """
+        Check if a task is active (has not been called yet).
+
+        Returns:
+            True (bool): If a task is active (has not been called yet).
+            False (bool): if the task
+                is not active (has already been called),
+                does not exist
+        """
+        return TASK_HANDLER.active(self.task_id)
+
+    @property
+    def called(self):
+        """
+        A task attribute to check if the deferral of a task has been called.
+
+        This exists to mock usage of a twisted deferred object.
+        It will not set to false if Task.call has been called.
+
+        """
+        return not TASK_HANDLER.active(self.task_id)
+
+    def exists(self):
+        """
+        Test if a task exists.
+
+        Returns:
+            True (bool): if the task exists.
+            False (bool): if the task does not exist.
+
+        Note:
+            Most task handler methods check for existence for you.
+        """
+        return TASK_HANDLER.exists(self.task_id)
+
+    def get_id(self):
+        """
+        Returns the global id for this task. For use with
+        `evennia.scripts.taskhandler.TASK_HANDLER`.
+
+        Returns:
+            task_id (int): global task id for this task.
+        """
+        return self.task_id
