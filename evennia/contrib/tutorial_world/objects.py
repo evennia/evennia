@@ -24,6 +24,7 @@ import random
 from evennia import DefaultObject, DefaultExit, Command, CmdSet
 from evennia.utils import search, delay, dedent
 from evennia.prototypes.spawner import spawn
+from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
 
 # -------------------------------------------------------------
 #
@@ -389,7 +390,8 @@ class LightSource(TutorialObject):
             # start the burn timer. When it runs out, self._burnout
             # will be called. We store the deferred so it can be
             # killed in unittesting.
-            self.deferred = delay(60 * 3, self._burnout)
+            task_id = delay(60 * 3, self._burnout)
+            self.deferred = _TASK_HANDLER.get_deferred(task_id)
         return True
 
 
@@ -687,7 +689,8 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.db.exit_open = True
         # start a 45 second timer before closing again. We store the deferred so it can be
         # killed in unittesting.
-        self.deferred = delay(45, self.reset)
+        task_id = delay(45, self.reset)
+        self.deferred = _TASK_HANDLER.get_deferred(task_id)
         return True
 
     def _translate_position(self, root, ipos):

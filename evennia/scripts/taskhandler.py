@@ -44,7 +44,6 @@ class TaskHandler(object):
     Dev notes:
     deferLater creates an instance of IDelayedCall using reactor.callLater.
     deferLater uses the cancel method on the IDelayedCall instance to create
-    the defer instance it returns.
 
     """
 
@@ -79,15 +78,17 @@ class TaskHandler(object):
                     continue
 
                 callback = getattr(obj, method)
-            self.tasks[task_id] = (date, callback, args, kwargs)
+            self.tasks[task_id] = date, callback, args, kwargs, True, None
 
         if to_save:
             self.save()
 
     def save(self):
         """Save the tasks in ServerConfig."""
-        for task_id, (date, callback, args, kwargs) in self.tasks.items():
+        for task_id, (date, callback, args, kwargs, persistent, _) in self.tasks.items():
             if task_id in self.to_save:
+                continue
+            if not persistent:
                 continue
 
             if getattr(callback, "__self__", None):
@@ -127,8 +128,8 @@ class TaskHandler(object):
             any (any): additional keyword arguments to send to the callback
 
         Returns:
-            twisted.internet.defer.Deferred instance of the deferred task
             task_id (int), the task's id intended for use with this class.
+            False, if the task has completed before addition finishes.
 
         Notes:
             This method has two return types.
@@ -144,19 +145,23 @@ class TaskHandler(object):
             As those memory references will no longer acurately point to
             the variable desired.
         """
+        # set the completion time
+        # Only used on persistent tasks after a restart
+        now = datetime.now()
+        delta = timedelta(seconds=timedelay)
+        comp_time = now + delta
+        # get an open task id
+        used_ids = list(self.tasks.keys())
+        task_id = 1
+        while task_id in used_ids:
+            task_id += 1
+
+        # record the task to the tasks dictionary
         persistent = kwargs.get("persistent", False)
         if persistent:
             del kwargs["persistent"]
-            now = datetime.now()
-            delta = timedelta(seconds=timedelay)
-
-            # Choose a free task_id
             safe_args = []
             safe_kwargs = {}
-            used_ids = list(self.tasks.keys())
-            task_id = 1
-            while task_id in used_ids:
-                task_id += 1
 
             # Check that args and kwargs contain picklable information
             for arg in args:
@@ -183,17 +188,28 @@ class TaskHandler(object):
                 else:
                     safe_kwargs[key] = value
 
-            self.tasks[task_id] = (now + delta, callback, safe_args, safe_kwargs)
+            self.tasks[task_id] = (comp_time, callback, safe_args, safe_kwargs, True, None)
             self.save()
-            callback = self.do_task
-            args = [task_id]
-            kwargs = {}
-            deferLater(self.clock, timedelay, callback, *args, **kwargs)
-            return task_id
+        else:  # this is a non-persitent task
+            self.tasks[task_id] = (comp_time, callback, args, kwargs, True, None)
 
+        # defer the task
+        callback = self.do_task
+        args = [task_id]
+        kwargs = {}
         d = deferLater(self.clock, timedelay, callback, *args, **kwargs)
         d.addErrback(handle_error)
-        return d
+
+        # some tasks may complete before the deferal can be added
+        if task_id in self.tasks:
+            task = self.tasks.get(task_id)
+            task = list(task)
+            task[4] = persistent
+            task[5] = d
+            self.tasks[task_id] = task
+        else:  # the task already completed
+            return False
+        return task_id
 
     def remove(self, task_id):
         """Remove a persistent task without executing it.
@@ -206,7 +222,8 @@ class TaskHandler(object):
             in the TaskHandler.
 
         """
-        del self.tasks[task_id]
+        if task_id in self.tasks:
+            del self.tasks[task_id]
         if task_id in self.to_save:
             del self.to_save[task_id]
 
@@ -222,12 +239,29 @@ class TaskHandler(object):
             This will also remove it from the list of current tasks.
 
         """
-        date, callback, args, kwargs = self.tasks.pop(task_id)
+        date, callback, args, kwargs, persistent, d = self.tasks.pop(task_id)
+
         if task_id in self.to_save:
             del self.to_save[task_id]
 
         self.save()
         callback(*args, **kwargs)
+
+    def get_deferred(self, task_id):
+        """
+        Return the instance of the deferred the task id is using.
+
+        Args:
+            task_id (int): a valid task ID.
+
+        Returns:
+            An instance of a deferral or False if there is no task with the id.
+            None is returned if there is no deferral affiliated with this id.
+        """
+        if task_id in self.tasks:
+            return self.tasks[task_id][5]
+        else:
+            return False
 
     def create_delays(self):
         """Create the delayed tasks for the persistent tasks.
@@ -237,9 +271,14 @@ class TaskHandler(object):
 
         """
         now = datetime.now()
-        for task_id, (date, callbac, args, kwargs) in self.tasks.items():
+        for task_id, (date, callbac, args, kwargs, _, _) in self.tasks.items():
+            self.tasks[task_id] = date, callbac, args, kwargs, True, None
             seconds = max(0, (date - now).total_seconds())
-            deferLater(self.clock, seconds, self.do_task, task_id)
+            d = deferLater(self.clock, seconds, self.do_task, task_id)
+            d.addErrback(handle_error)
+            # some tasks may complete before the deferal can be added
+            if self.tasks.get(task_id, False):
+                self.tasks[task_id] = date, callbac, args, kwargs, True, d
 
 
 # Create the soft singleton

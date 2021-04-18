@@ -1152,13 +1152,7 @@ from evennia.contrib import slow_exit
 slow_exit.MOVE_DELAY = {"stroll": 0, "walk": 0, "run": 0, "sprint": 0}
 
 
-def _cancellable_mockdelay(time, callback, *args, **kwargs):
-    callback(*args, **kwargs)
-    return Mock()
-
-
 class TestSlowExit(CommandTest):
-    @patch("evennia.utils.delay", _cancellable_mockdelay)
     def test_exit(self):
         exi = create_object(
             slow_exit.SlowExit, key="slowexit", location=self.room1, destination=self.room2

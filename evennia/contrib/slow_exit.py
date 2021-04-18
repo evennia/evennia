@@ -36,6 +36,7 @@ TickerHandler might be better.
 """
 
 from evennia import DefaultExit, utils, Command
+from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
 
 MOVE_DELAY = {"stroll": 6, "walk": 4, "run": 2, "sprint": 1}
 
@@ -70,11 +71,11 @@ class SlowExit(DefaultExit):
 
         traversing_object.msg("You start moving %s at a %s." % (self.key, move_speed))
         # create a delayed movement
-        deferred = utils.delay(move_delay, move_callback)
+        task_id = utils.delay(move_delay, move_callback)
         # we store the deferred on the character, this will allow us
         # to abort the movement. We must use an ndb here since
         # deferreds cannot be pickled.
-        traversing_object.ndb.currently_moving = deferred
+        traversing_object.ndb.currently_moving = _TASK_HANDLER.get_deferred(task_id)
 
 
 #
