@@ -341,6 +341,30 @@ class TaskHandler(object):
             del d
         return True
 
+    def remove_all(self, save=True, cancel=True):
+        """
+        Remove all tasks.
+        By default tasks are canceled and removed from the database also.
+
+        Arguments:
+            save=True (bool): Should changes to persistent tasks be saved to database.
+            cancel=True (bool): Cancel scheduled tasks before removing it from task handler.
+
+        Returns:
+            True (bool): if the removal completed successfully.
+        """
+        tasks_ids = tuple(self.tasks.keys())
+        for task_id in tasks_ids:
+            if cancel:
+                self.cancel(task_id)
+            del self.tasks[task_id]
+        tasks_ids = tuple(self.to_save.keys())
+        for task_id in tasks_ids:
+            del self.to_save[task_id]
+        if save:
+            self.save()
+        return True
+
     def do_task(self, task_id):
         """
         Execute the task (call its callback).
