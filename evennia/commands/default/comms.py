@@ -30,7 +30,7 @@ __all__ = (
     "CmdAddCom",
     "CmdDelCom",
     "CmdAllCom",
-    "CmdChannels",
+    #"CmdChannels",
     "CmdCdestroy",
     "CmdCBoot",
     "CmdCemit",
@@ -55,25 +55,27 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     Talk on and manage in-game channels.
 
     Usage:
-        channel channelname [= <msg>]
-        channel
-        channel/list
-        channel/all
-        channel/history channelname [= index]
-        channel/sub channelname [= alias]
-        channel/unsub channelname[,channelname, ...]
-        channel/alias channelname = alias
-        channel/unalias channelname = alias
-        channel/mute channelname[,channelname,...]
-        channel/unmute channelname[,channelname,...]
-        channel/create channelname;alias;alias:typeclass [= description]
-        channel/destroy channelname [= reason]
-        channel/lock channelname = lockstring
-        channel/desc channelname = description
-        channel/boot[/quiet] channelname = subscribername [: reason]
-        channel/ban channelname
-        channel/ban[/quiet] channelname = subscribername [: reason]
-        channel/who channelname
+      channel channelname [= <msg>]
+      channel
+      channel/list
+      channel/all
+      channel/history channelname [= index]
+      channel/sub channelname [= alias]
+      channel/unsub channelname[,channelname, ...]
+      channel/alias channelname = alias
+      channel/unalias channelname = alias
+      channel/mute channelname[,channelname,...]
+      channel/unmute channelname[,channelname,...]
+      channel/create channelname;alias;alias:typeclass [= description]
+      channel/destroy channelname [= reason]
+      channel/desc channelname = description
+      channel/lock channelname = lockstring
+      channel/unlock channelname = lockstring
+      channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
+      channel/ban channelname   (list bans)
+      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
+      channel/unban[/quiet] channelname[, channelname, ...] = subscribername
+      channel/who channelname
 
     This handles all operations on channels.
 
@@ -82,8 +84,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     aliases = ["chan", "channels"]
     locks = "cmd: not pperm(channel_banned)"
     switch_options = (
-        "history", "sub", "unsub", "mute", "alias", "unalias", "create",
-        "destroy", "desc", "boot", "who")
+        "list", "all", "history", "sub", "unsub", "mute", "unmute", "alias", "unalias",
+        "create", "destroy", "desc", "lock", "unlock", "boot", "ban", "unban", "who",)
 
     def search_channel(self, channelname, exact=False):
         """
@@ -152,7 +154,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         log_file = channel.attributes.get(
-            "log_file", default=channel.log_file.format(channelkey=channel.key))
+            "log_file", default=channel.log_to_file.format(channel_key=channel.key))
 
         def send_msg(lines):
             return caller.msg(
@@ -336,7 +338,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     def set_lock(self, channel, lockstring):
         """
-        Set a lockstring on a channel.
+        Set a lockstring on a channel. Permissions must have been
+        checked before this call.
 
         Args:
             channel (Channel): The channel to operate on.
@@ -349,6 +352,26 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         try:
             channel.locks.add(lockstring)
+        except LockException as err:
+            return False, err
+        return True, ""
+
+    def unset_lock(self, channel, lockstring):
+        """
+        Remove locks in a lockstring on a channel. Permissions must have been
+        checked before this call.
+
+        Args:
+            channel (Channel): The channel to operate on.
+            lockstring (str): A lockstring on the form 'type:lockfunc();...'
+
+        Returns:
+            bool, str: True, None if setting lock was successful. If False,
+                the second part is an error string.
+
+        """
+        try:
+            channel.locks.remove(lockstring)
         except LockException as err:
             return False, err
         return True, ""
@@ -443,6 +466,19 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             return True, ""
         return False, f"{target} was not previously banned from this channel."
 
+    def channel_list_bans(self, channel):
+        """
+        Show a channel's bans.
+
+        Args:
+            channel (Channel): The channel to operate on.
+
+        Returns:
+            list: A list of strings, each the name of a banned user.
+
+        """
+        return [banned.key for banned in channel.banlist]
+
     def channel_list_who(self, channel):
         """
         Show a list of online people is subscribing to a channel. This will check
@@ -492,7 +528,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         caller = self.caller
-        subscribed_channels = channelcls.objects.get_subscriptions(caller)
+        subscribed_channels = list(channelcls.objects.get_subscriptions(caller))
         unsubscribed_available_channels = [
             chan
             for chan in channelcls.objects.get_all_channels()
@@ -531,6 +567,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                   ",".join(nick.db_key for nick in make_iter(nicks)
                            if nick and nick.value[3].lower() == clower),
                   chan.db.desc))
+        return comtable
 
     def display_all_channels(self, subscribed, available):
         """
@@ -583,10 +620,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         Main functionality of command.
         """
+        # from evennia import set_trace;set_trace()
 
         caller = self.caller
         switches = self.switches
-        channel_names = self.lhslist
+        channel_names = [name for name in self.lhslist if name]
 
         if not channel_names:
             if 'all' in switches:
@@ -604,8 +642,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 table = self.display_subbed_channels(subscribed)
 
                 self.msg("\n|wChannel subscriptions|n "
-                         f"(use |w/all|n to see all available)\n{table}")
+                         f"(use |w/all|n to see all available):\n{table}")
                 return
+
+        if not self.switches and not self.args:
+            caller.msg("Usage[/switches]: channel [= message]")
+            return
 
         if 'create' in switches:
             # create a new channel
@@ -636,19 +678,28 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg("Multiple possible channel matches/alias for "
                          "'{channel_name}':\n" + ", ".join(chan.key for chan in channel))
                 return
-            channels.append(channel)
+            channels.extend(channel)
 
         # we have at least one channel at this point
         channel = channels[0]
 
         if not switches:
-            # send a message to channel(s)
-            message = self.rhs
-            if not message:
-                self.msg("To send: channel <channel-name-or-alias> = <message>")
-                return
-            for chan in channels:
-                self.msg_channel(chan, message)
+            if self.rhs:
+                # send message to channel
+                self.msg_channel(channel, self.rhs.strip())
+            else:
+                # inspect a given channel
+                subscribed, available = self.list_channels()
+                if channel in subscribed:
+                    table = self.display_subbed_channels[channel]
+                    self.msg(
+                        "\n|wSubscribed to Channel|n "
+                        f"(use |w/all|n to see all available)\n{table}")
+                elif channel in available:
+                    table = self.display_all_channels([], [channel])
+                    self.msg(
+                        "\n|wNot subscribed Channel|n (use /list to "
+                        f"show all subscriptions)\n{table}")
             return
 
         if 'history' in switches or 'hist' in switches:
@@ -734,8 +785,151 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg("You can only delete channels you control.")
                 return
 
-            def _perform_delete(caller, prompt, result):
+            def _perform_delete(caller, *args, **kwargs):
                 self.destroy_channel(channel, message=reason)
+                caller.msg(f"Channel {channel.key} was successfully deleted.")
+
+            ask_yes_no(
+                caller,
+                f"Are you sure you want to delete channel '{channel.key}'"
+                "(make sure name is correct!)? This will disconnect and "
+                "remove all users' aliases. {yesno}?",
+                _perform_delete,
+                "Aborted."
+            )
+
+        if 'lock' in switches:
+            # add a lockstring to channel
+            lockstring = self.rhs.strip()
+
+            if not lockstring:
+                self.msg("Usage: channel/lock channelname = lockstring")
+                return
+
+            if not channel.access(caller, "control"):
+                self.msg("You need 'control'-access to change locks on this channel.")
+                return
+
+            success, err = self.set_lock(channel, self.rhs)
+            if success:
+                caller.msg("Added/updated lock on channel.")
+            else:
+                caller.msg(f"Could not add/update lock: {err}")
+            return
+
+        if 'unlock' in switches:
+            # remove/update lockstring from channel
+            lockstring = self.rhs.strip()
+
+            if not lockstring:
+                self.msg("Usage: channel/unlock channelname = lockstring")
+                return
+
+            if not channel.access(caller, "control"):
+                self.msg("You need 'control'-access to change locks on this channel.")
+                return
+
+            success, err = self.set_lock(channel, self.rhs)
+            if success:
+                caller.msg("Removed lock on channel.")
+            else:
+                caller.msg(f"Could not remove lock: {err}")
+            return
+
+        if 'boot' in switches:
+            # boot a user from channel(s)
+
+            if not self.rhs:
+                caller.msg("Usage: channel/boot channel[,channel,...] = username [:reason]")
+                return
+
+            target_str, *reason = self.rhs.rsplit(":", 1)
+            reason = reason[0].strip() if reason else ""
+
+            for chan in channels:
+
+                if not chan.access(caller, "admin"):
+                    self.msg("You need 'control'-access to boot a user from {chan.key}.")
+                    return
+
+                # the target must be a member of all given channels
+                target = self.search(target_str, candidates=chan.subscriptions.all())
+                if not target:
+                    caller.msg(f"Cannot boot '{target_str}' - not in channel {chan.key}.")
+                    return
+
+            def _boot_user(caller, *args, **kwargs):
+                for chan in channels:
+                    success, err = self.boot_user(chan, target, quiet=False, reason=reason)
+                    if success:
+                        caller.msg(f"Booted {target.key} from channel {chan.key}.")
+                    else:
+                        caller.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
+
+            channames = ", ".join(chan.key for chan in channels)
+            ask_yes_no(
+                caller,
+                f"Are you sure you want to boot user {target.key} from "
+                f"channel(s) {channames} (make sure name/channels are correct) "
+                "{yesno}?",
+                _boot_user,
+                "Aborted.",
+                default="Y"
+            )
+            return
+
+        if 'ban' in switches:
+            # ban a user from channel(s)
+
+            if not self.rhs:
+                # view bans for channels
+
+                if not channel.access(caller, "control"):
+                    self.msg("You need 'control'-access to view bans on channel {channel.key}")
+                    return
+
+                bans = ["Channel bans "
+                        "(to ban, use channel/ban channel[,channel,...] = username [:reason]"]
+                bans.expand(self.channel_list_bans(channel))
+                self.msg("\n".join(bans))
+                return
+
+            target_str, *reason = self.rhs.rsplit(":", 1)
+            reason = reason[0].strip() if reason else ""
+
+            for chan in channels:
+                # the target must be a member of all given channels
+                target = self.search(target_str, candidates=chan.subscriptions.all())
+                if not target:
+                    caller.msg(f"Cannot ban '{target_str}' - not in channel {chan.key}.")
+                    return
+
+            def _ban_user(caller, *args, **kwargs):
+                for chan in channels:
+                    success, err = self.ban_user(chan, target, quiet=False, reason=reason)
+                    if success:
+                        caller.msg(f"Banned {target.key} from channel {chan.key}.")
+                    else:
+                        caller.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
+
+            channames = ", ".join(chan.key for chan in channels)
+            ask_yes_no(
+                caller,
+                f"Are you sure you want to ban user {target.key} from "
+                f"channel(s) {channames} (make sure name/channels are correct) "
+                "{yesno}?",
+                _ban_user,
+                "Aborted.",
+            )
+            return
+
+        if "who" in switches:
+            # view who's a member of a channel
+
+            who_list = [f"Subscribed to {channel.key}:"]
+            who_list.expand(self.channel_list_who(channel))
+            caller.msg("\n".join(who_list))
+            return
 
 
 class CmdAddCom(COMMAND_DEFAULT_CLASS):

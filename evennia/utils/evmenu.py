@@ -1710,7 +1710,7 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
 
     Args:
         prompt (str): The yes/no question to ask. This takes an optional formatting
-            marker `{suffix}` which will be filled with 'Y/N', [Y]/N or Y/[N]
+            marker `{yesno}` which will be filled with 'Y/N', [Y]/N or Y/[N]
             depending on the setting of `default`. If `allow_abort`, then the
             `A(bort)` will also be available.
         yes_action (callable or str): If a callable, this will be called
@@ -1736,9 +1736,9 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
 
     Example:
 
-        ask_yes_no(caller, "Are you happy {suffix}?",
+        ask_yes_no(caller, "Are you happy {yesno}?",
                    "you answered yes", "you answered no")
-        ask_yes_no(caller, "Are you sad {suffix}?",
+        ask_yes_no(caller, "Are you sad {yesno}?",
                    _callable_yes, _callable_no, allow_abort=True)
 
     """
@@ -1760,7 +1760,7 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
         kwargs['no_txt'] = str(no_action)
         no_action = _callable_no_txt
 
-    # prepare the prompt with suffix
+    # prepare the prompt with yesno suffix
     suffix = "Y/N"
     abort_txt = "/Abort" if allow_abort else ""
     if default:
@@ -1773,7 +1773,7 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
             allow_abort = True
             abort_txt = "/[A]bort"
     suffix += abort_txt
-    prompt = prompt.format(suffix=suffix)
+    prompt = prompt.format(yesno=suffix)
 
     caller.ndb._yes_no_question = _Prompt()
     caller.ndb._yes_no_question.session = session

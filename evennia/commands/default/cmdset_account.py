@@ -59,6 +59,7 @@ class AccountCmdSet(CmdSet):
         self.add(admin.CmdNewPassword())
 
         # Comm commands
+        self.add(comms.CmdChannel())
         self.add(comms.CmdAddCom())
         self.add(comms.CmdDelCom())
         self.add(comms.CmdAllCom())
