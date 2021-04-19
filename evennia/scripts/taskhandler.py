@@ -32,18 +32,13 @@ class TaskHandler(object):
 
     When `utils.delay` is called, the task handler is used to create
     the task.
-    If `utils.delay` is called with `persistent=True`. The
-    task handler creates the task. It saves the delay time, callback,
-    arguments and kwa to the database. Each of these variables are
-    serialized to do this.
 
-    It's easier to access these tasks (should it be necessary) using
-    `evennia.scripts.taskhandler.TASK_HANDLER`, which contains one
-    instance of this class, and use its `add` and `remove` methods.
-
-    Dev notes:
-    deferLater creates an instance of IDelayedCall using reactor.callLater.
-    deferLater uses the cancel method on the IDelayedCall instance to create
+    Task handler will automatically remove uncalled but canceled from task
+    handler. By default this will not occur until a canceled task
+    has been uncalled for 60 second after the time it should have been called.
+    To adjust this time use TASK_HANDLER.stale_timeout. If stale_timeout is 0
+    stale tasks will not be automatically removed.
+    This is not done on a timer. I is done as new tasks are added or the load method is called.
 
     """
 
@@ -51,6 +46,9 @@ class TaskHandler(object):
         self.tasks = {}
         self.to_save = {}
         self.clock = reactor
+        # number of seconds before an uncalled canceled task is removed from TaskHandler
+        self.stale_timeout = 60
+        self._now = False # used in unit testing to manually set now time
 
     def load(self):
         """Load from the ServerConfig.
@@ -80,11 +78,37 @@ class TaskHandler(object):
                 callback = getattr(obj, method)
             self.tasks[task_id] = date, callback, args, kwargs, True, None
 
+        if self.stale_timeout > 0:  # cleanup stale tasks.
+            self.clean_stale_tasks()
         if to_save:
             self.save()
 
+    def clean_stale_tasks(self):
+        """
+        remove uncalled but canceled from task handler.
+
+        By default this will not occur until a canceled task
+        has been uncalled for 60 second after the time it should have been called.
+        To adjust this time use TASK_HANDLER.stale_timeout.
+        """
+        clean_ids = []
+        for task_id, (date, callback, args, kwargs, persistent, _) in self.tasks.items():
+            if not self.active(task_id):
+                stale_date = date + timedelta(seconds=self.stale_timeout)
+                # if a now time is provided use it (intended for unit testing)
+                now = self._now if self._now else datetime.now()
+                # the task was canceled more than stale_timeout seconds ago
+                if now > stale_date:
+                    clean_ids.append(task_id)
+        for task_id in clean_ids:
+            self.remove(task_id)
+        return True
+
     def save(self):
-        """Save the tasks in ServerConfig."""
+        """
+        Save the tasks in ServerConfig.
+        """
+
         for task_id, (date, callback, args, kwargs, persistent, _) in self.tasks.items():
             if task_id in self.to_save:
                 continue
@@ -209,6 +233,8 @@ class TaskHandler(object):
             self.tasks[task_id] = task
         else:  # the task already completed
             return False
+        if self.stale_timeout > 0:
+            self.clean_stale_tasks()
         return Task(task_id)
 
     def exists(self, task_id):
@@ -392,10 +418,28 @@ TASK_HANDLER = TaskHandler()
 
 class Task:
     """
-    A light
+    A object to represent a single TaskHandler task.
+
+    Instance Attributes:
+        task_id (int): the global id for this task
+        deferred (deferred): a reference to this task's deferred
+    Propert Attributes:
+        paused (bool): check if the deferral of a task has been paused.
+        called(self): A task attribute to check if the deferral of a task has been called.
+
+    Methods:
+        pause(): Pause the callback of a task.
+        unpause(): Process all callbacks made since pause() was called.
+        do_task(): Execute the task (call its callback).
+        remove(): Remove a task without executing it.
+        cancel(): Stop a task from automatically executing.
+        active(): Check if a task is active (has not been called yet).
+        exists(): Check if a task exists.
+        get_id(): Returns the global id for this task. For use with
     """
     def __init__(self, task_id):
         self.task_id = task_id
+        self.deferred = TASK_HANDLER.get_deferred(task_id)
 
     def get_deferred(self):
         """
@@ -412,7 +456,7 @@ class Task:
         Pause the callback of a task.
         To resume use Task.unpause
         """
-        d = TASK_HANDLER.get_deferred(self.task_id)
+        d = self.deferred
         if d:
             d.pause()
 
@@ -420,7 +464,7 @@ class Task:
         """
         Process all callbacks made since pause() was called.
         """
-        d = TASK_HANDLER.get_deferred(self.task_id)
+        d = self.deferred
         if d:
             d.unpause()
 
@@ -434,7 +478,7 @@ class Task:
         This will return None if the deferred object for the task does not
         exist or if the task no longer exists.
         """
-        d = TASK_HANDLER.get_deferred(self.task_id)
+        d = self.deferred
         if d:
             return d.paused
         else:
@@ -511,7 +555,11 @@ class Task:
         It will not set to false if Task.call has been called.
 
         """
-        return not TASK_HANDLER.active(self.task_id)
+        d = self.deferred
+        if d:
+            return d.called
+        else:
+            return None
 
     def exists(self):
         """
