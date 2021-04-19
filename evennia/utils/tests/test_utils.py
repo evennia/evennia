@@ -7,6 +7,7 @@ TODO: Not nearly all utilities are covered yet.
 
 import os.path
 import mock
+from datetime import datetime, timedelta
 
 from django.test import TestCase
 from datetime import datetime
@@ -413,5 +414,53 @@ class TestDelay(EvenniaTest):
         t.unpause()
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.char1.ndb.dummy_var = False
-        # restart condictions
-        # cancel a diferall directly, without calling task handler's cancel
+        # test automated removal of stale tasks.
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        t.cancel()
+        task_id = t.get_id()
+        self.assertFalse(t.active())
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertTrue(task_id in _TASK_HANDLER.to_save)
+        self.assertTrue(task_id in _TASK_HANDLER.tasks)
+            # add a task to test automatic removal
+        _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + 6) # task handler time to 6 seconds after stale timeout
+        t2 = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        self.assertFalse(task_id in _TASK_HANDLER.to_save)
+        self.assertFalse(task_id in _TASK_HANDLER.tasks)
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        # test manual cleanup
+        t2.cancel()
+        _TASK_HANDLER.clock.advance(timedelay)  # advance twisted reactor time past callback time
+        _TASK_HANDLER._now = datetime.now() + timedelta(seconds=30)  # set TaskHandler's time to 30 seconnds from now
+        task_id = t2.get_id()
+            # test before stale_timeout time
+        _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
+            # still in the task handler because stale timeout has not been reached
+        self.assertTrue(task_id in _TASK_HANDLER.to_save)
+        self.assertTrue(task_id in _TASK_HANDLER.tasks)
+            # advance past stale timeout
+        _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + 6) # task handler time to 6 seconds after stale timeout
+        _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
+        self.assertFalse(task_id in _TASK_HANDLER.to_save)
+        self.assertFalse(task_id in _TASK_HANDLER.tasks)
+        self.char1.ndb.dummy_var = False
+        _TASK_HANDLER._now = False
+        # if _TASK_HANDLER.stale_timeout is 0 or less, automatic cleanup should not run
+        _TASK_HANDLER.stale_timeout = 0
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        t.cancel()
+        self.assertFalse(t.active())
+        _TASK_HANDLER.clock.advance(timedelay)  # advance twisted's reactor past callback time
+        self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+        self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+            # add a task to test automatic removal
+        _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + 6) # task handler time to 6 seconds after stale timeout
+        t2 = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+        self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+        self.assertEqual(self.char1.ndb.dummy_var, False)
+        t.remove()
+        t2.remove()
+        self.char1.ndb.dummy_var = False
+        _TASK_HANDLER._now = False
+        # replicate a restart
