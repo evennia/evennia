@@ -333,8 +333,14 @@ class TestDelay(EvenniaTest):
         self.char1.ndb.dummy_var = False
         # test a persistent deferral, that completes after delay time
         t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        # call the task early to test Task.call and TaskHandler.call_task
+        result = t.call()
+        self.assertTrue(result)
+        del result
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
         self.assertTrue(_TASK_HANDLER.active(t.get_id()))  # test Task.get_id
         self.assertTrue(t.active())
+        self.char1.ndb.dummy_var = False  # Set variable to continue completion after delay time test.
         _TASK_HANDLER.clock.advance(timedelay)  # make time pass
         self.assertTrue(t.called)  # test Task.called property
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
