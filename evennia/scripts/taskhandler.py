@@ -365,6 +365,26 @@ class TaskHandler(object):
             self.save()
         return True
 
+    def call_task(self, task_id):
+        """
+        Call the callback of a task.
+        Leave the task unaffected otherwise.
+        This does not use the task's deferred instance.
+        The only requirement is that the task exist in task handler.
+
+        Args:
+            task_id (int): an existing task ID.
+
+        Returns:
+            False (bool): if the task does not exist in task handler.
+            ?: The return of the task's callback.
+        """
+        if task_id in self.tasks:
+            date, callback, args, kwargs, persistent, d = self.tasks.get(task_id)
+        else:  # the task does not exist
+            return False
+        return callback(*args, **kwargs)
+
     def do_task(self, task_id):
         """
         Execute the task (call its callback).
@@ -394,7 +414,7 @@ class TaskHandler(object):
         else:  # the task does not exist
             return False
         if d:  # it is remotely possible for a task to not have a deferral
-            if not d.called:  # the task has not been called yet
+            if not d.called:  # the task's deferred has not been called yet
                 d.cancel()  # cancel the automated callback
         else:  # this task has no deferral, and should not be called
             return False
@@ -455,6 +475,7 @@ class Task:
         pause(): Pause the callback of a task.
         unpause(): Process all callbacks made since pause() was called.
         do_task(): Execute the task (call its callback).
+        call(): Call the callback of this task.
         remove(): Remove a task without executing it.
         cancel(): Stop a task from automatically executing.
         active(): Check if a task is active (has not been called yet).
@@ -529,6 +550,19 @@ class Task:
 
         """
         return TASK_HANDLER.do_task(self.task_id)
+
+    def call(self):
+        """
+        Call the callback of this task.
+        Leave the task unaffected otherwise.
+        This does not use the task's deferred instance.
+        The only requirement is that the task exist in task handler.
+
+        Returns:
+            False (bool): if the task does not exist in task handler.
+            ?: The return of the task's callback.
+        """
+        return TASK_HANDLER.call_task(self.task_id)
 
     def remove(self):
         """
