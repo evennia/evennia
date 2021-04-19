@@ -202,7 +202,7 @@ class CommandTest(EvenniaTest):
         else:
             # a single expected string and thus a single receiver (defaults to caller)
             receiver = receiver if receiver else caller
-            receiver_mapping[receiver] = str(msg).strip() if msg else None
+            receiver_mapping[receiver] = str(msg).strip() if msg is not None else None
 
         unmocked_msg_methods = {}
         for receiver in receiver_mapping:
@@ -1644,6 +1644,170 @@ class TestComms(CommandTest):
             "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases."
             "|Channel 'testchan' was destroyed.",
             receiver=self.account,
+        )
+
+
+from evennia.utils.create import create_channel  # noqa
+
+class TestCommsChannel(CommandTest):
+    """
+    Test the central `channel` command.
+
+    """
+    def setUp(self):
+        super(CommandTest, self).setUp()
+        self.channel = create_channel(
+            key="testchannel",
+            desc="A test channel")
+        self.channel.connect(self.char1)
+
+    def tearDown(self):
+        self.channel.delete()
+
+    # test channel command
+    def test_channel__noarg(self):
+        self.call(
+            comms.CmdChannel(),
+            "",
+            "Usage"
+        )
+
+    def test_channel__msg(self):
+        self.channel.msg = Mock()
+        self.call(
+            comms.CmdChannel(),
+            "testchannel = Test message",
+            ""
+        )
+        self.channel.msg.assert_called_with("Test message", senders=self.char1)
+
+    def test_channel__list(self):
+        self.call(
+            comms.CmdChannel(),
+            "/list",
+            "Channel subscriptions"
+        )
+
+    def test_channel__all(self):
+        self.call(
+            comms.CmdChannel(),
+            "/all",
+            "Available channels"
+        )
+
+    def test_channel__history(self):
+        with patch("evennia.commands.default.comms.tail_log_file") as mock_tail:
+            self.call(
+                comms.CmdChannel(),
+                "/history testchannel",
+                ""
+            )
+            mock_tail.assert_called()
+
+    def test_channel__sub(self):
+        self.channel.disconnect(self.char1)
+
+        self.call(
+            comms.CmdChannel(),
+            "/sub testchannel",
+            "You are now subscribed"
+        )
+        self.assertTrue(self.char1 in self.channel.subscriptions)
+
+    def test_channel__unsub(self):
+        self.call(
+            comms.CmdChannel(),
+            "/unsub testchannel",
+            "You un-subscribed"
+        )
+        self.assertFalse(self.char1 in self.channel.subscriptions)
+
+    def test_channel__alias(self):
+        self.call(
+            comms.CmdChannel(),
+            "/alias testchannel = foo",
+            ""
+        )
+        self.assertEqual(self.chan1.aliases.get('foo'), "")
+
+    def test_channel__unalias(self):
+
+        self.chan1.aliases.add("foo", "", "channel")
+
+        self.call(
+            comms.CmdChannel(),
+            "/unalias testchannel = foo",
+            ""
+        )
+        self.assertEqual(self.chan1.aliases.get('foo'), None)
+
+    def test_channel__mute(self):
+        self.call(
+            comms.CmdChannel(),
+            "/mute testchannel",
+            ""
+        )
+        self.assertTrue(self.char1 in self.channel.mutelist)
+
+    def test_channel__unmute(self):
+        self.channel.mute(self.char1)
+
+        self.call(
+            comms.CmdChannel(),
+            "/unmute testchannel = Char1",
+            ""
+        )
+        self.assertFalse(self.char1 in self.channel.mutelist)
+
+    def test_channel__create(self):
+        self.call(
+            comms.CmdChannel(),
+            "/create testchannel2",
+            ""
+        )
+
+    def test_channel__destroy(self):
+        self.call(
+            comms.CmdChannel(),
+            "/create testchannel2",
+            ""
+        )
+
+    def test_channel__desc(self):
+        self.call(
+            comms.CmdChannel(),
+            "/desc testchannel = Another description",
+            ""
+        )
+
+    def test_channel__lock(self):
+        self.call(
+            comms.CmdChannel(),
+            "/lock testchannel = foo:bar()",
+            ""
+        )
+        self.assertEqual(self.channel.locks.all(), [])
+
+    def test_channel__unlock(self):
+        self.channel.locks.add("foo:bar()")
+        self.call(
+            comms.CmdChannel(),
+            "/unlock testchannel = foo:bar()",
+            ""
+        )
+        self.assertEqual(self.channel.locks.all(), [])
+
+    def test_channel__boot(self):
+        pass
+
+    def test_channel__ban(self):
+        pass
+
+    def test_channel__who(self):
+        self.call(
+            comms.CmdChannel(),
+            "/who testchannel",
+            ""
         )
 
 
