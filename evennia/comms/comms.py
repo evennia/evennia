@@ -208,6 +208,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         banlist = self.banlist
         if target not in banlist:
             banlist.append(target)
+            self.db.ban_list = banlist
             return True
         return False
 
@@ -226,9 +227,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             bool: True if unbanning was successful, False if target was not
                 previously banned.
         """
-        banlist = self.banlist
-        if target not in banlist:
-            banlist.append(target)
+        banlist = list(self.banlist)
+        if target in banlist:
+            banlist = [banned for banned in banlist if banned != target]
+            self.db.ban_list = banlist
             return True
         return False
 
