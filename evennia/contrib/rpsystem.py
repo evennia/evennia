@@ -480,7 +480,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     return string, mapping
 
 
-def send_emote(sender, receivers, emote, anonymous_add="first"):
+def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     """
     Main access function for distribute an emote.
 
@@ -508,7 +508,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
     # we escape the object mappings since we'll do the language ones first
     # (the text could have nested object mappings).
     emote = _RE_REF.sub(r"{{#\1}}", emote)
-
+    # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
+    if 'anonymous_add' in kwargs:
+        anonymous_add = kwargs.pop('anonymous_add')
     if anonymous_add and not "#%i" % sender.id in obj_mapping:
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
@@ -566,7 +568,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             receiver_sdesc_mapping[rkey] = process_sdesc(receiver.key, receiver)
 
         # do the template replacement of the sdesc/recog {#num} markers
-        receiver.msg(sendemote.format(**receiver_sdesc_mapping))
+        receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
 
 
 # ------------------------------------------------------------
