@@ -304,18 +304,18 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
     """
     try:
 
-        @inlineCallbacks
-        def _get_channel_cmdset(account_or_obj):
-            """
-            Helper-method; Get channel-cmdsets
-            """
-            # Create cmdset for all account's available channels
-            try:
-                channel_cmdset = yield CHANNELHANDLER.get_cmdset(account_or_obj)
-                returnValue([channel_cmdset])
-            except Exception:
-                _msg_err(caller, _ERROR_CMDSETS)
-                raise ErrorReported(raw_string)
+        # @inlineCallbacks
+        # def _get_channel_cmdset(account_or_obj):
+        #     """
+        #     Helper-method; Get channel-cmdsets
+        #     """
+        #     # Create cmdset for all account's available channels
+        #     try:
+        #         channel_cmdset = yield CHANNELHANDLER.get_cmdset(account_or_obj)
+        #         returnValue([channel_cmdset])
+        #     except Exception:
+        #         _msg_err(caller, _ERROR_CMDSETS)
+        #         raise ErrorReported(raw_string)
 
         @inlineCallbacks
         def _get_local_obj_cmdsets(obj):
@@ -406,13 +406,13 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                                 cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                             ]
                         cmdsets += local_obj_cmdsets
-                    if not current.no_channels:
-                        # also objs may have channels
-                        channel_cmdsets = yield _get_channel_cmdset(obj)
-                        cmdsets += channel_cmdsets
-                if not current.no_channels:
-                    channel_cmdsets = yield _get_channel_cmdset(account)
-                    cmdsets += channel_cmdsets
+                    # if not current.no_channels:
+                    #     # also objs may have channels
+                    #     channel_cmdsets = yield _get_channel_cmdset(obj)
+                    #     cmdsets += channel_cmdsets
+                # if not current.no_channels:
+                #     channel_cmdsets = yield _get_channel_cmdset(account)
+                #     cmdsets += channel_cmdsets
 
         elif callertype == "account":
             # we are calling the command from the account level
@@ -430,11 +430,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                             cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                         ]
                     cmdsets += local_obj_cmdsets
-                if not current.no_channels:
-                    # also objs may have channels
-                    cmdsets += yield _get_channel_cmdset(obj)
-            if not current.no_channels:
-                cmdsets += yield _get_channel_cmdset(account)
+                # if not current.no_channels:
+                #     # also objs may have channels
+                #     cmdsets += yield _get_channel_cmdset(obj)
+            # if not current.no_channels:
+            #     cmdsets += yield _get_channel_cmdset(account)
 
         elif callertype == "object":
             # we are calling the command from the object level
@@ -448,9 +448,9 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                     ]
                 cmdsets += yield local_obj_cmdsets
-            if not current.no_channels:
-                # also objs may have channels
-                cmdsets += yield _get_channel_cmdset(obj)
+            # if not current.no_channels:
+            #     # also objs may have channels
+            #     cmdsets += yield _get_channel_cmdset(obj)
         else:
             raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
 

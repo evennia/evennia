@@ -247,6 +247,12 @@ class CommandTest(EvenniaTest):
         except InterruptCommand:
             pass
 
+        for inp in inputs:
+            # if there are any inputs left, we may have a non-generator
+            # input to handle (get_input/ask_yes_no that uses a separate
+            # cmdset rather than a yield
+            caller.execute_cmd(inp)
+
         # At this point the mocked .msg methods on each receiver will have
         # stored all calls made to them (that's a basic function of the Mock
         # class). We will not extract them and compare to what we expected to
@@ -1662,14 +1668,15 @@ class TestCommsChannel(CommandTest):
         self.channel.connect(self.char1)
 
     def tearDown(self):
-        self.channel.delete()
+        if self.channel.pk:
+            self.channel.delete()
 
     # test channel command
     def test_channel__noarg(self):
         self.call(
             comms.CmdChannel(),
             "",
-            "Usage"
+            "Channel subscriptions"
         )
 
     def test_channel__msg(self):
@@ -1712,7 +1719,10 @@ class TestCommsChannel(CommandTest):
             "/sub testchannel",
             "You are now subscribed"
         )
-        self.assertTrue(self.char1 in self.channel.subscriptions)
+        self.assertTrue(self.char1 in self.channel.subscriptions.all())
+        alias_msg = comms.CmdChannel.channel_msg_nick_alias.format(alias='testchannel')
+        self.assertEqual(self.char1.nicks.get(alias_msg, category="channel"),
+                         "channel testchannel = $1")
 
     def test_channel__unsub(self):
         self.call(
@@ -1720,32 +1730,40 @@ class TestCommsChannel(CommandTest):
             "/unsub testchannel",
             "You un-subscribed"
         )
-        self.assertFalse(self.char1 in self.channel.subscriptions)
+        self.assertFalse(self.char1 in self.channel.subscriptions.all())
 
-    def test_channel__alias(self):
+    def test_channel__alias__unalias(self):
+        """Add and then remove a channel alias"""
+        # add alias
         self.call(
             comms.CmdChannel(),
             "/alias testchannel = foo",
-            ""
+            "Added/updated your alias 'foo' for channel testchannel."
         )
-        self.assertEqual(self.chan1.aliases.get('foo'), "")
+        self.assertEqual(
+            self.char1.nicks.get('foo $1', category="channel"), "channel testchannel = $1")
 
-    def test_channel__unalias(self):
+        # use alias
+        self.channel.msg = Mock()
+        self.call(
+            comms.CmdChannel(),
+            "foo = test message",
+            "")
+        self.channel.msg.assert_called_with("test message", senders=self.char1)
 
-        self.chan1.aliases.add("foo", "", "channel")
-
+        # remove alias
         self.call(
             comms.CmdChannel(),
             "/unalias testchannel = foo",
-            ""
+            "Removed your channel alias 'foo'"
         )
-        self.assertEqual(self.chan1.aliases.get('foo'), None)
+        self.assertEqual(self.char1.nicks.get('foo $1', category="channel"), None)
 
     def test_channel__mute(self):
         self.call(
             comms.CmdChannel(),
             "/mute testchannel",
-            ""
+            "Muted channel testchannel"
         )
         self.assertTrue(self.char1 in self.channel.mutelist)
 
@@ -1755,7 +1773,7 @@ class TestCommsChannel(CommandTest):
         self.call(
             comms.CmdChannel(),
             "/unmute testchannel = Char1",
-            ""
+            "Un-muted channel testchannel"
         )
         self.assertFalse(self.char1 in self.channel.mutelist)
 
@@ -1763,51 +1781,96 @@ class TestCommsChannel(CommandTest):
         self.call(
             comms.CmdChannel(),
             "/create testchannel2",
-            ""
+            "Created (and joined) new channel"
         )
 
     def test_channel__destroy(self):
+        self.channel.msg = Mock()
         self.call(
             comms.CmdChannel(),
-            "/create testchannel2",
-            ""
+            "/destroy testchannel = delete reason",
+            "Are you sure you want to delete channel ",
+            inputs=['Yes']
         )
+        self.channel.msg.assert_called_with(
+            "delete reason", bypass_mute=True, senders=self.char1)
 
     def test_channel__desc(self):
         self.call(
             comms.CmdChannel(),
             "/desc testchannel = Another description",
-            ""
+            "Updated channel description."
         )
 
     def test_channel__lock(self):
         self.call(
             comms.CmdChannel(),
-            "/lock testchannel = foo:bar()",
-            ""
+            "/lock testchannel = foo:false()",
+            "Added/updated lock on channel"
         )
-        self.assertEqual(self.channel.locks.all(), [])
+        self.assertEqual(self.channel.locks.get('foo'), 'foo:false()')
 
     def test_channel__unlock(self):
-        self.channel.locks.add("foo:bar()")
+        self.channel.locks.add("foo:true()")
         self.call(
             comms.CmdChannel(),
-            "/unlock testchannel = foo:bar()",
-            ""
+            "/unlock testchannel = foo",
+            "Removed lock from channel"
         )
-        self.assertEqual(self.channel.locks.all(), [])
+        self.assertEqual(self.channel.locks.get('foo'), '')
 
     def test_channel__boot(self):
-        pass
+        self.channel.connect(self.char2)
+        self.assertTrue(self.char2 in self.channel.subscriptions.all())
+        self.channel.msg = Mock()
+        self.char2.msg = Mock()
 
-    def test_channel__ban(self):
-        pass
+        self.call(
+            comms.CmdChannel(),
+            "/boot testchannel = Char2 : Booting from channel!",
+            "Are you sure ",
+            inputs=["Yes"]
+        )
+        self.channel.msg.assert_called_with(
+            "Char2 was booted from channel by Char. Reason: Booting from channel!")
+        self.char2.msg.assert_called_with(
+            "You were booted from channel testchannel by Char. Reason: Booting from channel!")
+
+    def test_channel__ban__unban(self):
+        """Test first ban and then unban"""
+
+        # ban
+        self.channel.connect(self.char2)
+        self.assertTrue(self.char2 in self.channel.subscriptions.all())
+        self.channel.msg = Mock()
+        self.char2.msg = Mock()
+
+        self.call(
+            comms.CmdChannel(),
+            "/ban testchannel = Char2 : Banning from channel!",
+            "Are you sure ",
+            inputs=["Yes"]
+        )
+        self.channel.msg.assert_called_with(
+            "Char2 was booted from channel by Char. Reason: Banning from channel!")
+        self.char2.msg.assert_called_with(
+            "You were booted from channel testchannel by Char. Reason: Banning from channel!")
+        self.assertTrue(self.char2 in self.channel.banlist)
+
+        # unban
+
+        self.call(
+            comms.CmdChannel(),
+            "/unban testchannel = Char2",
+            "Un-banned Char2 from channel testchannel"
+        )
+        self.assertFalse(self.char2 in self.channel.banlist)
 
     def test_channel__who(self):
         self.call(
             comms.CmdChannel(),
             "/who testchannel",
-            ""
+            "Subscribed to testchannel:\nChar"
         )
 
 

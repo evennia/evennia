@@ -1678,11 +1678,12 @@ class CmdYesNoQuestion(Command):
 
             # cleanup
             self._clean()
-        except Exception:
+        except Exception as err:
             # make sure to clean up cmdset if something goes wrong
             caller.msg("|rError in ask_yes_no. Choice not confirmed (report to admin)|n")
             logger.log_trace("Error in ask_yes_no")
             self._clean()
+            raise
 
 
 class YesNoQuestionCmdSet(CmdSet):
