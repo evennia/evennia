@@ -55,8 +55,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     Talk on and manage in-game channels.
 
     Usage:
-      channel channelname [= <msg>]
       channel
+      channel channelname [= <msg>]
       channel/list
       channel/all
       channel/history channelname [= index]
@@ -88,7 +88,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         "create", "destroy", "desc", "lock", "unlock", "boot", "ban", "unban", "who",)
 
     # note - changing this will invalidate existing aliases in db
-    channel_msg_nick_alias = "{alias} $1"
+    # channel_msg_nick_alias = r"{alias}\s*?(?P<arg1>.+?){{0,1}}"
+    channel_msg_nick_alias = r"{alias} (?P<arg1>.+?)"
     channel_msg_nick_replacement = "channel {channelname} = $1"
 
     def search_channel(self, channelname, exact=False):
@@ -240,11 +241,13 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         chan_key = channel.key.lower()
         msg_alias = self.channel_msg_nick_alias.format(alias=alias)
+        print("msg_alias", msg_alias)
         msg_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
 
         if chan_key != alias:
             self.caller.nicks.add(alias, chan_key, category="channel", **kwargs)
-        self.caller.nicks.add(msg_alias, msg_replacement, category="channel", **kwargs)
+        self.caller.nicks.add(msg_alias, msg_replacement, category="inputline",
+                              regex_pattern=True, **kwargs)
 
     def remove_alias(self, alias, **kwargs):
         """
@@ -269,8 +272,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if caller.nicks.get(alias, category="channel", **kwargs):
             msg_alias = self.channel_msg_nick_alias.format(alias=alias)
             caller.nicks.remove(alias, category="channel", **kwargs)
-            caller.nicks.remove(msg_alias, category="channel", **kwargs)
+            caller.nicks.remove(msg_alias, category="inputline", **kwargs)
             return True, ""
+
         return False, "No such alias was defined."
 
     def get_channel_aliases(self, channel):
@@ -723,7 +727,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg(err)
             return
-
 
         channels = []
         for channel_name in channel_names:
