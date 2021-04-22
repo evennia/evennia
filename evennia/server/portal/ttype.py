@@ -119,10 +119,6 @@ class Ttype(object):
             if clientname.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
                 xterm256 = clientname.split("MUDLET", 1)[1].strip() >= "1.1"
-                self.protocol.protocol_flags["FORCEDENDLINE"] = True
-
-            if clientname.startswith("TINTIN++"):
-                self.protocol.protocol_flags["FORCEDENDLINE"] = True
 
             if (
                 clientname.startswith("XTERM")
