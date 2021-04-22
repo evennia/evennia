@@ -4,7 +4,9 @@ Unit tests for typeclass base system
 """
 from django.test import override_settings
 from evennia.utils.test_resources import EvenniaTest
+from evennia.typeclasses import attributes
 from mock import patch
+from parameterized import parameterized
 
 # ------------------------------------------------------------
 # Manager tests
@@ -171,3 +173,37 @@ class TestTags(EvenniaTest):
     def test_does_not_have_tag_category_only(self):
         self.obj1.tags.add("tagC", "categoryC")
         self.assertFalse(self.obj1.tags.has(category="categoryD"))
+
+
+class TestNickHandler(EvenniaTest):
+    """
+    Test the nick handler mechanisms.
+
+    """
+    @parameterized.expand([
+        # ("gr $1 $2 at $3", "emote with a $1 smile, $2 grins at $3.", False,
+        #  "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
+        # ("gr (?P<arg1>.+?) (?P<arg2>.+?) at (?P<arg3>.+?)",
+        #  "emote with a $1 smile, $2 grins at $3.", True,
+        #  "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
+        ("groo $1", "channel groo = $1", True,
+         "groo Hello world", "channel groo = Hello world"),
+        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+         "groo Hello world", "channel groo = Hello world"),
+        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+         "groo ", "channel groo = "),
+        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+         "groo", "channel groo = "),
+    ])
+    def test_nick_parsing(self, pattern, replacement, pattern_is_regex,
+                          inp_string, expected_replaced):
+        """
+        Setting up nick patterns and make sure they replace as expected.
+
+        """
+        self.char1.nicks.add(pattern, replacement,
+                             category="inputline", pattern_is_regex=pattern_is_regex)
+        actual_replaced = self.char1.nicks.nickreplace(inp_string)
+
+        self.assertEqual(expected_replaced, actual_replaced)
+        self.char1.nicks.clear()
