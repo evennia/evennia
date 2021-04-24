@@ -219,7 +219,7 @@
         <span class="k">global</span> <span class="n">_FUNCPARSER</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_FUNCPARSER</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
-            <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULE</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>

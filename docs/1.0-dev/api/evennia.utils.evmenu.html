@@ -908,6 +908,143 @@ get_input chain, EvMenu should be considered for anything beyond a
 single question.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">CmdYesNoQuestion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#CmdYesNoQuestion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Handle a prompt for yes or no. Press [return] for the default choice.</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.key">
+<code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'y', 'a', 'yes', 'abort', 'no', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('^$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#CmdYesNoQuestion.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called when user enters anything.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command y a yes abort no n', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">YesNoQuestionCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#YesNoQuestionCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>This stores the input command</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'yes_no_question_cmdset'</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.mergetype">
+<code class="sig-name descname">mergetype</code><em class="property"> = 'Replace'</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.mergetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.no_objs">
+<code class="sig-name descname">no_objs</code><em class="property"> = True</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.no_objs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.no_exits">
+<code class="sig-name descname">no_exits</code><em class="property"> = True</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.no_exits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.no_channels">
+<code class="sig-name descname">no_channels</code><em class="property"> = False</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.no_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#YesNoQuestionCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>called once at creation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmenu.YesNoQuestionCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.utils.evmenu.YesNoQuestionCmdSet'</em><a class="headerlink" href="#evennia.utils.evmenu.YesNoQuestionCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.evmenu.ask_yes_no">
+<code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">ask_yes_no</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">prompt</span></em>, <em class="sig-param"><span class="n">yes_action</span></em>, <em class="sig-param"><span class="n">no_action</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_abort</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#ask_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.ask_yes_no" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper question for asking a simple yes/no question. This will cause
+the system to pause and wait for input from the player.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – The yes/no question to ask. This takes an optional formatting
+marker <strong>{suffix}</strong> which will be filled with ‘Y/N’, [Y]/N or Y/[N]
+depending on the setting of <strong>default</strong>. If <strong>allow_abort</strong>, then the
+<strong>A(bort)</strong> will also be available.</p></li>
+<li><p><strong>yes_action</strong> (<em>callable</em><em> or </em><em>str</em>) – If a callable, this will be called
+with <a href="#id1"><span class="problematic" id="id2">**</span></a>(caller, <a href="#id3"><span class="problematic" id="id4">*</span></a>args, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs) when the yes-choice is made.
+If a string, this string will be echoed back to the caller.</p></li>
+<li><p><strong>no_action</strong> (<em>callable</em><em> or </em><em>str</em>) – If a callable, this will be called
+with <strong>(caller, *args, **kwargs)</strong> when the no-choice is made.
+If a string, this string will be echoed back to the caller.</p></li>
+<li><p><strong>default</strong> (<em>str optional</em>) – One of “N”, “Y”, “A” or None for no default.
+If “A” is given, <strong>allow_abort</strong> is assumed set. The user can choose
+the default option just by pressing return.</p></li>
+<li><p><strong>allow_abort</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the Q(uit) option is available,
+which is neither yes or no.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – This allows to specify the
+session to send the prompt to. It’s usually only needed if <strong>caller</strong>
+is an Account in multisession modes greater than 2. The session is
+then updated by the command and is available (for example in
+callbacks) through <strong>caller.ndb._yes_no_question.session</strong>.</p></li>
+<li><p><strong>*args</strong> – These are passed into the callables, if any.</p></li>
+<li><p><strong>**kwargs</strong> – <p>These are passed into the callables, if any.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If default and allow_abort clashes.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>ask_yes_no(caller, “Are you happy {suffix}?”,</dt><dd><p>“you answered yes”, “you answered no”)</p>
+</dd>
+<dt>ask_yes_no(caller, “Are you sad {suffix}?”,</dt><dd><p>_callable_yes, _callable_no, allow_abort=True)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt id="evennia.utils.evmenu.parse_menu_template">
 <code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">parse_menu_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">menu_template</span></em>, <em class="sig-param"><span class="n">goto_callables</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#parse_menu_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.parse_menu_template" title="Permalink to this definition">¶</a></dt>

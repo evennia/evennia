@@ -161,7 +161,7 @@
 
     <span class="n">_MAINTENANCE_COUNT</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># drop database connection every 7 hrs to avoid default timeouts on MySQL</span>
         <span class="c1"># (see https://github.com/evennia/evennia/issues/1376)</span>
         <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>

@@ -39,6 +39,9 @@
             
   <div class="section" id="the-inline-function-parser">
 <h1>The Inline Function Parser<a class="headerlink" href="#the-inline-function-parser" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 <p>The <a class="reference external" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser">FuncParser</a> extracts and executes
 ‘inline functions’
 embedded in a string on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>. Under the hood, this will
@@ -106,7 +109,7 @@ Evennia expects you to do in a proper text editor, outside of the game, not from
 <div class="section" id="using-the-funcparser">
 <h2>Using the FuncParser<a class="headerlink" href="#using-the-funcparser" title="Permalink to this headline">¶</a></h2>
 <p>You can apply inline function parsing to any string. The
-<a class="reference external" href="../api/evennia.utils.funcparser.FuncParser.html">FuncParser</a> is found in <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.py</span></code>.</p>
+<a class="reference external" href="../api/evennia.utils.funcparser.FuncParser.html">FuncParser</a> is imported as <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -133,7 +136,7 @@ available to the parser as you parse strings with it. It can either be</p>
 to include and how they should be named. Do you want a callable to be available under more than one name?
 Just add it multiple times to the dict, with a different key.</p></li>
 <li><p>A <code class="docutils literal notranslate"><span class="pre">module</span></code> or (more commonly) a <code class="docutils literal notranslate"><span class="pre">python-path</span></code> to a module. This module can define a dict
-<code class="docutils literal notranslate"><span class="pre">FUNCPARSER_CALLABLES</span> <span class="pre">=</span> <span class="pre">{&quot;funcname&quot;:</span> <span class="pre">callable,</span> <span class="pre">...}</span></code> - this will be imported and used like ther <code class="docutils literal notranslate"><span class="pre">dict</span></code> above.
+<code class="docutils literal notranslate"><span class="pre">FUNCPARSER_CALLABLES</span> <span class="pre">=</span> <span class="pre">{&quot;funcname&quot;:</span> <span class="pre">callable,</span> <span class="pre">...}</span></code> - this will be imported and used like the <code class="docutils literal notranslate"><span class="pre">dict</span></code> above.
 If no such variable is defined, <em>every</em> top-level function in the module (whose name doesn’t start with
 an underscore <code class="docutils literal notranslate"><span class="pre">_</span></code>) will be considered a suitable callable. The name of the function will be the <code class="docutils literal notranslate"><span class="pre">$funcname</span></code>
 by which it can be called.</p></li>
@@ -174,7 +177,7 @@ is the <code class="docutils literal notranslate"><span class="pre">raise_errors
 <p>Here the callable will be called as</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">_test</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="n">mydefault</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">myreserved</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> 
-      <span class="n">funcparser</span><span class="o">=&lt;</span><span class="n">FuncParser</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">raise_errrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> 
+      <span class="n">funcparser</span><span class="o">=&lt;</span><span class="n">FuncParser</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> 
 </pre></div>
 </td></tr></table></div>
 <p>The <code class="docutils literal notranslate"><span class="pre">mydefault=2</span></code> kwarg could be overwritten if we made the call as <code class="docutils literal notranslate"><span class="pre">$test(mydefault=...)</span></code>

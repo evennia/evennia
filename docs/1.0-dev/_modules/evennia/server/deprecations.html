@@ -106,7 +106,7 @@
         <span class="s2">&quot;replaces and generalizes that which inlinefuncs used to do).&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_ENABLED&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="s2">&quot;settings.INLINEFUNC_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLE&quot;</span><span class="p">))</span>
+            <span class="s2">&quot;settings.INLINEFUNC_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="s2">&quot;settings.INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_MAX_NESTING&quot;</span><span class="p">))</span>
