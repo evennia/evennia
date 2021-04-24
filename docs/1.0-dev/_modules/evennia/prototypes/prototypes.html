@@ -425,10 +425,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mod_matches</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPES</span>
 
+    <span class="n">allow_fuzzy</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mod_matches</span><span class="p">:</span>
             <span class="c1"># exact match</span>
             <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod_matches</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+            <span class="n">allow_fuzzy</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># fuzzy matching</span>
             <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span>
@@ -452,7 +454,7 @@
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
         <span class="c1"># exact or partial match on key</span>
         <span class="n">exact_match</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">exact_match</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exact_match</span> <span class="ow">and</span> <span class="n">allow_fuzzy</span><span class="p">:</span>
             <span class="c1"># try with partial match instead</span>
             <span class="n">db_matches</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -469,7 +471,7 @@
         <span class="n">nmodules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_prototypes</span><span class="p">)</span>
         <span class="n">ndbprots</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="si">}</span><span class="s2"> matching prototypes.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="si">}</span><span class="s2"> matching prototypes </span><span class="si">{</span><span class="n">module_prototypes</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_iterators</span><span class="p">:</span>
         <span class="c1"># trying to get the entire set of prototypes - we must paginate</span>

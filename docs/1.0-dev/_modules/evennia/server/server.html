@@ -182,13 +182,16 @@
     <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">SERVER_RUNTIME_LAST_UPDATED</span> <span class="o">=</span> <span class="n">now</span>
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;runtime&quot;</span><span class="p">,</span> <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">SERVER_RUNTIME</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">300</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># check cache size every 5 minutes</span>
         <span class="n">_FLUSH_CACHE</span><span class="p">(</span><span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">3700</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">60</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># validate scripts every hour</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="mi">61</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># validate channels off-sync with scripts</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">CHANNEL_HANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># drop database connection every 7 hrs to avoid default timeouts on MySQL</span>
         <span class="c1"># (see https://github.com/evennia/evennia/issues/1376)</span>
         <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
