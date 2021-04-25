@@ -6,6 +6,7 @@ set. The normal, database-tied help system is used for collaborative
 creation of other help topics such as RP help or game-world aides.
 """
 
+import re
 from django.conf import settings
 from collections import defaultdict
 from evennia.utils.utils import fill, dedent
@@ -24,6 +25,12 @@ from evennia.utils.utils import (
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE = settings.HELP_MORE
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+
+_RE_HELP_SUBTOPICS_START = re.compile(
+    r"^\s*?#\s*?help[- ]subtopics\s*?$", re.I + re.M)
+_RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?)$", re.M)
+_RE_HELP_SUBTOPIC_PARSE = re.compile(
+    r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -153,6 +160,122 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         self.msg(text=(text, {"type": "help"}))
 
     @staticmethod
+    def parse_entry_for_subcategories(entry):
+        """
+        Parse a command docstring for special sub-category blocks:
+
+        Args:
+            entry (str): A help entry to parse
+
+        Returns:
+            dict: A mapping that splits the entry into subcategories. This
+                will always hold a key `None` for the main help entry and
+                zero or more keys holding the subcategories. Each is itself
+                a dict with a key `None` for the main text of that subcategory
+                followed by any sub-sub-categories down to a max-depth of 5.
+
+        Example:
+        ::
+
+            '''
+            Main topic text
+
+            # help-subcategories
+
+            ## foo
+
+            A subcategory of the main entry, accessible as `help topic foo`
+            (or using /, like `help topic/foo`)
+
+            ## bar
+
+            Another subcategory, accessed as `help topic bar`
+            (or `help topic/bar`)
+
+            ### moo
+
+            A subcategory of bar, accessed as `help bar moo`
+            (or `help bar/moo`)
+
+            #### dum
+
+            A subcategory of moo, accessed `help bar moo dum`
+            (or `help bar/moo/dum`)
+
+            '''
+
+        This will result in this returned entry structure:
+        ::
+
+            {
+               None: "Main topic text":
+               "foo": {
+                    None: "main topic/foo text"
+               },
+               "bar": {
+                    None: "Main topic/bar text",
+                    "moo": {
+                        None: "topic/bar/moo text"
+                        "dum": {
+                            None: "topic/bar/moo/dum text"
+                        }
+                    }
+               }
+            }
+
+
+        Apart from making
+        sub-categories at the bottom of the entry.
+
+        This will be applied both to command docstrings and database-based help
+        entries.
+
+        """
+        topic, *subcategories = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
+        structure = {None: topic.strip()}
+
+        if subcategories:
+            subcategories = subcategories[0]
+        else:
+            return structure
+
+        keypath = []
+        current_nesting = 0
+        subtopic = None
+
+        for part in _RE_HELP_SUBTOPIC_SPLIT.split(subcategories):
+            subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part)
+            if subtopic_match:
+                # a new sub(-sub..) category starts.
+                mdict = subtopic_match.groupdict()
+                subtopic = mdict['name'].strip()
+                new_nesting = len(mdict['nesting']) - 1
+                nestdiff = new_nesting - current_nesting
+                if nestdiff < 0:
+                    # jumping back up in nesting
+                    for _ in range(abs(nestdiff) + 1):
+                        try:
+                            keypath.pop()
+                        except IndexError:
+                            pass
+                keypath.append(subtopic)
+                current_nesting = new_nesting
+            else:
+                # an entry belonging to a subtopic - find the nested location
+                dct = structure
+                if not keypath and subtopic is not None:
+                    structure[subtopic] = part.strip()
+                else:
+                    for key in keypath:
+                        if key in dct:
+                            dct = dct[key]
+                        else:
+                            dct[key] = {
+                                None: part.strip()
+                            }
+        return structure
+
+    @staticmethod
     def format_help_entry(title, help_text, aliases=None, suggested=None):
         """
         This visually formats the help entry.
@@ -259,6 +382,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         """
         self.original_args = self.args.strip()
         self.args = self.args.strip().lower()
+
 
     def func(self):
         """

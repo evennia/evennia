@@ -76,7 +76,14 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
       channel/unban[/quiet] channelname[, channelname, ...] = subscribername
       channel/who channelname
 
-    This handles all operations on channels.
+    # help-subcategories
+    ## channel/list
+
+    This handles all operations on channels. Note that the default operation is to
+    assign a nick/alias for sending to a channel. This would mean you can send
+    using 'foo Hello world' instead of using 'channel foo = Hello world'. Note that
+    aliases set when creating the channel are made available as aliases to subscribers
+    automatically.
 
     """
     key = "channel"
