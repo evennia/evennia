@@ -177,23 +177,38 @@ class TestTags(EvenniaTest):
 
 class TestNickHandler(EvenniaTest):
     """
-    Test the nick handler mechanisms.
+    Test the nick handler replacement.
 
     """
     @parameterized.expand([
-        # ("gr $1 $2 at $3", "emote with a $1 smile, $2 grins at $3.", False,
-        #  "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
-        # ("gr (?P<arg1>.+?) (?P<arg2>.+?) at (?P<arg3>.+?)",
-        #  "emote with a $1 smile, $2 grins at $3.", True,
-        #  "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
-        ("groo $1", "channel groo = $1", True,
+        # shell syntax
+        ("gr $1 $2 at $3", "emote with a $1 smile, $2 grins at $3.", False,
+         "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
+        # regex syntax
+        ("gr (?P<arg1>.+?) (?P<arg2>.+?) at (?P<arg3>.+?)",
+         "emote with a $1 smile, $2 grins at $3.", True,
+         "gr happy Foo at Bar", "emote with a happy smile, Foo grins at Bar."),
+        # channel-style syntax
+        ("groo $1", "channel groo = $1", False,
          "groo Hello world", "channel groo = Hello world"),
-        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)", "channel groo = $1", True,
          "groo Hello world", "channel groo = Hello world"),
-        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)", "channel groo = $1", True,
          "groo ", "channel groo = "),
-        (r"groo\s*?(?P<arg1>.*?)", "channel groo = $1", False,
+        (r"groo\s*?|groo\s*?(?P<arg1>.+?)", "channel groo = $1", True,
          "groo", "channel groo = "),
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)", "channel groo = $1", True,
+         "grooHello world", "grooHello world"),  # not matched - this is correct!
+        # optional, space-separated arguments
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)(?:\s+?(?P<arg2>.+?)){0,1}",
+         "channel groo = $1 and $2", True,
+         "groo Hello World", "channel groo = Hello and World"),
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)(?:\s+?(?P<arg2>.+?)){0,1}",
+         "channel groo = $1 and $2", True,
+         "groo Hello", "channel groo = Hello and "),
+        (r"groo\s*?|groo\s+?(?P<arg1>.+?)(?:\s+?(?P<arg2>.+?)){0,1}",
+         "channel groo = $1 and $2", True,
+         "groo", "channel groo =  and "),  # $1/$2 replaced by ''
     ])
     def test_nick_parsing(self, pattern, replacement, pattern_is_regex,
                           inp_string, expected_replaced):
@@ -201,6 +216,7 @@ class TestNickHandler(EvenniaTest):
         Setting up nick patterns and make sure they replace as expected.
 
         """
+        # from evennia import set_trace;set_trace()
         self.char1.nicks.add(pattern, replacement,
                              category="inputline", pattern_is_regex=pattern_is_regex)
         actual_replaced = self.char1.nicks.nickreplace(inp_string)
