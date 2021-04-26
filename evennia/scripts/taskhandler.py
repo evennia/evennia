@@ -67,7 +67,7 @@ class TaskHandlerTask:
             d.pause()
 
     def unpause(self):
-        """Process all callbacks made since pause() was called."""
+        """Unpause a task, run the task if it has passed delay time."""
         d = self.deferred
         if d:
             d.unpause()
@@ -328,8 +328,9 @@ class TaskHandler(object):
 
         # record the task to the tasks dictionary
         persistent = kwargs.get("persistent", False)
-        if persistent:
+        if "persistent" in kwargs:
             del kwargs["persistent"]
+        if persistent:
             safe_args = []
             safe_kwargs = {}
 
@@ -358,10 +359,10 @@ class TaskHandler(object):
                 else:
                     safe_kwargs[key] = value
 
-            self.tasks[task_id] = (comp_time, callback, safe_args, safe_kwargs, True, None)
+            self.tasks[task_id] = (comp_time, callback, safe_args, safe_kwargs, persistent, None)
             self.save()
         else:  # this is a non-persitent task
-            self.tasks[task_id] = (comp_time, callback, args, kwargs, True, None)
+            self.tasks[task_id] = (comp_time, callback, args, kwargs, persistent, None)
 
         # defer the task
         callback = self.do_task
