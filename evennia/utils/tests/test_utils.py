@@ -463,23 +463,23 @@ class TestDelay(EvenniaTest):
         self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
         self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
         self.assertEqual(self.char1.ndb.dummy_var, False)
-        _TASK_HANDLER.remove_all()
+        _TASK_HANDLER.clear()
         self.char1.ndb.dummy_var = False
         _TASK_HANDLER._now = False
         # replicate a restart
-        _TASK_HANDLER.remove_all()
+        _TASK_HANDLER.clear()
         _TASK_HANDLER.save()
         self.assertFalse(_TASK_HANDLER.tasks)
         self.assertFalse(_TASK_HANDLER.to_save)
             # create a persistent task.
         t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
         _TASK_HANDLER.save()
-        _TASK_HANDLER.remove_all(False)  # remove all tasks, do not save this change.
+        _TASK_HANDLER.clear(False)  # remove all tasks, do not save this change.
         _TASK_HANDLER.clock.advance(timedelay)  # advance twisted reactor time past callback time
         self.assertEqual(self.char1.ndb.dummy_var, False)  # task has not run
         _TASK_HANDLER.load()
         _TASK_HANDLER.create_delays()
         _TASK_HANDLER.clock.advance(timedelay)  # Clock must advance to trigger, even if past timedelay
         self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
-        _TASK_HANDLER.remove_all()
+        _TASK_HANDLER.clear()
         self.char1.ndb.dummy_var = False
