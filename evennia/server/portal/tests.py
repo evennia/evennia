@@ -252,6 +252,7 @@ class TestTelnet(TwistedTestCase):
         self.assertTrue(self.proto.protocol_flags["XTERM256"])
         self.assertEqual(self.proto.protocol_flags["CLIENTNAME"], "MUDLET")
         self.assertTrue(self.proto.protocol_flags["FORCEDENDLINE"])
+        self.assertFalse(self.proto.protocol_flags["NOPROMPTGOAHEAD"])
         self.proto.dataReceived(b"".join([IAC, SB, TTYPE, IS, b"XTERM", IAC, SE]))
         self.proto.dataReceived(b"".join([IAC, SB, TTYPE, IS, b"MTTS 137", IAC, SE]))
         self.assertEqual(self.proto.handshakes, 5)
