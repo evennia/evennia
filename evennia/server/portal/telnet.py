@@ -337,7 +337,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         line = line.replace(b"\n", b"\r\n")
         if not line.endswith(b"\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
             line += b"\r\n"
-        if not self.protocol_flags.get("NOGOAHEAD", True) and self.protocol_flags.get("NOPROMPTGOAHEAD", True):
+        if not self.protocol_flags.get("NOGOAHEAD", True):
             line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
 
@@ -440,8 +440,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                     prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
-            if not self.protocol_flags.get("NOGOAHEAD", True) and not self.protocol_flags.get("NOPROMPTGOAHEAD", True):
-                    prompt += IAC + GA
+            if not self.protocol_flags.get("NOPROMPTGOAHEAD", self.protocol_flags.get("NOGOAHEAD", True)):
+                prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:
             if echo is not None:
