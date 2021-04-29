@@ -103,17 +103,137 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
     )
 
 
+def parse_entry_for_subcategories(entry):
+    """
+    Parse a command docstring for special sub-category blocks:
+
+    Args:
+        entry (str): A help entry to parse
+
+    Returns:
+        dict: The dict is a mapping that splits the entry into subcategories. This
+            will always hold a key `None` for the main help entry and
+            zero or more keys holding the subcategories. Each is itself
+            a dict with a key `None` for the main text of that subcategory
+            followed by any sub-sub-categories down to a max-depth of 5.
+
+    Example:
+    ::
+
+        '''
+        Main topic text
+
+        # HELP-SUBCATEGORIES
+
+        ## foo
+
+        A subcategory of the main entry, accessible as `help topic foo`
+        (or using /, like `help topic/foo`)
+
+        ## bar
+
+        Another subcategory, accessed as `help topic bar`
+        (or `help topic/bar`)
+
+        ### moo
+
+        A subcategory of bar, accessed as `help bar moo`
+        (or `help bar/moo`)
+
+        #### dum
+
+        A subcategory of moo, accessed `help bar moo dum`
+        (or `help bar/moo/dum`)
+
+        '''
+
+    This will result in this returned entry structure:
+    ::
+
+        {
+           None: "Main topic text":
+           "foo": {
+                None: "main topic/foo text"
+           },
+           "bar": {
+                None: "Main topic/bar text",
+                "moo": {
+                    None: "topic/bar/moo text"
+                    "dum": {
+                        None: "topic/bar/moo/dum text"
+                    }
+                }
+           }
+        }
+
+
+    Apart from making
+    sub-categories at the bottom of the entry.
+
+    This will be applied both to command docstrings and database-based help
+    entries.
+
+    """
+    topic, *subtopics = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
+    structure = {None: topic.strip()}
+    subtopics_index = []
+
+    if subtopics:
+        subctopics = subtopics[0]
+    else:
+        return structure
+
+    keypath = []
+    current_nesting = 0
+    subtopic = None
+
+    for part in _RE_HELP_SUBTOPIC_SPLIT.split(subtopics):
+        subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part)
+        if subtopic_match:
+            # a new sub(-sub..) category starts.
+            mdict = subtopic_match.groupdict()
+            subtopic = mdict['name'].strip()
+            subtopic_index.append(subtopic)
+            new_nesting = len(mdict['nesting']) - 1
+            nestdiff = new_nesting - current_nesting
+            if nestdiff < 0:
+                # jumping back up in nesting
+                for _ in range(abs(nestdiff) + 1):
+                    try:
+                        keypath.pop()
+                    except IndexError:
+                        pass
+            keypath.append(subtopic)
+            current_nesting = new_nesting
+        else:
+            # an entry belonging to a subtopic - find the nested location
+            dct = structure
+            if not keypath and subtopic is not None:
+                structure[subtopic] = part.strip()
+            else:
+                for key in keypath:
+                    if key in dct:
+                        dct = dct[key]
+                    else:
+                        dct[key] = {
+                            None: part.strip()
+                        }
+    return structure, subtopic_index
+
+
 class CmdHelp(COMMAND_DEFAULT_CLASS):
     """
     View help or a list of topics
 
     Usage:
-      help <topic or command>
-      help list
-      help all
+      help
+      help <topic, command or category>
+      help <topic> / <subtopic>
+      help <topic> / <subtopic> / <subsubtopic> ...
 
-    This will search for help on commands and other
-    topics related to the game.
+    Use the help command alone to see an index of all help topics, organized by
+    category. Some long topics may offer additional sub-topics.
+
     """
 
     key = "help"
@@ -135,6 +255,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
     # number of suggestions (set to 0 to remove suggestions from help)
     suggestion_maxnum = 5
+
+    # separator between subtopics:
+    subtopic_separator_char = r"/"
 
     def msg_help(self, text):
         """
@@ -160,165 +283,74 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         self.msg(text=(text, {"type": "help"}))
 
     @staticmethod
-    def parse_entry_for_subcategories(entry):
-        """
-        Parse a command docstring for special sub-category blocks:
-
-        Args:
-            entry (str): A help entry to parse
-
-        Returns:
-            dict: A mapping that splits the entry into subcategories. This
-                will always hold a key `None` for the main help entry and
-                zero or more keys holding the subcategories. Each is itself
-                a dict with a key `None` for the main text of that subcategory
-                followed by any sub-sub-categories down to a max-depth of 5.
-
-        Example:
-        ::
-
-            '''
-            Main topic text
-
-            # help-subcategories
-
-            ## foo
-
-            A subcategory of the main entry, accessible as `help topic foo`
-            (or using /, like `help topic/foo`)
-
-            ## bar
-
-            Another subcategory, accessed as `help topic bar`
-            (or `help topic/bar`)
-
-            ### moo
-
-            A subcategory of bar, accessed as `help bar moo`
-            (or `help bar/moo`)
-
-            #### dum
-
-            A subcategory of moo, accessed `help bar moo dum`
-            (or `help bar/moo/dum`)
-
-            '''
-
-        This will result in this returned entry structure:
-        ::
-
-            {
-               None: "Main topic text":
-               "foo": {
-                    None: "main topic/foo text"
-               },
-               "bar": {
-                    None: "Main topic/bar text",
-                    "moo": {
-                        None: "topic/bar/moo text"
-                        "dum": {
-                            None: "topic/bar/moo/dum text"
-                        }
-                    }
-               }
-            }
-
-
-        Apart from making
-        sub-categories at the bottom of the entry.
-
-        This will be applied both to command docstrings and database-based help
-        entries.
-
-        """
-        topic, *subcategories = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
-        structure = {None: topic.strip()}
-
-        if subcategories:
-            subcategories = subcategories[0]
-        else:
-            return structure
-
-        keypath = []
-        current_nesting = 0
-        subtopic = None
-
-        for part in _RE_HELP_SUBTOPIC_SPLIT.split(subcategories):
-            subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part)
-            if subtopic_match:
-                # a new sub(-sub..) category starts.
-                mdict = subtopic_match.groupdict()
-                subtopic = mdict['name'].strip()
-                new_nesting = len(mdict['nesting']) - 1
-                nestdiff = new_nesting - current_nesting
-                if nestdiff < 0:
-                    # jumping back up in nesting
-                    for _ in range(abs(nestdiff) + 1):
-                        try:
-                            keypath.pop()
-                        except IndexError:
-                            pass
-                keypath.append(subtopic)
-                current_nesting = new_nesting
-            else:
-                # an entry belonging to a subtopic - find the nested location
-                dct = structure
-                if not keypath and subtopic is not None:
-                    structure[subtopic] = part.strip()
-                else:
-                    for key in keypath:
-                        if key in dct:
-                            dct = dct[key]
-                        else:
-                            dct[key] = {
-                                None: part.strip()
-                            }
-        return structure
-
-    @staticmethod
-    def format_help_entry(title, help_text, aliases=None, suggested=None):
+    def format_help_entry(topic="", help_text="", aliases=None, suggested=None,
+                          subtopics=None):
         """
         This visually formats the help entry.
         This method can be overriden to customize the way a help
         entry is displayed.
 
         Args:
-            title (str): the title of the help entry.
-            help_text (str): the text of the help entry.
-            aliases (list of str or None): the list of aliases.
-            suggested (list of str or None): suggested reading.
+            title (str): The title of the help entry.
+            help_text (str): Text of the help entry.
+            aliases (list): List of help-aliases (displayed in header).
+            suggested (list): Strings suggested reading (based on title).
+            subtopics (list): A list of strings - the subcategories to this entry.
 
         Returns the formatted string, ready to be sent.
 
         """
         start = f"{_SEP}\n"
-        title = f"|CHelp for |w{title}|n" if title else ""
+        title = f"|CHelp for |w{topic}|n" if topic else ""
         aliases = (
             " |C(aliases: {}|C)|n".format("|C,|n ".join(f"|w{ali}|n" for ali in aliases))
-            if aliases else "")
+            if aliases else ""
+        )
         help_text = (
-            f"\n{dedent(help_text.rstrip())}"if help_text else "")
+            f"\n{dedent(help_text.rstrip())}" if help_text else ""
+        )
+        subtopics = (
+            "\nSubtopics (read with |whelp {} / subtopic): {}".format(
+                topic, "|C,|n ".join(f"|w{subtop}|n" for subtop in subtopics)
+                if subtopics else ""
+            )
+        )
         suggested = (
             "\n\n|CSuggested:|n {}".format(
-                fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested)))
-            if suggested else "")
+                fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested))
+            )
+            if suggested else ""
+        )
         end = f"\n{_SEP}"
 
-        return "".join((start, title, aliases, help_text, suggested, end))
+        return "".join((start, title, aliases, help_text, subtopics, suggested, end))
 
-    def format_help_list(self, hdict_cmds, hdict_db):
+    def format_help_index(self, cmd_help_dict=None, db_help_dict=None):
         """
-        Output a category-ordered list. The input are the
+        Output a category-ordered g for displaying the main help, grouped by
+        category.
+
+        Args:
+            cmd_help_dict (dict): A dict `{"category": [topic, topic, ...]}` for
+                command-based help.
+            db_help_dict (dict): A dict `{"category": [topic, topic], ...]}` for
+                database-based help.
+
+        Returns:
+            str: The help index organized into a grid.
+
+        The input are the
         pre-loaded help files for commands and database-helpfiles
         respectively.  You can override this method to return a
         custom display of the list of commands and topics.
+
         """
         category_clr = "|w"
         topic_clr = "|G"
         width = self.client_width()
         grid = []
         verbatim_elements = []
-        for category in sorted(set(list(hdict_cmds.keys()) + list(hdict_db.keys()))):
+        for category in sorted(set(list(cmd_help_dict.keys()) + list(db_help_dict.keys()))):
 
             category_str = f"-- {category.title()} "
             grid.append(
@@ -328,7 +360,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             )
             verbatim_elements.append(len(grid) - 1)
 
-            entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
+            entries = sorted(set(cmd_help_dict.get(category, []) + db_help_dict.get(category, [])))
             grid.extend(entries)
 
         gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
@@ -379,23 +411,35 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
     def parse(self):
         """
         input is a string containing the command or topic to match.
-        """
-        self.original_args = self.args.strip()
-        self.args = self.args.strip().lower()
 
+        The allowed syntax is
+        ::
+
+            help <topic>[/<subtopic>[/<subtopic>[/...]]]
+
+        The database/command query is always for `<topic>`, and any subtopics
+        is then parsed from there. If a `<topic>` has spaces in it, it is
+        always matched before assuming the space begins a subtopic.
+
+        """
+        # parse the query
+
+        if self.args:
+            self.subtopics = [part.strip().lower()
+                              for part in self.args.split(self.subtopic_separator_char)]
+            self.topic = self.subtopics.pop(0)
+        else:
+            self.topic = ""
+            self.subtopics = []
 
     def func(self):
         """
         Run the dynamic help entry creator.
         """
-        query, cmdset = self.args, self.cmdset
         caller = self.caller
-
+        query, subtopics, cmdset = self.topic, self.subtopics, self.cmdset
         suggestion_cutoff = self.suggestion_cutoff
         suggestion_maxnum = self.suggestion_maxnum
-
-        if not query:
-            query = "all"
 
         # removing doublets in cmdset, caused by cmdhandler
         # having to allow doublet commands to manage exits etc.
@@ -403,86 +447,136 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         # retrieve all available commands and database topics
         all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
-        all_topics = [
+        all_db_topics = [
             topic for topic in HelpEntry.objects.all() if topic.access(caller, "view", default=True)
         ]
-        all_categories = list(
-            set(
-                [HelpCategory(cmd.help_category) for cmd in all_cmds]
-                + [HelpCategory(topic.help_category) for topic in all_topics]
+        all_categories = list(set(
+            [HelpCategory(cmd.help_category) for cmd in all_cmds]
+                + [HelpCategory(topic.help_category) for topic in all_db_topics]
             )
         )
 
-        if query in ("list", "all"):
-            # we want to list all available help entries, grouped by category
-            hdict_cmd = defaultdict(list)
-            hdict_topic = defaultdict(list)
-            # create the dictionaries {category:[topic, topic ...]} required by format_help_list
+        if not query:
+            # list all available help entries, grouped by category. We want to
+            # build dictionaries {category: [topic, topic, ...], ...}
+            cmd_help_dict = defaultdict(list)
+            db_help_dict = defaultdict(list)
+
             # Filter commands that should be reached by the help
             # system, but not be displayed in the table, or be displayed differently.
             for cmd in all_cmds:
                 if self.should_list_cmd(cmd, caller):
                     key = (cmd.auto_help_display_key
                            if hasattr(cmd, "auto_help_display_key") else cmd.key)
-                    hdict_cmd[cmd.help_category].append(key)
-            [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
-            # report back
-            self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
+                    cmd_help_dict[cmd.help_category].append(key)
+
+            for db_topic in all_db_topics:
+                db_help_dict[db_topic.help_category].append(db_topic.key)
+
+            output = self.format_help_index(cmd_help_dict, db_help_dict)
+            self.msg_help(output)
+
             return
 
-        # Try to access a particular help entry or category
+        # We have a query - try to find a specific topic/category using the
+        # Lunr search engine
+
+        # all available options
         entries = [cmd for cmd in all_cmds if cmd] + list(HelpEntry.objects.all()) + all_categories
+        match, suggestions = None, None
 
         for match_query in [f"{query}~1", f"{query}*"]:
             # We first do an exact word-match followed by a start-by query
+            # the return of this will either be a HelpCategory, a Command or a HelpEntry.
             matches, suggestions = help_search_with_index(
                 match_query, entries, suggestion_maxnum=self.suggestion_maxnum
             )
-
             if matches:
                 match = matches[0]
-                if isinstance(match, HelpCategory):
-                    formatted = self.format_help_list(
-                        {
-                            match.key: [
-                                cmd.key
-                                for cmd in all_cmds
-                                if match.key.lower() == cmd.help_category
-                            ]
-                        },
-                        {
-                            match.key: [
-                                topic.key
-                                for topic in all_topics
-                                if match.key.lower() == topic.help_category
-                            ]
-                        },
-                    )
-                elif inherits_from(match, "evennia.commands.command.Command"):
-                    formatted = self.format_help_entry(
-                        match.key,
-                        match.get_help(caller, cmdset),
-                        aliases=match.aliases,
-                        suggested=suggestions[1:],
-                    )
+                break
+
+        if not match:
+            # no exact matches found. Just give suggestions.
+            output = self.format_help_entry(
+                topic="",
+                help_text=f"No help entry found for '{query}'",
+                suggested=suggestions
+            )
+            self.msg_help(output)
+            return
+
+        if isinstance(match, HelpCategory):
+            # no subtopics for categories - these are just lists of topics
+            output = self.format_help_index(
+                {
+                    match.key: [
+                        cmd.key
+                        for cmd in all_cmds
+                        if match.key.lower() == cmd.help_category
+                    ]
+                },
+                {
+                    match.key: [
+                        topic.key
+                        for topic in all_topics
+                        if match.key.lower() == topic.help_category
+                    ]
+                },
+            )
+            self.msg_help(output)
+            return
+
+        if inherits_from(match, "evennia.commands.command.Command"):
+            # a command match
+            topic = match.key
+            help_text = match.get_help(caller, cmdset)
+            aliases = match.aliases,
+            suggested=suggestions[1:]
+        else:
+            # a database match
+            topic = match.key
+            help_text = match.entrytext
+            aliases = match.aliases.all()
+            suggested = suggestions[1:]
+
+        # parse for subtopics. The subtopic_map is a dict with the current topic/subtopic
+        # text is stored under a `None` key and all other keys are subtopic titles pointing
+        # to nested dicts.
+
+        subtopic_map = parse_entry_for_subcategories(help_text)
+        help_text = subtopic_map[None]
+        subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
+
+        if subtopics:
+            # if we asked for subtopics, parse the found topic_text to see if any match.
+            # the subtopics is a list describing the path through the subtopic_map.
+            for subtopic_query in subtopics:
+                subtopic_query_lower = subtopic_query.lower()
+                checked_topic = topic + f" / {subtopic_query.lower().capitalize()}"
+                subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
+                if subtopic_query_lower() in subtopic_index:
+                    # keep stepping down into the tree
+                    subtopic_map = subtopic_map.pop(subtopic_query)
+                    topic = checked_topic
                 else:
-                    formatted = self.format_help_entry(
-                        match.key,
-                        match.entrytext,
-                        aliases=match.aliases.all(),
-                        suggested=suggestions[1:],
+                    output = self.format_help_entry(
+                        topic=topic,
+                        help_text=f"No help entry found for '{checked_topic}'",
+                        subtopics=subtopic_index
                     )
+                    self.msg_help(output)
+                    return
+            # we reached the bottom of the topic tree
+            help_text = subtopic_map[None]
 
-                self.msg_help(formatted)
-                return
-
-        # no exact matches found. Just give suggestions.
-        self.msg(
-            self.format_help_entry(
-                "", f"No help entry found for '{query}'", None, suggested=suggestions
-            ),
-            options={"type": "help"},
+        output = self.format_help_entry(
+            topic=topic,
+            help_text=help_text,
+            aliases=aliases if not subtopics else None,
+            subtopics=subtopic_index
         )
+
+        self.msg_help(output)
 
 
 def _loadhelp(caller):
