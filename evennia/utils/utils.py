@@ -168,16 +168,18 @@ def crop(text, width=None, suffix="[...]"):
         return to_str(text)
 
 
-def dedent(text, baseline_index=None):
+def dedent(text, baseline_index=None, indent=None):
     """
     Safely clean all whitespace at the left of a paragraph.
 
     Args:
         text (str): The text to dedent.
-        baseline_index (int or None, optional): Which row to use as a 'base'
+        baseline_index (int, optional): Which row to use as a 'base'
             for the indentation. Lines will be dedented to this level but
             no further. If None, indent so as to completely deindent the
             least indented text.
+        indent (int, optional): If given, force all lines to this indent.
+            This bypasses `baseline_index`.
 
     Returns:
         text (str): Dedented string.
@@ -190,7 +192,12 @@ def dedent(text, baseline_index=None):
     """
     if not text:
         return ""
-    if baseline_index is None:
+    if indent is not None:
+        lines = text.split("\n")
+        ind = " " * indent
+        indline = "\n" + ind
+        return ind + indline.join(line.strip() for line in lines)
+    elif baseline_index is None:
         return textwrap.dedent(text)
     else:
         lines = text.split("\n")

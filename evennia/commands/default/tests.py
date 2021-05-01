@@ -16,6 +16,7 @@ import types
 import datetime
 from anything import Anything
 
+from parameterized import parameterized
 from django.conf import settings
 from unittest.mock import patch, Mock, MagicMock
 
@@ -442,7 +443,7 @@ class TestHelp(CommandTest):
         entry = """
         Main topic text
 
-        # help-subtopics
+        # subtopics
 
         ## foo
 
@@ -484,8 +485,154 @@ class TestHelp(CommandTest):
             }
         }
 
-        actual_result = help_module.CmdHelp.parse_entry_for_subcategories(entry)
+        actual_result = help_module.parse_entry_for_subcategories(entry)
         self.assertEqual(expected, actual_result)
+
+    def test_parse_single_entry(self):
+        """
+        Test parsing single subcategory
+
+        """
+
+        entry = """
+        Main topic text
+
+        # SUBTOPICS
+
+        ## creating extra stuff
+
+        Help on creating extra stuff.
+
+        """
+        expected = {
+            None: "Main topic text",
+            "creating extra stuff": {
+                None: "Help on creating extra stuff."
+            }
+        }
+
+        actual_result = help_module.parse_entry_for_subcategories(entry)
+        self.assertEqual(expected, actual_result)
+
+    @parameterized.expand([
+        ("test",  # main help entry
+         "Help for test\n\n"
+         "Main help text\n\n"
+         "Subtopics:\n"
+         "  test/creating extra stuff\n"
+         "  test/something else\n"
+         "  test/more"
+         ),
+        ("test/creating extra stuff",  # subtopic, full match
+         "Help for test/creating extra stuff\n\n"
+         "Help on creating extra stuff.\n\n"
+         "Subtopics:\n"
+         "  test/creating extra stuff/subsubtopic\n"
+         ),
+        ("test/creating",  # startswith-match
+         "Help for test/creating extra stuff\n\n"
+         "Help on creating extra stuff.\n\n"
+         "Subtopics:\n"
+         "  test/creating extra stuff/subsubtopic\n"
+         ),
+        ("test/extra",  # partial match
+         "Help for test/creating extra stuff\n\n"
+         "Help on creating extra stuff.\n\n"
+         "Subtopics:\n"
+         "  test/creating extra stuff/subsubtopic\n"
+         ),
+        ("test/extra/subsubtopic",  # partial subsub-match
+         "Help for test/creating extra stuff/subsubtopic\n\n"
+         "A subsubtopic text"
+         ),
+        ("test/creating extra/subsub",  # partial subsub-match
+         "Help for test/creating extra stuff/subsubtopic\n\n"
+         "A subsubtopic text"
+         ),
+        ("test/Something else",  # case
+         "Help for test/something else\n\n"
+         "Something else"
+         ),
+        ("test/More",  # case
+         "Help for test/more\n\n"
+         "Another text\n\n"
+         "Subtopics:\n"
+         "  test/more/second-more"
+         ),
+        ("test/More/Second-more",
+         "Help for test/more/second-more\n\n"
+         "The Second More text.\n\n"
+         "Subtopics:\n"
+         "  test/more/second-more/more again\n\n"
+         "  test/more/second-more/third more"
+         ),
+        ("test/More/-more",  # partial match
+         "Help for test/more/second-more\n\n"
+         "The Second More text.\n\n"
+         "Subtopics:\n"
+         "  test/more/second-more/more again\n"
+         "  test/more/second-more/third more"
+         ),
+        ("test/more/second/more again",
+         "Help for test/more/second-more/more again\n"
+         "Even more text.\n"
+         ),
+        ("test/more/second/third",
+         "Help for test/more/second-more/third more\n\n"
+         "Third more text\n"
+         ),
+    ])
+    def test_subtopic_fetch(self, helparg, expected):
+        """
+        Check retrieval of subtopics.
+
+        """
+        class TestCmd(Command):
+            """
+            Main help text
+
+            # SUBTOPICS
+
+                ## creating extra stuff
+
+                Help on creating extra stuff.
+
+                    ### subsubtopic
+
+                    A subsubtopic text
+
+                ## Something else
+
+                Something else
+
+                ## More
+
+                Another text
+
+                    ### Second-More
+
+                    The Second More text.
+
+                            #### More again
+
+                            Even more text.
+
+                            #### Third more
+
+                            Third more text
+
+            """
+            key = "test"
+
+        class TestCmdSet(CmdSet):
+            def at_cmdset_creation(self):
+                self.add(TestCmd())
+                self.add(help_module.CmdHelp())
+
+        self.call(help_module.CmdHelp(),
+                  helparg,
+                  expected,
+                  cmdset=TestCmdSet())
 
 
 class TestSystem(CommandTest):
