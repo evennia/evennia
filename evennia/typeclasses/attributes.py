@@ -1476,7 +1476,7 @@ class NickHandler(AttributeHandler):
                 then must mark numbered arguments as a named regex-groupd named `argN`.
                 For example, `(?P<arg1>.+?)` will match the behavior of using `$1`
                 in the shell pattern.
-            kwargs (any, optional): These are passed on to `AttributeHandler.get`.
+            **kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         Notes:
             For most cases, the shell-pattern is much shorter and easier. The

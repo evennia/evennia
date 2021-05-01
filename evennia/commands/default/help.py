@@ -4,6 +4,7 @@ are best written by those that write the commands - the admins. So
 command-help is all auto-loaded and searched from the current command
 set. The normal, database-tied help system is used for collaborative
 creation of other help topics such as RP help or game-world aides.
+
 """
 
 import re
@@ -19,7 +20,7 @@ from evennia.utils.utils import (
     string_suggestions,
     class_from_module,
     inherits_from,
-    format_grid,
+    format_grid, pad
 )
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -27,10 +28,12 @@ HELP_MORE = settings.HELP_MORE
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
 _RE_HELP_SUBTOPICS_START = re.compile(
-    r"^\s*?#\s*?help[- ]subtopics\s*?$", re.I + re.M)
-_RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?)$", re.M)
+    r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
+_RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$", re.M + re.I)
 _RE_HELP_SUBTOPIC_PARSE = re.compile(
     r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
+MAX_SUBTOPIC_NESTING = 5
+
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -123,7 +126,7 @@ def parse_entry_for_subcategories(entry):
         '''
         Main topic text
 
-        # HELP-SUBCATEGORIES
+        # SUBTOPICS
 
         ## foo
 
@@ -176,10 +179,9 @@ def parse_entry_for_subcategories(entry):
     """
     topic, *subtopics = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
     structure = {None: topic.strip()}
-    subtopics_index = []
 
     if subtopics:
-        subctopics = subtopics[0]
+        subtopics = subtopics[0]
     else:
         return structure
 
@@ -187,14 +189,20 @@ def parse_entry_for_subcategories(entry):
     current_nesting = 0
     subtopic = None
 
-    for part in _RE_HELP_SUBTOPIC_SPLIT.split(subtopics):
-        subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part)
+    # from evennia import set_trace;set_trace()
+    for part in _RE_HELP_SUBTOPIC_SPLIT.split(subtopics.strip()):
+
+        subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part.strip())
         if subtopic_match:
             # a new sub(-sub..) category starts.
             mdict = subtopic_match.groupdict()
-            subtopic = mdict['name'].strip()
-            subtopic_index.append(subtopic)
+            subtopic = mdict['name'].lower().strip()
             new_nesting = len(mdict['nesting']) - 1
+
+            if new_nesting > MAX_SUBTOPIC_NESTING:
+                raise RuntimeError(
+                    f"Can have max {MAX_SUBTOPIC_NESTING} levels of nested help subtopics.")
+
             nestdiff = new_nesting - current_nesting
             if nestdiff < 0:
                 # jumping back up in nesting
@@ -203,22 +211,28 @@ def parse_entry_for_subcategories(entry):
                         keypath.pop()
                     except IndexError:
                         pass
+            elif nestdiff == 0:
+                # don't add a deeper nesting but replace the current
+                try:
+                    keypath.pop()
+                except IndexError:
+                    pass
             keypath.append(subtopic)
             current_nesting = new_nesting
         else:
             # an entry belonging to a subtopic - find the nested location
             dct = structure
             if not keypath and subtopic is not None:
-                structure[subtopic] = part.strip()
+                structure[subtopic] = dedent(part.strip())
             else:
                 for key in keypath:
                     if key in dct:
                         dct = dct[key]
                     else:
                         dct[key] = {
-                            None: part.strip()
+                            None: dedent(part.strip())
                         }
-    return structure, subtopic_index
+    return structure
 
 
 class CmdHelp(COMMAND_DEFAULT_CLASS):
@@ -249,6 +263,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
     # with separate help popups) If you want to avoid this, simply add
     # 'HELP_MORE = False' in your settings/conf/settings.py
     help_more = HELP_MORE
+
+    # colors for the help index
+    index_type_separator_clr = "|w"
+    index_category_clr = "|W"
+    index_topic_clr = "|G"
 
     # suggestion cutoff, between 0 and 1 (1 => perfect match)
     suggestion_cutoff = 0.6
@@ -295,32 +314,41 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             help_text (str): Text of the help entry.
             aliases (list): List of help-aliases (displayed in header).
             suggested (list): Strings suggested reading (based on title).
-            subtopics (list): A list of strings - the subcategories to this entry.
+            subtopics (list): A list of strings - the subcategories available
+                for this entry.
 
         Returns the formatted string, ready to be sent.
 
         """
         start = f"{_SEP}\n"
+
         title = f"|CHelp for |w{topic}|n" if topic else ""
-        aliases = (
-            " |C(aliases: {}|C)|n".format("|C,|n ".join(f"|w{ali}|n" for ali in aliases))
-            if aliases else ""
-        )
-        help_text = (
-            f"\n{dedent(help_text.rstrip())}" if help_text else ""
-        )
-        subtopics = (
-            "\nSubtopics (read with |whelp {} / subtopic): {}".format(
-                topic, "|C,|n ".join(f"|w{subtop}|n" for subtop in subtopics)
-                if subtopics else ""
+
+        if aliases:
+            aliases = (
+                " |C(aliases: {}|C)|n".format("|C,|n ".join(f"|w{ali}|n" for ali in aliases))
             )
-        )
-        suggested = (
-            "\n\n|CSuggested:|n {}".format(
-                fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested))
+        else:
+            aliases = ''
+
+        help_text = f"\n\n{dedent('    ' + help_text.strip())}\n" if help_text else ""
+
+        if subtopics:
+            subtopics = (
+                "\n|CSubtopics:|n\n  {}".format(
+                    "\n  ".join(f"|w{topic}/{subtop}|n" for subtop in subtopics))
             )
-            if suggested else ""
-        )
+        else:
+            subtopics = ''
+
+        if suggested:
+            suggested = (
+                "\n\n|CSuggested other topics:|n\n{}".format(
+                    fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested), indent=2))
+            )
+        else:
+            suggested = ''
+
         end = f"\n{_SEP}"
 
         return "".join((start, title, aliases, help_text, subtopics, suggested, end))
@@ -345,27 +373,61 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         custom display of the list of commands and topics.
 
         """
-        category_clr = "|w"
-        topic_clr = "|G"
+        def _group_by_category(help_dict):
+            grid = []
+            verbatim_elements = []
+
+            if len(help_dict) == 1:
+                # don't list categories if there is only one
+                for category in help_dict:
+                    entries = sorted(set(help_dict.get(category, [])))
+                    grid.extend(entries)
+            else:
+                # list the categories
+                for category in sorted(set(list(help_dict.keys()))):
+                    category_str = f"-- {category.title()} "
+                    grid.append(
+                        ANSIString(
+                            self.index_category_clr + category_str
+                            + "-" * (width - len(category_str))
+                            + self.index_topic_clr
+                        )
+                    )
+                    verbatim_elements.append(len(grid) - 1)
+
+                    entries = sorted(set(help_dict.get(category, [])))
+                    grid.extend(entries)
+
+            return grid, verbatim_elements
+
+        help_index = ""
         width = self.client_width()
         grid = []
         verbatim_elements = []
-        for category in sorted(set(list(cmd_help_dict.keys()) + list(db_help_dict.keys()))):
 
-            category_str = f"-- {category.title()} "
-            grid.append(
-                ANSIString(
-                    category_clr + category_str + "-" * (width - len(category_str)) + topic_clr
-                )
-            )
-            verbatim_elements.append(len(grid) - 1)
-
-            entries = sorted(set(cmd_help_dict.get(category, []) + db_help_dict.get(category, [])))
-            grid.extend(entries)
-
+        # get the command-help entries by-category
+        sep1 = (self.index_type_separator_clr
+                + pad("Commands", width=width, fillchar='-')
+                + self.index_topic_clr)
+        grid, verbatim_elements = _group_by_category(cmd_help_dict)
         gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
-        gridrows = ANSIString("\n").join(gridrows)
-        return gridrows
+        cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+
+        # get db-based help entries by-category
+        sep2 = (self.index_type_separator_clr
+                + pad("Game & World", width=width, fillchar='-')
+                + self.index_topic_clr)
+        grid, verbatim_elements = _group_by_category(db_help_dict)
+        gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+        db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+
+        # only show the main separators if there are actually both cmd and db-based help
+        if cmd_grid and db_grid:
+            help_index = f"{sep1}\n{cmd_grid}\n{sep2}\n{db_grid}"
+        else:
+            help_index = f"{cmd_grid}{db_grid}"
+
+        return help_index
 
     def check_show_help(self, cmd, caller):
         """
@@ -518,7 +580,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 {
                     match.key: [
                         topic.key
-                        for topic in all_topics
+                        for topic in all_db_topics
                         if match.key.lower() == topic.help_category
                     ]
                 },
@@ -530,7 +592,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # a command match
             topic = match.key
             help_text = match.get_help(caller, cmdset)
-            aliases = match.aliases,
+            aliases = match.aliases
             suggested=suggestions[1:]
         else:
             # a database match
@@ -550,22 +612,44 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         if subtopics:
             # if we asked for subtopics, parse the found topic_text to see if any match.
             # the subtopics is a list describing the path through the subtopic_map.
+
             for subtopic_query in subtopics:
-                subtopic_query_lower = subtopic_query.lower()
-                checked_topic = topic + f" / {subtopic_query.lower().capitalize()}"
+
+                if subtopic_query not in subtopic_map:
+                    # exact match failed. Try startswith-match
+                    fuzzy_match = False
+                    for key in subtopic_map:
+                        if key and key.startswith(subtopic_query):
+                            subtopic_query = key
+                            fuzzy_match = True
+                            break
+
+                    if not fuzzy_match:
+                        # startswith failed - try an 'in' match
+                        for key in subtopic_map:
+                            if key and subtopic_query in key:
+                                subtopic_query = key
+                                fuzzy_match = True
+                                break
+
+                    if not fuzzy_match:
+                        # no match found - give up
+                        checked_topic = topic + f"/{subtopic_query}"
+                        output = self.format_help_entry(
+                            topic=topic,
+                            help_text=f"No help entry found for '{checked_topic}'",
+                            subtopics=subtopic_index
+                        )
+                        self.msg_help(output)
+                        return
+
+                # if we get here we have an exact or fuzzy match
+
+                subtopic_map = subtopic_map.pop(subtopic_query)
                 subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
-                if subtopic_query_lower() in subtopic_index:
-                    # keep stepping down into the tree
-                    subtopic_map = subtopic_map.pop(subtopic_query)
-                    topic = checked_topic
-                else:
-                    output = self.format_help_entry(
-                        topic=topic,
-                        help_text=f"No help entry found for '{checked_topic}'",
-                        subtopics=subtopic_index
-                    )
-                    self.msg_help(output)
-                    return
+                # keep stepping down into the tree, append path to show position
+                topic = topic + f"/{subtopic_query}"
+
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]
 
@@ -614,15 +698,51 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
       delete - remove help topic.
 
     Examples:
-      sethelp throw = This throws something at ...
+      sethelp lore = In the beginning was ...
       sethelp/append pickpocketing,Thievery = This steals ...
       sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
       sethelp/edit thievery
 
-    This command manipulates the help database. A help entry can be created,
-    appended/merged to and deleted. If you don't assign a category, the
-    "General" category will be used. If no lockstring is specified, default
-    is to let everyone read the help file.
+    If not assigning a category, the "General" category will be used. If no
+    lockstring is specified, everyone will be able to read the help entry.
+    Sub-topics are embedded in the help text.
+
+    Note that this cannot modify command-help entries - these are modified
+    in-code, outside the game.
+
+    # SUBTOPICS
+
+    ## Adding subtopics
+
+    Subtopics helps to break up a long help entry into sub-sections. Users can
+    access subtopics with |whelp topic/subtopic/...|n Subtopics are created and
+    stored together with the main topic.
+
+    To start adding subtopics, add the text '# SUBTOPICS' on a new line at the
+    end of your help text. After this you can now add any number of subtopics,
+    each starting with '## <subtopic-name>' on a line, followed by the
+    help-text of that subtopic.
+    Use '### <subsub-name>' to add a sub-subtopic and so on. Max depth is 5. A
+    subtopic's title is case-insensitive and can consist of multiple words -
+    the user will be able to enter a partial match to access it.
+
+    For example:
+
+    | Main help text for <topic>
+    |
+    | # SUBTOPICS
+    |
+    | ## about
+    |
+    | Text for the '<topic>/about' subtopic'
+    |
+    | ### more about-info
+    |
+    | Text for the '<topic>/about/more about-info sub-subtopic
+    |
+    | ## extra
+    |
+    | Text for the '<topic>/extra' subtopic
 
     """
 
