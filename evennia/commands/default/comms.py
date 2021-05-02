@@ -11,11 +11,10 @@ from django.conf import settings
 from evennia.comms.models import Msg
 from evennia.accounts.models import AccountDB
 from evennia.accounts import bots
-from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.locks.lockhandler import LockException
 from evennia.utils import create, logger, utils
 from evennia.utils.logger import tail_log_file
-from evennia.utils.utils import make_iter, class_from_module
+from evennia.utils.utils import class_from_module
 from evennia.utils.evmenu import ask_yes_no
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -29,10 +28,8 @@ __all__ = (
     "CmdAddCom",
     "CmdDelCom",
     "CmdAllCom",
-    "CmdChannels",
     "CmdCdestroy",
     "CmdCBoot",
-    "CmdCemit",
     "CmdCWho",
     "CmdChannelCreate",
     "CmdClock",
@@ -72,7 +69,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
       channel/unlock channelname = lockstring
       channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
       channel/ban channelname   (list bans)
-      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
+      channe/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
       channel/unban[/quiet] channelname[, channelname, ...] = subscribername
       channel/who channelname
 
@@ -100,7 +97,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     channel_msg_nick_alias = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
     channel_msg_nick_replacement = "channel {channelname} = $1"
 
-    def search_channel(self, channelname, exact=False):
+    def search_channel(self, channelname, exact=False, handle_errors=True):
         """
         Helper function for searching for a single channel with some error
         handling.
@@ -111,9 +108,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             exact (bool, optional): If an exact or fuzzy-match of the name should be done.
                 Note that even for a fuzzy match, an exactly given, unique channel name
                 will always be returned.
+            handle_errors (bool): If true, use `self.msg` to report errors if
+                there are non/multiple matches. If so, the return will always be
+                a single match or None.
         Returns:
-            list: A list of zero, one or more channels found.
-
+            object, list or None: If `handle_errors` is `True`, this is either a found Channel
+                or `None`. Otherwise it's a list  of zero, one or more channels found.
         Notes:
             The 'listen' and 'control' accesses are checked before returning.
 
@@ -133,11 +133,22 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         channels = [channel for channel in channels
                     if channel.access(caller, 'listen') or channel.access(caller, 'control')]
 
-        if not channels:
-            return []
-        elif len(channels) > 1:
-            return list(channels)
-        return [channels[0]]
+        if handle_errors:
+            if not channels:
+                self.msk(f"No channel found matching '{channelname}' "
+                         "could also be due to missing access).")
+                return None
+            elif len(channels) > 1:
+                self.msg("Multiple possible channel matches/alias for "
+                         "'{channelname}':\n" + ", ".join(chan.key for chan in channels))
+                return None
+            return channels[0]
+        else:
+            if not channels:
+                return []
+            elif len(channels) > 1:
+                return list(channels)
+            return [channels[0]]
 
     def msg_channel(self, channel, message, **kwargs):
         """
@@ -284,7 +295,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         """
         caller = self.caller
         if caller.nicks.get(alias, category="channel", **kwargs):
-            caller.nicks.remove(alias, category="channel", **kwargs)
+            caller.nicks.remove(alias, category="chan nel", **kwargs)
             msg_alias = self.channel_msg_nick_alias.format(alias=alias)
             caller.nicks.remove(msg_alias, category="inputline", **kwargs)
             return True, ""
@@ -747,13 +758,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # 'listen/control' perms.
             channel = self.search_channel(channel_name, exact=False)
             if not channel:
-                self.msg(f"No channel found matching '{channel_name}'.")
                 return
-            elif len(channel) > 1:
-                self.msg("Multiple possible channel matches/alias for "
-                         "'{channel_name}':\n" + ", ".join(chan.key for chan in channel))
-                return
-            channels.extend(channel)
+            channels.append(channel)
 
         # we have at least one channel at this point
         channel = channels[0]
@@ -795,8 +801,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             return
 
         if 'sub' in switches:
-            # subscribe to a channel
-            aliases = set(alias.strip().lower() for alias in self.rhs.split(";"))
+            # subscribe to a channel aliases = set(alias.strip().lower() for
+            # alias in self.rhs.split(";"))
             success, err = self.sub_to_channel(channel)
             if success:
                 for alias in aliases:
@@ -1056,9 +1062,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             return
 
 
-class CmdAddCom(COMMAND_DEFAULT_CLASS):
+class CmdAddCom(CmdChannel):
     """
-    add a channel alias and/or subscribe to a channel
+    Add a channel alias and/or subscribe to a channel
 
     Usage:
        addcom [alias=] <channel>
@@ -1082,7 +1088,6 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         args = self.args
-        account = caller
 
         if not args:
             self.msg("Usage: addcom [alias =] channelname.")
@@ -1096,42 +1101,37 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             channelname = self.args
             alias = None
 
-        channel = find_channel(caller, channelname)
+        channel = self.search_channel(channelname)
         if not channel:
-            # we use the custom search method to handle errors.
-            return
-
-        # check permissions
-        if not channel.access(account, "listen"):
-            self.msg("%s: You are not allowed to listen to this channel." % channel.key)
             return
 
         string = ""
-        if not channel.has_connection(account):
+        if not channel.has_connection(caller):
             # we want to connect as well.
-            if not channel.connect(account):
+            success, err = self.sub_to_channel(channel)
+            if success:
                 # if this would have returned True, the account is connected
-                self.msg("%s: You are not allowed to join this channel." % channel.key)
+                self.msg(f"You now listen to the channel {channel.key}")
+            else:
+                self.msg(f"{channel.key}: You are not allowed to join this channel.")
                 return
-            else:
-                string += "You now listen to the channel %s. " % channel.key
+
+        if channel.unmute(caller):
+            string += "You unmute channel %s." % channel.key
         else:
-            if channel.unmute(account):
-                string += "You unmute channel %s." % channel.key
-            else:
-                string += "You are already connected to channel %s." % channel.key
+            string += "You are already connected to channel %s." % channel.key
 
         if alias:
             # create a nick and add it to the caller.
-            caller.nicks.add(alias, channel.key, category="channel")
-            string += " You can now refer to the channel %s with the alias '%s'."
+            self.add_alias(channel, alias)
+            self.msg(f" You can now refer to the channel {channel} with the alias '{alias}'.")
             self.msg(string % (channel.key, alias))
         else:
             string += " No alias added."
             self.msg(string)
 
 
-class CmdDelCom(COMMAND_DEFAULT_CLASS):
+class CmdDelCom(CmdChannel):
     """
     remove a channel alias and/or unsubscribe from channel
 
@@ -1157,49 +1157,42 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
         """Implementing the command. """
 
         caller = self.caller
-        account = caller
 
         if not self.args:
             self.msg("Usage: delcom <alias or channel>")
             return
-        ostring = self.args.lower()
+        ostring = self.args.lower().strip()
 
-        channel = find_channel(caller, ostring, silent=True, noaliases=True)
-        if channel:
-            # we have given a channel name - unsubscribe
-            if not channel.has_connection(account):
-                self.msg("You are not listening to that channel.")
-                return
-            chkey = channel.key.lower()
+        channel = self.search_channel(ostring)
+        if not channel:
+            return
+
+        if not channel.has_connection(caller):
+            self.msg("You are not listening to that channel.")
+            return
+
+        if ostring == channel.key.lower():
+            # an exact channel name - unsubscribe
             delnicks = "all" in self.switches
             # find all nicks linked to this channel and delete them
             if delnicks:
-                for nick in [
-                    nick
-                    for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                    if nick and nick.pk and nick.value[3].lower() == chkey
-                ]:
-                    nick.delete()
-            disconnect = channel.disconnect(account)
-            if disconnect:
+                aliases = self.get_channel_aliases(channel)
+                for alias in aliases:
+                    self.remove_alias(alias)
+            success, err = self.unsub_from_channel(channel)
+            if success:
                 wipednicks = " Eventual aliases were removed." if delnicks else ""
-                self.msg("You stop listening to channel '%s'.%s" % (channel.key, wipednicks))
+                self.msg(f"You stop listening to channel '{channel.key}'.{wipednicks}")
+            else:
+                self.msg(err)
             return
         else:
             # we are removing a channel nick
-            channame = caller.nicks.get(key=ostring, category="channel")
-            channel = find_channel(caller, channame, silent=True)
-            if not channel:
-                self.msg("No channel with alias '%s' was found." % ostring)
-            else:
-                if caller.nicks.get(ostring, category="channel"):
-                    caller.nicks.remove(ostring, category="channel")
-                    self.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
-                else:
-                    self.msg("You had no such alias defined for this channel.")
+            self.remove_alias(ostring)
+            self.msg(f"Any alias '{ostring}' for channel {channel.key} was cleared.")
 
 
-class CmdAllCom(COMMAND_DEFAULT_CLASS):
+class CmdAllCom(CmdChannel):
     """
     perform admin operations on all channels
 
@@ -1271,125 +1264,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             # wrong input
             self.msg("Usage: allcom on | off | who | clear")
 
-
-class CmdChannels(COMMAND_DEFAULT_CLASS):
-    """
-    list all channels available to you
-
-    Usage:
-      channels
-      clist
-      comlist
-
-    Lists all channels available to you, whether you listen to them or not.
-    Use 'comlist' to only view your current channel subscriptions.
-    Use addcom/delcom to join and leave channels
-    """
-
-    key = "channels"
-    aliases = ["clist", "comlist", "chanlist", "channellist", "all channels"]
-    help_category = "Comms"
-    locks = "cmd: not pperm(channel_banned)"
-
-    # this is used by the COMMAND_DEFAULT_CLASS parent
-    account_caller = True
-
-    def func(self):
-        """Implement function"""
-
-        caller = self.caller
-
-        # all channels we have available to listen to
-        channels = [
-            chan
-            for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
-            if chan.access(caller, "listen")
-        ]
-        if not channels:
-            self.msg("No channels available.")
-            return
-        # all channel we are already subscribed to
-        subs = CHANNEL_DEFAULT_TYPECLASS.objects.get_subscriptions(caller)
-
-        if self.cmdstring == "comlist":
-            # just display the subscribed channels with no extra info
-            comtable = self.styled_table(
-                "|wchannel|n",
-                "|wmy aliases|n",
-                "|wdescription|n",
-                align="l",
-                maxwidth=_DEFAULT_WIDTH,
-            )
-            for chan in subs:
-                clower = chan.key.lower()
-                nicks = caller.nicks.get(category="channel", return_obj=True)
-                comtable.add_row(
-                    *[
-                        "%s%s"
-                        % (
-                            chan.key,
-                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
-                        ),
-                        "%s"
-                        % ",".join(
-                            nick.db_key
-                            for nick in make_iter(nicks)
-                            if nick and nick.value[3].lower() == clower
-                        ),
-                        chan.db.desc,
-                    ]
-                )
-            self.msg(
-                "\n|wChannel subscriptions|n (use |wchannels|n to list all,"
-                " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable
-            )
-        else:
-            # full listing (of channels caller is able to listen to)
-            comtable = self.styled_table(
-                "|wsub|n",
-                "|wchannel|n",
-                "|wmy aliases|n",
-                "|wlocks|n",
-                "|wdescription|n",
-                maxwidth=_DEFAULT_WIDTH,
-            )
-            for chan in channels:
-                clower = chan.key.lower()
-                nicks = caller.nicks.get(category="channel", return_obj=True)
-                nicks = nicks or []
-                if chan not in subs:
-                    substatus = "|rNo|n"
-                elif caller in chan.mutelist:
-                    substatus = "|rMuted|n"
-                else:
-                    substatus = "|gYes|n"
-                comtable.add_row(
-                    *[
-                        substatus,
-                        "%s%s"
-                        % (
-                            chan.key,
-                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
-                        ),
-                        "%s"
-                        % ",".join(
-                            nick.db_key
-                            for nick in make_iter(nicks)
-                            if nick.value[3].lower() == clower
-                        ),
-                        str(chan.locks),
-                        chan.db.desc,
-                    ]
-                )
-            comtable.reformat_column(0, width=9)
-            comtable.reformat_column(3, width=14)
-            self.msg(
-                "\n|wAvailable channels|n (use |wcomlist|n,|waddcom|n and |wdelcom|n"
-                " to manage subscriptions):\n%s" % comtable
-            )
-
-
-class CmdCdestroy(COMMAND_DEFAULT_CLASS):
+class CmdCdestroy(CmdChannel):
     """
     destroy a channel you created
 
@@ -1408,12 +1283,15 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         """Destroy objects cleanly."""
+
         caller = self.caller
 
         if not self.args:
             self.msg("Usage: cdestroy <channelname>")
             return
-        channel = find_channel(caller, self.args)
+
+        channel = self.search_channel(self.args)
+
         if not channel:
             self.msg("Could not find channel %s." % self.args)
             return
@@ -1421,11 +1299,8 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
             self.msg("You are not allowed to do that.")
             return
         channel_key = channel.key
-        message = "%s is being destroyed. Make sure to change your aliases." % channel_key
-        msgobj = create.create_message(caller, message, channel)
-        channel.msg(msgobj)
-        channel.delete()
-        CHANNELHANDLER.update()
+        message = f"{channel.key} is being destroyed. Make sure to change your aliases."
+        self.destroy_channel(channel, message)
         self.msg("Channel '%s' was destroyed." % channel_key)
         logger.log_sec(
             "Channel Deleted: %s (Caller: %s, IP: %s)."
@@ -1433,7 +1308,7 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
         )
 
 
-class CmdCBoot(COMMAND_DEFAULT_CLASS):
+class CmdCBoot(CmdChannel):
     """
     kick an account from a channel you control
 
@@ -1463,17 +1338,21 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        channel = find_channel(self.caller, self.lhs)
+        channel = self.search_channel(self.lhs)
         if not channel:
             return
+
         reason = ""
         if ":" in self.rhs:
-            accountname, reason = self.rhs.rsplit(":", 1)
-            searchstring = accountname.lstrip("*")
+            target, reason = self.rhs.rsplit(":", 1)
+            is_account = target.strip().startswith("*")
+            searchstring = target.lstrip("*")
         else:
+            is_account = target.strip().startswith("*")
             searchstring = self.rhs.lstrip("*")
-        account = self.caller.search(searchstring, account=True)
-        if not account:
+
+        target = self.caller.search(searchstring, account=is_account)
+        if not target:
             return
         if reason:
             reason = " (reason: %s)" % reason
@@ -1481,79 +1360,19 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
             string = "You don't control this channel."
             self.msg(string)
             return
-        if not channel.subscriptions.has(account):
-            string = "Account %s is not connected to channel %s." % (account.key, channel.key)
-            self.msg(string)
-            return
-        if "quiet" not in self.switches:
-            string = "%s boots %s from channel.%s" % (self.caller, account.key, reason)
-            channel.msg(string)
-        # find all account's nicks linked to this channel and delete them
-        for nick in [
-            nick
-            for nick in account.character.nicks.get(category="channel") or []
-            if nick.value[3].lower() == channel.key
-        ]:
-            nick.delete()
-        # disconnect account
-        channel.disconnect(account)
-        CHANNELHANDLER.update()
-        logger.log_sec(
-            "Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s)."
-            % (account, channel, reason, self.caller, self.session.address)
-        )
+
+        success, err = self.boot_user(target, quiet='quiet' in self.switches)
+        if success:
+            self.msg(f"Booted {target.key} from {channel.key}")
+            logger.log_sec(
+                "Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s)."
+                % (self.caller, channel, reason, self.caller, self.session.address)
+            )
+        else:
+            self.msg(err)
 
 
-class CmdCemit(COMMAND_DEFAULT_CLASS):
-    """
-    send an admin message to a channel you control
-
-    Usage:
-      cemit[/switches] <channel> = <message>
-
-    Switches:
-      sendername - attach the sender's name before the message
-      quiet - don't echo the message back to sender
-
-    Allows the user to broadcast a message over a channel as long as
-    they control it. It does not show the user's name unless they
-    provide the /sendername switch.
-
-    """
-
-    key = "cemit"
-    aliases = ["cmsg"]
-    switch_options = ("sendername", "quiet")
-    locks = "cmd: not pperm(channel_banned) and pperm(Player)"
-    help_category = "Comms"
-
-    # this is used by the COMMAND_DEFAULT_CLASS parent
-    account_caller = True
-
-    def func(self):
-        """Implement function"""
-
-        if not self.args or not self.rhs:
-            string = "Usage: cemit[/switches] <channel> = <message>"
-            self.msg(string)
-            return
-        channel = find_channel(self.caller, self.lhs)
-        if not channel:
-            return
-        if not channel.access(self.caller, "control"):
-            string = "You don't control this channel."
-            self.msg(string)
-            return
-        message = self.rhs
-        if "sendername" in self.switches:
-            message = "%s: %s" % (self.caller.key, message)
-        channel.msg(message)
-        if "quiet" not in self.switches:
-            string = "Sent to channel %s: %s" % (channel.key, message)
-            self.msg(string)
-
-
-class CmdCWho(COMMAND_DEFAULT_CLASS):
+class CmdCWho(CmdChannel):
     """
     show who is listening to a channel
 
@@ -1578,7 +1397,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        channel = find_channel(self.caller, self.lhs)
+        channel = self.search_channel(self.lhs)
         if not channel:
             return
         if not channel.access(self.caller, "listen"):
@@ -1590,7 +1409,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
         self.msg(string.strip())
 
 
-class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
+class CmdChannelCreate(CmdChannel):
     """
     create a new channel
 
@@ -1611,8 +1430,6 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Implement the command"""
 
-        caller = self.caller
-
         if not self.args:
             self.msg("Usage ccreate <channelname>[;alias;alias..] = description")
             return
@@ -1627,19 +1444,15 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
         if ";" in lhs:
             channame, aliases = lhs.split(";", 1)
             aliases = [alias.strip().lower() for alias in aliases.split(";")]
-        channel = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channame)
-        if channel:
-            self.msg("A channel with that name already exists.")
-            return
-        # Create and set the channel up
-        lockstring = "send:all();listen:all();control:id(%s)" % caller.id
-        new_chan = create.create_channel(channame.strip(), aliases, description, locks=lockstring)
-        new_chan.connect(caller)
-        CHANNELHANDLER.update()
-        self.msg("Created channel %s and connected to it." % new_chan.key)
+
+        new_chan, err = self.create_channel(channame, description, aliases=aliases)
+        if new_chan:
+            self.msg(f"Created channel {new_chan.key} and connected to it.")
+        else:
+            self.msg(err)
 
 
-class CmdClock(COMMAND_DEFAULT_CLASS):
+class CmdClock(CmdChannel):
     """
     change channel locks of a channel you control
 
@@ -1666,14 +1479,13 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        channel = find_channel(self.caller, self.lhs)
+        channel = self.search_channel(self.lhs)
         if not channel:
             return
+
         if not self.rhs:
             # no =, so just view the current locks
-            string = "Current locks on %s:" % channel.key
-            string = "%s\n %s" % (string, channel.locks)
-            self.msg(string)
+            self.msg(f"Current locks on {channel.key}\n{channel.locks}")
             return
         # we want to add/change a lock.
         if not channel.access(self.caller, "control"):
@@ -1681,18 +1493,13 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         # Try to add the lock
-        try:
-            channel.locks.add(self.rhs)
-        except LockException as err:
+        success, err = self.set_lock(channel, self.rhs)
+        if success:
+            self.msg(f"Lock(s) applied. Current locks on {channel.key}:\n{channel.locks}")
+        else:
             self.msg(err)
-            return
-        string = "Lock(s) applied. "
-        string += "Current locks on %s:" % channel.key
-        string = "%s\n %s" % (string, channel.locks)
-        self.msg(string)
 
-
-class CmdCdesc(COMMAND_DEFAULT_CLASS):
+class CmdCdesc(CmdChannel):
     """
     describe a channel you control
 
@@ -1701,6 +1508,7 @@ class CmdCdesc(COMMAND_DEFAULT_CLASS):
 
     Changes the description of the channel as shown in
     channel lists.
+
     """
 
     key = "cdesc"
@@ -1718,18 +1526,15 @@ class CmdCdesc(COMMAND_DEFAULT_CLASS):
         if not self.rhs:
             self.msg("Usage: cdesc <channel> = <description>")
             return
-        channel = find_channel(caller, self.lhs)
+        channel = self.search_channel(self.lhs)
         if not channel:
-            self.msg("Channel '%s' not found." % self.lhs)
             return
         # check permissions
         if not channel.access(caller, "control"):
             self.msg("You cannot admin this channel.")
             return
-        # set the description
-        channel.db.desc = self.rhs
-        channel.save()
-        self.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
+        self.set_desc(channel, self.rhs)
+        self.msg(f"Description of channel '{channel.key}' set to '{self.rhs}'.")
 
 
 class CmdPage(COMMAND_DEFAULT_CLASS):
@@ -1737,16 +1542,19 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
     send a private message to another account
 
     Usage:
+      page <account> <message>
       page[/switches] [<account>,<account>,... = <message>]
       tell        ''
       page <number>
 
-    Switch:
+    Switches:
       last - shows who you last messaged
       list - show your last <number> of tells/pages (default)
 
-    Send a message to target user (if online). If no
-    argument is given, you will get a list of your latest messages.
+    Send a message to target user (if online). If no argument is given, you will
+    get a list of your latest messages. The equal sign is needed for multiple
+    targets or if sending to target with space in the name.
+
     """
 
     key = "page"
@@ -1768,6 +1576,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         pages_we_sent = Msg.objects.get_messages_by_sender(caller, exclude_channel_messages=True)
         # get last messages we've got
         pages_we_got = Msg.objects.get_messages_by_receiver(caller)
+        targets, message, number = [], None, None
 
         if "last" in self.switches:
             if pages_we_sent:
@@ -1778,19 +1587,75 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 self.msg("You haven't paged anyone yet.")
                 return
 
-        if not self.args or not self.rhs:
-            pages = pages_we_sent + pages_we_got
-            pages = sorted(pages, key=lambda page: page.date_created)
+        if self.args:
+            if self.rhs:
+                for target in self.lhslist:
+                    target_obj = self.caller.search(target)
+                    if not target_obj:
+                        return
+                    targets.append(target_obj)
+                message = self.rhs.strip()
+            else:
+                target, *message = self.args.split(" ", 4)
+                if target and target.isnumeric():
+                    # a number to specify a historic page
+                    number = int(target)
+                elif target:
+                    target_obj = self.caller.search(target, quiet=True)
+                    if target_obj:
+                        # a proper target
+                        targets = [target_obj[0]]
+                    else:
+                        # a message with a space in it - put it back together
+                        message = target + " " + (message[0] if message else "")
+                else:
+                    # a single-word message
+                    message = message[0].strip()
 
-            number = 5
-            if self.args:
-                try:
-                    number = int(self.args)
-                except ValueError:
-                    self.msg("Usage: tell [<account> = msg]")
+        pages = pages_we_sent + pages_we_got
+        pages = sorted(pages, key=lambda page: page.date_created)
+
+        if message:
+            # send a message
+            if not targets:
+                # no target given - send to last person we paged
+                if pages_we_sent:
+                    targets = pages_we_sent[-1].receivers
+                else:
+                    self.msg("Who do you want page?")
                     return
 
-            if len(pages) > number:
+            header = "|wAccount|n |c%s|n |wpages:|n" % caller.key
+            if message.startswith(":"):
+                message = "%s %s" % (caller.key, message.strip(":").strip())
+
+            # create the persistent message object
+            create.create_message(caller, message, receivers=targets)
+
+            # tell the accounts they got a message.
+            received = []
+            rstrings = []
+            for target in targets:
+                if not target.access(caller, "msg"):
+                    rstrings.append(f"You are not allowed to page {target}.")
+                    continue
+                target.msg(f"{header} {message}")
+                if hasattr(target, "sessions") and not target.sessions.count():
+                    received.append(f"|C{target.name}|n")
+                    rstrings.append(
+                        f"{received[-1]} is offline. They will see your message "
+                        "if they list their pages later."
+                    )
+                else:
+                    received.append(f"|c{target.name}|n")
+            if rstrings:
+                self.msg("\n".join(rstrings))
+            self.msg("You paged %s with: '%s'." % (", ".join(received), message))
+            return
+
+        else:
+            # no message to send
+            if number is not None and len(pages) > number:
                 lastpages = pages[-number:]
             else:
                 lastpages = pages
@@ -1819,7 +1684,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 receiver = f"|n,{clr}".join([obj.name for obj in page.receivers])
                 if sending:
                     template = to_template
-                    sender =  f"{sender} " if multi_send else ""
+                    sender = f"{sender} " if multi_send else ""
                     receiver = f" {receiver}" if multi_recv else f" {receiver}"
                 else:
                     template = from_template
@@ -1844,64 +1709,6 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 string = "You haven't paged anyone yet."
             self.msg(string)
             return
-
-        # We are sending. Build a list of targets
-
-        if not self.lhs:
-            # If there are no targets, then set the targets
-            # to the last person we paged.
-            if pages_we_sent:
-                receivers = pages_we_sent[-1].receivers
-            else:
-                self.msg("Who do you want to page?")
-                return
-        else:
-            receivers = self.lhslist
-
-        recobjs = []
-        for receiver in set(receivers):
-            if isinstance(receiver, str):
-                pobj = caller.search(receiver)
-            elif hasattr(receiver, "character"):
-                pobj = receiver
-            else:
-                self.msg("Who do you want to page?")
-                return
-            if pobj:
-                recobjs.append(pobj)
-        if not recobjs:
-            self.msg("Noone found to page.")
-            return
-
-        header = "|wAccount|n |c%s|n |wpages:|n" % caller.key
-        message = self.rhs
-
-        # if message begins with a :, we assume it is a 'page-pose'
-        if message.startswith(":"):
-            message = "%s %s" % (caller.key, message.strip(":").strip())
-
-        # create the persistent message object
-        create.create_message(caller, message, receivers=recobjs)
-
-        # tell the accounts they got a message.
-        received = []
-        rstrings = []
-        for pobj in recobjs:
-            if not pobj.access(caller, "msg"):
-                rstrings.append("You are not allowed to page %s." % pobj)
-                continue
-            pobj.msg("%s %s" % (header, message))
-            if hasattr(pobj, "sessions") and not pobj.sessions.count():
-                received.append("|C%s|n" % pobj.name)
-                rstrings.append(
-                    "%s is offline. They will see your message if they list their pages later."
-                    % received[-1]
-                )
-            else:
-                received.append("|c%s|n" % pobj.name)
-        if rstrings:
-            self.msg("\n".join(rstrings))
-        self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
 def _list_bots(cmd):
@@ -1942,7 +1749,6 @@ def _list_bots(cmd):
         return table
     else:
         return "No irc bots found."
-
 
 class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """

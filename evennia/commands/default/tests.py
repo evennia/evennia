@@ -563,7 +563,7 @@ class TestHelp(CommandTest):
          "Help for test/more/second-more\n\n"
          "The Second More text.\n\n"
          "Subtopics:\n"
-         "  test/more/second-more/more again\n\n"
+         "  test/more/second-more/more again\n"
          "  test/more/second-more/third more"
          ),
         ("test/More/-more",  # partial match
@@ -574,7 +574,7 @@ class TestHelp(CommandTest):
          "  test/more/second-more/third more"
          ),
         ("test/more/second/more again",
-         "Help for test/more/second-more/more again\n"
+         "Help for test/more/second-more/more again\n\n"
          "Even more text.\n"
          ),
         ("test/more/second/third",
