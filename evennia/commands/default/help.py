@@ -11,13 +11,11 @@ import re
 from django.conf import settings
 from collections import defaultdict
 from evennia.utils.utils import fill, dedent
-from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import (
-    string_suggestions,
     class_from_module,
     inherits_from,
     format_grid, pad
@@ -500,8 +498,6 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         """
         caller = self.caller
         query, subtopics, cmdset = self.topic, self.subtopics, self.cmdset
-        suggestion_cutoff = self.suggestion_cutoff
-        suggestion_maxnum = self.suggestion_maxnum
 
         # removing doublets in cmdset, caused by cmdhandler
         # having to allow doublet commands to manage exits etc.
@@ -514,9 +510,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         ]
         all_categories = list(set(
             [HelpCategory(cmd.help_category) for cmd in all_cmds]
-                + [HelpCategory(topic.help_category) for topic in all_db_topics]
-            )
-        )
+            + [HelpCategory(topic.help_category) for topic in all_db_topics]
+        ))
 
         if not query:
             # list all available help entries, grouped by category. We want to
@@ -593,7 +588,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             topic = match.key
             help_text = match.get_help(caller, cmdset)
             aliases = match.aliases
-            suggested=suggestions[1:]
+            suggested = suggestions[1:]
         else:
             # a database match
             topic = match.key

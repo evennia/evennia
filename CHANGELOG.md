@@ -17,7 +17,7 @@
   initial game database state. (volund)
 - Added new Traits contrib, converted and expanded from Ainneve project.
 - Added new `requirements_extra.txt` file for easily getting all optional dependencies.
-- Change default multimatch syntax from 1-obj, 2-obj to obj-1, obj-2.
+- Change default multi-match syntax from 1-obj, 2-obj to obj-1, obj-2.
 - Make `object.search` support 'stacks=0' keyword - if ``>0``, the method will return
   N identical matches instead of triggering a multi-match error.
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
@@ -32,26 +32,27 @@
 - Latin (la) i18n translation (jamalainm)
 - Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
 - Make Scripts' timer component independent from script object deletion; can now start/stop
-  timer without deleting Script. The `.persistent` flag now only controls if timer survives 
+  timer without deleting Script. The `.persistent` flag now only controls if timer survives
   reload - Script has to be removed with `.delete()` like other typeclassed entities.
 - Add `utils.repeat` and `utils.unrepeat` as shortcuts to TickerHandler add/remove, similar
   to how `utils.delay` is a shortcut for TaskHandler add.
 - Refactor the classic `red_button` example to use `utils.delay/repeat` and modern recommended
-  code style and paradigms instead of relying on `Scripts` for everything. 
-- Expand `CommandTest` with ability to check multipler msg-receivers; inspired by PR by 
+  code style and paradigms instead of relying on `Scripts` for everything.
+- Expand `CommandTest` with ability to check multiple message-receivers; inspired by PR by
   user davewiththenicehat. Also add new doc string.
-- Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc` 
+- Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc`
   function.
-- Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This 
+- Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This
   is useful for implementing actor-stance emoting for sending a string to different targets.
 - New version of Italian translation (rpolve)
 - `utils.evmenu.ask_yes_no` is a helper function that makes it easy to ask a yes/no question
   to the user and respond to their input. This complements the existing `get_input` helper.
+- Allow sending messages with `page/tell` without a `=` if target name contains no spaces.
 
 ### Evennia 0.9.5 (2019-2020)
 
 Released 2020-11-14.
-A transitional release, including new doc system. 
+A transitional release, including new doc system.
 
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
@@ -115,13 +116,13 @@ without arguments starts a full interactive Python console.
 - Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
 - Change how `ic` finds puppets; non-priveleged users will use `_playable_characters` list as
   candidates, Builders+ will use list, local search and only global search if no match found.
-- Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays 
+- Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays
   with yield.
 - `EvMore` support for db queries and django paginators as well as easier to override for custom
   pagination (e.g. to create EvTables for every page instead of splittine one table)
-- Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings 
+- Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings
   (100x speed increase for displaying 1000+ prototypes/scripts).
-- `EvMenu` now uses the more logically named `.ndb._evmenu` instead of `.ndb._menutree` to store itself. 
+- `EvMenu` now uses the more logically named `.ndb._evmenu` instead of `.ndb._menutree` to store itself.
   Both still work for backward compatibility, but `_menutree` is deprecated.
 - `EvMenu.msg(txt)` added as a central place to send text to the user, makes it easier to override.
   Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
