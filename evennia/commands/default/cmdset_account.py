@@ -68,7 +68,6 @@ class AccountCmdSet(CmdSet):
         self.add(comms.CmdChannelCreate())
         self.add(comms.CmdClock())
         self.add(comms.CmdCBoot())
-        self.add(comms.CmdCemit())
         self.add(comms.CmdCWho())
         self.add(comms.CmdCdesc())
         self.add(comms.CmdPage())
