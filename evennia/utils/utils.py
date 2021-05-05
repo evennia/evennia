@@ -1853,10 +1853,12 @@ def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
             decorations in the grid, such as horizontal bars.
 
     Returns:
-        gridstr: The grid as a list of ready-formatted rows. We return it
+        list: The grid as a list of ready-formatted rows. We return it
         like this to make it easier to insert decorations between rows, such
         as horizontal bars.
     """
+    if not elements:
+        return []
     if not verbatim_elements:
         verbatim_elements = []
 

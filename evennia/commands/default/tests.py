@@ -35,7 +35,6 @@ from evennia.commands.default import (
     unloggedin,
     syscommands,
 )
-from evennia.commands.cmdparser import build_matches
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
 from evennia.commands import cmdparser
@@ -1770,21 +1769,13 @@ class TestComms(CommandTest):
         self.call(
             comms.CmdAddCom(),
             "tc = testchan",
-            "You are already connected to channel testchan. You can now",
+            "You are already connected to channel testchan.| You can now",
             receiver=self.account,
         )
         self.call(
             comms.CmdDelCom(),
             "tc",
-            "Your alias 'tc' for channel testchan was cleared.",
-            receiver=self.account,
-        )
-
-    def test_channels(self):
-        self.call(
-            comms.CmdChannels(),
-            "",
-            "Available channels (use comlist,addcom and delcom to manage",
+            "Any alias 'tc' for channel testchan was cleared.",
             receiver=self.account,
         )
 
@@ -1792,7 +1783,7 @@ class TestComms(CommandTest):
         self.call(
             comms.CmdAllCom(),
             "",
-            "Available channels (use comlist,addcom and delcom to manage",
+            "Available channels:",
             receiver=self.account,
         )
 
@@ -1809,14 +1800,6 @@ class TestComms(CommandTest):
             comms.CmdCdesc(),
             "testchan = Test Channel",
             "Description of channel 'testchan' set to 'Test Channel'.",
-            receiver=self.account,
-        )
-
-    def test_cemit(self):
-        self.call(
-            comms.CmdCemit(),
-            "testchan = Test Message",
-            "[testchan] Test Message|Sent to channel testchan: Test Message",
             receiver=self.account,
         )
 
@@ -1869,6 +1852,8 @@ class TestCommsChannel(CommandTest):
             key="testchannel",
             desc="A test channel")
         self.channel.connect(self.char1)
+        self.cmdchannel = comms.CmdChannel
+        self.cmdchannel.account_caller = False
 
     def tearDown(self):
         if self.channel.pk:
@@ -1877,7 +1862,7 @@ class TestCommsChannel(CommandTest):
     # test channel command
     def test_channel__noarg(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "",
             "Channel subscriptions"
         )
@@ -1885,7 +1870,7 @@ class TestCommsChannel(CommandTest):
     def test_channel__msg(self):
         self.channel.msg = Mock()
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "testchannel = Test message",
             ""
         )
@@ -1893,14 +1878,14 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__list(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/list",
             "Channel subscriptions"
         )
 
     def test_channel__all(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/all",
             "Available channels"
         )
@@ -1908,7 +1893,7 @@ class TestCommsChannel(CommandTest):
     def test_channel__history(self):
         with patch("evennia.commands.default.comms.tail_log_file") as mock_tail:
             self.call(
-                comms.CmdChannel(),
+                self.cmdchannel(),
                 "/history testchannel",
                 ""
             )
@@ -1918,18 +1903,16 @@ class TestCommsChannel(CommandTest):
         self.channel.disconnect(self.char1)
 
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/sub testchannel",
             "You are now subscribed"
         )
         self.assertTrue(self.char1 in self.channel.subscriptions.all())
-        alias_msg = comms.CmdChannel.channel_msg_nick_alias.format(alias='testchannel')
-        self.assertEqual(self.char1.nicks.get(alias_msg, category="channel"),
-                         "channel testchannel = $1")
+        self.assertEqual(self.char1.nicks.nickreplace("testchannel Hello"), "channel testchannel = Hello")
 
     def test_channel__unsub(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/unsub testchannel",
             "You un-subscribed"
         )
@@ -1939,24 +1922,24 @@ class TestCommsChannel(CommandTest):
         """Add and then remove a channel alias"""
         # add alias
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/alias testchannel = foo",
             "Added/updated your alias 'foo' for channel testchannel."
         )
         self.assertEqual(
-            self.char1.nicks.get('foo $1', category="channel"), "channel testchannel = $1")
+            self.char1.nicks.nickreplace('foo Hello'), "channel testchannel = Hello")
 
         # use alias
         self.channel.msg = Mock()
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "foo = test message",
             "")
         self.channel.msg.assert_called_with("test message", senders=self.char1)
 
         # remove alias
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/unalias testchannel = foo",
             "Removed your channel alias 'foo'"
         )
@@ -1964,7 +1947,7 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__mute(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/mute testchannel",
             "Muted channel testchannel"
         )
@@ -1974,7 +1957,7 @@ class TestCommsChannel(CommandTest):
         self.channel.mute(self.char1)
 
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/unmute testchannel = Char1",
             "Un-muted channel testchannel"
         )
@@ -1982,7 +1965,7 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__create(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/create testchannel2",
             "Created (and joined) new channel"
         )
@@ -1990,7 +1973,7 @@ class TestCommsChannel(CommandTest):
     def test_channel__destroy(self):
         self.channel.msg = Mock()
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/destroy testchannel = delete reason",
             "Are you sure you want to delete channel ",
             inputs=['Yes']
@@ -2000,14 +1983,14 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__desc(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/desc testchannel = Another description",
             "Updated channel description."
         )
 
     def test_channel__lock(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/lock testchannel = foo:false()",
             "Added/updated lock on channel"
         )
@@ -2016,7 +1999,7 @@ class TestCommsChannel(CommandTest):
     def test_channel__unlock(self):
         self.channel.locks.add("foo:true()")
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/unlock testchannel = foo",
             "Removed lock from channel"
         )
@@ -2029,7 +2012,7 @@ class TestCommsChannel(CommandTest):
         self.char2.msg = Mock()
 
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/boot testchannel = Char2 : Booting from channel!",
             "Are you sure ",
             inputs=["Yes"]
@@ -2049,7 +2032,7 @@ class TestCommsChannel(CommandTest):
         self.char2.msg = Mock()
 
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/ban testchannel = Char2 : Banning from channel!",
             "Are you sure ",
             inputs=["Yes"]
@@ -2063,7 +2046,7 @@ class TestCommsChannel(CommandTest):
         # unban
 
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/unban testchannel = Char2",
             "Un-banned Char2 from channel testchannel"
         )
@@ -2071,7 +2054,7 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__who(self):
         self.call(
-            comms.CmdChannel(),
+            self.cmdchannel(),
             "/who testchannel",
             "Subscribed to testchannel:\nChar"
         )

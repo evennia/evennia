@@ -181,7 +181,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             "log_file", default=channel.log_to_file.format(channel_key=channel.key))
 
         def send_msg(lines):
-            return caller.msg(
+            return self.msg(
                 "".join(line.split("[-]", 1)[1] if "[-]" in line else line for line in lines)
             )
         # asynchronously tail the log file
@@ -699,6 +699,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         switches = self.switches
         channel_names = [name for name in self.lhslist if name]
 
+        #from evennia import set_trace;set_trace()
+
         if not channel_names:
             if 'all' in switches:
                 # show all available channels
@@ -719,7 +721,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 return
 
         if not self.switches and not self.args:
-            caller.msg("Usage[/switches]: channel [= message]")
+            self.msg("Usage[/switches]: channel [= message]")
             return
 
         if 'create' in switches:
@@ -801,8 +803,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             return
 
         if 'sub' in switches:
-            # subscribe to a channel aliases = set(alias.strip().lower() for
-            # alias in self.rhs.split(";"))
+            # subscribe to a channel
+            aliases = []
+            if self.rhs:
+                aliases = set(alias.strip().lower() for alias in self.rhs.split(";"))
             success, err = self.sub_to_channel(channel)
             if success:
                 for alias in aliases:
@@ -864,7 +868,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             def _perform_delete(caller, *args, **kwargs):
                 self.destroy_channel(channel, message=reason)
-                caller.msg(f"Channel {channel.key} was successfully deleted.")
+                self.msg(f"Channel {channel.key} was successfully deleted.")
 
             ask_yes_no(
                 caller,
@@ -904,9 +908,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             success, err = self.set_lock(channel, self.rhs)
             if success:
-                caller.msg("Added/updated lock on channel.")
+                self.msg("Added/updated lock on channel.")
             else:
-                caller.msg(f"Could not add/update lock: {err}")
+                self.msg(f"Could not add/update lock: {err}")
             return
 
         if 'unlock' in switches:
@@ -923,16 +927,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             success, err = self.unset_lock(channel, self.rhs)
             if success:
-                caller.msg("Removed lock from channel.")
+                self.msg("Removed lock from channel.")
             else:
-                caller.msg(f"Could not remove lock: {err}")
+                self.msg(f"Could not remove lock: {err}")
             return
 
         if 'boot' in switches:
             # boot a user from channel(s)
 
             if not self.rhs:
-                caller.msg("Usage: channel/boot channel[,channel,...] = username [:reason]")
+                self.msg("Usage: channel/boot channel[,channel,...] = username [:reason]")
                 return
 
             target_str, *reason = self.rhs.rsplit(":", 1)
@@ -947,16 +951,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 # the target must be a member of all given channels
                 target = caller.search(target_str, candidates=chan.subscriptions.all())
                 if not target:
-                    caller.msg(f"Cannot boot '{target_str}' - not in channel {chan.key}.")
+                    self.msg(f"Cannot boot '{target_str}' - not in channel {chan.key}.")
                     return
 
             def _boot_user(caller, *args, **kwargs):
                 for chan in channels:
                     success, err = self.boot_user(chan, target, quiet=False, reason=reason)
                     if success:
-                        caller.msg(f"Booted {target.key} from channel {chan.key}.")
+                        self.msg(f"Booted {target.key} from channel {chan.key}.")
                     else:
-                        caller.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
+                        self.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
 
             channames = ", ".join(chan.key for chan in channels)
             reasonwarn = (". Also note that your reason will be echoed to the channel"
@@ -994,13 +998,13 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             for chan in channels:
                 # the target must be a member of all given channels
                 if not chan.access(caller, "control"):
-                    caller.msg(f"You don't have access to ban users on channel {chan.key}")
+                    self.msg(f"You don't have access to ban users on channel {chan.key}")
                     return
 
                 target = caller.search(target_str, candidates=chan.subscriptions.all())
 
                 if not target:
-                    caller.msg(f"Cannot ban '{target_str}' - not in channel {chan.key}.")
+                    self.msg(f"Cannot ban '{target_str}' - not in channel {chan.key}.")
                     return
 
             def _ban_user(caller, *args, **kwargs):
@@ -1036,7 +1040,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             for chan in channels:
                 # the target must be a member of all given channels
                 if not chan.access(caller, "control"):
-                    caller.msg(f"You don't have access to unban users on channel {chan.key}")
+                    self.msg(f"You don't have access to unban users on channel {chan.key}")
                     return
                 banlists.extend(chan.banlist)
 
@@ -1058,8 +1062,13 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             who_list = [f"Subscribed to {channel.key}:"]
             who_list.extend(self.channel_list_who(channel))
-            caller.msg("\n".join(who_list))
+            self.msg("\n".join(who_list))
             return
+
+
+# a channel-command parent for use with Characters/Objects.
+class CmdObjectChannel(CmdChannel):
+    account_caller = False
 
 
 class CmdAddCom(CmdChannel):
@@ -1117,15 +1126,14 @@ class CmdAddCom(CmdChannel):
                 return
 
         if channel.unmute(caller):
-            string += "You unmute channel %s." % channel.key
+            self.msg(f"You unmute channel {channel.key}.")
         else:
-            string += "You are already connected to channel %s." % channel.key
+            self.msg(f"You are already connected to channel {channel.key}.")
 
         if alias:
             # create a nick and add it to the caller.
             self.add_alias(channel, alias)
             self.msg(f" You can now refer to the channel {channel} with the alias '{alias}'.")
-            self.msg(string % (channel.key, alias))
         else:
             string += " No alias added."
             self.msg(string)
@@ -1219,8 +1227,11 @@ class CmdAllCom(CmdChannel):
         caller = self.caller
         args = self.args
         if not args:
-            self.execute_cmd("channels")
-            self.msg("(Usage: allcom on | off | who | destroy)")
+            subscribed, available = self.list_channels()
+            table = self.display_all_channels(subscribed, available)
+            self.msg(
+                "\n|wAvailable channels:\n{table}")
+            return
             return
 
         if args == "on":
