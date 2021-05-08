@@ -874,7 +874,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 caller,
                 f"Are you sure you want to delete channel '{channel.key}'"
                 "(make sure name is correct!)? This will disconnect and "
-                "remove all users' aliases. {yesno}?",
+                "remove all users' aliases. {options}?",
                 _perform_delete,
                 "Aborted."
             )
@@ -969,7 +969,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 caller,
                 f"Are you sure you want to boot user {target.key} from "
                 f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}). "
-                "{yesno}?",
+                "{options}?",
                 _boot_user,
                 "Aborted.",
                 default="Y"
@@ -1022,7 +1022,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 caller,
                 f"Are you sure you want to ban user {target.key} from "
                 f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}) "
-                "{yesno}?",
+                "{options}?",
                 _ban_user,
                 "Aborted.",
             )

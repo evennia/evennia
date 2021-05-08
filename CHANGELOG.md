@@ -48,6 +48,7 @@
 - `utils.evmenu.ask_yes_no` is a helper function that makes it easy to ask a yes/no question
   to the user and respond to their input. This complements the existing `get_input` helper.
 - Allow sending messages with `page/tell` without a `=` if target name contains no spaces.
+- New FileHelpStorage system allows adding help entries via external files.
 
 ### Evennia 0.9.5 (2019-2020)
 
