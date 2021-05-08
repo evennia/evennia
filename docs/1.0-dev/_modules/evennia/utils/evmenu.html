@@ -1752,36 +1752,39 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        prompt (str): The yes/no question to ask. This takes an optional formatting</span>
-<span class="sd">            marker `{suffix}` which will be filled with &#39;Y/N&#39;, [Y]/N or Y/[N]</span>
-<span class="sd">            depending on the setting of `default`. If `allow_abort`, then the</span>
-<span class="sd">            `A(bort)` will also be available.</span>
+<span class="sd">            marker `{options}` which will be filled with &#39;Y/N&#39;, &#39;[Y]/N&#39; or</span>
+<span class="sd">            &#39;Y/[N]&#39; depending on the setting of `default`. If `allow_abort` is set,</span>
+<span class="sd">            then the &#39;A(bort)&#39; option will also be available.</span>
 <span class="sd">        yes_action (callable or str): If a callable, this will be called</span>
-<span class="sd">            with `(caller, *args, **kwargs) when the yes-choice is made.</span>
+<span class="sd">            with `(caller, *args, **kwargs)` when the Yes-choice is made.</span>
 <span class="sd">            If a string, this string will be echoed back to the caller.</span>
 <span class="sd">        no_action (callable or str): If a callable, this will be called</span>
-<span class="sd">            with `(caller, *args, **kwargs)` when the no-choice is made.</span>
+<span class="sd">            with `(caller, *args, **kwargs)` when the No-choice is made.</span>
 <span class="sd">            If a string, this string will be echoed back to the caller.</span>
-<span class="sd">        default (str optional): One of &quot;N&quot;, &quot;Y&quot;, &quot;A&quot; or None for no default.</span>
-<span class="sd">            If &quot;A&quot; is given, `allow_abort` is assumed set. The user can choose</span>
-<span class="sd">            the default option just by pressing return.</span>
-<span class="sd">        allow_abort (bool, optional): If set, the Q(uit) option is available,</span>
-<span class="sd">            which is neither yes or no.</span>
+<span class="sd">        default (str optional): This is what the user will get if they just press the</span>
+<span class="sd">            return key without giving any input. One of &#39;N&#39;, &#39;Y&#39;, &#39;A&#39; or &#39;None&#39;</span>
+<span class="sd">            for no default.  If &#39;A&#39; is given, `allow_abort` is auto-set.</span>
+<span class="sd">        allow_abort (bool, optional): If set, the &#39;A(bort)&#39; option is available</span>
+<span class="sd">            (a third option meaning neither yes or no but just exits the prompt).</span>
 <span class="sd">        session (Session, optional): This allows to specify the</span>
 <span class="sd">            session to send the prompt to. It&#39;s usually only needed if `caller`</span>
 <span class="sd">            is an Account in multisession modes greater than 2. The session is</span>
 <span class="sd">            then updated by the command and is available (for example in</span>
 <span class="sd">            callbacks) through `caller.ndb._yes_no_question.session`.</span>
-<span class="sd">        *args, **kwargs: These are passed into the callables, if any.</span>
+<span class="sd">        *args, **kwargs: These are passed into the callables.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        RuntimeError: If default and allow_abort clashes.</span>
+<span class="sd">        RuntimeError, FooError: If default and allow_abort clashes.</span>
 
 <span class="sd">    Example:</span>
+<span class="sd">        ::</span>
 
-<span class="sd">        ask_yes_no(caller, &quot;Are you happy {suffix}?&quot;,</span>
-<span class="sd">                   &quot;you answered yes&quot;, &quot;you answered no&quot;)</span>
-<span class="sd">        ask_yes_no(caller, &quot;Are you sad {suffix}?&quot;,</span>
-<span class="sd">                   _callable_yes, _callable_no, allow_abort=True)</span>
+<span class="sd">            # just returning strings</span>
+<span class="sd">            ask_yes_no(caller, &quot;Are you happy {options}?&quot;,</span>
+<span class="sd">                       &quot;you answered yes&quot;, &quot;you answered no&quot;)</span>
+<span class="sd">            # trigger callables</span>
+<span class="sd">            ask_yes_no(caller, &quot;Are you sad {options}?&quot;,</span>
+<span class="sd">                       _callable_yes, _callable_no, allow_abort=True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_callable_yes_txt</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1802,20 +1805,20 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;no_txt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">no_action</span><span class="p">)</span>
         <span class="n">no_action</span> <span class="o">=</span> <span class="n">_callable_no_txt</span>
 
-    <span class="c1"># prepare the prompt with suffix</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;Y/N&quot;</span>
+    <span class="c1"># prepare the prompt with options</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;Y/N&quot;</span>
     <span class="n">abort_txt</span> <span class="o">=</span> <span class="s2">&quot;/Abort&quot;</span> <span class="k">if</span> <span class="n">allow_abort</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
         <span class="n">default</span> <span class="o">=</span> <span class="n">default</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
-            <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;[Y]/N&quot;</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;[Y]/N&quot;</span>
         <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
-            <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;Y/[N]&quot;</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;Y/[N]&quot;</span>
         <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
             <span class="n">allow_abort</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">abort_txt</span> <span class="o">=</span> <span class="s2">&quot;/[A]bort&quot;</span>
-    <span class="n">suffix</span> <span class="o">+=</span> <span class="n">abort_txt</span>
-    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">+=</span> <span class="n">abort_txt</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
 
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span> <span class="o">=</span> <span class="n">_Prompt</span><span class="p">()</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>

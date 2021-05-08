@@ -920,7 +920,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'y', 'a', 'yes', 'abort', 'no', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['yes', 'n', 'y', 'a', 'no', '__nomatch_command', 'abort']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -946,7 +946,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command y a yes abort no n', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'yes n y a no __nomatch_command abort', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1008,41 +1008,43 @@ the system to pause and wait for input from the player.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – The yes/no question to ask. This takes an optional formatting
-marker <strong>{suffix}</strong> which will be filled with ‘Y/N’, [Y]/N or Y/[N]
-depending on the setting of <strong>default</strong>. If <strong>allow_abort</strong>, then the
-<strong>A(bort)</strong> will also be available.</p></li>
+marker <strong>{options}</strong> which will be filled with ‘Y/N’, ‘[Y]/N’ or
+‘Y/[N]’ depending on the setting of <strong>default</strong>. If <strong>allow_abort</strong> is set,
+then the ‘A(bort)’ option will also be available.</p></li>
 <li><p><strong>yes_action</strong> (<em>callable</em><em> or </em><em>str</em>) – If a callable, this will be called
-with <a href="#id1"><span class="problematic" id="id2">**</span></a>(caller, <a href="#id3"><span class="problematic" id="id4">*</span></a>args, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs) when the yes-choice is made.
+with <strong>(caller, *args, **kwargs)</strong> when the Yes-choice is made.
 If a string, this string will be echoed back to the caller.</p></li>
 <li><p><strong>no_action</strong> (<em>callable</em><em> or </em><em>str</em>) – If a callable, this will be called
-with <strong>(caller, *args, **kwargs)</strong> when the no-choice is made.
+with <strong>(caller, *args, **kwargs)</strong> when the No-choice is made.
 If a string, this string will be echoed back to the caller.</p></li>
-<li><p><strong>default</strong> (<em>str optional</em>) – One of “N”, “Y”, “A” or None for no default.
-If “A” is given, <strong>allow_abort</strong> is assumed set. The user can choose
-the default option just by pressing return.</p></li>
-<li><p><strong>allow_abort</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the Q(uit) option is available,
-which is neither yes or no.</p></li>
+<li><p><strong>default</strong> (<em>str optional</em>) – This is what the user will get if they just press the
+return key without giving any input. One of ‘N’, ‘Y’, ‘A’ or ‘None’
+for no default.  If ‘A’ is given, <strong>allow_abort</strong> is auto-set.</p></li>
+<li><p><strong>allow_abort</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the ‘A(bort)’ option is available
+(a third option meaning neither yes or no but just exits the prompt).</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – This allows to specify the
 session to send the prompt to. It’s usually only needed if <strong>caller</strong>
 is an Account in multisession modes greater than 2. The session is
 then updated by the command and is available (for example in
 callbacks) through <strong>caller.ndb._yes_no_question.session</strong>.</p></li>
-<li><p><strong>*args</strong> – These are passed into the callables, if any.</p></li>
-<li><p><strong>**kwargs</strong> – <p>These are passed into the callables, if any.</p>
+<li><p><strong>*args</strong> – These are passed into the callables.</p></li>
+<li><p><strong>**kwargs</strong> – <p>These are passed into the callables.</p>
 </p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If default and allow_abort clashes.</p>
+<dd class="field-even"><p><strong>RuntimeError</strong><strong>, </strong><strong>FooError</strong> – If default and allow_abort clashes.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<dl class="simple">
-<dt>ask_yes_no(caller, “Are you happy {suffix}?”,</dt><dd><p>“you answered yes”, “you answered no”)</p>
-</dd>
-<dt>ask_yes_no(caller, “Are you sad {suffix}?”,</dt><dd><p>_callable_yes, _callable_no, allow_abort=True)</p>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># just returning strings</span>
+<span class="n">ask_yes_no</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Are you happy </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;you answered yes&quot;</span><span class="p">,</span> <span class="s2">&quot;you answered no&quot;</span><span class="p">)</span>
+<span class="c1"># trigger callables</span>
+<span class="n">ask_yes_no</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Are you sad </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
+           <span class="n">_callable_yes</span><span class="p">,</span> <span class="n">_callable_no</span><span class="p">,</span> <span class="n">allow_abort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
