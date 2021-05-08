@@ -119,7 +119,7 @@ def _portal_maintenance():
 
     _MAINTENANCE_COUNT += 1
 
-    if _MAINTENANCE_COUNT % (3600 * 7) == 0:
+    if _MAINTENANCE_COUNT % (60 * 7) == 0:
         # drop database connection every 7 hrs to avoid default timeouts on MySQL
         # (see https://github.com/evennia/evennia/issues/1376)
         connection.close()

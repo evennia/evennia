@@ -14,31 +14,31 @@ a server reload/reboot).
 
 ## Adding Traits to a typeclass
 
-To access and manipulate traits on an object, its Typeclass needs to have a
+To access and manipulate traits on an entity, its Typeclass needs to have a
 `TraitHandler` assigned it. Usually, the handler is made available as `.traits`
-(in the same way as `.tags` or `.attributes`).
+(in the same way as `.tags` or `.attributes`). It's recommended to do this
+using Evennia's `lazy_property` (which basically just means it's not
+initialized until it's actually accessed).
 
 Here's an example for adding the TraitHandler to the base Object class:
 
-    ```python
-    # mygame/typeclasses/objects.py
+```python
+# mygame/typeclasses/objects.py
 
-    from evennia import DefaultObject
-    from evennia.utils import lazy_property
-    from evennia.contrib.traits import TraitHandler
+from evennia import DefaultObject
+from evennia.utils import lazy_property
+from evennia.contrib.traits import TraitHandler
 
-    # ...
+# ...
 
-    class Object(DefaultObject):
-        ...
-        @lazy_property
-        def traits(self):
-            # this adds the handler as .traits
-            return TraitHandler(self)
+class Object(DefaultObject):
+    ...
+    @lazy_property
+    def traits(self):
+        # this adds the handler as .traits
+        return TraitHandler(self)
 
-    ```
-
-After a reload you can now try adding some example traits:
+```
 
 ## Using traits
 
@@ -48,6 +48,7 @@ in Evennia).
 
 ```python
 # this is an example using the "static" trait, described below
+
 >>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", base=4)
 >>> obj.traits.hunting.value
 4
@@ -130,17 +131,19 @@ that varies slowly or not at all, and which may be modified in-place.
 ```
 
 ### Counter
+::
 
     min/unset     base    base+mod                       max/unset
-     |--------------|--------|---------X--------X------------|
-                                    current   value
-                                              = current
-                                              + mod
+    |--------------|--------|---------X--------X------------|
+                                current   value
+                                          = current
+                                          + mod
 
-A counter describes a value that can move from a base. The `current` property
-is the thing usually modified. It starts at the `base`. One can also add a modifier,
-which will both be added to the base and to current (forming .value).
-The min/max of the range are optional, a boundary set to None will remove it.
+A counter describes a value that can move from a base. The `.current` property
+is the thing usually modified. It starts at the `.base`. One can also add a
+modifier, which will both be added to the base and to current (forming
+`.value`).  The min/max of the range are optional, a boundary set to None will
+remove it. A suggested use for a Counter Trait would be to track skill values.
 
 ```python
 >>> obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
@@ -160,10 +163,15 @@ The min/max of the range are optional, a boundary set to None will remove it.
 
 Counters have some extra properties:
 
-`descs` is a dict {upper_bound:text_description}. This allows for easily
+#### .descs
+
+The `descs` property is a dict {upper_bound:text_description}. This allows for easily
 storing a more human-friendly description of the current value in the
 interval. Here is an example for skill values between 0 and 10:
+::
+
     {0: "unskilled", 1: "neophyte", 5: "trained", 7: "expert", 9: "master"}
+
 The keys must be supplied from smallest to largest. Any values below the lowest and above the
 highest description will be considered to be included in the closest description slot.
 By calling `.desc()` on the Counter, will you get the text matching the current `value`
@@ -190,11 +198,11 @@ value.
 The `rate` property defaults to 0. If set to a value different from 0, it
 allows the trait to change value dynamically. This could be used for example
 for an attribute that was temporarily lowered but will gradually (or abruptly)
-recover after a certain time. The rate is given as change of the `current`
-per-second, and the .value will still be restrained by min/max boundaries, if
-those are set.
+recover after a certain time. The rate is given as change of the current
+`.value` per-second, and this will still be restrained by min/max boundaries,
+if those are set.
 
-It is also possible to set a ".ratetarget", for the auto-change to stop at
+It is also possible to set a `.ratetarget`, for the auto-change to stop at
 (rather than at the min/max boundaries). This allows the value to return to
 a previous value.
 
@@ -220,35 +228,41 @@ a previous value.
 >>> obj.traits.hunting.rate = 0  # disable auto-change
 
 ```
-Note that if rate is a non-integer, the resulting .value (at least until it
-reaches the boundary) will likely also come out a float. If you expect an
-integer, you must run run int() on the result yourself.
+Note that if `.rate` is a non-integer, the resulting `.value` (at least until it
+reaches a boundary or rate-target) will also come out a float (so you can get a
+very exact value at the current time). If you expect an integer, you must run
+`int()` (or something like `round()`) on the result yourself.
 
-#### .percentage()
+#### .percent()
 
-If both min and max are defined, the `.percentage()` method of the trait will
+If both min and max are defined, the `.percent()` method of the trait will
 return the value as a percentage.
 
 ```python
->>> obj.traits.hunting.percentage()
+>>> obj.traits.hunting.percent()
 "71.0%"
+>>> obj.traits.hunting.percent(formatting=None)
+71.0
 
 ```
 
 ### Gauge
 
 This emulates a [fuel-] gauge that empties from a base+mod value.
+::
 
     min/0                                            max=base+mod
      |-----------------------X---------------------------|
                            value
                           = current
 
-The 'current' value will start from a full gauge. The .max property is
-read-only and is set by .base + .mod. So contrary to a Counter, the modifier
-only applies to the max value of the gauge and not the current value. The
-minimum bound defaults to 0. This trait is useful for showing resources that
-can deplete, like health, stamina and the like.
+The `.current` value will start from a full gauge. The .max property is
+read-only and is set by `.base` + `.mod`. So contrary to a `Counter`, the
+`.mod` modifier only applies to the max value of the gauge and not the current
+value. The minimum bound defaults to 0 if not set explicitly. 
+
+This trait is useful for showing commonly depletable resources like health,
+stamina and the like.
 
 ```python
 >>> obj.traits.add("hp", "Health", trait_type="gauge", base=100)
@@ -263,20 +277,24 @@ can deplete, like health, stamina and the like.
 
 ```
 
-Same as Counters, Gauges can also have `descs` to describe the interval and can also
-have `rate` and `ratetarget` to auto-update the value. The rate is particularly useful
-for gauges, for everything from poison slowly draining your health, to resting gradually
-increasing it. You can also use the `.percentage()` function to show the current value
-as a percentage.
+The Gauge trait is subclass of the Counter, so you have access to the same
+methods and properties where they make sense. So gauges can also have a
+`.descs` dict to describe the intervals in text, and can use `.percent()` to
+get how filled it is as a percentage etc. 
+
+The `.rate` is particularly relevant for gauges - useful for everything
+from poison slowly draining your health, to resting gradually increasing it.
 
 ### Trait
 
 A single value of any type.
 
-This is the 'base' Trait, meant to inherit from if you want to make your own
-trait-types (see below). Its .value can be anything (that can be stored in an Attribute)
-and if it's a integer/float you can do arithmetic with it, but otherwise it
-acts just like a glorified Attribute.
+This is the 'base' Trait, meant to inherit from if you want to invent
+trait-types from scratch (most of the time you'll probably inherit from some of
+the more advanced trait-type classes though). A `Trait`s  `.value` can be
+anything (that can be stored in an Attribute) and if it's a integer/float you
+can do arithmetic with it, but otherwise it acts just like a glorified
+Attribute.
 
 
 ```python
@@ -291,38 +309,45 @@ acts just like a glorified Attribute.
 
 ## Expanding with your own Traits
 
-A Trait is a class inhering from `evennia.contrib.traits.Trait` (or
-from one of the existing Trait classes).
+A Trait is a class inhering from `evennia.contrib.traits.Trait` (or from one of
+the existing Trait classes).
 
 ```python
 # in a file, say, 'mygame/world/traits.py'
 
-from evennia.contrib.traits import Trait
+from evennia.contrib.traits import StaticTrait
 
-class RageTrait(Trait):
+class RageTrait(StaticTrait):
 
     trait_type = "rage"
     default_keys = {
         "rage": 0
     }
 
+    def berserk(self):
+        self.mod = 100
+
+    def sedate(self):
+        self.mod = 0
+        
+
 ```
 
 Above is an example custom-trait-class "rage" that stores a property "rage" on
-itself, with a default value of 0. This has all the
-functionality of a Trait - for example, if you do del on the `rage` property, it will be
-set back to its default (0). If you wanted to customize what it does, you
-just add `rage` property get/setters/deleters on the class.
+itself, with a default value of 0. This has all the functionality of a Trait -
+for example, if you do del on the `rage` property, it will be set back to its
+default (0). Above we also added some helper methods.
 
 To add your custom RageTrait to Evennia, add the following to your settings file
 (assuming your class is in mygame/world/traits.py):
+::
 
     TRAIT_CLASS_PATHS = ["world.traits.RageTrait"]
 
 Reload the server and you should now be able to use your trait:
 
 ```python
->>> obj.traits.add("mood", "A dark mood", rage=30)
+>>> obj.traits.add("mood", "A dark mood", rage=30, trait_type='rage')
 >>> obj.traits.mood.rage
 30
 
