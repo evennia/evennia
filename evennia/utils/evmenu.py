@@ -1710,36 +1710,39 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
 
     Args:
         prompt (str): The yes/no question to ask. This takes an optional formatting
-            marker `{suffix}` which will be filled with 'Y/N', [Y]/N or Y/[N]
-            depending on the setting of `default`. If `allow_abort`, then the
-            `A(bort)` will also be available.
+            marker `{options}` which will be filled with 'Y/N', '[Y]/N' or
+            'Y/[N]' depending on the setting of `default`. If `allow_abort` is set,
+            then the 'A(bort)' option will also be available.
         yes_action (callable or str): If a callable, this will be called
-            with `(caller, *args, **kwargs) when the yes-choice is made.
+            with `(caller, *args, **kwargs)` when the Yes-choice is made.
             If a string, this string will be echoed back to the caller.
         no_action (callable or str): If a callable, this will be called
-            with `(caller, *args, **kwargs)` when the no-choice is made.
+            with `(caller, *args, **kwargs)` when the No-choice is made.
             If a string, this string will be echoed back to the caller.
-        default (str optional): One of "N", "Y", "A" or None for no default.
-            If "A" is given, `allow_abort` is assumed set. The user can choose
-            the default option just by pressing return.
-        allow_abort (bool, optional): If set, the Q(uit) option is available,
-            which is neither yes or no.
+        default (str optional): This is what the user will get if they just press the
+            return key without giving any input. One of 'N', 'Y', 'A' or 'None'
+            for no default.  If 'A' is given, `allow_abort` is auto-set.
+        allow_abort (bool, optional): If set, the 'A(bort)' option is available
+            (a third option meaning neither yes or no but just exits the prompt).
         session (Session, optional): This allows to specify the
             session to send the prompt to. It's usually only needed if `caller`
             is an Account in multisession modes greater than 2. The session is
             then updated by the command and is available (for example in
             callbacks) through `caller.ndb._yes_no_question.session`.
-        *args, **kwargs: These are passed into the callables, if any.
+        *args, **kwargs: These are passed into the callables.
 
     Raises:
-        RuntimeError: If default and allow_abort clashes.
+        RuntimeError, FooError: If default and allow_abort clashes.
 
     Example:
+        ::
 
-        ask_yes_no(caller, "Are you happy {suffix}?",
-                   "you answered yes", "you answered no")
-        ask_yes_no(caller, "Are you sad {suffix}?",
-                   _callable_yes, _callable_no, allow_abort=True)
+            # just returning strings
+            ask_yes_no(caller, "Are you happy {options}?",
+                       "you answered yes", "you answered no")
+            # trigger callables
+            ask_yes_no(caller, "Are you sad {options}?",
+                       _callable_yes, _callable_no, allow_abort=True)
 
     """
     def _callable_yes_txt(caller, *args, **kwargs):
@@ -1760,20 +1763,20 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
         kwargs['no_txt'] = str(no_action)
         no_action = _callable_no_txt
 
-    # prepare the prompt with suffix
-    suffix = "Y/N"
+    # prepare the prompt with options
+    options = "Y/N"
     abort_txt = "/Abort" if allow_abort else ""
     if default:
         default = default.lower()
         if default == "y":
-            suffix = "[Y]/N"
+            options = "[Y]/N"
         elif default == "n":
-            suffix = "Y/[N]"
+            options = "Y/[N]"
         elif default == "a":
             allow_abort = True
             abort_txt = "/[A]bort"
-    suffix += abort_txt
-    prompt = prompt.format(suffix=suffix)
+    options += abort_txt
+    prompt = prompt.format(options=options)
 
     caller.ndb._yes_no_question = _Prompt()
     caller.ndb._yes_no_question.session = session
