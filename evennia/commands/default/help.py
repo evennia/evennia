@@ -336,7 +336,6 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
 
         # retrieve all available commands and database / file-help topics
-        from evennia.commands.default.system import CmdAbout
         all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
 
         # we group the file-help topics with the db ones, giving the db ones priority
@@ -379,8 +378,6 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         # all available options
         entries = [cmd for cmd in all_cmds if cmd] + all_db_topics + all_categories
-
-        print("CmdAbout in entries: ", CmdAbout in entries)
 
         # lunr search fields/boosts
         search_fields=[
