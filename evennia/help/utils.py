@@ -7,14 +7,24 @@ This is used primarily by the default `help` command.
 """
 import re
 
+# these are words that Lunr normally ignores but which we want to find
+# since we use them (e.g. as command names).
+# Lunr's default word list is found here:
+# https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
+_LUNR_STOP_WORD_FILTER_EXCEPTIONS = ("about", "might")
 
 _LUNR = None
 _LUNR_EXCEPTION = None
+
+_LUNR_GET_BUILDER = None
+_LUNR_BUILDER_PIPELINE = None
+
 _RE_HELP_SUBTOPICS_START = re.compile(
     r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
 _RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$", re.M + re.I)
 _RE_HELP_SUBTOPIC_PARSE = re.compile(
     r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
+
 MAX_SUBTOPIC_NESTING = 5
 
 
@@ -38,12 +48,31 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
             how many suggestions are included.
 
     """
-    global _LUNR, _LUNR_EXCEPTION
+    global _LUNR, _LUNR_EXCEPTION, _LUNR_BUILDER_PIPELINE, _LUNR_GET_BUILDER
     if not _LUNR:
         # we have to delay-load lunr because it messes with logging if it's imported
         # before twisted's logging has been set up
         from lunr import lunr as _LUNR
         from lunr.exceptions import QueryParseError as _LUNR_EXCEPTION
+        from lunr import get_default_builder as _LUNR_GET_BUILDER
+        from lunr import stop_word_filter
+        from lunr.stemmer import stemmer
+        from lunr.trimmer import trimmer
+
+        # pre-create a lunr index-builder pipeline where we've removed some of
+        # the stop-words from the default in lunr.
+
+        stop_words = stop_word_filter.WORDS
+
+        for ignore_word in _LUNR_STOP_WORD_FILTER_EXCEPTIONS:
+            try:
+                stop_words.remove(ignore_word)
+            except ValueError:
+                pass
+
+        custom_stop_words_filter = stop_word_filter.generate_stop_word_filter(stop_words)
+        _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
+
 
     indx = [cnd.search_index_entry for cnd in candidate_entries]
     mapping = {indx[ix]["key"]: cand for ix, cand in enumerate(candidate_entries)}
@@ -56,11 +85,18 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
             {"field_name": "tags", "boost": 5},
         ]
 
+    # build the search index
+    builder = _LUNR_GET_BUILDER()
+    builder.pipeline.reset()
+    builder.pipeline.add(*_LUNR_BUILDER_PIPELINE)
+
     search_index = _LUNR(
         ref="key",
         fields=fields,
         documents=indx,
+        builder=builder
     )
+
     try:
         matches = search_index.search(query)[:suggestion_maxnum]
     except _LUNR_EXCEPTION:

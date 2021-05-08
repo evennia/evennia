@@ -10,7 +10,7 @@ django-filter >= 2.2.0, < 2.3
 django-sekizai
 inflect >= 5.2.0
 autobahn >= 17.9.3
-lunr == 0.5.6
+lunr == 0.6.0
 simpleeval <= 1.0
 
 # try to resolve dependency issue in py3.7
