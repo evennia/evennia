@@ -12,8 +12,6 @@ from evennia.comms.managers import ChannelManager
 from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
 
-_CHANNEL_HANDLER = None
-
 
 class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     """
@@ -78,13 +76,6 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 self.tags.batch_add(*cdict["tags"])
 
     def basetype_setup(self):
-        # delayed import of the channelhandler
-        global _CHANNEL_HANDLER
-        if not _CHANNEL_HANDLER:
-            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
-        # register ourselves with the channelhandler.
-        _CHANNEL_HANDLER.add(self)
-
         self.locks.add("send:all();listen:all();control:perm(Admin)")
 
     def at_channel_creation(self):
@@ -371,15 +362,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     def delete(self):
         """
-        Deletes channel while also cleaning up channelhandler.
+        Deletes channel.
 
         """
         self.attributes.clear()
         self.aliases.clear()
         super().delete()
-        from evennia.comms.channelhandler import CHANNELHANDLER
-
-        CHANNELHANDLER.update()
 
     def channel_prefix(self):
         """

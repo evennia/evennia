@@ -36,7 +36,6 @@ from evennia.server.models import ServerConfig
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.utils import logger
-from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
 from django.utils.translation import gettext as _
@@ -143,9 +142,6 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 5 == 0:
         # check cache size every 5 minutes
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
-    if _MAINTENANCE_COUNT % 61 == 0:
-        # validate channels off-sync with scripts
-        evennia.CHANNEL_HANDLER.update()
     if _MAINTENANCE_COUNT % (60 * 7) == 0:
         # drop database connection every 7 hrs to avoid default timeouts on MySQL
         # (see https://github.com/evennia/evennia/issues/1376)
@@ -201,12 +197,6 @@ class Evennia:
         self.sqlite3_prep()
 
         self.start_time = time.time()
-
-        # initialize channelhandler
-        try:
-            channelhandler.CHANNELHANDLER.update()
-        except OperationalError:
-            print("channelhandler couldn't update - db not set up")
 
         # wrap the SIGINT handler to make sure we empty the threadpool
         # even when we reload and we have long-running requests in queue.
@@ -544,11 +534,10 @@ class Evennia:
         god_account = AccountDB.objects.get(id=1)
         # mudinfo
         mudinfo_chan = settings.CHANNEL_MUDINFO
-        if not mudinfo_chan:
-            raise RuntimeError("settings.CHANNEL_MUDINFO must be defined.")
-        if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-            channel = create_channel(**mudinfo_chan)
-            channel.connect(god_account)
+        if mudinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
+                channel = create_channel(**mudinfo_chan)
+                channel.connect(god_account)
         # connectinfo
         connectinfo_chan = settings.CHANNEL_MUDINFO
         if connectinfo_chan:

@@ -57,41 +57,6 @@ class TestServer(TestCase):
             self.server._server_maintenance()
             mocks["_FLUSH_CACHE"].assert_called_with(1000)
 
-    def test__server_maintenance_validate_scripts(self):
-        with patch.multiple(
-            "evennia.server.server",
-            LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
-            connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=60 - 1,
-            _LAST_SERVER_TIME_SNAPSHOT=0,
-            ServerConfig=DEFAULT,
-        ) as mocks:
-            mocks["connection"].close = MagicMock()
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            self.server._server_maintenance()
-            mocks["_FLUSH_CACHE"].assert_called_with(1000)
-
-    def test__server_maintenance_channel_handler_update(self):
-        with patch.multiple(
-            "evennia.server.server",
-            LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
-            connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=61 - 1,
-            _LAST_SERVER_TIME_SNAPSHOT=0,
-            ServerConfig=DEFAULT,
-        ) as mocks:
-            mocks["connection"].close = MagicMock()
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            with patch("evennia.server.server.evennia.CHANNEL_HANDLER.update") as mock:
-                self.server._server_maintenance()
-                mock.assert_called()
-
     def test__server_maintenance_close_connection(self):
         with patch.multiple(
             "evennia.server.server",

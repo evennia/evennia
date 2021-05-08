@@ -32,7 +32,6 @@ _Account = None
 _AccountDB = None
 _to_object = None
 _ChannelDB = None
-_channelhandler = None
 
 
 # limit symbol import from API

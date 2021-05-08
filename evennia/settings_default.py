@@ -450,18 +450,6 @@ COMMAND_DEFAULT_ARG_REGEX = None
 COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
-# The Channel Handler is responsible for managing all available channels. By
-# default it builds the current channels into a channel-cmdset that it feeds
-# to the cmdhandler. Overloading this can completely change how Channels
-# are identified and called.
-CHANNEL_HANDLER_CLASS = "evennia.comms.channelhandler.ChannelHandler"
-# The (default) Channel Handler will create a command to represent each
-# channel, creating it with the key of the channel, its aliases, locks etc. The
-# default class logs channel messages to a file and allows for /history.  This
-# setting allows to override the command class used with your own.
-# If you implement CHANNEL_HANDLER_CLASS, you can change this directly and will
-# likely not need this setting.
-CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
 # Typeclasses and other paths
@@ -724,36 +712,36 @@ GUEST_LIST = ["Guest" + str(s + 1) for s in range(9)]
 # In-game Channels created from server start
 ######################################################################
 
-# The mudinfo channel must always exist; it is used by Evennia itself to
-# relay status messages, connection info etc to staff. The superuser will be
-# automatically subscribed to this channel and it will be recreated on a
-# reload if deleted. This is a dict specifying the kwargs needed to create
-# the channel .
+# The mudinfo channel is a read-only channel used by Evennia to replay status
+# messages, connection info etc to staff. The superuser will automatically be
+# subscribed to this channel. If set to None, the channel is disabled and
+# status messages will only be logged (not recommended).
 CHANNEL_MUDINFO = {
     "key": "MudInfo",
     "aliases": "",
     "desc": "Connection log",
     "locks": "control:perm(Developer);listen:perm(Admin);send:false()",
 }
-# These are additional channels to offer. Usually, at least 'public'
-# should exist. The superuser will automatically be subscribed to all channels
-# in this list. New entries will be created on the next reload. But
-# removing or updating a same-key channel from this list will NOT automatically
-# change/remove it in the game, that needs to be done manually.
+# Optional channel (same form as CHANNEL_MUDINFO) that will receive connection
+# messages like ("<account> has (dis)connected"). While the MudInfo channel
+# will also receieve this info, this channel is meant for non-staffers. If
+# None, this information will only be logged.
+CHANNEL_CONNECTINFO = None
+# New accounts will auto-sub to the default channels given below (but they can
+# unsub at any time). Traditionally, at least 'public' should exist. Entries
+# will be (re)created on the next reload, but removing or updating a same-key
+# channel from this list will NOT automatically change/remove it in the game,
+# that needs to be done manually. Note: To create other, non-auto-subbed
+# channels, create them manually in server/conf/at_initial_setup.py.
 DEFAULT_CHANNELS = [
-    # public channel
     {
         "key": "Public",
-        "aliases": ("pub"),
+        "aliases": ("pub",),
         "desc": "Public discussion",
         "locks": "control:perm(Admin);listen:all();send:all()",
+        "typeclass": BASE_CHANNEL_TYPECLASS,
     }
 ]
-# Optional channel info (same form as CHANNEL_MUDINFO) for the channel to
-# receive connection messages ("<account> has (dis)connected").  While the
-# MudInfo channel will also receieve this info, this channel is meant for
-# non-staffers.
-CHANNEL_CONNECTINFO = None
 
 ######################################################################
 # External Connections

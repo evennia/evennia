@@ -48,6 +48,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
+_CONNECT_CHANNEL = None
 _CMDHANDLER = None
 
 # Create throttles for too many account-creations and login attempts
@@ -1359,30 +1360,42 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def _send_to_connect_channel(self, message):
         """
-        Helper method for loading and sending to the comm channel
-        dedicated to connection messages.
+        Helper method for loading and sending to the comm channel dedicated to
+        connection messages. This will also be sent to the mudinfo channel.
 
         Args:
             message (str): A message to send to the connect channel.
 
         """
-        global _MUDINFO_CHANNEL
-        if not _MUDINFO_CHANNEL:
-            try:
-                _MUDINFO_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_MUDINFO["key"])[
-                    0
-                ]
-            except Exception:
-                logger.log_trace()
+        global _MUDINFO_CHANNEL, _CONNECT_CHANNEL
+        if _MUDINFO_CHANNEL is None:
+            if settings.CHANNEL_MUDINFO:
+                try:
+                    _MUDINFO_CHANNEL = ChannelDB.objects.get(
+                        db_key=settings.CHANNEL_MUDINFO["key"])
+                except ChannelDB.DoesNotExist:
+                    logger.log_trace()
+            else:
+                _MUDINFO = False
+        if _CONNECT_CHANNEL is None:
+            if settings.CHANNEL_CONNECTINFO:
+                try:
+                    _CONNECT_CHANNEL = ChannelDB.objects.get(
+                        db_key=settings.CHANNEL_CONNECTINFO["key"])
+                except ChannelDB.DoesNotExist:
+                    logger.log_trace()
+            else:
+                _CONNECT_CHANNEL = False
+
         if settings.USE_TZ:
             now = timezone.localtime()
         else:
             now = timezone.now()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
         if _MUDINFO_CHANNEL:
-            _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
-        else:
-            logger.log_info(f"[{now}]: {message}")
+            _MUDINFO_CHANNEL.msg(f"[{now}]: {message}")
+        if _CONNECT_CHANNEL:
+            _CONNECT_CHANNEL.msg(f"[{now}]: {message}")
 
     def at_post_login(self, session=None, **kwargs):
         """
