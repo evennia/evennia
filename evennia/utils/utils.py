@@ -1335,18 +1335,19 @@ def all_from_module(module):
             already imported module object (e.g. `models`)
 
     Returns:
-        variables (dict): A dict of {variablename: variable} for all
+        dict: A dict of {variablename: variable} for all
             variables in the given module.
 
     Notes:
-        Ignores modules and variable names starting with an underscore.
+        Ignores modules and variable names starting with an underscore, as well
+        as variables imported into the module from other modules.
 
     """
     mod = mod_import(module)
     if not mod:
         return {}
     # make sure to only return variables actually defined in this
-    # module if available (try to avoid not imports)
+    # module if available (try to avoid imports)
     members = getmembers(mod, predicate=lambda obj: getmodule(obj) in (mod, None))
     return dict((key, val) for key, val in members if not key.startswith("_"))
 

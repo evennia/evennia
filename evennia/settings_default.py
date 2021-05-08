@@ -448,8 +448,6 @@ COMMAND_DEFAULT_ARG_REGEX = None
 # calling the Command. This may be more intuitive for users in certain
 # multisession modes.
 COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
-# The help category of a command if not otherwise specified.
-COMMAND_DEFAULT_HELP_CATEGORY = "general"
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
 # The Channel Handler is responsible for managing all available channels. By
@@ -598,6 +596,21 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
+# Help system
+######################################################################
+# Help output from CmdHelp are wrapped in an EvMore call
+# (excluding webclient with separate help popups). If continuous scroll
+# is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
+HELP_MORE = True
+# The help category of a command if not specified.
+COMMAND_DEFAULT_HELP_CATEGORY = "general"
+# The help category of a file-based help entry if not specified
+FILE_DEFAULT_HELP_CATEGORY = "general"
+# File-based help entries. These are modules containing dicts defining help
+# entries. They can be used together with in-database entries created in-game.
+FILE_HELP_ENTRY_MODULES = ["world.help_entries"]
+
+######################################################################
 # FuncParser
 #
 # Strings parsed with the FuncParser can contain 'callables' on the
@@ -679,10 +692,6 @@ PERMISSION_ACCOUNT_DEFAULT = "Player"
 CLIENT_DEFAULT_WIDTH = 78
 # telnet standard height is 24; does anyone use such low-res displays anymore?
 CLIENT_DEFAULT_HEIGHT = 45
-# Help output from CmdHelp are wrapped in an EvMore call
-# (excluding webclient with separate help popups). If continuous scroll
-# is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
-HELP_MORE = True
 # Set rate limits per-IP on account creations and login attempts
 CREATION_THROTTLE_LIMIT = 2
 CREATION_THROTTLE_TIMEOUT = 10 * 60

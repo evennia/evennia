@@ -424,7 +424,7 @@ class TestHelp(CommandTest):
         logging.disable(level=logging.ERROR)
 
     def test_help(self):
-        self.call(help_module.CmdHelp(), "", "Admin", cmdset=CharacterCmdSet())
+        self.call(help_module.CmdHelp(), "", "Commands", cmdset=CharacterCmdSet())
 
     def test_set_help(self):
         self.call(
@@ -433,85 +433,6 @@ class TestHelp(CommandTest):
             "Topic 'testhelp' was successfully created.",
         )
         self.call(help_module.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
-
-    def test_parse_entry(self):
-        """
-        Test for subcategories
-
-        """
-        entry = """
-        Main topic text
-
-        # subtopics
-
-        ## foo
-
-        Foo sub-category
-
-        ### moo
-
-        Foo/Moo subsub-category
-
-        #### dum
-
-        Foo/Moo/Dum subsubsub-category
-
-        ## bar
-
-        Bar subcategory
-
-        ### moo
-
-        Bar/Moo subcategory
-
-        """
-        expected = {
-            None: "Main topic text",
-            "foo": {
-                None: "Foo sub-category",
-                "moo": {
-                    None: "Foo/Moo subsub-category",
-                    "dum": {
-                        None: "Foo/Moo/Dum subsubsub-category",
-                    }
-                },
-            },
-            "bar": {
-                None: "Bar subcategory",
-                "moo": {
-                    None: "Bar/Moo subcategory"
-                }
-            }
-        }
-
-        actual_result = help_module.parse_entry_for_subcategories(entry)
-        self.assertEqual(expected, actual_result)
-
-    def test_parse_single_entry(self):
-        """
-        Test parsing single subcategory
-
-        """
-
-        entry = """
-        Main topic text
-
-        # SUBTOPICS
-
-        ## creating extra stuff
-
-        Help on creating extra stuff.
-
-        """
-        expected = {
-            None: "Main topic text",
-            "creating extra stuff": {
-                None: "Help on creating extra stuff."
-            }
-        }
-
-        actual_result = help_module.parse_entry_for_subcategories(entry)
-        self.assertEqual(expected, actual_result)
 
     @parameterized.expand([
         ("test",  # main help entry

@@ -143,9 +143,6 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 5 == 0:
         # check cache size every 5 minutes
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
-    if _MAINTENANCE_COUNT % 60 == 0:
-        # validate scripts every hour
-        evennia.ScriptDB.objects.validate()
     if _MAINTENANCE_COUNT % 61 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
