@@ -56,31 +56,31 @@
 
 <span class="sd">## Adding Traits to a typeclass</span>
 
-<span class="sd">To access and manipulate traits on an object, its Typeclass needs to have a</span>
+<span class="sd">To access and manipulate traits on an entity, its Typeclass needs to have a</span>
 <span class="sd">`TraitHandler` assigned it. Usually, the handler is made available as `.traits`</span>
-<span class="sd">(in the same way as `.tags` or `.attributes`).</span>
+<span class="sd">(in the same way as `.tags` or `.attributes`). It&#39;s recommended to do this</span>
+<span class="sd">using Evennia&#39;s `lazy_property` (which basically just means it&#39;s not</span>
+<span class="sd">initialized until it&#39;s actually accessed).</span>
 
 <span class="sd">Here&#39;s an example for adding the TraitHandler to the base Object class:</span>
 
-<span class="sd">    ```python</span>
-<span class="sd">    # mygame/typeclasses/objects.py</span>
+<span class="sd">```python</span>
+<span class="sd"># mygame/typeclasses/objects.py</span>
 
-<span class="sd">    from evennia import DefaultObject</span>
-<span class="sd">    from evennia.utils import lazy_property</span>
-<span class="sd">    from evennia.contrib.traits import TraitHandler</span>
+<span class="sd">from evennia import DefaultObject</span>
+<span class="sd">from evennia.utils import lazy_property</span>
+<span class="sd">from evennia.contrib.traits import TraitHandler</span>
 
-<span class="sd">    # ...</span>
+<span class="sd"># ...</span>
 
-<span class="sd">    class Object(DefaultObject):</span>
-<span class="sd">        ...</span>
-<span class="sd">        @lazy_property</span>
-<span class="sd">        def traits(self):</span>
-<span class="sd">            # this adds the handler as .traits</span>
-<span class="sd">            return TraitHandler(self)</span>
+<span class="sd">class Object(DefaultObject):</span>
+<span class="sd">    ...</span>
+<span class="sd">    @lazy_property</span>
+<span class="sd">    def traits(self):</span>
+<span class="sd">        # this adds the handler as .traits</span>
+<span class="sd">        return TraitHandler(self)</span>
 
-<span class="sd">    ```</span>
-
-<span class="sd">After a reload you can now try adding some example traits:</span>
+<span class="sd">```</span>
 
 <span class="sd">## Using traits</span>
 
@@ -90,6 +90,7 @@
 
 <span class="sd">```python</span>
 <span class="sd"># this is an example using the &quot;static&quot; trait, described below</span>
+
 <span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;static&quot;, base=4)</span>
 <span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
 <span class="sd">4</span>
@@ -172,17 +173,19 @@
 <span class="sd">```</span>
 
 <span class="sd">### Counter</span>
+<span class="sd">::</span>
 
 <span class="sd">    min/unset     base    base+mod                       max/unset</span>
-<span class="sd">     |--------------|--------|---------X--------X------------|</span>
-<span class="sd">                                    current   value</span>
-<span class="sd">                                              = current</span>
-<span class="sd">                                              + mod</span>
+<span class="sd">    |--------------|--------|---------X--------X------------|</span>
+<span class="sd">                                current   value</span>
+<span class="sd">                                          = current</span>
+<span class="sd">                                          + mod</span>
 
-<span class="sd">A counter describes a value that can move from a base. The `current` property</span>
-<span class="sd">is the thing usually modified. It starts at the `base`. One can also add a modifier,</span>
-<span class="sd">which will both be added to the base and to current (forming .value).</span>
-<span class="sd">The min/max of the range are optional, a boundary set to None will remove it.</span>
+<span class="sd">A counter describes a value that can move from a base. The `.current` property</span>
+<span class="sd">is the thing usually modified. It starts at the `.base`. One can also add a</span>
+<span class="sd">modifier, which will both be added to the base and to current (forming</span>
+<span class="sd">`.value`).  The min/max of the range are optional, a boundary set to None will</span>
+<span class="sd">remove it. A suggested use for a Counter Trait would be to track skill values.</span>
 
 <span class="sd">```python</span>
 <span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
@@ -202,10 +205,15 @@
 
 <span class="sd">Counters have some extra properties:</span>
 
-<span class="sd">`descs` is a dict {upper_bound:text_description}. This allows for easily</span>
+<span class="sd">#### .descs</span>
+
+<span class="sd">The `descs` property is a dict {upper_bound:text_description}. This allows for easily</span>
 <span class="sd">storing a more human-friendly description of the current value in the</span>
 <span class="sd">interval. Here is an example for skill values between 0 and 10:</span>
+<span class="sd">::</span>
+
 <span class="sd">    {0: &quot;unskilled&quot;, 1: &quot;neophyte&quot;, 5: &quot;trained&quot;, 7: &quot;expert&quot;, 9: &quot;master&quot;}</span>
+
 <span class="sd">The keys must be supplied from smallest to largest. Any values below the lowest and above the</span>
 <span class="sd">highest description will be considered to be included in the closest description slot.</span>
 <span class="sd">By calling `.desc()` on the Counter, will you get the text matching the current `value`</span>
@@ -232,11 +240,11 @@
 <span class="sd">The `rate` property defaults to 0. If set to a value different from 0, it</span>
 <span class="sd">allows the trait to change value dynamically. This could be used for example</span>
 <span class="sd">for an attribute that was temporarily lowered but will gradually (or abruptly)</span>
-<span class="sd">recover after a certain time. The rate is given as change of the `current`</span>
-<span class="sd">per-second, and the .value will still be restrained by min/max boundaries, if</span>
-<span class="sd">those are set.</span>
+<span class="sd">recover after a certain time. The rate is given as change of the current</span>
+<span class="sd">`.value` per-second, and this will still be restrained by min/max boundaries,</span>
+<span class="sd">if those are set.</span>
 
-<span class="sd">It is also possible to set a &quot;.ratetarget&quot;, for the auto-change to stop at</span>
+<span class="sd">It is also possible to set a `.ratetarget`, for the auto-change to stop at</span>
 <span class="sd">(rather than at the min/max boundaries). This allows the value to return to</span>
 <span class="sd">a previous value.</span>
 
@@ -262,35 +270,41 @@
 <span class="sd">&gt;&gt;&gt; obj.traits.hunting.rate = 0  # disable auto-change</span>
 
 <span class="sd">```</span>
-<span class="sd">Note that if rate is a non-integer, the resulting .value (at least until it</span>
-<span class="sd">reaches the boundary) will likely also come out a float. If you expect an</span>
-<span class="sd">integer, you must run run int() on the result yourself.</span>
+<span class="sd">Note that if `.rate` is a non-integer, the resulting `.value` (at least until it</span>
+<span class="sd">reaches a boundary or rate-target) will also come out a float (so you can get a</span>
+<span class="sd">very exact value at the current time). If you expect an integer, you must run</span>
+<span class="sd">`int()` (or something like `round()`) on the result yourself.</span>
 
-<span class="sd">#### .percentage()</span>
+<span class="sd">#### .percent()</span>
 
-<span class="sd">If both min and max are defined, the `.percentage()` method of the trait will</span>
+<span class="sd">If both min and max are defined, the `.percent()` method of the trait will</span>
 <span class="sd">return the value as a percentage.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.percentage()</span>
+<span class="sd">&gt;&gt;&gt; obj.traits.hunting.percent()</span>
 <span class="sd">&quot;71.0%&quot;</span>
+<span class="sd">&gt;&gt;&gt; obj.traits.hunting.percent(formatting=None)</span>
+<span class="sd">71.0</span>
 
 <span class="sd">```</span>
 
 <span class="sd">### Gauge</span>
 
 <span class="sd">This emulates a [fuel-] gauge that empties from a base+mod value.</span>
+<span class="sd">::</span>
 
 <span class="sd">    min/0                                            max=base+mod</span>
 <span class="sd">     |-----------------------X---------------------------|</span>
 <span class="sd">                           value</span>
 <span class="sd">                          = current</span>
 
-<span class="sd">The &#39;current&#39; value will start from a full gauge. The .max property is</span>
-<span class="sd">read-only and is set by .base + .mod. So contrary to a Counter, the modifier</span>
-<span class="sd">only applies to the max value of the gauge and not the current value. The</span>
-<span class="sd">minimum bound defaults to 0. This trait is useful for showing resources that</span>
-<span class="sd">can deplete, like health, stamina and the like.</span>
+<span class="sd">The `.current` value will start from a full gauge. The .max property is</span>
+<span class="sd">read-only and is set by `.base` + `.mod`. So contrary to a `Counter`, the</span>
+<span class="sd">`.mod` modifier only applies to the max value of the gauge and not the current</span>
+<span class="sd">value. The minimum bound defaults to 0 if not set explicitly. </span>
+
+<span class="sd">This trait is useful for showing commonly depletable resources like health,</span>
+<span class="sd">stamina and the like.</span>
 
 <span class="sd">```python</span>
 <span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hp&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, base=100)</span>
@@ -305,20 +319,24 @@
 
 <span class="sd">```</span>
 
-<span class="sd">Same as Counters, Gauges can also have `descs` to describe the interval and can also</span>
-<span class="sd">have `rate` and `ratetarget` to auto-update the value. The rate is particularly useful</span>
-<span class="sd">for gauges, for everything from poison slowly draining your health, to resting gradually</span>
-<span class="sd">increasing it. You can also use the `.percentage()` function to show the current value</span>
-<span class="sd">as a percentage.</span>
+<span class="sd">The Gauge trait is subclass of the Counter, so you have access to the same</span>
+<span class="sd">methods and properties where they make sense. So gauges can also have a</span>
+<span class="sd">`.descs` dict to describe the intervals in text, and can use `.percent()` to</span>
+<span class="sd">get how filled it is as a percentage etc. </span>
+
+<span class="sd">The `.rate` is particularly relevant for gauges - useful for everything</span>
+<span class="sd">from poison slowly draining your health, to resting gradually increasing it.</span>
 
 <span class="sd">### Trait</span>
 
 <span class="sd">A single value of any type.</span>
 
-<span class="sd">This is the &#39;base&#39; Trait, meant to inherit from if you want to make your own</span>
-<span class="sd">trait-types (see below). Its .value can be anything (that can be stored in an Attribute)</span>
-<span class="sd">and if it&#39;s a integer/float you can do arithmetic with it, but otherwise it</span>
-<span class="sd">acts just like a glorified Attribute.</span>
+<span class="sd">This is the &#39;base&#39; Trait, meant to inherit from if you want to invent</span>
+<span class="sd">trait-types from scratch (most of the time you&#39;ll probably inherit from some of</span>
+<span class="sd">the more advanced trait-type classes though). A `Trait`s  `.value` can be</span>
+<span class="sd">anything (that can be stored in an Attribute) and if it&#39;s a integer/float you</span>
+<span class="sd">can do arithmetic with it, but otherwise it acts just like a glorified</span>
+<span class="sd">Attribute.</span>
 
 
 <span class="sd">```python</span>
@@ -333,38 +351,45 @@
 
 <span class="sd">## Expanding with your own Traits</span>
 
-<span class="sd">A Trait is a class inhering from `evennia.contrib.traits.Trait` (or</span>
-<span class="sd">from one of the existing Trait classes).</span>
+<span class="sd">A Trait is a class inhering from `evennia.contrib.traits.Trait` (or from one of</span>
+<span class="sd">the existing Trait classes).</span>
 
 <span class="sd">```python</span>
 <span class="sd"># in a file, say, &#39;mygame/world/traits.py&#39;</span>
 
-<span class="sd">from evennia.contrib.traits import Trait</span>
+<span class="sd">from evennia.contrib.traits import StaticTrait</span>
 
-<span class="sd">class RageTrait(Trait):</span>
+<span class="sd">class RageTrait(StaticTrait):</span>
 
 <span class="sd">    trait_type = &quot;rage&quot;</span>
 <span class="sd">    default_keys = {</span>
 <span class="sd">        &quot;rage&quot;: 0</span>
 <span class="sd">    }</span>
 
+<span class="sd">    def berserk(self):</span>
+<span class="sd">        self.mod = 100</span>
+
+<span class="sd">    def sedate(self):</span>
+<span class="sd">        self.mod = 0</span>
+<span class="sd">        </span>
+
 <span class="sd">```</span>
 
 <span class="sd">Above is an example custom-trait-class &quot;rage&quot; that stores a property &quot;rage&quot; on</span>
-<span class="sd">itself, with a default value of 0. This has all the</span>
-<span class="sd">functionality of a Trait - for example, if you do del on the `rage` property, it will be</span>
-<span class="sd">set back to its default (0). If you wanted to customize what it does, you</span>
-<span class="sd">just add `rage` property get/setters/deleters on the class.</span>
+<span class="sd">itself, with a default value of 0. This has all the functionality of a Trait -</span>
+<span class="sd">for example, if you do del on the `rage` property, it will be set back to its</span>
+<span class="sd">default (0). Above we also added some helper methods.</span>
 
 <span class="sd">To add your custom RageTrait to Evennia, add the following to your settings file</span>
 <span class="sd">(assuming your class is in mygame/world/traits.py):</span>
+<span class="sd">::</span>
 
 <span class="sd">    TRAIT_CLASS_PATHS = [&quot;world.traits.RageTrait&quot;]</span>
 
 <span class="sd">Reload the server and you should now be able to use your trait:</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;mood&quot;, &quot;A dark mood&quot;, rage=30)</span>
+<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;mood&quot;, &quot;A dark mood&quot;, rage=30, trait_type=&#39;rage&#39;)</span>
 <span class="sd">&gt;&gt;&gt; obj.traits.mood.rage</span>
 <span class="sd">30</span>
 
