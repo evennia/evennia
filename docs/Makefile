@@ -120,6 +120,14 @@ local:
 	@echo ""
 	@echo "Documentation built (single version)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+	
+# build only that which updated since last run (no clean or index-creation)
+localupdate:
+	make _check-env
+	make _html-build
+	@echo ""
+	@echo "Documentation built (single version, only updates, no auto-index)."
+	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 # note that this should be done for each relevant multiversion branch.
 mv-index:

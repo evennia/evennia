@@ -38,7 +38,7 @@ than, the doc-strings of each component in the [API](../Evennia-API).
 - [MonitorHandler](./MonitorHandler)
 - [TickerHandler](./TickerHandler)
 - [Lock system](./Locks)
-- [FuncParser](FuncParser)
+- [FuncParser](./FuncParser)
 
 ## Server and network
 
