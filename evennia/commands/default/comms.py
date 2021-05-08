@@ -1882,7 +1882,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
     Check and reboot IRC bot.
 
     Usage:
-        ircstatus [#dbref ping||nicklist||reconnect]
+        ircstatus [#dbref ping | nicklist | reconnect]
 
     If not given arguments, will return a list of all bots (like
     irc2chan/list). The 'ping' argument will ping the IRC network to
