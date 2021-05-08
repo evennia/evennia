@@ -109,11 +109,8 @@ class HelpEntry(SharedMemoryModel):
     #
     #
 
-    def __str__(self):
-        return self.key
-
     def __repr__(self):
-        return "%s" % self.key
+        return f"<HelpEntry {self.key}>"
 
     def access(self, accessing_obj, access_type="read", default=False):
         """

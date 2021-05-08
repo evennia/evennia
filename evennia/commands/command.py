@@ -119,9 +119,11 @@ class CommandMeta(type):
 #    parsing errors.
 
 
-class Command(object, metaclass=CommandMeta):
+class Command(metaclass=CommandMeta):
     """
-    Base command
+    ## Base command
+
+    (you may see this if a child command had no help text defined)
 
     Usage:
       command [args]

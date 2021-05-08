@@ -1,9 +1,10 @@
 """
-The help command. The basic idea is that help texts for commands
-are best written by those that write the commands - the admins. So
-command-help is all auto-loaded and searched from the current command
-set. The normal, database-tied help system is used for collaborative
-creation of other help topics such as RP help or game-world aides.
+The help command. The basic idea is that help texts for commands are best
+written by those that write the commands - the developers. So command-help is
+all auto-loaded and searched from the current command set. The normal,
+database-tied help system is used for collaborative creation of other help
+topics such as RP help or game-world aides. Help entries can also be created
+outside the game in modules given by ``settings.FILE_HELP_ENTRY_MODULES``.
 
 """
 
@@ -32,7 +33,6 @@ CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 __all__ = ("CmdHelp", "CmdSetHelp")
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SEP = "|C" + "-" * _DEFAULT_WIDTH + "|n"
-
 
 
 @dataclass
@@ -144,7 +144,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         """
         start = f"{_SEP}\n"
 
-        title = f"|CHelp for |w{topic}|n" if topic else ""
+        title = f"|CHelp for |w{topic}|n" if topic else "|rNo help found|n"
 
         if aliases:
             aliases = (
@@ -165,7 +165,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         if suggested:
             suggested = (
-                "\n\n|CSuggested other topics:|n\n{}".format(
+                "\n|CSuggestions:|n\n{}".format(
                     fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested), indent=2))
             )
         else:
@@ -175,7 +175,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         return "".join((start, title, aliases, help_text, subtopics, suggested, end))
 
-    def format_help_index(self, cmd_help_dict=None, db_help_dict=None):
+
+    def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False):
         """
         Output a category-ordered g for displaying the main help, grouped by
         category.
@@ -185,6 +186,10 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 command-based help.
             db_help_dict (dict): A dict `{"category": [topic, topic], ...]}` for
                 database-based help.
+            title_lone_category (bool, optional): If a lone category should
+                be titled with the category name or not. While pointless in a
+                general index, the title should probably show when explicitly
+                listing the category itself.
 
         Returns:
             str: The help index organized into a grid.
@@ -199,7 +204,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             grid = []
             verbatim_elements = []
 
-            if len(help_dict) == 1:
+            if len(help_dict) == 1 and not title_lone_category:
                 # don't list categories if there is only one
                 for category in help_dict:
                     entries = sorted(set(help_dict.get(category, [])))
@@ -226,22 +231,25 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         width = self.client_width()
         grid = []
         verbatim_elements = []
+        cmd_grid, db_grid = "", ""
 
-        # get the command-help entries by-category
-        sep1 = (self.index_type_separator_clr
-                + pad("Commands", width=width, fillchar='-')
-                + self.index_topic_clr)
-        grid, verbatim_elements = _group_by_category(cmd_help_dict)
-        gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
-        cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+        if any(cmd_help_dict.values()):
+            # get the command-help entries by-category
+            sep1 = (self.index_type_separator_clr
+                    + pad("Commands", width=width, fillchar='-')
+                    + self.index_topic_clr)
+            grid, verbatim_elements = _group_by_category(cmd_help_dict)
+            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
-        # get db-based help entries by-category
-        sep2 = (self.index_type_separator_clr
-                + pad("Game & World", width=width, fillchar='-')
-                + self.index_topic_clr)
-        grid, verbatim_elements = _group_by_category(db_help_dict)
-        gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
-        db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+        if any(db_help_dict.values()):
+            # get db-based help entries by-category
+            sep2 = (self.index_type_separator_clr
+                    + pad("Game & World", width=width, fillchar='-')
+                    + self.index_topic_clr)
+            grid, verbatim_elements = _group_by_category(db_help_dict)
+            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         # only show the main separators if there are actually both cmd and db-based help
         if cmd_grid and db_grid:
@@ -328,6 +336,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
 
         # retrieve all available commands and database / file-help topics
+        from evennia.commands.default.system import CmdAbout
         all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
 
         # we group the file-help topics with the db ones, giving the db ones priority
@@ -370,30 +379,67 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         # all available options
         entries = [cmd for cmd in all_cmds if cmd] + all_db_topics + all_categories
+
+        print("CmdAbout in entries: ", CmdAbout in entries)
+
+        # lunr search fields/boosts
+        search_fields=[
+            {"field_name": "key", "boost": 10},
+            {"field_name": "aliases", "boost": 9},
+            {"field_name": "category", "boost": 8},
+            {"field_name": "tags", "boost": 1},  # tags are not used by default
+        ]
         match, suggestions = None, None
 
-        for match_query in [f"{query}~1", f"{query}*"]:
-            # We first do an exact word-match followed by a start-by query
-            # the return of this will either be a HelpCategory, a Command or a HelpEntry.
+        for match_query in (query, f"{query}*"):
+            # We first do an exact word-match followed by a start-by query. The
+            # return of this will either be a HelpCategory, a Command or a
+            # HelpEntry/FileHelpEntry.
             matches, suggestions = help_search_with_index(
-                match_query, entries, suggestion_maxnum=self.suggestion_maxnum
+                match_query, entries,
+                suggestion_maxnum=self.suggestion_maxnum,
+                fields=search_fields
             )
             if matches:
                 match = matches[0]
                 break
 
         if not match:
-            # no exact matches found. Just give suggestions.
+            # no topic matches found. Only give suggestions.
+            help_text = f"There is no help topic matching '{query}'."
+
+            if not suggestions:
+                # we don't even have a good suggestion. Run a second search,
+                # doing a full-text search in the actual texts of the help
+                # entries
+
+                search_fields=[
+                    {"field_name": "text", "boost": 1},
+                ]
+
+                for match_query in [query, f"{query}*"]:
+                    _, suggestions = help_search_with_index(
+                        match_query, entries,
+                        suggestion_maxnum=self.suggestion_maxnum,
+                        fields=search_fields
+                    )
+
+                    if suggestions:
+                        help_text += "\n... But matches where found within the help texts of the suggestions below."
+                        break
+
             output = self.format_help_entry(
-                topic="",
-                help_text=f"No help entry found for '{query}'",
+                topic=None,  # this will give a no-match style title
+                help_text=help_text,
                 suggested=suggestions
             )
+
             self.msg_help(output)
             return
 
         if isinstance(match, HelpCategory):
             # no subtopics for categories - these are just lists of topics
+
             output = self.format_help_index(
                 {
                     match.key: [
@@ -409,6 +455,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                         if match.key.lower() == topic.help_category
                     ]
                 },
+                title_lone_category=True
             )
             self.msg_help(output)
             return
@@ -655,6 +702,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             old_entry.aliases.add(aliases)
             self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
             return
+
         if "delete" in switches or "del" in switches:
             # delete the help entry
             if not old_entry:

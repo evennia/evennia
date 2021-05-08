@@ -117,7 +117,7 @@ def check_errors(settings):
             "Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE "
             "to control log cycling."
         )
-    if hasattr(settings, "CHANNEL_COMMAND_CLASS") or hasaattr(settings, "CHANNEL_HANDLER_CLASS"):
+    if hasattr(settings, "CHANNEL_COMMAND_CLASS") or hasattr(settings, "CHANNEL_HANDLER_CLASS"):
         raise DeprecationWarning(
             "settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are "
             "unused and should be removed. The ChannelHandler is no more; "
