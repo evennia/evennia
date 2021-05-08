@@ -131,10 +131,9 @@ def create_channels():
     goduser = get_god_account()
 
     channel_mudinfo = settings.CHANNEL_MUDINFO
-    if not channel_mudinfo:
-        raise RuntimeError("settings.CHANNEL_MUDINFO must be defined.")
-    channel = create.create_channel(**channel_mudinfo)
-    channel.connect(goduser)
+    if channel_mudinfo:
+        channel = create.create_channel(**channel_mudinfo)
+        channel.connect(goduser)
 
     channel_connectinfo = settings.CHANNEL_CONNECTINFO
     if channel_connectinfo:

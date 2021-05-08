@@ -23,14 +23,12 @@ command line. The processing of a command works as follows:
    cmdset, or fallback to error message. Exit.
 7. If no match was found -> check for CMD_NOMATCH in current cmdset or
    fallback to error message. Exit.
-8. A single match was found. If this is a channel-command (i.e. the
-   ommand name is that of a channel), --> check for CMD_CHANNEL in
-   current cmdset or use channelhandler default. Exit.
-9. At this point we have found a normal command. We assign useful variables to it that
+8. At this point we have found a normal command. We assign useful variables to it that
    will be available to the command coder at run-time.
-12. We have a unique cmdobject, primed for use. Call all hooks:
+9. We have a unique cmdobject, primed for use. Call all hooks:
    `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.
-13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
+10. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
+
 """
 
 from collections import defaultdict
@@ -44,7 +42,6 @@ from twisted.internet.task import deferLater
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.commands.command import InterruptCommand
-from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
 
@@ -303,19 +300,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
 
     """
     try:
-
-        # @inlineCallbacks
-        # def _get_channel_cmdset(account_or_obj):
-        #     """
-        #     Helper-method; Get channel-cmdsets
-        #     """
-        #     # Create cmdset for all account's available channels
-        #     try:
-        #         channel_cmdset = yield CHANNELHANDLER.get_cmdset(account_or_obj)
-        #         returnValue([channel_cmdset])
-        #     except Exception:
-        #         _msg_err(caller, _ERROR_CMDSETS)
-        #         raise ErrorReported(raw_string)
 
         @inlineCallbacks
         def _get_local_obj_cmdsets(obj):

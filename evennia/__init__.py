@@ -95,7 +95,6 @@ SESSION_HANDLER = None
 TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
-CHANNEL_HANDLER = None
 
 # Containers
 GLOBAL_SCRIPTS = None
@@ -149,7 +148,7 @@ def _init():
     global signals
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
-    global CHANNEL_HANDLER, TASK_HANDLER
+    global TASK_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
@@ -212,7 +211,6 @@ def _init():
     from .scripts.tickerhandler import TICKER_HANDLER
     from .scripts.taskhandler import TASK_HANDLER
     from .server.sessionhandler import SESSION_HANDLER
-    from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
 
     # containers
