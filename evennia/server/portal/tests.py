@@ -231,7 +231,6 @@ class TestTelnet(TwistedTestCase):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()
         d = self.proto.makeConnection(self.transport)
-
         # test suppress_ga
         self.assertTrue(self.proto.protocol_flags["NOGOAHEAD"])
         self.proto.dataReceived(IAC + DONT + SUPPRESS_GA)
@@ -246,13 +245,15 @@ class TestTelnet(TwistedTestCase):
         self.assertEqual(self.proto.protocol_flags["SCREENHEIGHT"][0], 45)
         self.assertEqual(self.proto.handshakes, 6)
         # test ttype
-        self.assertTrue(self.proto.protocol_flags["FORCEDENDLINE"])
         self.assertFalse(self.proto.protocol_flags["TTYPE"])
         self.assertTrue(self.proto.protocol_flags["ANSI"])
         self.proto.dataReceived(IAC + WILL + TTYPE)
         self.proto.dataReceived(b"".join([IAC, SB, TTYPE, IS, b"MUDLET", IAC, SE]))
         self.assertTrue(self.proto.protocol_flags["XTERM256"])
         self.assertEqual(self.proto.protocol_flags["CLIENTNAME"], "MUDLET")
+        self.assertTrue(self.proto.protocol_flags["FORCEDENDLINE"])
+        self.assertTrue(self.proto.protocol_flags["NOGOAHEAD"])
+        self.assertFalse(self.proto.protocol_flags["NOPROMPTGOAHEAD"])
         self.proto.dataReceived(b"".join([IAC, SB, TTYPE, IS, b"XTERM", IAC, SE]))
         self.proto.dataReceived(b"".join([IAC, SB, TTYPE, IS, b"MTTS 137", IAC, SE]))
         self.assertEqual(self.proto.handshakes, 5)
