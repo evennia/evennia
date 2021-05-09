@@ -70,11 +70,11 @@ class SlowExit(DefaultExit):
 
         traversing_object.msg("You start moving %s at a %s." % (self.key, move_speed))
         # create a delayed movement
-        deferred = utils.delay(move_delay, move_callback)
+        t = utils.delay(move_delay, move_callback)
         # we store the deferred on the character, this will allow us
         # to abort the movement. We must use an ndb here since
         # deferreds cannot be pickled.
-        traversing_object.ndb.currently_moving = deferred
+        traversing_object.ndb.currently_moving = t
 
 
 #
