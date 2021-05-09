@@ -119,10 +119,10 @@ class Ttype(object):
             if clientname.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
                 xterm256 = clientname.split("MUDLET", 1)[1].strip() >= "1.1"
-                self.protocol.protocol_flags["FORCEDENDLINE"] = False
-
-            if clientname.startswith("TINTIN++"):
-                self.protocol.protocol_flags["FORCEDENDLINE"] = True
+                # Mudlet likes GA's on a prompt line for the prompt trigger to match, if it's not wanting NOGOAHEAD.
+                if not self.protocol.protocol_flags["NOGOAHEAD"]:
+                    self.protocol.protocol_flags["NOGOAHEAD"] = True
+                    self.protocol.protocol_flags["NOPROMPTGOAHEAD"] = False
 
             if (
                 clientname.startswith("XTERM")
