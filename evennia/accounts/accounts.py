@@ -965,9 +965,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
         """
-        Called by `self.channel_msg` before sending a channel message to the
-        user. This allows for customizing messages per-user and also to abort
-        the receive on the receiver-level.
+        Called by the Channel just before passing a message into `channel_msg`.
+        This allows for tweak messages per-user and also to abort the
+        receive on the receiver-level.
 
         Args:
             message (str): The message sent to the channel.
@@ -1020,21 +1020,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 `Channel.msg`.
 
         Notes:
-            Before this, `Channel.at_before_msg` will fire, which offers a way
+            Before this, `Channel.at_pre_channel_msg` will fire, which offers a way
             to customize the message for the receiver on the channel-level.
 
         """
-        # channel pre-msg hook
-        message = self.at_pre_channel_msg(message, channel, senders=senders, **kwargs)
-        if message in (None, False):
-            return
-
-        # the actual sending
         self.msg(text=(message, {"from_channel": channel.id}),
                  from_obj=senders, options={"from_channel": channel.id})
-
-        # channel post-msg hook
-        self.at_post_channel_msg(message, channel, senders=senders, **kwargs)
 
     def at_post_channel_msg(self, message, channel, senders=None, **kwargs):
         """
