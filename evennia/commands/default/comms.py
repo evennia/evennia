@@ -135,8 +135,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if handle_errors:
             if not channels:
-                self.msk(f"No channel found matching '{channelname}' "
-                         "could also be due to missing access).")
+                self.msg(f"No channel found matching '{channelname}' "
+                         "(could also be due to missing access).")
                 return None
             elif len(channels) > 1:
                 self.msg("Multiple possible channel matches/alias for "
@@ -701,24 +701,24 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         #from evennia import set_trace;set_trace()
 
+        if 'all' in switches:
+            # show all available channels
+            subscribed, available = self.list_channels()
+            table = self.display_all_channels(subscribed, available)
+
+            self.msg(
+                "\n|wAvailable channels|n (use /list to "
+                f"only show subscriptions)\n{table}")
+            return
+
         if not channel_names:
-            if 'all' in switches:
-                # show all available channels
-                subscribed, available = self.list_channels()
-                table = self.display_all_channels(subscribed, available)
+            # (empty or /list) show only subscribed channels
+            subscribed, _ = self.list_channels()
+            table = self.display_subbed_channels(subscribed)
 
-                self.msg(
-                    "\n|wAvailable channels|n (use /list to "
-                    f"only show subscriptions)\n{table}")
-                return
-            else:
-                # (empty or /list) show only subscribed channels
-                subscribed, _ = self.list_channels()
-                table = self.display_subbed_channels(subscribed)
-
-                self.msg("\n|wChannel subscriptions|n "
-                         f"(use |w/all|n to see all available):\n{table}")
-                return
+            self.msg("\n|wChannel subscriptions|n "
+                     f"(use |w/all|n to see all available):\n{table}")
+            return
 
         if not self.switches and not self.args:
             self.msg("Usage[/switches]: channel [= message]")
@@ -754,14 +754,34 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(err)
             return
 
+        possible_lhs_message = ""
+        if not self.rhs and self.args and " " in self.args:
+            # since we want to support messaging with `channel name text` (for
+            # channels without a space in their name), we need to check if the
+            # first 'channel name' is in fact 'channelname text'
+            no_rhs_channel_name = self.args.split(" ", 1)[0]
+            possible_lhs_message = self.args[len(no_rhs_channel_name):]
+            channel_names.append(no_rhs_channel_name)
+
+
         channels = []
+        errors = []
         for channel_name in channel_names:
             # find a channel by fuzzy-matching. This also checks
             # 'listen/control' perms.
-            channel = self.search_channel(channel_name, exact=False)
-            if not channel:
-                return
-            channels.append(channel)
+            found_channels = self.search_channel(channel_name, exact=False, handle_errors=False)
+            if not found_channels:
+                errors.append(f"No channel found matching '{channel_name}' "
+                              "(could also be due to missing access).")
+            elif len(found_channels) > 1:
+                errors.append("Multiple possible channel matches/alias for "
+                              "'{channel_name}':\n" + ", ".join(chan.key for chan in found_channels))
+            else:
+                channels.append(found_channels[0])
+
+        if not channels:
+            self.msg('\n'.join(errors))
+            return
 
         # we have at least one channel at this point
         channel = channels[0]
@@ -770,6 +790,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             if self.rhs:
                 # send message to channel
                 self.msg_channel(channel, self.rhs.strip())
+            elif channel and possible_lhs_message:
+                # called on the form channelname message without =
+                self.msg_channel(channel, possible_lhs_message.strip())
             else:
                 # inspect a given channel
                 subscribed, available = self.list_channels()
@@ -1215,6 +1238,7 @@ class CmdAllCom(CmdChannel):
     """
 
     key = "allcom"
+    aliases = []  # important to not inherit parent's aliases
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -1286,6 +1310,7 @@ class CmdCdestroy(CmdChannel):
     """
 
     key = "cdestroy"
+    aliases = []
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
 
@@ -1334,6 +1359,7 @@ class CmdCBoot(CmdChannel):
     """
 
     key = "cboot"
+    aliases = []
     switch_options = ("quiet",)
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
@@ -1394,6 +1420,7 @@ class CmdCWho(CmdChannel):
     """
 
     key = "cwho"
+    aliases = []
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -1475,8 +1502,8 @@ class CmdClock(CmdChannel):
     """
 
     key = "clock"
-    locks = "cmd:not pperm(channel_banned)"
     aliases = ["clock"]
+    locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -1523,6 +1550,7 @@ class CmdCdesc(CmdChannel):
     """
 
     key = "cdesc"
+    aliases = []
     locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -1562,9 +1590,9 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
       last - shows who you last messaged
       list - show your last <number> of tells/pages (default)
 
-    Send a message to target user (if online). If no argument is given, you will
-    get a list of your latest messages. The equal sign is needed for multiple
-    targets or if sending to target with space in the name.
+    Send a message to target user (if online). If no argument is given, you
+    will get a list of your latest messages. The equal sign is needed for
+    multiple targets or if sending to target with space in the name.
 
     """
 
@@ -1616,6 +1644,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     if target_obj:
                         # a proper target
                         targets = [target_obj[0]]
+                        message = message[0].strip()
                     else:
                         # a message with a space in it - put it back together
                         message = target + " " + (message[0] if message else "")
