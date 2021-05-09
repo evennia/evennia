@@ -442,7 +442,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
-            prompt += IAC + GA
+            if not self.protocol_flags.get("NOPROMPTGOAHEAD", 
+                                           self.protocol_flags.get("NOGOAHEAD", True)):
+                prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:
             if echo is not None:

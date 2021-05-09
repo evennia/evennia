@@ -892,7 +892,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Before the move, call eventual pre-commands.
         if move_hooks:
             try:
-                if not self.at_before_move(destination):
+                if not self.at_before_move(destination, **kwargs):
                     return False
             except Exception as err:
                 logerr(errtxt % "at_before_move()", err)
@@ -904,7 +904,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Call hook on source location
         if move_hooks and source_location:
             try:
-                source_location.at_object_leave(self, destination)
+                source_location.at_object_leave(self, destination, **kwargs)
             except Exception as err:
                 logerr(errtxt % "at_object_leave()", err)
                 return False
@@ -936,7 +936,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # Perform eventual extra commands on the receiving location
             # (the object has already arrived at this point)
             try:
-                destination.at_object_receive(self, source_location)
+                destination.at_object_receive(self, source_location, **kwargs)
             except Exception as err:
                 logerr(errtxt % "at_object_receive()", err)
                 return False
@@ -945,7 +945,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # (usually calling 'look')
         if move_hooks:
             try:
-                self.at_after_move(source_location)
+                self.at_after_move(source_location, **kwargs)
             except Exception as err:
                 logerr(errtxt % "at_after_move", err)
                 return False
