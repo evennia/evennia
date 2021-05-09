@@ -360,22 +360,21 @@ help_entry = create_help_entry
 
 
 def create_message(
-    senderobj, message, channels=None, receivers=None, locks=None, tags=None, header=None
-):
+    senderobj, message, receivers=None, locks=None, tags=None,
+        header=None, **kwargs):
     """
     Create a new communication Msg. Msgs represent a unit of
     database-persistent communication between entites.
 
     Args:
-        senderobj (Object or Account): The entity sending the Msg.
+        senderobj (Object, Account, Script, str or list): The entity (or
+        entities) sending the Msg. If a `str`, this is the id-string
+            for an external sender type.
         message (str): Text with the message. Eventual headers, titles
             etc should all be included in this text string. Formatting
             will be retained.
-        channels (Channel, key or list): A channel or a list of channels to
-            send to. The channels may be actual channel objects or their
-            unique key strings.
-        receivers (Object, Account, str or list): An Account/Object to send
-            to, or a list of them. May be Account objects or accountnames.
+        receivers (Object, Account or list): An Account/Object to send
+            to, or a list of them.
         locks (str): Lock definition string.
         tags (list): A list of tags or tuples `(tag, category)`.
         header (str): Mime-type or other optional information for the message
@@ -387,6 +386,12 @@ def create_message(
         limit this as desired.
 
     """
+    if 'channels' in kwargs:
+        raise DeprecationWarning(
+            "create_message() does not accept 'channel' kwarg anymore "
+            "- channels no longer accept Msg objects."
+        )
+
     global _Msg
     if not _Msg:
         from evennia.comms.models import Msg as _Msg
@@ -398,8 +403,6 @@ def create_message(
     for sender in make_iter(senderobj):
         new_message.senders = sender
     new_message.header = header
-    for channel in make_iter(channels):
-        new_message.channels = channel
     for receiver in make_iter(receivers):
         new_message.receivers = receiver
     if locks:

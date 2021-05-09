@@ -157,6 +157,7 @@ class Msg(SharedMemoryModel):
     db_hide_from_objects = models.ManyToManyField(
         "objects.ObjectDB", related_name="hide_from_objects_set", blank=True
     )
+    # NOTE: deprecated in 1.0. Not used for channels anymore
     db_hide_from_channels = models.ManyToManyField(
         "ChannelDB", related_name="hide_from_channels_set", blank=True
     )
@@ -263,9 +264,8 @@ class Msg(SharedMemoryModel):
             elif clsname == "ScriptDB":
                 self.db_sender_accounts.remove(sender)
 
-    # receivers property
-    # @property
-    def __receivers_get(self):
+    @property
+    def receivers(self):
         """
         Getter. Allows for value = self.receivers.
         Returns four lists of receivers: accounts, objects, scripts and channels.
@@ -277,8 +277,8 @@ class Msg(SharedMemoryModel):
             + list(self.db_receivers_channels.all())
         )
 
-    # @receivers.setter
-    def __receivers_set(self, receivers):
+    @receivers.setter
+    def receivers(self, receivers):
         """
         Setter. Allows for self.receivers = value.
         This appends a new receiver to the message.
@@ -298,8 +298,8 @@ class Msg(SharedMemoryModel):
             elif clsname == "ChannelDB":
                 self.db_receivers_channels.add(receiver)
 
-    # @receivers.deleter
-    def __receivers_del(self):
+    @receivers.deleter
+    def receivers(self):
         "Deleter. Clears all receivers"
         self.db_receivers_accounts.clear()
         self.db_receivers_objects.clear()
@@ -307,7 +307,6 @@ class Msg(SharedMemoryModel):
         self.db_receivers_channels.clear()
         self.save()
 
-    receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
     def remove_receiver(self, receivers):
         """

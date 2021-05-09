@@ -14,6 +14,7 @@ _GA = object.__getattribute__
 _AccountDB = None
 _ObjectDB = None
 _ChannelDB = None
+_ScriptDB = None
 _SESSIONS = None
 
 # error class
@@ -54,6 +55,8 @@ def identify_object(inp):
             return inp, "object"
         elif clsname == "ChannelDB":
             return inp, "channel"
+        elif clsname == "ScriptDB":
+            return inp, "script"
     if isinstance(inp, str):
         return inp, "string"
     elif dbref(inp):
@@ -103,6 +106,14 @@ def to_object(inp, objtype="account"):
             return _ChannelDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
+    elif objtype == "script":
+        if typ == "string":
+            return _ScriptDB.objects.get(db_key__iexact=obj)
+        if typ == "dbref":
+            return _ScriptDB.objects.get(id=obj)
+        logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
+        raise CommError()
+
     # an unknown
     return None
 
@@ -158,48 +169,30 @@ class MsgManager(TypedObjectManager):
         except Exception:
             return None
 
-    def get_messages_by_sender(self, sender, exclude_channel_messages=False):
+    def get_messages_by_sender(self, sender):
         """
         Get all messages sent by one entity - this could be either a
         account or an object
 
         Args:
             sender (Account or Object): The sender of the message.
-            exclude_channel_messages (bool, optional): Only return messages
-                not aimed at a channel (that is, private tells for example)
 
         Returns:
-            messages (list): List of matching messages
+            QuerySet: Matching messages.
 
         Raises:
             CommError: For incorrect sender types.
 
         """
         obj, typ = identify_object(sender)
-        if exclude_channel_messages:
-            # explicitly exclude channel recipients
-            if typ == "account":
-                return list(
-                    self.filter(db_sender_accounts=obj, db_receivers_channels__isnull=True).exclude(
-                        db_hide_from_accounts=obj
-                    )
-                )
-            elif typ == "object":
-                return list(
-                    self.filter(db_sender_objects=obj, db_receivers_channels__isnull=True).exclude(
-                        db_hide_from_objects=obj
-                    )
-                )
-            else:
-                raise CommError
+        if typ == "account":
+            return self.filter(db_sender_accounts=obj).exclude(db_hide_from_accounts=obj)
+        elif typ == "object":
+            return self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj)
+        elif typ == "script":
+            return self.filter(db_sender_scripts=obj)
         else:
-            # get everything, channel or not
-            if typ == "account":
-                return list(self.filter(db_sender_accounts=obj).exclude(db_hide_from_accounts=obj))
-            elif typ == "object":
-                return list(self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj))
-            else:
-                raise CommError
+            raise CommError
 
     def get_messages_by_receiver(self, recipient):
         """
@@ -209,7 +202,7 @@ class MsgManager(TypedObjectManager):
             recipient (Object, Account or Channel): The recipient of the messages to search for.
 
         Returns:
-            messages (list): Matching messages.
+            Queryset: Matching messages.
 
         Raises:
             CommError: If the `recipient` is not of a valid type.
@@ -217,26 +210,14 @@ class MsgManager(TypedObjectManager):
         """
         obj, typ = identify_object(recipient)
         if typ == "account":
-            return list(self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj))
+            return self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj)
         elif typ == "object":
-            return list(self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj))
-        elif typ == "channel":
-            return list(self.filter(db_receivers_channels=obj).exclude(db_hide_from_channels=obj))
+            return self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj)
+        elif typ == 'script':
+            return self.filter(db_receivers_scripts=obj)
         else:
             raise CommError
 
-    def get_messages_by_channel(self, channel):
-        """
-        Get all persistent messages sent to one channel.
-
-        Args:
-            channel (Channel): The channel to find messages for.
-
-        Returns:
-            messages (list): Persistent Msg objects saved for this channel.
-
-        """
-        return self.filter(db_receivers_channels=channel).exclude(db_hide_from_channels=channel)
 
     def search_message(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
@@ -244,7 +225,7 @@ class MsgManager(TypedObjectManager):
         one of the arguments must be given to do a search.
 
         Args:
-            sender (Object or Account, optional): Get messages sent by a particular account or object
+            sender (Object, Account or Script, optional): Get messages sent by a particular sender.
             receiver (Object, Account or Channel, optional): Get messages
                 received by a certain account,object or channel
             freetext (str): Search for a text string in a message.  NOTE:
@@ -255,14 +236,12 @@ class MsgManager(TypedObjectManager):
                     always gives only one match.
 
         Returns:
-            messages (list or Msg): A list of message matches or a single match if `dbref` was given.
+            Queryset: Message matches.
 
         """
         # unique msg id
         if dbref:
-            msg = self.objects.filter(id=dbref)
-            if msg:
-                return msg[0]
+            return self.objects.filter(id=dbref)
 
         # We use Q objects to gradually build up the query - this way we only
         # need to do one database lookup at the end rather than gradually
@@ -275,20 +254,23 @@ class MsgManager(TypedObjectManager):
             sender_restrict = Q(db_sender_accounts=sender) & ~Q(db_hide_from_accounts=sender)
         elif styp == "object":
             sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
+        elif styp == 'script':
+            sender_restrict = Q(db_sender_scripts=sender)
         else:
             sender_restrict = Q()
         # filter by receiver
         receiver, rtyp = identify_object(receiver)
         if rtyp == "account":
-            receiver_restrict = Q(db_receivers_accounts=receiver) & ~Q(
-                db_hide_from_accounts=receiver
-            )
+            receiver_restrict = (
+                Q(db_receivers_accounts=receiver) & ~Q(db_hide_from_accounts=receiver ))
         elif rtyp == "object":
             receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
+        elif rtyp == 'script':
+            receiver_restrict = Q(db_receivers_scripts=receiver)
         elif rtyp == "channel":
-            receiver_restrict = Q(db_receivers_channels=receiver) & ~Q(
-                db_hide_from_channels=receiver
-            )
+            raise DeprecationWarning(
+                "Msg.objects.search don't accept channel recipients since "
+                "Channels no longer accepts Msg objects.")
         else:
             receiver_restrict = Q()
         # filter by full text
@@ -297,7 +279,7 @@ class MsgManager(TypedObjectManager):
         else:
             fulltext_restrict = Q()
         # execute the query
-        return list(self.filter(sender_restrict & receiver_restrict & fulltext_restrict))
+        return self.filter(sender_restrict & receiver_restrict & fulltext_restrict)
 
     # back-compatibility alias
     message_search = search_message

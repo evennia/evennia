@@ -314,7 +314,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         )
 
     @classmethod
-    def create(cls, key, account=None, *args, **kwargs):
+    def create(cls, key, creator=None, *args, **kwargs):
         """
         Creates a basic Channel with default parameters, unless otherwise
         specified or extended.
@@ -323,7 +323,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         Args:
             key (str): This must be unique.
-            account (Account): Account to attribute this object to.
+            creator (Account or Object): Entity to associate with this channel
+                (used for tracking)
 
         Keyword Args:
             aliases (list of str): List of alternative (likely shorter) keynames.
@@ -351,8 +352,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             # Record creator id and creation IP
             if ip:
                 obj.db.creator_ip = ip
-            if account:
-                obj.db.creator_id = account.id
+            if creator:
+                obj.db.creator_id = creator.id
 
         except Exception as exc:
             errors.append("An error occurred while creating this '%s' object." % key)

@@ -152,8 +152,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     def msg_channel(self, channel, message, **kwargs):
         """
-        Send a message to a given channel. At this point
-        any permissions should already be done.
+        Send a message to a given channel. This will check the 'send'
+        permission on the channel.
 
         Args:
             channel (Channel): The channel to send to.
@@ -162,6 +162,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 all channel messaging hooks for custom overriding.
 
         """
+        if not channel.access(self.caller, "send"):
+            caller.msg(f"You are not allowed to send messages to channel {channel}")
+            return
+
         channel.msg(message, senders=self.caller, **kwargs)
 
     def get_channel_history(self, channel, start_index=0):
@@ -587,7 +591,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             name = subscriber.get_display_name(caller)
             conditions = ("muted" if subscriber in mute_list else "",
                           "offline" if subscriber not in online_list else "")
-            conditions = (cond for cond in conditions if cond)
+            conditions = [cond for cond in conditions if cond]
             cond_text = "(" + ", ".join(conditions) + ")" if conditions else ""
             who_list.append(f"{name}{cond_text}")
 
