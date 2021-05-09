@@ -14,7 +14,7 @@ Each dict is on the form
 ::
 
     {'key': <str>,
-     'category': <str>,   # optional, otherwise settings.FILE_DEFAULT_HELP_CATEGORY
+     'category': <str>,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY
      'aliases': <list>,   # optional
      'text': <str>}``     # the actual help text. Can contain # subtopic sections
 

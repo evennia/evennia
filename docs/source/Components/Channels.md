@@ -1,11 +1,11 @@
 # Channels 
 
 In a multiplayer game, players often need other means of in-game communication
-than just walking from room to room using `say` or `emote`.
+than moving to the same room and use `say` or `emote`.
 
-_Channels_ are Evennia's system for letting the server act as a fancy chat
-program. When a player is connected to a channel, sending a message to it will
-automatically distribute it to every other subscriber.
+_Channels_ allows Evennia's to act as a fancy chat program. When a player is
+connected to a channel, sending a message to it will automatically distribute
+it to every other subscriber.
 
 Channels can be used both for chats between [Accounts](./Accounts) and between
 [Objects](./Objects) (usually Characters) and (in principle) a mix of the two.
@@ -91,6 +91,11 @@ You can now just do
 
     foo Hello world!
     bar Hello again!
+
+And even remove the default one if they don't want to use it
+
+    channel/unalias public
+    public Hello
 
 But you can also use your alias with the `channel` command:
   

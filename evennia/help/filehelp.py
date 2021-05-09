@@ -13,7 +13,7 @@ Each help-entry dict is on the form
 ::
 
     {'key': <str>,
-     'category': <str>,   # optional, otherwise settings.FILE_DEFAULT_HELP_CATEGORY
+     'category': <str>,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY
      'aliases': <list>,   # optional
      'text': <str>}``
 
@@ -23,7 +23,7 @@ same form as other help entry-texts and contain ``# subtopics`` as normal.
 New help-entry modules are added to the system by providing the python-path to
 the module to `settings.FILE_HELP_ENTRY_MODULES`. Note that if same-key entries are
 added, entries in latter modules will override that of earlier ones. Use
-``settings.FILE_DEFAULT_HELP_CATEGORY`` to customize what category is used if
+``settings.DEFAULT_HELP_CATEGORY`` to customize what category is used if
 not set explicitly.
 
 An example of the contents of a module:
@@ -68,6 +68,8 @@ from django.conf import settings
 from evennia.utils.utils import (
     variable_from_module, make_iter, all_from_module)
 from evennia.utils import logger
+
+_DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
 
 @dataclass
@@ -144,7 +146,7 @@ class FileHelpStorageHandler:
 
         for dct in loaded_help_dicts:
             key = dct.get('key').lower().strip()
-            category = dct.get('category', settings.FILE_DEFAULT_HELP_CATEGORY).strip()
+            category = dct.get('category', _DEFAULT_HELP_CATEGORY).strip()
             aliases = list(dct.get('aliases', []))
             entrytext = dct.get('text')
 
