@@ -445,7 +445,6 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         for receiver in receivers:
             # send to each individual subscriber
 
-
             try:
                 message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
                 if message in (None, False):
