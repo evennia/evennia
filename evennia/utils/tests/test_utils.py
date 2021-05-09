@@ -6,13 +6,16 @@ TODO: Not nearly all utilities are covered yet.
 """
 
 import os.path
-
 import mock
+from datetime import datetime, timedelta
+
 from django.test import TestCase
 from datetime import datetime
+from twisted.internet import task
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
+from evennia.utils.test_resources import EvenniaTest
 
 
 class TestIsIter(TestCase):
@@ -292,3 +295,241 @@ class LatinifyTest(TestCase):
         byte_str = utils.to_bytes(self.example_str)
         result = utils.latinify(byte_str)
         self.assertEqual(result, self.expected_output)
+
+
+_TASK_HANDLER = None
+
+
+def dummy_func(obj):
+    """
+    Used in TestDelay.
+
+    A function that:
+        can be serialized
+        uses no memory references
+        uses evennia objects
+    """
+    # get a reference of object
+    from evennia.objects.models import ObjectDB
+    obj = ObjectDB.objects.object_search(obj)
+    obj = obj[0]
+    # make changes to object
+    obj.ndb.dummy_var = 'dummy_func ran'
+    return True
+
+
+class TestDelay(EvenniaTest):
+    """
+    Test utils.delay.
+    """
+
+    def setUp(self):
+        super().setUp()
+        # get a reference of TASK_HANDLER
+        self.timedelay = 5
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        _TASK_HANDLER.clock = task.Clock()
+        self.char1.ndb.dummy_var = False
+
+    def tearDown(self):
+        super().tearDown()
+        _TASK_HANDLER.clear()
+
+    def test_call_early(self):
+        # call a task early with call
+        for pers in (True, False):
+            t = utils.delay(self.timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            result = t.call()
+            self.assertTrue(result)
+            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertTrue(t.exists())
+            self.assertTrue(t.active())
+            self.char1.ndb.dummy_var = False
+
+    def test_do_task(self):
+        # call the task early with do_task
+        for pers in (True, False):
+            t = utils.delay(self.timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            # call the task early to test Task.call and TaskHandler.call_task
+            result = t.do_task()
+            self.assertTrue(result)
+            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertFalse(t.exists())
+            self.char1.ndb.dummy_var = False
+
+    def test_deferred_call(self):
+        # wait for deferred to call
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertFalse(t.exists())
+            self.char1.ndb.dummy_var = False
+
+    def test_short_deferred_call(self):
+        # wait for deferred to call with a very short time
+        timedelay = .1
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertFalse(t.exists())
+            self.char1.ndb.dummy_var = False
+
+    def test_active(self):
+        timedelay = self.timedelay
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertTrue(_TASK_HANDLER.active(t.get_id()))
+        self.assertTrue(t.active())
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertFalse(_TASK_HANDLER.active(t.get_id()))
+        self.assertFalse(t.active())
+
+    def test_called(self):
+        timedelay = self.timedelay
+        t = utils.delay(timedelay, dummy_func, self.char1.dbref)
+        self.assertFalse(t.called)
+        _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+        self.assertTrue(t.called)
+
+    def test_cancel(self):
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            success = t.cancel()
+            self.assertFalse(t.active())
+            self.assertTrue(success)
+            self.assertTrue(t.exists())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+
+    def test_remove(self):
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            success = t.remove()
+            self.assertTrue(success)
+            self.assertFalse(t.active())
+            self.assertFalse(t.exists())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+
+    def test_remove_canceled(self):
+        # remove a canceled task
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            success = t.cancel()
+            self.assertTrue(success)
+            self.assertTrue(t.exists())
+            self.assertFalse(t.active())
+            success = t.remove()
+            self.assertTrue(success)
+            self.assertFalse(t.exists())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+
+    def test_pause_unpause(self):
+        # remove a canceled task
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            self.assertTrue(t.active())
+            t.pause()
+            self.assertTrue(t.paused)
+            t.unpause()
+            self.assertFalse(t.paused)
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+            t.pause()
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+            t.unpause()
+            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.char1.ndb.dummy_var = False
+
+    def test_auto_stale_task_removal(self):
+        # automated removal of stale tasks.
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            t.cancel()
+            self.assertFalse(t.active())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            if pers:
+                self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+            # Make task handler's now time, after the stale timeout
+            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            # add a task to test automatic removal
+            t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
+            if pers:
+                self.assertFalse(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertFalse(t.get_id() in _TASK_HANDLER.tasks)
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+            _TASK_HANDLER.clear()
+
+    def test_manual_stale_task_removal(self):
+        # manual removal of stale tasks.
+        timedelay = self.timedelay
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            t.cancel()
+            self.assertFalse(t.active())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            if pers:
+                self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+            # Make task handler's now time, after the stale timeout
+            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
+            if pers:
+                self.assertFalse(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertFalse(t.get_id() in _TASK_HANDLER.tasks)
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+            _TASK_HANDLER.clear()
+
+    def test_disable_stale_removal(self):
+        # manual removal of stale tasks.
+        timedelay = self.timedelay
+        _TASK_HANDLER.stale_timeout = 0
+        for pers in (False, True):
+            t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
+            t.cancel()
+            self.assertFalse(t.active())
+            _TASK_HANDLER.clock.advance(timedelay)  # make time pass
+            if pers:
+                self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+            # Make task handler's now time, after the stale timeout
+            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
+            if pers:
+                self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
+            self.assertEqual(self.char1.ndb.dummy_var, False)
+            # manual removal should still work
+            _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
+            if pers:
+                self.assertFalse(t.get_id() in _TASK_HANDLER.to_save)
+            self.assertFalse(t.get_id() in _TASK_HANDLER.tasks)
+            _TASK_HANDLER.clear()
+
+    def test_server_restart(self):
+        # emulate a server restart
+        timedelay = self.timedelay
+        utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=True)
+        _TASK_HANDLER.clear(False)  # remove all tasks from task handler, do not save this change.
+        _TASK_HANDLER.clock.advance(timedelay)  # advance twisted reactor time past callback time
+        self.assertEqual(self.char1.ndb.dummy_var, False)  # task has not run
+        _TASK_HANDLER.load()  # load persistent tasks from database.
+        _TASK_HANDLER.create_delays()  # create new deffered instances from persistent tasks
+        _TASK_HANDLER.clock.advance(timedelay)  # Clock must advance to trigger, even if past timedelay
+        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
