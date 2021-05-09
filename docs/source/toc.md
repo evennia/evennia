@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
@@ -34,6 +34,7 @@
 - [Components/Inputfuncs](Components/Inputfuncs)
 - [Components/Locks](Components/Locks)
 - [Components/MonitorHandler](Components/MonitorHandler)
+- [Components/Msg](Components/Msg)
 - [Components/Nicks](Components/Nicks)
 - [Components/Objects](Components/Objects)
 - [Components/Outputfuncs](Components/Outputfuncs)
