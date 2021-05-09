@@ -444,11 +444,21 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         for receiver in receivers:
             # send to each individual subscriber
+
+
             try:
-                # this will in turn call receiver.at_pre/post_channel_msg
+                message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
+                if message in (None, False):
+                    return
+
                 receiver.channel_msg(message, self, **send_kwargs)
+
+                receiver.at_post_channel_msg(message, self, **send_kwargs)
+
             except Exception:
-                logger.log_trace(f"Cannot send channel message to {receiver}.")
+                logger.log_trace(f"Error sending channel message to {receiver}.")
+
+
 
         # post-send hook
         self.at_post_msg(message, **send_kwargs)
