@@ -26,8 +26,8 @@ from evennia.utils.utils import (
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
-HELP_MORE = settings.HELP_MORE
-CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+HELP_MORE_ENABLED = settings.HELP_MORE_ENABLED
+DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -83,8 +83,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
     # Help messages are wrapped in an EvMore call (unless using the webclient
     # with separate help popups) If you want to avoid this, simply add
-    # 'HELP_MORE = False' in your settings/conf/settings.py
-    help_more = HELP_MORE
+    # 'HELP_MORE_ENABLED = False' in your settings/conf/settings.py
+    help_more = HELP_MORE_ENABLED
 
     # colors for the help index
     index_type_separator_clr = "|w"
@@ -572,9 +572,9 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
       sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
       sethelp/edit thievery
 
-    If not assigning a category, the "General" category will be used. If no
-    lockstring is specified, everyone will be able to read the help entry.
-    Sub-topics are embedded in the help text.
+    If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category
+    will be used. If no lockstring is specified, everyone will be able to read
+    the help entry.  Sub-topics are embedded in the help text.
 
     Note that this cannot modify command-help entries - these are modified
     in-code, outside the game.
@@ -656,7 +656,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else old_entry.locks.get()
         except Exception:
             old_entry = None
-            category = lhslist[1] if nlist > 1 else "General"
+            category = lhslist[1] if nlist > 1 else DEFAULT_HELP_CATEGORY
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
         category = category.lower()
 

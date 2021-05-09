@@ -1235,7 +1235,7 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
-class DbHolder(object):
+class DbHolder:
     "Holder for allowing property access of attributes"
 
     def __init__(self, obj, name, manager_name="attributes"):

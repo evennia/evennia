@@ -589,11 +589,11 @@ TIME_IGNORE_DOWNTIMES = False
 # Help output from CmdHelp are wrapped in an EvMore call
 # (excluding webclient with separate help popups). If continuous scroll
 # is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
-HELP_MORE = True
+HELP_MORE_ENABLED = True
 # The help category of a command if not specified.
 COMMAND_DEFAULT_HELP_CATEGORY = "general"
-# The help category of a file-based help entry if not specified
-FILE_DEFAULT_HELP_CATEGORY = "general"
+# The help category of a db or file-based help entry if not specified
+DEFAULT_HELP_CATEGORY = "general"
 # File-based help entries. These are modules containing dicts defining help
 # entries. They can be used together with in-database entries created in-game.
 FILE_HELP_ENTRY_MODULES = ["world.help_entries"]
