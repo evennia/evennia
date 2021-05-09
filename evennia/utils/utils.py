@@ -1030,20 +1030,19 @@ def delay(timedelay, callback, *args, **kwargs):
             after `timedelay` seconds.
         args (any, optional): Will be used as arguments to callback
     Keyword Args:
-        persistent (bool, optional): should make the delay persistent
-            over a reboot or reload
+        persistent (bool, optional): Should make the delay persistent
+            over a reboot or reload. Defaults to False.
         any (any): Will be used as keyword arguments to callback.
 
     Returns:
-        deferred (deferred): Will fire with callback after
-            `timedelay` seconds. Note that if `timedelay()` is used in the
-            commandhandler callback chain, the callback chain can be
-            defined directly in the command body and don't need to be
-            specified here.
-            Reference twisted.internet.defer.Deferred
-        if persistent kwarg is truthy:
-        task_id (int): the task's id intended for use with
-          evennia.scripts.taskhandler.TASK_HANDLER's do_task and remove methods.
+        deferred or int: If ``persistent`` kwarg is `False`, return deferred
+            that will fire with callback after `timedelay` seconds. Note that
+            if `timedelay()` is used in the commandhandler callback chain, the
+            callback chain can be defined directly in the command body and
+            don't need to be specified here. Reference twisted.internet.defer.Deferred.
+            If persistent kwarg is set, return the task's ID as an integer. This is
+            intended for use with ``evennia.scripts.taskhandler.TASK_HANDLER``
+            `.do_task` and `.remove` methods.
 
     Note:
         The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will

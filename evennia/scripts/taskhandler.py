@@ -5,6 +5,7 @@ Module containing the task handler for Evennia deferred tasks, persistent or not
 from datetime import datetime, timedelta
 
 from twisted.internet import reactor
+from pickle import PickleError
 from twisted.internet.task import deferLater
 from twisted.internet.defer import CancelledError as DefCancelledError
 from evennia.server.models import ServerConfig
@@ -287,18 +288,8 @@ class TaskHandler(object):
             # Check if callback can be pickled. args and kwargs have been checked
             safe_callback = None
 
-            try:
-                dbserialize(callback)
-            except (TypeError, AttributeError):
-                raise ValueError(
-                    "the specified callback {} cannot be pickled. "
-                    "It must be a top-level function in a module or an "
-                    "instance method.".format(callback)
-                )
-            else:
-                safe_callback = callback
 
-            self.to_save[task_id] = dbserialize((date, safe_callback, args, kwargs))
+            self.to_save[task_id] = dbserialize((date, callback, args, kwargs))
         ServerConfig.objects.conf("delayed_tasks", self.to_save)
 
     def add(self, timedelay, callback, *args, **kwargs):
@@ -318,8 +309,8 @@ class TaskHandler(object):
             any (any): any additional positional arguments to send to the callback
             *args: positional arguments to pass to callback.
             **kwargs: keyword arguments to pass to callback.
-                persistent (bool, optional): persist the task (stores it).
-                    persistent key and value is removed from kwargs it will
+                - persistent (bool, optional): persist the task (stores it).
+                    Persistent key and value is removed from kwargs it will
                     not be passed to callback.
 
         Returns:
@@ -346,11 +337,22 @@ class TaskHandler(object):
             safe_args = []
             safe_kwargs = {}
 
+            # an unsaveable callback should immediately abort
+            try:
+                dbserialize(callback)
+            except (TypeError, AttributeError, PickleError):
+                raise ValueError(
+                    "the specified callback {} cannot be pickled. "
+                    "It must be a top-level function in a module or an "
+                    "instance method.".format(callback)
+                )
+                return
+
             # Check that args and kwargs contain picklable information
             for arg in args:
                 try:
                     dbserialize(arg)
-                except (TypeError, AttributeError):
+                except (TypeError, AttributeError, PickleError):
                     log_err(
                         "The positional argument {} cannot be "
                         "pickled and will not be present in the arguments "
@@ -362,7 +364,7 @@ class TaskHandler(object):
             for key, value in kwargs.items():
                 try:
                     dbserialize(value)
-                except (TypeError, AttributeError):
+                except (TypeError, AttributeError, PickleError):
                     log_err(
                         "The {} keyword argument {} cannot be "
                         "pickled and will not be present in the arguments "
