@@ -6,7 +6,7 @@ from evennia.utils.utils import crop
 from evennia.utils import validatorfuncs
 
 
-class BaseOption(object):
+class BaseOption:
     """
     Abstract Class to deal with encapsulating individual Options. An Option has
     a name/key, a description to display in relevant commands and menus, and a
