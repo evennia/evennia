@@ -5,7 +5,7 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
-class InMemorySaveHandler(object):
+class InMemorySaveHandler:
     """
     Fallback SaveHandler, implementing a minimum of the required save mechanism
     and storing data in memory.
@@ -22,7 +22,7 @@ class InMemorySaveHandler(object):
         return self.storage.get(key, default)
 
 
-class OptionHandler(object):
+class OptionHandler:
     """
     This is a generic Option handler.  Retrieve options either as properties on
     this handler or by using the .get method.
@@ -57,6 +57,7 @@ class OptionHandler(object):
                 A common one to pass would be AttributeHandler.get.
             save_kwargs (any): Optional extra kwargs to pass into `savefunc` above.
             load_kwargs (any): Optional extra kwargs to pass into `loadfunc` above.
+
         Notes:
             Both loadfunc and savefunc must be specified. If only one is given, the other
             will be ignored and in-memory storage will be used.

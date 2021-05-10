@@ -248,25 +248,29 @@ class MsgManager(TypedObjectManager):
         # refining with multiple filter:s. Django Note: Q objects can be
         # combined with & and | (=AND,OR). ~ negates the queryset
 
-        # filter by sender
+        # filter by sender (we need __pk to avoid an error with empty Q() objects)
         sender, styp = identify_object(sender)
+        if sender:
+            spk = sender.pk
         if styp == "account":
-            sender_restrict = Q(db_sender_accounts=sender) & ~Q(db_hide_from_accounts=sender)
+            sender_restrict = Q(db_sender_accounts__pk=spk) & ~Q(db_hide_from_accounts__pk=spk)
         elif styp == "object":
-            sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
+            sender_restrict = Q(db_sender_objects__pk=spk) & ~Q(db_hide_from_objects__pk=spk)
         elif styp == 'script':
-            sender_restrict = Q(db_sender_scripts=sender)
+            sender_restrict = Q(db_sender_scripts__pk=spk)
         else:
             sender_restrict = Q()
         # filter by receiver
         receiver, rtyp = identify_object(receiver)
+        if receiver:
+            rpk = receiver.pk
         if rtyp == "account":
             receiver_restrict = (
-                Q(db_receivers_accounts=receiver) & ~Q(db_hide_from_accounts=receiver ))
+                Q(db_receivers_accounts__pk=rpk) & ~Q(db_hide_from_accounts__pk=rpk))
         elif rtyp == "object":
-            receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
+            receiver_restrict = Q(db_receivers_objects__pk=rpk) & ~Q(db_hide_from_objects__pk=rpk)
         elif rtyp == 'script':
-            receiver_restrict = Q(db_receivers_scripts=receiver)
+            receiver_restrict = Q(db_receivers_scripts__pk=rpk)
         elif rtyp == "channel":
             raise DeprecationWarning(
                 "Msg.objects.search don't accept channel recipients since "
