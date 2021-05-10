@@ -153,7 +153,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         else:
             aliases = ''
 
-        help_text = "\n\n" + dedent(help_text.strip(), indent=0) + "\n" if help_text else ""
+        help_text = "\n\n" + dedent(help_text.strip('\n')) + "\n" if help_text else ""
 
         if subtopics:
             subtopics = (
