@@ -1,12 +1,12 @@
 """
-Comsystem command module.
+Communication commands:
 
-Comm commands are OOC commands and intended to be made available to
-the Account at all times (they go into the AccountCmdSet). So we
-make sure to homogenize self.caller to always be the account object
-for easy handling.
+- channel
+- page
+- irc/rss/grapevine linking
 
 """
+
 from django.conf import settings
 from evennia.comms.models import Msg
 from evennia.accounts.models import AccountDB
@@ -25,6 +25,7 @@ CHANNEL_DEFAULT_TYPECLASS = class_from_module(
 # limit symbol import for API
 __all__ = (
     "CmdChannel",
+
     "CmdAddCom",
     "CmdDelCom",
     "CmdAllCom",
@@ -34,7 +35,9 @@ __all__ = (
     "CmdChannelCreate",
     "CmdClock",
     "CmdCdesc",
+
     "CmdPage",
+
     "CmdIRC2Chan",
     "CmdIRCStatus",
     "CmdRSS2Chan",
@@ -52,17 +55,20 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     Usage:
       channel
-      channel channelname [= <msg>]
+      channel channelname <msg>
+      channel channel name [= <msg>]
       channel/list
       channel/all
+      channel/alias channelname = alias[;alias...]
+      channel/unalias alias
+      channel/who channelname
       channel/history channelname [= index]
       channel/sub channelname [= alias[;alias...]]
       channel/unsub channelname[,channelname, ...]
-      channel/alias channelname = alias[;alias...]
-      channel/unalias alias
       channel/mute channelname[,channelname,...]
       channel/unmute channelname[,channelname,...]
-      channel/create channelname;alias;alias:typeclass [= description]
+
+      channel/create channelname[;alias;alias[:typeclass]] [= description]
       channel/destroy channelname [= reason]
       channel/desc channelname = description
       channel/lock channelname = lockstring
@@ -71,16 +77,99 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
       channel/ban channelname   (list bans)
       channe/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
       channel/unban[/quiet] channelname[, channelname, ...] = subscribername
-      channel/who channelname
 
-    # help-subcategories
-    ## channel/list
+    # subtopics
 
-    This handles all operations on channels. Note that the default operation is to
-    assign a nick/alias for sending to a channel. This would mean you can send
-    using 'foo Hello world' instead of using 'channel foo = Hello world'. Note that
-    aliases set when creating the channel are made available as aliases to subscribers
-    automatically.
+    ## sending
+
+    Usage: channel channelname msg
+           channel channel name = msg  (with space in channel name)
+
+    This sends a message to the channel. Note that you will rarely use this command
+    like this; instead you can use the alias
+
+        channelname <msg>
+        channelalias <msg>
+
+    For example
+
+        public Hello World
+        pub Hello World
+
+    (this shortcut doesn't work for aliases containing spaces)
+
+    See channel/alias for help on setting channel aliases.
+
+    ## alias and unalias
+
+    Usage: channel/alias channel = alias[;alias[;alias...]]
+           channel/unalias alias
+           channel    - this will list your subs and aliases to each channel
+
+    Set one or more personal aliases for referencing a channel. For example:
+
+        channel/alias warrior's guild = warrior;wguild;warchannel;warrior guild
+
+    You can now send to the channel using all of these:
+
+        warrior's guild Hello
+        warrior Hello
+        wguild Hello
+        warchannel Hello
+
+    Note that this will not work if the alias has a space in it. So the 'warrior guild'
+    alias must be used with the `channel` command:
+
+        channel warrior guild = Hello
+
+    Channel-aliases can be removed one at a time, using the '/unalias' switch.
+
+    ## who
+
+    Usage: channel/who channelname
+
+    List the channel's subscribers. Shows who are currently offline or are
+    muting the channel. Subscribers who are 'muting' will not see messages sent
+    to the channel (use channel/mute to mute a channel).
+
+    ## history
+
+    Usage: channel/history channel [= index]
+
+    This will display the last |c20|n lines of channel history. By supplying an
+    index number, you will step that many lines back before viewing those 20 lines.
+    For example:
+
+        channel/history public = 35
+
+    will go back 35 lines and show the previous 20 lines from that point (so
+    lines -35 to -55).
+
+    ## sub and unsub
+
+    Usage: channel/sub channel [=alias[;alias;...]]
+           channel/unsub channel
+
+    This subscribes you to a channel and optionally assigns personal shortcuts
+    for you to use to send to that channel (see aliases). When you unsub, all
+    your personal aliases will also be removed.
+
+    ## mute and unmute
+
+    Usage: channel/mute channelname
+           channel/unmute channelname
+
+    Muting silences all output from the channel without actually
+    un-subscribing.  Other channel members will see you are muted in the /who
+    list.  Sending a message to the channel will automatically unmute you.
+
+    ## create and destroy
+
+    Usage: channel/create channelname[;alias;alias[:typeclass]] [= description]
+           channel/destroy channelname [= reason]
+
+    Creates a new channel (or destroys one you control).
+
 
     """
     key = "channel"
@@ -589,7 +678,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         who_list = []
         for subscriber in all_subs:
             name = subscriber.get_display_name(caller)
-            conditions = ("muted" if subscriber in mute_list else "",
+            conditions = ("muting" if subscriber in mute_list else "",
                           "offline" if subscriber not in online_list else "")
             conditions = [cond for cond in conditions if cond]
             cond_text = "(" + ", ".join(conditions) + ")" if conditions else ""
@@ -677,7 +766,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             if chan not in subscribed:
                 substatus = "|rNo|n"
             elif caller in chan.mutelist:
-                substatus = "|rMuted|n"
+                substatus = "|rMuting|n"
             else:
                 substatus = "|gYes|n"
             comtable.add_row(

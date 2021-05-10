@@ -8,9 +8,8 @@ connected to a channel, sending a message to it will automatically distribute
 it to every other subscriber.
 
 Channels can be used both for chats between [Accounts](./Accounts) and between
-[Objects](./Objects) (usually Characters) and (in principle) a mix of the two.
-Chats could be both OOC (out-of-character) or IC (in-charcter) in nature.  Some
-examples:
+[Objects](./Objects) (usually Characters).  Chats could be both OOC
+(out-of-character) or IC (in-charcter) in nature.  Some examples:
 
 - A support channel for contacting staff (OOC)
 - A general chat for discussing anything and foster community (OOC)
@@ -105,9 +104,10 @@ But you can also use your alias with the `channel` command:
 > alias + argument onto calling the `channel` command. So when you enter `foo hello`,
 > what the server sees is actually `channel foo = hello`. The system is also 
 > clever enough to know that whenever you search for channels, your channel-nicks
-> should first be considered.
+> should also be considered so as to convert your input to an existing channel name.
 
-You can check if you missed something by viewing the channel's scrollback with
+You can check if you missed channel conversations by viewing the channel's
+scrollback with
 
     channel/history public 
 
@@ -144,14 +144,13 @@ You can give a comma-separated list of channels to kick the same user from all
 those channels at once. The user will be unsubbed from the channel and all
 their aliases will be wiped. But they can still rejoin if they like.
 
-    channel/ban mychannel = annoyinguser123 : spammed too much
+    channel/ban mychannel = annoyinguser123
     channel/ban      - view bans
     channel/unban mychannel = annoyinguser123
 
-The optional reason at the end shows in the banlist
 Banning adds the user to the channels blacklist. This means they will not be
-able to rejoin if you boot them. You will need to run `channel/boot` to
-actually kick them.
+able to _rejoin_ if you boot them. You will need to run `channel/boot` to
+actually kick them out.
 
 See the [Channel command](api:evennia.commands.default.comms.CmdChannel) api
 docs (and in-game help) for more details.
