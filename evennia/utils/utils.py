@@ -1021,44 +1021,34 @@ _TASK_HANDLER = None
 
 
 def delay(timedelay, callback, *args, **kwargs):
-    """
-    Delay the calling of a callback (function).
+    """Delay the calling of a callback (function).
+
+    The task handler (`evennia.scripts.taskhandler.TaskHandler`) will
+    be called for persistent or non-persistent tasks.
+
+    If persistent is set to True.
+        The callback, its arguments and other keyword arguments will be saved
+        (serialized) in the database, assuming they can be. The callback will
+        be executed even after a server restart/reload, taking into account the
+        specified delay (and server down time).
+        Keep in mind that persistent tasks arguments and callback should not
+        use memory references.
+        All task's whose time delays have passed will be called on server startup.
 
     Args:
         timedelay (int or float): The delay in seconds
         callback (callable): Will be called as `callback(*args, **kwargs)`
             after `timedelay` seconds.
         args (any, optional): Will be used as arguments to callback
+
     Keyword Args:
-        persistent (bool, optional): Should make the delay persistent
-            over a reboot or reload. Defaults to False.
-        any (any): Will be used as keyword arguments to callback.
+        persistent (bool, optional): should make the delay persistent
+            over a reboot or reload
+        any (any, optional): Will be used as keyword arguments to callback.
 
     Returns:
-        deferred or int: If ``persistent`` kwarg is `False`, return deferred
-            that will fire with callback after `timedelay` seconds. Note that
-            if `timedelay()` is used in the commandhandler callback chain, the
-            callback chain can be defined directly in the command body and
-            don't need to be specified here. Reference twisted.internet.defer.Deferred.
-            If persistent kwarg is set, return the task's ID as an integer. This is
-            intended for use with ``evennia.scripts.taskhandler.TASK_HANDLER``
-            `.do_task` and `.remove` methods.
-
-    Note:
-        The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will
-        be called for persistent or non-persistent tasks.
-        If persistent is set to True, the callback, its arguments
-        and other keyword arguments will be saved (serialized) in the database,
-        assuming they can be.  The callback will be executed even after
-        a server restart/reload, taking into account the specified delay
-        (and server down time).
-        Keep in mind that persistent tasks arguments and callback should not
-        use memory references.
-        If persistent is set to True the delay function will return an int
-        which is the task's id itended for use with TASK_HANDLER's do_task
-        and remove methods.
-
-        All task's whose time delays have passed will be called on server startup.
+        task (TaskHandlerTask): A task instance.
+            Reference: evennia.scripts.taskhandler.TaskHandlerTask
 
     """
     global _TASK_HANDLER
