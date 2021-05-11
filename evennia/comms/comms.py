@@ -447,18 +447,16 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             # send to each individual subscriber
 
             try:
-                message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
-                if message in (None, False):
+                recv_message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
+                if recv_message in (None, False):
                     return
 
-                receiver.channel_msg(message, self, **send_kwargs)
+                receiver.channel_msg(recv_message, self, **send_kwargs)
 
-                receiver.at_post_channel_msg(message, self, **send_kwargs)
+                receiver.at_post_channel_msg(recv_message, self, **send_kwargs)
 
             except Exception:
                 logger.log_trace(f"Error sending channel message to {receiver}.")
-
-
 
         # post-send hook
         self.at_post_msg(message, **send_kwargs)
