@@ -18,6 +18,7 @@ from evennia.utils.create import create_script
 from evennia.utils.evmore import EvMore
 from evennia.utils.utils import (
     all_from_module,
+    variable_from_module,
     make_iter,
     is_iter,
     dbid_to_obj,
@@ -158,11 +159,30 @@ def load_module_prototypes():
         # to remove a default prototype, override it with an empty dict.
         # internally we store as (key, desc, locks, tags, prototype_dict)
         prots = []
-        for variable_name, prot in all_from_module(mod).items():
-            if isinstance(prot, dict):
-                if "prototype_key" not in prot:
-                    prot["prototype_key"] = variable_name.lower()
+
+        prototype_list = variable_from_module(mod, "PROTOTYPE_LIST")
+        if prototype_list:
+            # found mod.PROTOTYPE_LIST - this should be a list of valid
+            # prototype dicts that must have 'prototype_key' set.
+            for prot in prototype_list:
+                if not isinstance(prot, dict):
+                    logger.log_err(f"Prototype read from {mod}.PROTOTYPE_LIST "
+                                   f"is not a dict (skipping): {prot}")
+                    continue
+                elif "prototype_key" not in prot:
+                    logger.log_err(f"Prototype read from {mod}.PROTOTYPE_LIST "
+                                   f"is missing the 'prototype_key' (skipping): {prot}")
+                    continue
                 prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+        else:
+            # load all global dicts in module as prototypes. If the prototype_key
+            # is not given, the variable name will be used.
+            for variable_name, prot in all_from_module(mod).items():
+                if isinstance(prot, dict):
+                    if "prototype_key" not in prot:
+                        prot["prototype_key"] = variable_name.lower()
+                    prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+
         # assign module path to each prototype_key for easy reference
         _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
         # make sure the prototype contains all meta info
