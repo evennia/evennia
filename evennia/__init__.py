@@ -339,7 +339,6 @@ def _init():
         CMD_NOINPUT - no input was given on command line
         CMD_NOMATCH - no valid command key was found
         CMD_MULTIMATCH - multiple command matches were found
-        CMD_CHANNEL - the command name is a channel name
         CMD_LOGINSTART - this command will be called as the very
                          first command when an account connects to
                          the server.
@@ -354,7 +353,6 @@ def _init():
         CMD_NOINPUT = cmdhandler.CMD_NOINPUT
         CMD_NOMATCH = cmdhandler.CMD_NOMATCH
         CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH
-        CMD_CHANNEL = cmdhandler.CMD_CHANNEL
         CMD_LOGINSTART = cmdhandler.CMD_LOGINSTART
         del cmdhandler
 

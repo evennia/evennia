@@ -144,14 +144,6 @@ class TestCreateMessage(EvenniaTest):
         self.assertEqual(msg.header, "TestHeader")
         self.assertEqual(msg.senders, [self.char1])
 
-    def test_create_msg__channel(self):
-        chan1 = create.create_channel("DummyChannel1")
-        chan2 = create.create_channel("DummyChannel2")
-        msg = create.create_message(
-            self.char1, self.msgtext, channels=[chan1, chan2], header="TestHeader"
-        )
-        self.assertEqual(list(msg.channels), [chan1, chan2])
-
     def test_create_msg__custom(self):
         locks = "foo:false();bar:true()"
         tags = ["tag1", "tag2", "tag3"]

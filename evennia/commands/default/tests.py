@@ -1861,7 +1861,7 @@ class TestCommsChannel(CommandTest):
         # remove alias
         self.call(
             self.cmdchannel(),
-            "/unalias testchannel = foo",
+            "/unalias foo",
             "Removed your channel alias 'foo'"
         )
         self.assertEqual(self.char1.nicks.get('foo $1', category="channel"), None)
@@ -2053,12 +2053,3 @@ class TestSystemCommands(CommandTest):
         multimatch.matches = matches
 
         self.call(multimatch, "look", "")
-
-    @patch("evennia.commands.default.syscommands.ChannelDB")
-    def test_channelcommand(self, mock_channeldb):
-        channel = MagicMock()
-        channel.msg = MagicMock()
-        mock_channeldb.objects.get_channel = MagicMock(return_value=channel)
-
-        self.call(syscommands.SystemSendToChannel(), "public:Hello")
-        channel.msg.assert_called()

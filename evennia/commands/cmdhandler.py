@@ -6,10 +6,6 @@ command line. The processing of a command works as follows:
 
 1. The calling object (caller) is analyzed based on its callertype.
 2. Cmdsets are gathered from different sources:
-   - channels:  all available channel names are auto-created into a cmdset, to allow
-     for giving the channel name and have the following immediately
-     sent to the channel. The sending is performed by the CMD_CHANNEL
-     system command.
    - object cmdsets: all objects at caller's location are scanned for non-empty
      cmdsets. This includes cmdsets on exits.
    - caller: the caller is searched for its own currently active cmdset.
@@ -72,8 +68,6 @@ CMD_NOINPUT = "__noinput_command"
 CMD_NOMATCH = "__nomatch_command"
 # command to call if multiple command matches were found
 CMD_MULTIMATCH = "__multimatch_command"
-# command to call if found command is the name of a channel
-CMD_CHANNEL = "__send_to_channel_command"
 # command to call as the very first one when the user connects.
 # (is expected to display the login screen)
 CMD_LOGINSTART = "__unloggedin_look_command"
@@ -756,18 +750,6 @@ def cmdhandler(
                         else:
                             sysarg += _(' Type "help" for help.')
                     raise ExecSystemCommand(syscmd, sysarg)
-
-                # Check if this is a Channel-cmd match.
-                if hasattr(cmd, "is_channel") and cmd.is_channel:
-                    # even if a user-defined syscmd is not defined, the
-                    # found cmd is already a system command in its own right.
-                    syscmd = yield cmdset.get(CMD_CHANNEL)
-                    if syscmd:
-                        # replace system command with custom version
-                        cmd = syscmd
-                    cmd.session = session
-                    sysarg = "%s:%s" % (cmdname, args)
-                    raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
             ret = yield _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account)

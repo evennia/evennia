@@ -170,11 +170,34 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     Creates a new channel (or destroys one you control).
 
+    ## lock and unlock
+
+    Usage: channel/lock channelname = lockstring
+           channel/unlock channelname = lockstring
+
+    Note: this is an admin command.
+
+    A lockstring is on the form locktype:lockfunc(). Channels understand three
+    locktypes:
+        listen - who may listen or join the channel.
+        send - who may send messages to the channel
+        control - who controls the channel. This is usually the one creating
+           the channel.
+
+    Common lockfuncs are all() and perm(). To make a channel everyone can listen
+    to but only builders can talk on, use this:
+
+        listen:all()
+        send: perm(Builders)
 
     """
     key = "channel"
     aliases = ["chan", "channels"]
-    locks = "cmd: not pperm(channel_banned)"
+    help_category = "Comms"
+    # these cmd: lock controls access to the channel command itself
+    # the admin: lock controls access to /boot/ban/unban switches
+    # the manage: lock  controls access to /create/destroy/desc/lock/unlock switches
+    locks = "cmd:not pperm(channel_banned);admin:all();manage:all();changelocks:perm(Admin)"
     switch_options = (
         "list", "all", "history", "sub", "unsub", "mute", "unmute", "alias", "unalias",
         "create", "destroy", "desc", "lock", "unlock", "boot", "ban", "unban", "who",)
@@ -185,6 +208,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     # channel_msg_nick_alias = r"{alias}\s*?(?P<arg1>.+?){{0,1}}"
     channel_msg_nick_alias = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
     channel_msg_nick_replacement = "channel {channelname} = $1"
+
+    # to make it easier to override help functionality, we add the ability to
+    # tweak access to different sub-functionality. Note that the system will
+    # still check control lock etc even if you can use this functionality.
+    # changing these does not change access to this command itself (that's the
+    # locks property)
 
     def search_channel(self, channelname, exact=False, handle_errors=True):
         """
@@ -721,20 +750,26 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         comtable = self.styled_table(
-            "|wchannel|n",
-            "|wmy aliases|n",
-            "|wdescription|n",
+            "channel",
+            "my aliases",
+            "locks",
+            "description",
             align="l",
             maxwidth=_DEFAULT_WIDTH
         )
-
         for chan in subscribed:
+
+            locks = "-"
+            if chan.access(self.caller, "control"):
+                locks = chan.locks
+
             my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
                 *("{}{}".format(
                     chan.key,
                     "({})".format(",".join(chan.aliases.all())) if chan.aliases.all() else ""),
                   my_aliases,
+                  locks,
                   chan.db.desc))
         return comtable
 
@@ -744,7 +779,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         Args:
             subscribed (list): List of subscribed channels
-
         Returns:
             EvTable: Table to display.
 
@@ -752,33 +786,30 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         comtable = self.styled_table(
-            "|wsub|n",
-            "|wchannel|n",
-            "|wmy aliases|n",
-            "|wlocks|n",
-            "|wdescription|n",
+            "sub",
+            "channel",
+            "aliases",
+            "my aliases",
+            "description",
             maxwidth=_DEFAULT_WIDTH,
         )
         channels = subscribed + available
 
         for chan in channels:
-            my_aliases = ", ".join(self.get_channel_aliases(chan))
             if chan not in subscribed:
                 substatus = "|rNo|n"
             elif caller in chan.mutelist:
                 substatus = "|rMuting|n"
             else:
                 substatus = "|gYes|n"
+            my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
                 *(substatus,
-                  "{}{}".format(
-                      chan.key,
-                      "({})".format(",".join(chan.aliases.all())) if chan.aliases.all() else ""),
+                  chan.key,
+                  ",".join(chan.aliases.all()) if chan.aliases.all() else "",
                   my_aliases,
-                  str(chan.locks),
                   chan.db.desc))
-        comtable.reformat_column(0, width=9)
-        comtable.reformat_column(3, width=14)
+        comtable.reformat_column(0, width=8)
 
         return comtable
 
@@ -819,6 +850,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'create' in switches:
             # create a new channel
+
+            if not self.access(caller, "manage"):
+                self.msg("You don't have access to use channel/create.")
+                return
+
             config = self.lhs
             if not config:
                 self.msg("To create: channel/create name[;aliases][:typeclass] [= description]")
@@ -836,7 +872,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'unalias' in switches:
             # remove a personal alias (no channel needed)
-            alias = self.rhs
+            alias = self.args.strip()
             if not alias:
                 self.msg("Specify the alias to remove as channel/unalias <alias>")
                 return
@@ -976,11 +1012,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'destroy' in switches or 'delete' in switches:
             # destroy a channel we control
-            reason = self.rhs or None
+
+            if not self.access(caller, "manage"):
+                self.msg("You don't have access to use channel/destroy.")
+                return
 
             if not channel.access(caller, "control"):
                 self.msg("You can only delete channels you control.")
                 return
+
+            reason = self.rhs or None
 
             def _perform_delete(caller, *args, **kwargs):
                 self.destroy_channel(channel, message=reason)
@@ -997,11 +1038,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'desc' in switches:
             # set channel description
-            desc = self.rhs.strip()
+
+            if not self.access(caller, "manage"):
+                self.msg("You don't have access to use channel/desc.")
+                return
 
             if not channel.access(caller, "control"):
                 self.msg("You can only change description of channels you control.")
                 return
+
+            desc = self.rhs.strip()
 
             if not desc:
                 self.msg("Usage: /desc channel = description")
@@ -1012,11 +1058,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'lock' in switches:
             # add a lockstring to channel
-            lockstring = self.rhs.strip()
+
+            if not self.access(caller, "changelocks"):
+                self.msg("You don't have access to use channel/lock.")
+                return
 
             if not channel.access(caller, "control"):
                 self.msg("You need 'control'-access to change locks on this channel.")
                 return
+
+            lockstring = self.rhs.strip()
 
             if not lockstring:
                 self.msg("Usage: channel/lock channelname = lockstring")
@@ -1031,14 +1082,19 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'unlock' in switches:
             # remove/update lockstring from channel
-            lockstring = self.rhs.strip()
 
-            if not lockstring:
-                self.msg("Usage: channel/unlock channelname = lockstring")
+            if not self.access(caller, "changelocks"):
+                self.msg("You don't have access to use channel/unlock.")
                 return
 
             if not channel.access(caller, "control"):
                 self.msg("You need 'control'-access to change locks on this channel.")
+                return
+
+            lockstring = self.rhs.strip()
+
+            if not lockstring:
+                self.msg("Usage: channel/unlock channelname = lockstring")
                 return
 
             success, err = self.unset_lock(channel, self.rhs)
@@ -1050,6 +1106,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'boot' in switches:
             # boot a user from channel(s)
+
+            if not self.access(caller, "admin"):
+                self.msg("You don't have access to use channel/boot.")
+                return
 
             if not self.rhs:
                 self.msg("Usage: channel/boot channel[,channel,...] = username [:reason]")
@@ -1095,6 +1155,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if 'ban' in switches:
             # ban a user from channel(s)
 
+            if not self.access(caller, "admin"):
+                self.msg("You don't have access to use channel/ban.")
+                return
+
             if not self.rhs:
                 # view bans for channels
 
@@ -1104,7 +1168,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
                 bans = ["Channel bans "
                         "(to ban, use channel/ban channel[,channel,...] = username [:reason]"]
-                bans.expand(self.channel_list_bans(channel))
+                bans.extend(self.channel_list_bans(channel))
                 self.msg("\n".join(bans))
                 return
 
@@ -1146,6 +1210,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if 'unban' in switches:
             # unban a previously banned user from channel
+
+            if not self.access(caller, "admin"):
+                self.msg("You don't have access to use channel/unban.")
+                return
+
             target_str = self.rhs.strip()
 
             if not target_str:
@@ -1596,7 +1665,7 @@ class CmdClock(CmdChannel):
 
     key = "clock"
     aliases = ["clock"]
-    locks = "cmd:not pperm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned) and perm(Admin)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -1705,7 +1774,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         # get the messages we've sent (not to channels)
-        pages_we_sent = Msg.objects.get_messages_by_sender(caller, exclude_channel_messages=True)
+        pages_we_sent = Msg.objects.get_messages_by_sender(caller)
         # get last messages we've got
         pages_we_got = Msg.objects.get_messages_by_receiver(caller)
         targets, message, number = [], None, None
@@ -1745,7 +1814,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     # a single-word message
                     message = message[0].strip()
 
-        pages = pages_we_sent + pages_we_got
+        pages = list(pages_we_sent) + list(pages_we_got)
         pages = sorted(pages, key=lambda page: page.date_created)
 
         if message:

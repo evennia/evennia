@@ -1,4 +1,4 @@
-# Channels 
+# Channels
 
 In a multiplayer game, players often need other means of in-game communication
 than moving to the same room and use `say` or `emote`.
@@ -34,7 +34,7 @@ In the default command set, channels are all handled via the mighty
 `chan`).  By default, this command will assume all entities dealing with
 channels are `Accounts`.
 
-### Viewing, joining and creating channels
+### Viewing and joining channels
 
     channel       - shows your subscriptions
     channel/all   - shows all subs available to you
@@ -51,18 +51,9 @@ unsubscribing), you can mute it:
     channel/mute channelname
     channel/unmute channelname
 
-To create/destroy a new channel you can do
-
-    channel/create channelname;alias;alias = description
-    channel/destroy channelname
-
-Aliases are optional but can be good for obvious shortcuts everyone may want to
-use. The description is used in channel-listings. You will automatically join a
-channel you created and will be controlling it.
-
 ### Chat on channels
 
-To speak on a channel, do 
+To speak on a channel, do
 
     channel public Hello world!
 
@@ -86,7 +77,7 @@ Any user can make up their own channel aliases:
 
     channel/alias public = foo;bar
 
-You can now just do 
+You can now just do
 
     foo Hello world!
     bar Hello again!
@@ -97,19 +88,19 @@ And even remove the default one if they don't want to use it
     public Hello
 
 But you can also use your alias with the `channel` command:
-  
+
     channel foo Hello world!
 
 > What happens when aliasing is that a [nick](./Nicks) is created that maps your
 > alias + argument onto calling the `channel` command. So when you enter `foo hello`,
-> what the server sees is actually `channel foo = hello`. The system is also 
+> what the server sees is actually `channel foo = hello`. The system is also
 > clever enough to know that whenever you search for channels, your channel-nicks
 > should also be considered so as to convert your input to an existing channel name.
 
 You can check if you missed channel conversations by viewing the channel's
 scrollback with
 
-    channel/history public 
+    channel/history public
 
 This retrieves the last 20 lines of text (also from a time when you were
 offline). You can step further back by specifying how many lines back to start:
@@ -122,23 +113,20 @@ This again retrieve 20 lines, but starting 30 lines back (so you'll get lines
 
 ### Channel administration
 
-If you control the channel (because you are an admin or created it) you have the 
-ability to control who can access it by use of [locks](./Locks):
+To create/destroy a new channel you can do
 
-    channel/lock buildchannel = listen:all();send:perm(Builders)
+    channel/create channelname;alias;alias = description
+    channel/destroy channelname
 
-Channels use three lock-types by default:
-
-- `listen` - who may listen to the channel. Users without this access will not
-  even be able to join the channel and it will not appear in listings for them.
-- `send` - who may send to the channel.
-- `control` - this is assigned to you automatically when you create the channel. With
-  control over the channel you can edit it, boot users and do other management tasks.
+Aliases are optional but can be good for obvious shortcuts everyone may want to
+use. The description is used in channel-listings. You will automatically join a
+channel you created and will be controlling it. You can also use `channel/desc` to
+change the description on a channel you wnn later.
 
 If you control a channel you can also kick people off it:
 
     channel/boot mychannel = annoyinguser123 : stop spamming!
-    
+
 The last part is an optional reason to send to the user before they are booted.
 You can give a comma-separated list of channels to kick the same user from all
 those channels at once. The user will be unsubbed from the channel and all
@@ -155,6 +143,64 @@ actually kick them out.
 See the [Channel command](api:evennia.commands.default.comms.CmdChannel) api
 docs (and in-game help) for more details.
 
+Admin-level users can also modify channel's [locks](./Locks):
+
+    channel/lock buildchannel = listen:all();send:perm(Builders)
+
+Channels use three lock-types by default:
+
+- `listen` - who may listen to the channel. Users without this access will not
+  even be able to join the channel and it will not appear in listings for them.
+- `send` - who may send to the channel.
+- `control` - this is assigned to you automatically when you create the channel. With
+  control over the channel you can edit it, boot users and do other management tasks.
+
+
+#### Restricting channel administration
+
+By default everyone can use the channel command ([evennia.commands.default.comms.CmdChannel](api:evennia.commands.default.comms.CmdChannel))
+to create channels and will then control the channels they created (to boot/ban
+people etc). If you as a developer does not want regular players to do this
+(perhaps you want only staff to be able to spawn new channels), you can
+override the `channel` command and change its `locks` property.
+
+The default `help` command has the following `locks` property:
+
+```python
+    locks = "cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)"
+```
+
+This is a regular [lockstring](Locks).
+
+- `cmd: pperm(channel_banned)` - The `cmd` locktype is the standard one used for all Commands.
+  an accessing object failing this will not even know that the command exists. The `pperm()` lockfunc
+  checks an on-account [Permission](Building Permissions) 'channel_banned' - and the `not` means
+  that if they _have_ that 'permission' they are cut off from using the `channel` command. You usually
+  don't need to change this lock.
+- `admin:all()` - this is a lock checked in the `channel` command itself. It controls access to the
+  `/boot`, `/ban` and `/unban` switches (by default letting everyone use them).
+- `manage:all()` - this controls access to the `/create`, `/destroy`, `/desc` switches.
+- `changelocks: perm(Admin)` - this controls access to the `/lock` and `/unlock` switches. By
+  default this is something only [Admins](Building Permissions) can change.
+
+> Note - while `admin:all()` and `manage:all()` will let everyone use these switches, users
+> will still only be able to admin or destroy channels they actually control!
+
+If you only want (say) Builders and higher to be able to create and admin
+channels you could override the `help` command and change the lockstring to:
+
+```python
+  # in for example mygame/commands/commands.py
+
+  from evennia import default_cmds
+
+  class MyCustomChannelCmd(default_cmds.CmdChannel):
+      locks = "cmd: not pperm(channel_banned);admin:perm(Builder);manage:perm(Builder);changelocks:perm(Admin)"
+
+```
+
+Add this custom command to your default cmdset and regular users wil now get an
+access-denied error when trying to use use these switches.
 
 ## Allowing Characters to use Channels
 
@@ -174,7 +220,7 @@ When distributing a message, the channel will call a series of hooks on itself
 and (more importantly) on each recipient. So you can customize things a lot by
 just modifying hooks on your normal Object/Account typeclasses.
 
-Internally, the message is sent with 
+Internally, the message is sent with
 `channel.msg(message, senders=sender, bypass_mute=False, **kwargs)`, where
 `bypass_mute=True` means the message ignores muting (good for alerts or if you
 delete the channel etc) and `**kwargs` are any extra info you may want to pass
@@ -182,7 +228,7 @@ to the hooks. The `senders` (it's always only one in the default implementation
 but could in principle be multiple) and `bypass_mute` are part of the `kwargs`
 below:
 
-  1. `channel.at_pre_msg(message, **kwargs)` 
+  1. `channel.at_pre_msg(message, **kwargs)`
   2. For each recipient:
       - `message = recipient.at_pre_channel_msg(message, channel, **kwargs)` -
          allows for the message to be tweaked per-receiver (for example coloring it depending
@@ -190,7 +236,7 @@ below:
          recipient is skipped.
       - `recipient.channel_msg(message, channel, **kwargs)` - actually sends to recipient.
       - `recipient.at_post_channel_msg(message, channel, **kwargs)` - any post-receive effects.
-  3. `channel.at_post_channel_msg(message, **kwargs)` 
+  3. `channel.at_post_channel_msg(message, **kwargs)`
 
 Note that `Accounts` and `Objects` both have their have separate sets of hooks.
 So make sure you modify the set actually used by your subcribers (or both).
@@ -209,10 +255,10 @@ and can be easily extended.
 To change which channel typeclass Evennia uses for default commands, change
 `settings.BASE_CHANNEL_TYPECLASS`. The base command class is
 [`evennia.comms.comms.DefaultChannel`](api:evennia.comms.comms.DefaultChannel).
-There is an empty child class in `mygame/typeclasses/channels.py`, same 
+There is an empty child class in `mygame/typeclasses/channels.py`, same
 as for other typelass-bases.
 
-In code you create a new channel with `evennia.create_channel` or 
+In code you create a new channel with `evennia.create_channel` or
 `Channel.create`:
 
 ```python
@@ -232,7 +278,7 @@ In code you create a new channel with `evennia.create_channel` or
 
   # view subscriptions (the SubscriptionHandler handles all subs under the hood)
   channel.subscriptions.has(me)    # check we subbed
-  channel.subscriptions.all()      # get all subs 
+  channel.subscriptions.all()      # get all subs
   channel.subscriptions.online()   # get only subs currently online
   channel.subscriptions.clear()    # unsub all
 
@@ -264,7 +310,7 @@ details.
 
 The channel messages are not stored in the database. A channel is instead
 always logged to a regular text log-file
-`mygame/server/logs/channel_<channelname>.log`. This is where `channels/history channelname` 
+`mygame/server/logs/channel_<channelname>.log`. This is where `channels/history channelname`
 gets its data from. A channel's log will rotate when it grows too big, which
 thus also automatically limits the max amount of history a user can view with
 `/history`.
@@ -279,7 +325,7 @@ see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
   sensible optimization since people offline people will not see the message anyway.
 - `log_to_file` - this is a string that determines the name of the channel log file. Default
   is `"channel_{channel_key}.log"`. You should usually not change this.
-- `channel_prefix_string` - this property is a string to easily change how 
+- `channel_prefix_string` - this property is a string to easily change how
   the channel is prefixed. It takes the `channel_key` format key. Default is `"[{channel_key}] "`
   and produces output like `[public] ...``.
 - `subscriptions` - this is the [SubscriptionHandler](`api:evennia.comms.comms.SubscriptionHandler`), which
@@ -297,7 +343,7 @@ Notable `Channel` hooks:
 - `at_post_channel_msg(message, **kwargs)` - by default this is used to store the message
   to the log file.
 - `channel_prefix(message)` - this is called to allow the channel to prefix. This is called
-  by the object/account when they build the message, so if wanting something else one can 
+  by the object/account when they build the message, so if wanting something else one can
   also just remove that call.
 - every channel message. By default it just returns `channel_prefix_string`.
 - `has_connection(subscriber)` - shortcut to check if an entity subscribes to
@@ -309,4 +355,4 @@ Notable `Channel` hooks:
 - `post_join_channel(subscriber)` - unused by default.
 - `pre_leave_channel(subscriber)` - if this returns `False`, the user is not allowed to leave.
 - `post_leave_channel(subscriber)` - unused by default.
-  
+
