@@ -1029,11 +1029,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             ask_yes_no(
                 caller,
-                f"Are you sure you want to delete channel '{channel.key}'"
+                prompt=f"Are you sure you want to delete channel '{channel.key}' "
                 "(make sure name is correct!)? This will disconnect and "
                 "remove all users' aliases. {options}?",
-                _perform_delete,
-                "Aborted."
+                yes_action=_perform_delete,
+                no_action="Aborted.",
+                default="N"
             )
 
         if 'desc' in switches:
@@ -1143,11 +1144,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                           if reason else '')
             ask_yes_no(
                 caller,
-                f"Are you sure you want to boot user {target.key} from "
+                prompt=f"Are you sure you want to boot user {target.key} from "
                 f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}). "
                 "{options}?",
-                _boot_user,
-                "Aborted.",
+                yes_action=_boot_user,
+                no_action="Aborted.",
                 default="Y"
             )
             return
