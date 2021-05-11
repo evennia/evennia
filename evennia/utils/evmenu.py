@@ -1631,10 +1631,12 @@ class CmdYesNoQuestion(Command):
     aliases = [_CMD_NOMATCH, "yes", "no", 'y', 'n', 'a', 'abort']
     arg_regex = r"^$"
 
-    def _clean(self):
-        del self.caller.ndb._yes_no_question
-        self.caller.cmdset.remove(YesNoQuestionCmdSet)
-
+    def _clean(self, caller):
+        del caller.ndb._yes_no_question
+        if not caller.cmdset.has(YesNoQuestionCmdSet) and hasattr(caller, "account"):
+            caller.account.cmdset.remove(YesNoQuestionCmdSet)
+        else:
+            caller.cmdset.remove(YesNoQuestionCmdSet)
 
     def func(self):
         """This is called when user enters anything."""
@@ -1644,6 +1646,10 @@ class CmdYesNoQuestion(Command):
             if not yes_no_question and hasattr(caller, "account"):
                 yes_no_question = caller.account.ndb._yes_no_question
                 caller = caller.account
+
+            if not yes_no_question:
+                self._clean(caller)
+                return
 
             inp = self.cmdname
 
@@ -1657,7 +1663,7 @@ class CmdYesNoQuestion(Command):
 
             if inp in ('a', 'abort') and yes_no_question.allow_abort:
                 caller.msg("Aborted.")
-                self._clean()
+                self._clean(caller)
                 return
 
             caller.ndb._yes_no_question.session = self.session
@@ -1677,12 +1683,12 @@ class CmdYesNoQuestion(Command):
                 return
 
             # cleanup
-            self._clean()
+            self._clean(caller)
         except Exception as err:
             # make sure to clean up cmdset if something goes wrong
             caller.msg("|rError in ask_yes_no. Choice not confirmed (report to admin)|n")
             logger.log_trace("Error in ask_yes_no")
-            self._clean()
+            self._clean(caller)
             raise
 
 
@@ -1703,8 +1709,8 @@ class YesNoQuestionCmdSet(CmdSet):
         self.add(CmdYesNoQuestion())
 
 
-def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
-               allow_abort=False, session=None, *args, **kwargs):
+def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_action="No",
+               default=None, allow_abort=False, session=None, *args, **kwargs):
     """
     A helper question for asking a simple yes/no question. This will cause
     the system to pause and wait for input from the player.
@@ -1721,8 +1727,9 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
             with `(caller, *args, **kwargs)` when the No-choice is made.
             If a string, this string will be echoed back to the caller.
         default (str optional): This is what the user will get if they just press the
-            return key without giving any input. One of 'N', 'Y', 'A' or 'None'
-            for no default.  If 'A' is given, `allow_abort` is auto-set.
+            return key without giving any input. One of 'N', 'Y', 'A' or `None`
+            for no default (an explicit choice must be given). If 'A' is given,
+            `allow_abort` kwarg is ignored and assumed set.
         allow_abort (bool, optional): If set, the 'A(bort)' option is available
             (a third option meaning neither yes or no but just exits the prompt).
         session (Session, optional): This allows to specify the
@@ -1780,6 +1787,7 @@ def ask_yes_no(caller, prompt, yes_action, no_action, default=None,
     prompt = prompt.format(options=options)
 
     caller.ndb._yes_no_question = _Prompt()
+    caller.ndb._yes_no_question.prompt = prompt
     caller.ndb._yes_no_question.session = session
     caller.ndb._yes_no_question.prompt = prompt
     caller.ndb._yes_no_question.default = default
