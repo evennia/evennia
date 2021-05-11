@@ -49,6 +49,8 @@
   to the user and respond to their input. This complements the existing `get_input` helper.
 - Allow sending messages with `page/tell` without a `=` if target name contains no spaces.
 - New FileHelpStorage system allows adding help entries via external files.
+- In modules given by `settings.PROTOTYPE_MODULES`, spawner will now first look for a global
+  list `PROTOTYPE_LIST` of dicts before loading all dicts in the module as prototypes.
 
 ### Evennia 0.9.5 (2019-2020)
 
