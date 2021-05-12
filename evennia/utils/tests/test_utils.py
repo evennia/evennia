@@ -321,7 +321,7 @@ class TestFormatGrid(TestCase):
         """Grid with small variations"""
         elements = self._generate_elements(3, 1, 30)
         rows = utils.format_grid(elements, width=78)
-        self.assertEqual(len(rows), 3)
+        self.assertEqual(len(rows), 4)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
     def test_disparate_grid(self):
@@ -356,7 +356,7 @@ class TestFormatGrid(TestCase):
             "lock",
         )
         rows = utils.format_grid(elements, width=78)
-        self.assertEqual(len(rows), 2)
+        self.assertEqual(len(rows), 3)
         for element in elements:
             self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
 

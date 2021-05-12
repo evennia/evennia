@@ -439,8 +439,8 @@ class TestHelp(CommandTest):
          "Help for test\n\n"
          "Main help text\n\n"
          "Subtopics:\n"
-         "  test/creating extra stuff\n"
-         "  test/something else\n"
+         "  test/creating extra stuff"
+         "  test/something else"
          "  test/more"
          ),
         ("test/creating extra stuff",  # subtopic, full match
@@ -483,14 +483,14 @@ class TestHelp(CommandTest):
          "Help for test/more/second-more\n\n"
          "The Second More text.\n\n"
          "Subtopics:\n"
-         "  test/more/second-more/more again\n"
+         "  test/more/second-more/more again"
          "  test/more/second-more/third more"
          ),
         ("test/More/-more",  # partial match
          "Help for test/more/second-more\n\n"
          "The Second More text.\n\n"
          "Subtopics:\n"
-         "  test/more/second-more/more again\n"
+         "  test/more/second-more/more again"
          "  test/more/second-more/third more"
          ),
         ("test/more/second/more again",

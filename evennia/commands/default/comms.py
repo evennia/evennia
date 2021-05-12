@@ -51,14 +51,13 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 class CmdChannel(COMMAND_DEFAULT_CLASS):
     """
-    Talk on and manage in-game channels.
+    Use and manage in-game channels.
 
     Usage:
-      channel
       channel channelname <msg>
-      channel channel name [= <msg>]
-      channel/list
-      channel/all
+      channel channel name = <msg>
+      channel        (show all subscription)
+      channel/all    (show available channels)
       channel/alias channelname = alias[;alias...]
       channel/unalias alias
       channel/who channelname
@@ -73,10 +72,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
       channel/desc channelname = description
       channel/lock channelname = lockstring
       channel/unlock channelname = lockstring
-      channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
       channel/ban channelname   (list bans)
-      channe/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
+      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: logmessage]
       channel/unban[/quiet] channelname[, channelname, ...] = subscribername
+      channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
 
     # subtopics
 
@@ -85,8 +84,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     Usage: channel channelname msg
            channel channel name = msg  (with space in channel name)
 
-    This sends a message to the channel. Note that you will rarely use this command
-    like this; instead you can use the alias
+    This sends a message to the channel. Note that you will rarely use this
+    command like this; instead you can use the alias
 
         channelname <msg>
         channelalias <msg>
@@ -117,8 +116,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         wguild Hello
         warchannel Hello
 
-    Note that this will not work if the alias has a space in it. So the 'warrior guild'
-    alias must be used with the `channel` command:
+    Note that this will not work if the alias has a space in it. So the
+    'warrior guild' alias must be used with the `channel` command:
 
         channel warrior guild = Hello
 
@@ -138,6 +137,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     This will display the last |c20|n lines of channel history. By supplying an
     index number, you will step that many lines back before viewing those 20 lines.
+
     For example:
 
         channel/history public = 35
@@ -182,13 +182,38 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         listen - who may listen or join the channel.
         send - who may send messages to the channel
         control - who controls the channel. This is usually the one creating
-           the channel.
+            the channel.
 
-    Common lockfuncs are all() and perm(). To make a channel everyone can listen
-    to but only builders can talk on, use this:
+    Common lockfuncs are all() and perm(). To make a channel everyone can
+    listen to but only builders can talk on, use this:
 
         listen:all()
         send: perm(Builders)
+
+    ## boot and ban
+
+    Usage: channel/ban channelname    (list bans)
+           channel/ban channelname[, channelname, ...] = subscribername [: logmessage]
+           channel/unban channelname[, channelname, ...] = subscribername
+           channel/unban channelname
+           channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
+
+    Booting will kick a named subscriber from a channel temporarily. It will
+    also remove all their aliases. They are still able to re-connect unless
+    they are also banned. The 'reason' given will be echoed to the user and
+    channel.
+
+    Banning will block a given subscriber's ability to connect to a channel. It
+    will not automatically boot them. The 'logmessage' will be stored on the
+    channel and shown when you list your bans (so you can remember why they
+    were banned).
+
+    So to permanently get rid of a user, the way to do so is to first ban them
+    and then boot them.
+
+    Example:
+        ban mychannel1,mychannel2 = EvilUser : Was banned for spamming.
+        boot mychannel1,mychannel2 = EvilUser : No more spamming!
 
     """
     key = "channel"
@@ -505,7 +530,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         new_chan = create.create_channel(
             name, aliases=aliases, desc=description, locks=lockstring, typeclass=typeclass)
-        new_chan.connect(caller)
+        self.sub_to_channel(new_chan)
         return new_chan, ""
 
     def destroy_channel(self, channel, message=None):
@@ -831,12 +856,12 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             table = self.display_all_channels(subscribed, available)
 
             self.msg(
-                "\n|wAvailable channels|n (use /list to "
-                f"only show subscriptions)\n{table}")
+                "\n|wAvailable channels|n (use no argument to "
+                f"only show your subscriptions)\n{table}")
             return
 
         if not channel_names:
-            # (empty or /list) show only subscribed channels
+            # empty arg show only subscribed channels
             subscribed, _ = self.list_channels()
             table = self.display_subbed_channels(subscribed)
 
