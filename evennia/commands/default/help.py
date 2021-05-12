@@ -31,8 +31,6 @@ DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
-_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-_SEP = "|C" + "-" * _DEFAULT_WIDTH + "|n"
 
 
 @dataclass
@@ -59,16 +57,16 @@ class HelpCategory:
 
 class CmdHelp(COMMAND_DEFAULT_CLASS):
     """
-    View help or a list of topics
+    Get help.
 
     Usage:
       help
       help <topic, command or category>
-      help <topic> / <subtopic>
-      help <topic> / <subtopic> / <subsubtopic> ...
+      help <topic>/<subtopic>
+      help <topic>/<subtopic>/<subsubtopic> ...
 
-    Use the help command alone to see an index of all help topics, organized by
-    category. Some long topics may offer additional sub-topics.
+    Use the 'help' command alone to see an index of all help topics, organized
+    by category.eSome big topics may offer additional sub-topics.
 
     """
 
@@ -123,8 +121,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         self.msg(text=(text, {"type": "help"}))
 
-    @staticmethod
-    def format_help_entry(topic="", help_text="", aliases=None, suggested=None,
+    def format_help_entry(self, topic="", help_text="", aliases=None, suggested=None,
                           subtopics=None):
         """
         This visually formats the help entry.
@@ -142,7 +139,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         Returns the formatted string, ready to be sent.
 
         """
-        start = f"{_SEP}\n"
+        separator = "|C" + "-" * self.client_width() + "|n"
+        start = f"{separator}\n"
 
         title = f"|CHelp for |w{topic}|n" if topic else "|rNo help found|n"
 
@@ -156,25 +154,26 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         help_text = "\n\n" + dedent(help_text.strip('\n')) + "\n" if help_text else ""
 
         if subtopics:
+            subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
             subtopics = (
                 "\n|CSubtopics:|n\n  {}".format(
-                    "\n  ".join(f"|w{topic}/{subtop}|n" for subtop in subtopics))
+                    "\n  ".join(format_grid(subtopics, width=self.client_width())))
             )
         else:
             subtopics = ''
 
         if suggested:
+            suggested = [f"|w{sug}|n" for sug in suggested]
             suggested = (
                 "\n|CSuggestions:|n\n{}".format(
-                    fill("|C,|n ".join(f"|w{sug}|n" for sug in suggested), indent=2))
+                    "\n  ".join(format_grid(suggested, width=self.client_width())))
             )
         else:
             suggested = ''
 
-        end = f"\n{_SEP}"
+        end = f"\n{separator}"
 
         return "".join((start, title, aliases, help_text, subtopics, suggested, end))
-
 
     def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False):
         """

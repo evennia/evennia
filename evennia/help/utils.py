@@ -173,16 +173,9 @@ def parse_entry_for_subcategories(entry):
            }
         }
 
-
-    Apart from making
-    sub-categories at the bottom of the entry.
-
-    This will be applied both to command docstrings and database-based help
-    entries.
-
     """
     topic, *subtopics = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
-    structure = {None: topic.strip()}
+    structure = {None: topic.strip('\n')}
 
     if subtopics:
         subtopics = subtopics[0]
