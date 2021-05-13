@@ -91,7 +91,7 @@ class TestCraftingRecipeBase(TestCase):
         """Test craft hook, the main access method."""
 
         expected_result = _TestMaterial("test_result")
-        self.recipe.do_craft = mock.MagicMock(return_value=expected_result)
+        self.recipe.craft = mock.MagicMock(return_value=expected_result)
 
         self.assertTrue(self.recipe.allow_craft)
 
@@ -99,7 +99,7 @@ class TestCraftingRecipeBase(TestCase):
 
         # check result
         self.assertEqual(result, expected_result)
-        self.recipe.do_craft.assert_called_with(kw1=1, kw2=2)
+        self.recipe.craft.assert_called_with(kw1=1, kw2=2)
 
         # since allow_reuse is False, this usage should now be turned off
         self.assertFalse(self.recipe.allow_craft)
@@ -110,7 +110,7 @@ class TestCraftingRecipeBase(TestCase):
     def test_craft_hook__fail(self):
         """Test failing the call"""
 
-        self.recipe.do_craft = mock.MagicMock(return_value=None)
+        self.recipe.craft = mock.MagicMock(return_value=None)
 
         # trigger exception
         with self.assertRaises(crafting.CraftingError):
