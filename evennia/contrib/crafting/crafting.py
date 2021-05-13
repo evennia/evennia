@@ -186,7 +186,7 @@ class CraftingRecipeBase:
        are optional but will be passed into all of the following hooks.
     2. `.pre_craft(**kwargs)` - this normally validates inputs and stores them in
        `.validated_inputs.`. Raises `CraftingValidationError` otherwise.
-    4. `.do_craft(**kwargs)` - should return the crafted item(s) or the empty list. Any
+    4. `.craft(**kwargs)` - should return the crafted item(s) or the empty list. Any
        crafting errors should be immediately reported to user.
     5. `.post_craft(crafted_result, **kwargs)`- always called, even if `pre_craft`
        raised a `CraftingError` or `CraftingValidationError`.
@@ -252,7 +252,7 @@ class CraftingRecipeBase:
         else:
             raise CraftingValidationError
 
-    def do_craft(self, **kwargs):
+    def craft(self, **kwargs):
         """
         Hook to override.
 
@@ -277,7 +277,7 @@ class CraftingRecipeBase:
         method is to delete the inputs.
 
         Args:
-            crafting_result (any): The outcome of crafting, as returned by `do_craft`.
+            crafting_result (any): The outcome of crafting, as returned by `craft()`.
             **kwargs: Any extra flags passed at initialization.
 
         Returns:
@@ -324,7 +324,7 @@ class CraftingRecipeBase:
                     if raise_exception:
                         raise
                 else:
-                    craft_result = self.do_craft(**craft_kwargs)
+                    craft_result = self.craft(**craft_kwargs)
                 finally:
                     craft_result = self.post_craft(craft_result, **craft_kwargs)
             except (CraftingError, CraftingValidationError):
@@ -455,7 +455,7 @@ class CraftingRecipe(CraftingRecipeBase):
     3. `.pre_craft(**kwargs)` should handle validation of inputs. Results should
        be stored in `validated_consumables/tools` respectively. Raises `CraftingValidationError`
        otherwise.
-    4. `.do_craft(**kwargs)` will not be called if validation failed. Should return
+    4. `.craft(**kwargs)` will not be called if validation failed. Should return
        a list of the things crafted.
     5. `.post_craft(crafting_result, **kwargs)` is always called, also if validation
        failed (`crafting_result` will then be falsy). It does any cleanup. By default
@@ -819,7 +819,7 @@ class CraftingRecipe(CraftingRecipeBase):
         self.validated_tools = tools
         self.validated_consumables = consumables
 
-    def do_craft(self, **kwargs):
+    def craft(self, **kwargs):
         """
         Hook to override. This will not be called if validation in `pre_craft`
         fails.
@@ -847,7 +847,7 @@ class CraftingRecipe(CraftingRecipeBase):
         this method is to delete the inputs.
 
         Args:
-            craft_result (list): The crafted result, provided by `self.do_craft`.
+            craft_result (list): The crafted result, provided by `self.craft()`.
             **kwargs (any): Passed from `self.craft`.
 
         Returns:
@@ -958,7 +958,6 @@ class CmdCraft(Command):
         things in the current location, like a furnace, windmill or anvil.
 
     """
-
     key = "craft"
     locks = "cmd:all()"
     help_category = "General"
