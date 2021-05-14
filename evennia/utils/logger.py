@@ -357,12 +357,14 @@ class EvenniaLogFile(logfile.LogFile):
         _CHANNEL_LOG_NUM_TAIL_LINES = settings.CHANNEL_LOG_NUM_TAIL_LINES
     num_lines_to_append = _CHANNEL_LOG_NUM_TAIL_LINES
 
-    def rotate(self):
+    def rotate(self, num_lines_to_append=None):
         """
         Rotates our log file and appends some number of lines from
         the previous log to the start of the new one.
         """
-        append_tail = self.num_lines_to_append > 0
+        append_tail = (num_lines_to_append
+                       if num_lines_to_append is not None
+                       else self.num_lines_to_append)
         if not append_tail:
             logfile.LogFile.rotate(self)
             return
@@ -470,6 +472,43 @@ def log_file(msg, filename="game.log"):
     filehandle = _open_log_file(filename)
     if filehandle:
         deferToThread(callback, filehandle, msg).addErrback(errback)
+
+
+def log_file_exists(filename="game.log"):
+    """
+    Determine if a log-file already exists.
+
+    Args:
+        filename (str): The filename (within the log-dir).
+
+    Returns:
+        bool: If the log file exists or not.
+
+    """
+    global _LOGDIR
+    if not _LOGDIR:
+        from django.conf import settings
+        _LOGDIR = settings.LOG_DIR
+
+    filename = os.path.join(_LOGDIR, filename)
+    return os.path.exists(filename)
+
+
+def rotate_log_file(filename="game.log", num_lines_to_append=None):
+    """
+    Force-rotate a log-file, without
+
+    Args:
+        filename (str): The log file, located in settings.LOG_DIR.
+        num_lines_to_append (int, optional): Include N number of
+            lines from previous file in new one. If `None`, use default.
+            Set to 0 to include no lines.
+
+    """
+    if log_file_exists(filename):
+        file_handle = _open_log_file(filename)
+        if file_handle:
+            file_handle.rotate(num_lines_to_append=num_lines_to_append)
 
 
 def tail_log_file(filename, offset, nlines, callback=None):
