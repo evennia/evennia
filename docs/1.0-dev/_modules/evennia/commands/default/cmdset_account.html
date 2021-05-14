@@ -101,15 +101,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">CmdNewPassword</span><span class="p">())</span>
 
         <span class="c1"># Comm commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdChannel</span><span class="p">())</span>
+        <span class="c1"># self.add(comms.CmdChannels())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdAddCom</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdDelCom</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdAllCom</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdChannels</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCdestroy</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdChannelCreate</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdClock</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCBoot</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCemit</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCWho</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCdesc</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">())</span>

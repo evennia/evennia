@@ -161,10 +161,11 @@
             <span class="k">if</span> <span class="n">clientname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;MUDLET&quot;</span><span class="p">):</span>
                 <span class="c1"># supports xterm256 stably since 1.1 (2010?)</span>
                 <span class="n">xterm256</span> <span class="o">=</span> <span class="n">clientname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;MUDLET&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="s2">&quot;1.1&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;FORCEDENDLINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">if</span> <span class="n">clientname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;TINTIN++&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;FORCEDENDLINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># Mudlet likes GA&#39;s on a prompt line for the prompt trigger to</span>
+                <span class="c1"># match, if it&#39;s not wanting NOGOAHEAD.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">clientname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;XTERM&quot;</span><span class="p">)</span>

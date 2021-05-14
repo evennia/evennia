@@ -76,8 +76,6 @@
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 <span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
 
-<span class="n">_CHANNELHANDLER</span> <span class="o">=</span> <span class="kc">None</span>
-
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1">#</span>
@@ -201,6 +199,7 @@
     <span class="n">db_hide_from_objects</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;hide_from_objects_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
+    <span class="c1"># NOTE: deprecated in 1.0. Not used for channels anymore</span>
     <span class="n">db_hide_from_channels</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;ChannelDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;hide_from_channels_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -307,9 +306,8 @@
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_accounts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span></div>
 
-    <span class="c1"># receivers property</span>
-    <span class="c1"># @property</span>
-    <span class="k">def</span> <span class="nf">__receivers_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for value = self.receivers.</span>
 <span class="sd">        Returns four lists of receivers: accounts, objects, scripts and channels.</span>
@@ -321,8 +319,8 @@
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="p">)</span>
 
-    <span class="c1"># @receivers.setter</span>
-    <span class="k">def</span> <span class="nf">__receivers_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
+    <span class="nd">@receivers</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setter. Allows for self.receivers = value.</span>
 <span class="sd">        This appends a new receiver to the message.</span>
@@ -342,8 +340,8 @@
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
 
-    <span class="c1"># @receivers.deleter</span>
-    <span class="k">def</span> <span class="nf">__receivers_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@receivers</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Deleter. Clears all receivers&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_accounts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -351,7 +349,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-    <span class="n">receivers</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__receivers_get</span><span class="p">,</span> <span class="n">__receivers_set</span><span class="p">,</span> <span class="n">__receivers_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Msg.remove_receiver"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.admin.Msg.remove_receiver">[docs]</a>    <span class="k">def</span> <span class="nf">remove_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -645,9 +642,6 @@
 <span class="sd">                no hooks will be called.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_CHANNELHANDLER</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELHANDLER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNELHANDLER</span>
         <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">subscriber</span><span class="p">:</span>
                 <span class="n">clsname</span> <span class="o">=</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -656,7 +650,6 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-                <span class="n">_CHANNELHANDLER</span><span class="o">.</span><span class="n">_cached_cmdsets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
@@ -668,9 +661,6 @@
 <span class="sd">                entities to un-subscribe from the channel.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_CHANNELHANDLER</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELHANDLER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNELHANDLER</span>
         <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">subscriber</span><span class="p">:</span>
                 <span class="n">clsname</span> <span class="o">=</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -679,7 +669,6 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ObjectDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
-                <span class="n">_CHANNELHANDLER</span><span class="o">.</span><span class="n">_cached_cmdsets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

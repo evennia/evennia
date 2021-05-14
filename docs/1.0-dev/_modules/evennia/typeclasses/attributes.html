@@ -1037,7 +1037,8 @@
 <span class="sd">                looked-after Attribute.</span>
 <span class="sd">            default_access (bool, optional): If no `attrread` lock is set on</span>
 <span class="sd">                object, this determines if the lock should then be passed or not.</span>
-<span class="sd">            return_list (bool, optional):</span>
+<span class="sd">            return_list (bool, optional): Always return a list, also if there is only</span>
+<span class="sd">                one or zero matches found.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            result (any or list): One or more matches for keys and/or</span>
@@ -1277,7 +1278,7 @@
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
 
-<div class="viewcode-block" id="DbHolder"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder">[docs]</a><span class="k">class</span> <span class="nc">DbHolder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DbHolder"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder">[docs]</a><span class="k">class</span> <span class="nc">DbHolder</span><span class="p">:</span>
     <span class="s2">&quot;Holder for allowing property access of attributes&quot;</span>
 
 <div class="viewcode-block" id="DbHolder.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
@@ -1333,8 +1334,10 @@
 <span class="sd">   $N      argument position (1-99)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="n">_RE_OR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">)\|&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_RE_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;arg([1-9][0-9]?)&quot;</span><span class="p">)</span>
 <span class="n">_RE_NICK_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
-<span class="n">_RE_NICK_TEMPLATE_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_RAW_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
 <span class="n">_RE_NICK_SPACE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2"> &quot;</span><span class="p">)</span>
 
 
@@ -1342,45 +1345,72 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">in_template</span><span class="p">,</span> <span class="n">out_template</span><span class="p">):</span>
+<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the nick templates for matching and remapping a string.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        in_template (str): The template to be used for nick recognition.</span>
-<span class="sd">        out_template (str): The template to be used to replace the string</span>
-<span class="sd">            matched by the in_template.</span>
+<span class="sd">        pattern (str): The pattern to be used for nick recognition. This will</span>
+<span class="sd">            be parsed for shell patterns into a regex, unless `pattern_is_regex`</span>
+<span class="sd">            is `True`, in which case it must be an already valid regex string. In</span>
+<span class="sd">            this case, instead of `$N`, numbered arguments must instead be given</span>
+<span class="sd">            as matching groups named as `argN`, such as `(?P&lt;arg1&gt;.+?)`.</span>
+<span class="sd">        replacement (str): The template to be used to replace the string</span>
+<span class="sd">            matched by the pattern. This can contain `$N` markers and is never</span>
+<span class="sd">            parsed into a regex.</span>
+<span class="sd">        pattern_is_regex (bool): If set, `pattern` is a full regex string</span>
+<span class="sd">            instead of containing shell patterns.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        regex  (regex): Regex to match against strings</span>
-<span class="sd">        template (str): Template with markers ``{arg1}, {arg2}``, etc for</span>
-<span class="sd">        replacement using the standard .format method.</span>
+<span class="sd">        regex, template  (str): Regex to match against strings and template</span>
+<span class="sd">            with markers ``{arg1}, {arg2}``, etc for replacement using the standard</span>
+<span class="sd">            `.format` method.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        evennia.typecalasses.attributes.NickTemplateInvalid: If the in/out</span>
 <span class="sd">        template does not have a matching number of `$args`.</span>
 
+<span class="sd">    Examples:</span>
+<span class="sd">        - `pattern` (shell syntax): `&quot;grin $1&quot;`</span>
+<span class="sd">        - `pattern` (regex): `&quot;grin (?P&lt;arg1.+?&gt;)&quot;`</span>
+<span class="sd">        - `replacement`: `&quot;emote gives a wicked grin to $1&quot;`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># create the regex for in_template</span>
-    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">in_template</span><span class="p">)</span>
-    <span class="c1"># we must account for a possible line break coming over the wire</span>
+    <span class="c1"># create the regex from the pattern</span>
+    <span class="k">if</span> <span class="n">pattern_is_regex</span><span class="p">:</span>
+        <span class="c1"># Note that for a regex we can&#39;t validate in the way we do for the shell</span>
+        <span class="c1"># pattern, since you may have complex OR statements or optional arguments.</span>
 
-    <span class="c1"># NOTE-PYTHON3: fnmatch.translate format changed since Python2</span>
-    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">regex_string</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
+        <span class="c1"># Explicit regex given from the onset - this already contains argN</span>
+        <span class="c1"># groups.  we need to split out any | - separated parts so we can</span>
+        <span class="c1"># attach the line-break/ending extras all regexes require.</span>
+        <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">or_part</span> <span class="o">+</span>  <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
+            <span class="k">for</span> <span class="n">or_part</span> <span class="ow">in</span> <span class="n">_RE_OR</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
 
-    <span class="c1"># validate the templates</span>
-    <span class="n">regex_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">regex_string</span><span class="p">)]</span>
-    <span class="n">temp_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">out_template</span><span class="p">)]</span>
-    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">regex_args</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">temp_args</span><span class="p">):</span>
-        <span class="c1"># We don&#39;t have the same $-tags in input/output.</span>
-        <span class="k">raise</span> <span class="n">NickTemplateInvalid</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Shell pattern syntax - convert $N to argN groups</span>
+        <span class="c1"># for the shell pattern we make sure we have matching $N on both sides</span>
+        <span class="n">pattern_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">pattern</span><span class="p">)]</span>
+        <span class="n">replacement_args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">replacement</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">pattern_args</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">replacement_args</span><span class="p">):</span>
+            <span class="c1"># We don&#39;t have the same amount of argN/$N tags in input/output.</span>
+            <span class="k">raise</span> <span class="n">NickTemplateInvalid</span><span class="p">(</span><span class="s2">&quot;Nicks: Both in/out-templates must contain the same $N tags.&quot;</span><span class="p">)</span>
 
-    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_SPACE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">s+&quot;</span><span class="p">,</span> <span class="n">regex_string</span><span class="p">)</span>
-    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;(?P&lt;arg</span><span class="si">%s</span><span class="s2">&gt;.+?)&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">regex_string</span><span class="p">)</span>
-    <span class="n">template_string</span> <span class="o">=</span> <span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;{arg</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">out_template</span><span class="p">)</span>
+        <span class="c1"># generate regex from shell pattern</span>
+        <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_SPACE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">s+&quot;</span><span class="p">,</span> <span class="n">pattern_regex_string</span><span class="p">)</span>
+        <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;(?P&lt;arg</span><span class="si">%s</span><span class="s2">&gt;.+?)&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">pattern_regex_string</span><span class="p">)</span>
+        <span class="c1"># we must account for a possible line break coming over the wire</span>
+        <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="n">pattern_regex_string</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
 
-    <span class="k">return</span> <span class="n">regex_string</span><span class="p">,</span> <span class="n">template_string</span></div>
+    <span class="c1"># map the replacement to match the arg1 group-names, to make replacement easy</span>
+    <span class="n">replacement_string</span> <span class="o">=</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;{arg</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">replacement</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pattern_regex_string</span><span class="p">,</span> <span class="n">replacement_string</span></div>
 
 
 <div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
@@ -1388,17 +1418,21 @@
 <span class="sd">    Parse a text using a template and map it to another template</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        string (str): The input string to processj</span>
+<span class="sd">        string (str): The input string to process</span>
 <span class="sd">        template_regex (regex): A template regex created with</span>
 <span class="sd">            initialize_nick_template.</span>
 <span class="sd">        outtemplate (str): The template to which to map the matches</span>
 <span class="sd">            produced by the template_regex. This should have $1, $2,</span>
-<span class="sd">            etc to match the regex.</span>
+<span class="sd">            etc to match the template-regex. Un-found $N-markers (possible if</span>
+<span class="sd">            the regex has optional matching groups) are replaced with empty</span>
+<span class="sd">            strings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">template_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">outtemplate</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+        <span class="n">matchdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">outtemplate</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">matchdict</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">string</span></div>
 
 
@@ -1447,6 +1481,9 @@
 <span class="sd">                a string.</span>
 <span class="sd">            kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            str or tuple:  The nick replacement string or nick tuple.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">return_tuple</span> <span class="ow">or</span> <span class="s2">&quot;return_obj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1460,24 +1497,46 @@
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="NickHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NickHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a new nick.</span>
+<span class="sd">        Add a new nick, a mapping pattern -&gt; replacement.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            key (str): A key (or template) for the nick to match for.</span>
-<span class="sd">            replacement (str): The string (or template) to replace `key` with (the &quot;nickname&quot;).</span>
+<span class="sd">            pattern (str): A pattern to match for. This will be parsed for</span>
+<span class="sd">                shell patterns using the `fnmatch` library and can contain</span>
+<span class="sd">                `$N`-markers to indicate the locations of arguments to catch. If</span>
+<span class="sd">                `pattern_is_regex=True`, this must instead be a valid regular</span>
+<span class="sd">                expression and the `$N`-markers must be named `argN` that matches</span>
+<span class="sd">                numbered regex groups (see examples).</span>
+<span class="sd">            replacement (str): The string (or template) to replace `key` with</span>
+<span class="sd">                (the &quot;nickname&quot;). This may contain `$N` markers to indicate where to</span>
+<span class="sd">                place the argument-matches</span>
 <span class="sd">            category (str, optional): the category within which to</span>
 <span class="sd">                retrieve the nick. The &quot;inputline&quot; means replacing data</span>
 <span class="sd">                sent by the user.</span>
-<span class="sd">            kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
+<span class="sd">            pattern_is_regex (bool): If `True`, the `pattern` will be parsed as a</span>
+<span class="sd">                raw regex string. Instead of using `$N` markers in this string, one</span>
+<span class="sd">                then must mark numbered arguments as a named regex-groupd named `argN`.</span>
+<span class="sd">                For example, `(?P&lt;arg1&gt;.+?)` will match the behavior of using `$1`</span>
+<span class="sd">                in the shell pattern.</span>
+<span class="sd">            **kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            For most cases, the shell-pattern is much shorter and easier. The</span>
+<span class="sd">            regex pattern form can be useful for more complex matchings though,</span>
+<span class="sd">            for example in order to add optional arguments, such as with</span>
+<span class="sd">            `(?P&lt;argN&gt;.*?)`.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            - pattern (default shell syntax): `&quot;gr $1 at $2&quot;`</span>
+<span class="sd">            - pattern (with pattern_is_regex=True): `r&quot;gr (?P&lt;arg1&gt;.+?) at (?P&lt;arg2&gt;.+?)&quot;`</span>
+<span class="sd">            - replacement: `&quot;emote With a flourish, $1 grins at $2.&quot;`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
-            <span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span> <span class="o">=</span> <span class="n">initialize_nick_templates</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; $1&quot;</span><span class="p">,</span> <span class="n">replacement</span> <span class="o">+</span> <span class="s2">&quot; $1&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span> <span class="o">=</span> <span class="n">initialize_nick_templates</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span> <span class="o">=</span> <span class="n">initialize_nick_templates</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">pattern_is_regex</span><span class="o">=</span><span class="n">pattern_is_regex</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">),</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NickHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

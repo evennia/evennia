@@ -158,21 +158,20 @@ in-game setting information and so on.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.create.create_message">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new communication Msg. Msgs represent a unit of
 database-persistent communication between entites.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>senderobj</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity sending the Msg.</p></li>
+<li><p><strong>senderobj</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>Script</em><em>, </em><em>str</em><em> or </em><em>list</em>) – The entity (or</p></li>
+<li><p><strong>sending the Msg. If a str</strong> (<em>entities</em><em>)</em>) – for an external sender type.</p></li>
+<li><p><strong>is the id-string</strong> (<em>this</em>) – for an external sender type.</p></li>
 <li><p><strong>message</strong> (<em>str</em>) – Text with the message. Eventual headers, titles
 etc should all be included in this text string. Formatting
 will be retained.</p></li>
-<li><p><strong>channels</strong> (<em>Channel</em><em>, </em><em>key</em><em> or </em><em>list</em>) – A channel or a list of channels to
-send to. The channels may be actual channel objects or their
-unique key strings.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>str</em><em> or </em><em>list</em>) – An Account/Object to send
-to, or a list of them. May be Account objects or accountnames.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>list</em>) – An Account/Object to send
+to, or a list of them.</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – Lock definition string.</p></li>
 <li><p><strong>tags</strong> (<em>list</em>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
 <li><p><strong>header</strong> (<em>str</em>) – Mime-type or other optional information for the message</p></li>

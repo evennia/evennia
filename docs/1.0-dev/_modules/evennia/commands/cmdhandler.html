@@ -48,10 +48,6 @@
 
 <span class="sd">1. The calling object (caller) is analyzed based on its callertype.</span>
 <span class="sd">2. Cmdsets are gathered from different sources:</span>
-<span class="sd">   - channels:  all available channel names are auto-created into a cmdset, to allow</span>
-<span class="sd">     for giving the channel name and have the following immediately</span>
-<span class="sd">     sent to the channel. The sending is performed by the CMD_CHANNEL</span>
-<span class="sd">     system command.</span>
 <span class="sd">   - object cmdsets: all objects at caller&#39;s location are scanned for non-empty</span>
 <span class="sd">     cmdsets. This includes cmdsets on exits.</span>
 <span class="sd">   - caller: the caller is searched for its own currently active cmdset.</span>
@@ -65,14 +61,12 @@
 <span class="sd">   cmdset, or fallback to error message. Exit.</span>
 <span class="sd">7. If no match was found -&gt; check for CMD_NOMATCH in current cmdset or</span>
 <span class="sd">   fallback to error message. Exit.</span>
-<span class="sd">8. A single match was found. If this is a channel-command (i.e. the</span>
-<span class="sd">   ommand name is that of a channel), --&gt; check for CMD_CHANNEL in</span>
-<span class="sd">   current cmdset or use channelhandler default. Exit.</span>
-<span class="sd">9. At this point we have found a normal command. We assign useful variables to it that</span>
+<span class="sd">8. At this point we have found a normal command. We assign useful variables to it that</span>
 <span class="sd">   will be available to the command coder at run-time.</span>
-<span class="sd">12. We have a unique cmdobject, primed for use. Call all hooks:</span>
+<span class="sd">9. We have a unique cmdobject, primed for use. Call all hooks:</span>
 <span class="sd">   `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.</span>
-<span class="sd">13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).</span>
+<span class="sd">10. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
@@ -86,7 +80,6 @@
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">returnValue</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNELHANDLER</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_suggestions</span>
 
@@ -117,11 +110,10 @@
 <span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="s2">&quot;__nomatch_command&quot;</span>
 <span class="c1"># command to call if multiple command matches were found</span>
 <span class="n">CMD_MULTIMATCH</span> <span class="o">=</span> <span class="s2">&quot;__multimatch_command&quot;</span>
-<span class="c1"># command to call if found command is the name of a channel</span>
-<span class="n">CMD_CHANNEL</span> <span class="o">=</span> <span class="s2">&quot;__send_to_channel_command&quot;</span>
 <span class="c1"># command to call as the very first one when the user connects.</span>
 <span class="c1"># (is expected to display the login screen)</span>
 <span class="n">CMD_LOGINSTART</span> <span class="o">=</span> <span class="s2">&quot;__unloggedin_look_command&quot;</span>
+
 
 <span class="c1"># Function for handling multiple command matches.</span>
 <span class="n">_SEARCH_AT_RESULT</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -346,19 +338,6 @@
     <span class="k">try</span><span class="p">:</span>
 
         <span class="nd">@inlineCallbacks</span>
-        <span class="k">def</span> <span class="nf">_get_channel_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Helper-method; Get channel-cmdsets</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="c1"># Create cmdset for all account&#39;s available channels</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">channel_cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">get_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">)</span>
-                <span class="n">returnValue</span><span class="p">([</span><span class="n">channel_cmdset</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
-
-        <span class="nd">@inlineCallbacks</span>
         <span class="k">def</span> <span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper-method; Get Object-level cmdsets</span>
@@ -447,13 +426,13 @@
                                 <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                             <span class="p">]</span>
                         <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
-                        <span class="c1"># also objs may have channels</span>
-                        <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                        <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
-                    <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
-                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
+                    <span class="c1"># if not current.no_channels:</span>
+                    <span class="c1">#     # also objs may have channels</span>
+                    <span class="c1">#     channel_cmdsets = yield _get_channel_cmdset(obj)</span>
+                    <span class="c1">#     cmdsets += channel_cmdsets</span>
+                <span class="c1"># if not current.no_channels:</span>
+                <span class="c1">#     channel_cmdsets = yield _get_channel_cmdset(account)</span>
+                <span class="c1">#     cmdsets += channel_cmdsets</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the account level</span>
@@ -471,11 +450,11 @@
                             <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                         <span class="p">]</span>
                     <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
-                    <span class="c1"># also objs may have channels</span>
-                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
-                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+                <span class="c1"># if not current.no_channels:</span>
+                <span class="c1">#     # also objs may have channels</span>
+                <span class="c1">#     cmdsets += yield _get_channel_cmdset(obj)</span>
+            <span class="c1"># if not current.no_channels:</span>
+            <span class="c1">#     cmdsets += yield _get_channel_cmdset(account)</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the object level</span>
@@ -489,9 +468,9 @@
                         <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                     <span class="p">]</span>
                 <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">local_obj_cmdsets</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
-                <span class="c1"># also objs may have channels</span>
-                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="c1"># if not current.no_channels:</span>
+            <span class="c1">#     # also objs may have channels</span>
+            <span class="c1">#     cmdsets += yield _get_channel_cmdset(obj)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;get_and_merge_cmdsets: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
 
@@ -813,18 +792,6 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39; Type &quot;help&quot; for help.&#39;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
-
-                <span class="c1"># Check if this is a Channel-cmd match.</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;is_channel&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">is_channel</span><span class="p">:</span>
-                    <span class="c1"># even if a user-defined syscmd is not defined, the</span>
-                    <span class="c1"># found cmd is already a system command in its own right.</span>
-                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_CHANNEL</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
-                        <span class="c1"># replace system command with custom version</span>
-                        <span class="n">cmd</span> <span class="o">=</span> <span class="n">syscmd</span>
-                    <span class="n">cmd</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
-                    <span class="n">sysarg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
 
             <span class="c1"># A normal command.</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>

@@ -158,8 +158,12 @@
             <span class="s2">&quot;settings.CYCLE_LOGFILES is unused and should be removed. &quot;</span>
             <span class="s2">&quot;Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE &quot;</span>
             <span class="s2">&quot;to control log cycling.&quot;</span>
-        <span class="p">)</span></div>
-
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_COMMAND_CLASS&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_HANDLER_CLASS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are &quot;</span>
+            <span class="s2">&quot;unused and should be removed. The ChannelHandler is no more; &quot;</span>
+            <span class="s2">&quot;channels are now handled by aliasing the default &#39;channel&#39; command.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="check_warnings"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_warnings">[docs]</a><span class="k">def</span> <span class="nf">check_warnings</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

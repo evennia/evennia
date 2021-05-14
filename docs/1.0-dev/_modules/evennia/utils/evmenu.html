@@ -1673,10 +1673,12 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">_CMD_NOMATCH</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;abort&#39;</span><span class="p">]</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^$&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span>
-
+    <span class="k">def</span> <span class="nf">_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">YesNoQuestionCmdSet</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CmdYesNoQuestion.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdYesNoQuestion.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This is called when user enters anything.&quot;&quot;&quot;</span>
@@ -1686,6 +1688,10 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">yes_no_question</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
                 <span class="n">yes_no_question</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span>
                 <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">yes_no_question</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+                <span class="k">return</span>
 
             <span class="n">inp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span>
 
@@ -1699,7 +1705,7 @@
 
             <span class="k">if</span> <span class="n">inp</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;abort&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">yes_no_question</span><span class="o">.</span><span class="n">allow_abort</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
@@ -1719,12 +1725,13 @@
                 <span class="k">return</span>
 
             <span class="c1"># cleanup</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="c1"># make sure to clean up cmdset if something goes wrong</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError in ask_yes_no. Choice not confirmed (report to admin)|n&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Error in ask_yes_no&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+            <span class="k">raise</span></div></div>
 
 
 <div class="viewcode-block" id="YesNoQuestionCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.YesNoQuestionCmdSet">[docs]</a><span class="k">class</span> <span class="nc">YesNoQuestionCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -1744,8 +1751,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdYesNoQuestion</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="ask_yes_no"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.ask_yes_no">[docs]</a><span class="k">def</span> <span class="nf">ask_yes_no</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">yes_action</span><span class="p">,</span> <span class="n">no_action</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">allow_abort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ask_yes_no"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.ask_yes_no">[docs]</a><span class="k">def</span> <span class="nf">ask_yes_no</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Yes or No </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span> <span class="n">yes_action</span><span class="o">=</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">no_action</span><span class="o">=</span><span class="s2">&quot;No&quot;</span><span class="p">,</span>
+               <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_abort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper question for asking a simple yes/no question. This will cause</span>
 <span class="sd">    the system to pause and wait for input from the player.</span>
@@ -1762,8 +1769,9 @@
 <span class="sd">            with `(caller, *args, **kwargs)` when the No-choice is made.</span>
 <span class="sd">            If a string, this string will be echoed back to the caller.</span>
 <span class="sd">        default (str optional): This is what the user will get if they just press the</span>
-<span class="sd">            return key without giving any input. One of &#39;N&#39;, &#39;Y&#39;, &#39;A&#39; or &#39;None&#39;</span>
-<span class="sd">            for no default.  If &#39;A&#39; is given, `allow_abort` is auto-set.</span>
+<span class="sd">            return key without giving any input. One of &#39;N&#39;, &#39;Y&#39;, &#39;A&#39; or `None`</span>
+<span class="sd">            for no default (an explicit choice must be given). If &#39;A&#39; (abort)</span>
+<span class="sd">            is given, `allow_abort` kwarg is ignored and assumed set.</span>
 <span class="sd">        allow_abort (bool, optional): If set, the &#39;A(bort)&#39; option is available</span>
 <span class="sd">            (a third option meaning neither yes or no but just exits the prompt).</span>
 <span class="sd">        session (Session, optional): This allows to specify the</span>
@@ -1771,10 +1779,11 @@
 <span class="sd">            is an Account in multisession modes greater than 2. The session is</span>
 <span class="sd">            then updated by the command and is available (for example in</span>
 <span class="sd">            callbacks) through `caller.ndb._yes_no_question.session`.</span>
-<span class="sd">        *args, **kwargs: These are passed into the callables.</span>
+<span class="sd">        *args: Additional arguments passed on into callables.</span>
+<span class="sd">        **kwargs: Additional keyword args passed on into callables.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        RuntimeError, FooError: If default and allow_abort clashes.</span>
+<span class="sd">        RuntimeError, FooError: If default and `allow_abort` clashes.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        ::</span>
@@ -1821,6 +1830,7 @@
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
 
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span> <span class="o">=</span> <span class="n">_Prompt</span><span class="p">()</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_yes_no_question</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>

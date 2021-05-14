@@ -151,11 +151,8 @@
     <span class="c1">#</span>
     <span class="c1">#</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;HelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 <div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

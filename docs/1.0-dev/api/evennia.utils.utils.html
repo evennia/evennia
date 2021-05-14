@@ -160,16 +160,18 @@ suffix, the suffix will be dropped.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.dedent">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dedent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">baseline_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dedent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dedent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dedent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">baseline_index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dedent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dedent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Safely clean all whitespace at the left of a paragraph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – The text to dedent.</p></li>
-<li><p><strong>baseline_index</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Which row to use as a ‘base’
+<li><p><strong>baseline_index</strong> (<em>int</em><em>, </em><em>optional</em>) – Which row to use as a ‘base’
 for the indentation. Lines will be dedented to this level but
 no further. If None, indent so as to completely deindent the
 least indented text.</p></li>
+<li><p><strong>indent</strong> (<em>int</em><em>, </em><em>optional</em>) – If given, force all lines to this indent.
+This bypasses <strong>baseline_index</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -678,7 +680,7 @@ shortcut to having to use the full backend name.</p>
 <dl class="py function">
 <dt id="evennia.utils.utils.delay">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">delay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timedelay</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#delay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.delay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delay the return of a value.</p>
+<dd><p>Delay the calling of a callback (function).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -690,26 +692,40 @@ after <strong>timedelay</strong> seconds.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>persistent</strong> (<em>bool</em>) – Make the delay persistent over a reboot or reload.</p></li>
-<li><p><strong>any</strong> – Any other keywords will be use as keyword arguments to callback.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Should make the delay persistent
+over a reboot or reload. Defaults to False.</p></li>
+<li><p><strong>any</strong> (<em>any</em>) – Will be used as keyword arguments to callback.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>deferred</em> – Will fire with callback after <strong>timedelay</strong> seconds. Note that
-if <strong>timedelay()</strong> is used in the
-commandhandler callback chain, the callback chain can be
-defined directly in the command body and don’t need to be
-specified here.</p>
+<dd class="field-odd"><p><p><em>deferred or int</em> –</p>
+<dl class="simple">
+<dt>If <strong>**persistent**</strong> kwarg is <strong>False</strong>, return deferred</dt><dd><p>that will fire with callback after <strong>timedelay</strong> seconds. Note that
+if <strong>timedelay()</strong> is used in the commandhandler callback chain, the
+callback chain can be defined directly in the command body and
+don’t need to be specified here. Reference twisted.internet.defer.Deferred.
+If persistent kwarg is set, return the task’s ID as an integer. This is
+intended for use with <strong>**evennia.scripts.taskhandler.TASK_HANDLER**</strong>
+<strong>.do_task</strong> and <strong>.remove</strong> methods.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The task handler (<strong>evennia.scripts.taskhandler.TASK_HANDLER</strong>) will
 be called for persistent or non-persistent tasks.
 If persistent is set to True, the callback, its arguments
-and other keyword arguments will be saved in the database,
+and other keyword arguments will be saved (serialized) in the database,
 assuming they can be.  The callback will be executed even after
 a server restart/reload, taking into account the specified delay
-(and server down time).</p>
+(and server down time).
+Keep in mind that persistent tasks arguments and callback should not
+use memory references.
+If persistent is set to True the delay function will return an int
+which is the task’s id itended for use with TASK_HANDLER’s do_task
+and remove methods.</p>
+<p>All task’s whose time delays have passed will be called on server startup.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -890,7 +906,7 @@ parsed and imported. Returns <strong>None</strong> and logs error if import fail
 already imported module object (e.g. <strong>models</strong>)</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>variables (dict)</em> –</p>
+<dd class="field-even"><p><p><em>dict</em> –</p>
 <dl class="simple">
 <dt>A dict of {variablename: variable} for all</dt><dd><p>variables in the given module.</p>
 </dd>
@@ -899,7 +915,8 @@ already imported module object (e.g. <strong>models</strong>)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Ignores modules and variable names starting with an underscore.</p>
+<p>Ignores modules and variable names starting with an underscore, as well
+as variables imported into the module from other modules.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1238,7 +1255,7 @@ boundary, so the result will be 0% or 100%, respectively.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.format_grid">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">' '</span></em>, <em class="sig-param"><span class="n">verbatim_elements</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'  '</span></em>, <em class="sig-param"><span class="n">verbatim_elements</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function makes a ‘grid’ output, where it distributes the given
 string-elements as evenly as possible to fill out the given width.
 will not work well if the variation of length is very big!</p>
@@ -1258,7 +1275,7 @@ decorations in the grid, such as horizontal bars.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>gridstr</em> – The grid as a list of ready-formatted rows. We return it
+<dd class="field-even"><p><em>list</em> – The grid as a list of ready-formatted rows. We return it
 like this to make it easier to insert decorations between rows, such
 as horizontal bars.</p>
 </dd>
