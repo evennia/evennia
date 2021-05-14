@@ -368,22 +368,22 @@ def create_message(
 
     Args:
         senderobj (Object, Account, Script, str or list): The entity (or
-        entities) sending the Msg. If a `str`, this is the id-string
+            entities) sending the Msg. If a `str`, this is the id-string
             for an external sender type.
         message (str): Text with the message. Eventual headers, titles
             etc should all be included in this text string. Formatting
             will be retained.
-        receivers (Object, Account or list): An Account/Object to send
-            to, or a list of them.
+        receivers (Object, Account, Script, str or list): An Account/Object to send
+            to, or a list of them. If a string, it's an identifier for an external
+            receiver.
         locks (str): Lock definition string.
         tags (list): A list of tags or tuples `(tag, category)`.
         header (str): Mime-type or other optional information for the message
 
     Notes:
-        The Comm system is created very open-ended, so it's fully possible
-        to let a message both go to several channels and to several
-        receivers at the same time, it's up to the command definitions to
-        limit this as desired.
+        The Comm system is created to be very open-ended, so it's fully
+        possible to let a message both go several receivers at the same time,
+        it's up to the command definitions to limit this as desired.
 
     """
     if 'channels' in kwargs:
