@@ -91,7 +91,6 @@
 - [Howto/Command Duration](Howto/Command-Duration)
 - [Howto/Command Prompt](Howto/Command-Prompt)
 - [Howto/Coordinates](Howto/Coordinates)
-- [Howto/Customize channels](Howto/Customize-channels)
 - [Howto/Default Exit Errors](Howto/Default-Exit-Errors)
 - [Howto/Evennia for Diku Users](Howto/Evennia-for-Diku-Users)
 - [Howto/Evennia for MUSH Users](Howto/Evennia-for-MUSH-Users)

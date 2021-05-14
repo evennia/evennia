@@ -170,7 +170,7 @@ The default `help` command has the following `locks` property:
     locks = "cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)"
 ```
 
-This is a regular [lockstring](Locks).
+This is a regular [lockstring](./Locks).
 
 - `cmd: pperm(channel_banned)` - The `cmd` locktype is the standard one used for all Commands.
   an accessing object failing this will not even know that the command exists. The `pperm()` lockfunc
@@ -335,7 +335,7 @@ see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
 - `channel_prefix_string` - this property is a string to easily change how
   the channel is prefixed. It takes the `channelname` format key. Default is `"[{channelname}] "`
   and produces output like `[public] ...``.
-- `subscriptions` - this is the [SubscriptionHandler](`api:evennia.comms.comms.SubscriptionHandler`), which
+- `subscriptions` - this is the [SubscriptionHandler](api:evennia.comms.comms#SubscriptionHandler), which
   has methods `has`, `add`, `remove`, `all`, `clear` and also `online` (to get
   only actually online channel-members).
 - `wholist`, `mutelist`, `banlist` are properties that return a list of subscribers,

@@ -1464,8 +1464,8 @@ class NickHandler(AttributeHandler):
                 shell patterns using the `fnmatch` library and can contain
                 `$N`-markers to indicate the locations of arguments to catch. If
                 `pattern_is_regex=True`, this must instead be a valid regular
-                expression and the `$N`-markers must be named `argN` matching
-                groups (see examples).
+                expression and the `$N`-markers must be named `argN` that matches
+                numbered regex groups (see examples).
             replacement (str): The string (or template) to replace `key` with
                 (the "nickname"). This may contain `$N` markers to indicate where to
                 place the argument-matches
@@ -1487,7 +1487,7 @@ class NickHandler(AttributeHandler):
 
         Example:
             - pattern (default shell syntax): `"gr $1 at $2"`
-            - pattern (with pattern_is_regex=True): `r"gr (?P<arg1>.+?) at (?P<arg2>.+?)"
+            - pattern (with pattern_is_regex=True): `r"gr (?P<arg1>.+?) at (?P<arg2>.+?)"`
             - replacement: `"emote With a flourish, $1 grins at $2."`
 
         """

@@ -51,6 +51,8 @@
 - New FileHelpStorage system allows adding help entries via external files.
 - In modules given by `settings.PROTOTYPE_MODULES`, spawner will now first look for a global
   list `PROTOTYPE_LIST` of dicts before loading all dicts in the module as prototypes.
+- New Channel-System using the `channel` command and nicks. Removed the `ChannelHandler` and the
+  concept of a dynamically created `ChannelCmdSet`.
 
 ### Evennia 0.9.5 (2019-2020)
 

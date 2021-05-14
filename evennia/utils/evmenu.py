@@ -1728,8 +1728,8 @@ def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_actio
             If a string, this string will be echoed back to the caller.
         default (str optional): This is what the user will get if they just press the
             return key without giving any input. One of 'N', 'Y', 'A' or `None`
-            for no default (an explicit choice must be given). If 'A' is given,
-            `allow_abort` kwarg is ignored and assumed set.
+            for no default (an explicit choice must be given). If 'A' (abort)
+            is given, `allow_abort` kwarg is ignored and assumed set.
         allow_abort (bool, optional): If set, the 'A(bort)' option is available
             (a third option meaning neither yes or no but just exits the prompt).
         session (Session, optional): This allows to specify the
@@ -1737,10 +1737,11 @@ def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_actio
             is an Account in multisession modes greater than 2. The session is
             then updated by the command and is available (for example in
             callbacks) through `caller.ndb._yes_no_question.session`.
-        *args, **kwargs: These are passed into the callables.
+        *args: Additional arguments passed on into callables.
+        **kwargs: Additional keyword args passed on into callables.
 
     Raises:
-        RuntimeError, FooError: If default and allow_abort clashes.
+        RuntimeError, FooError: If default and `allow_abort` clashes.
 
     Example:
         ::

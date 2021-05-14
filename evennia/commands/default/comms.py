@@ -74,7 +74,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
       channel/lock channelname = lockstring
       channel/unlock channelname = lockstring
       channel/ban channelname   (list bans)
-      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: logmessage]
+      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]
       channel/unban[/quiet] channelname[, channelname, ...] = subscribername
       channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
 
@@ -161,15 +161,17 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
            channel/unmute channelname
 
     Muting silences all output from the channel without actually
-    un-subscribing.  Other channel members will see you are muted in the /who
-    list.  Sending a message to the channel will automatically unmute you.
+    un-subscribing. Other channel members will see that you are muted in the /who
+    list. Sending a message to the channel will automatically unmute you.
 
     ## create and destroy
 
     Usage: channel/create channelname[;alias;alias[:typeclass]] [= description]
            channel/destroy channelname [= reason]
 
-    Creates a new channel (or destroys one you control).
+    Creates a new channel (or destroys one you control). You will automatically
+    join the channel you create and everyone will be kicked and loose all aliases
+    to a destroyed channel.
 
     ## lock and unlock
 
@@ -193,28 +195,25 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     ## boot and ban
 
-    Usage: channel/ban channelname    (list bans)
-           channel/ban channelname[, channelname, ...] = subscribername [: logmessage]
+    Usage:
+           channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
+           channel/ban channelname[, channelname, ...] = subscribername [: reason]
            channel/unban channelname[, channelname, ...] = subscribername
            channel/unban channelname
-           channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]
+           channel/ban channelname    (list bans)
 
-    Booting will kick a named subscriber from a channel temporarily. It will
-    also remove all their aliases. They are still able to re-connect unless
-    they are also banned. The 'reason' given will be echoed to the user and
-    channel.
+    Booting will kick a named subscriber from channel(s) temporarily. The
+    'reason' will be passed to the booted user. Unless the /quiet switch is
+    used, the channel will also be informed of the action. A booted user is
+    still able to re-connect, but they'll have to set up their aliases again.
 
-    Banning will block a given subscriber's ability to connect to a channel. It
-    will not automatically boot them. The 'logmessage' will be stored on the
-    channel and shown when you list your bans (so you can remember why they
-    were banned).
-
-    So to permanently get rid of a user, the way to do so is to first ban them
-    and then boot them.
+    Banning will blacklist a user from (re)joining the provided channels. It
+    will then proceed to boot them from those channels if they were connected.
+    The 'reason' and `/quiet` works the same as for booting.
 
     Example:
-        ban mychannel1,mychannel2 = EvilUser : Was banned for spamming.
-        boot mychannel1,mychannel2 = EvilUser : No more spamming!
+        boot mychannel1 = EvilUser : Kicking you to cool down a bit.
+        ban mychannel1,mychannel2= EvilUser : Was banned for spamming.
 
     """
     key = "channel"
