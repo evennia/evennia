@@ -82,6 +82,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span>
+            <span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Used to send a GA after a prompt line only, set in TTYPE (per client)</span>
         <span class="c1"># tell the client that we prefer to suppress GA ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
 

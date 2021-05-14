@@ -45,15 +45,11 @@ command line. The processing of a command works as follows:</p>
 <ol class="arabic">
 <li><p>The calling object (caller) is analyzed based on its callertype.</p></li>
 <li><p>Cmdsets are gathered from different sources:
-- channels:  all available channel names are auto-created into a cmdset, to allow</p>
+- object cmdsets: all objects at caller’s location are scanned for non-empty</p>
 <blockquote>
-<div><p>for giving the channel name and have the following immediately
-sent to the channel. The sending is performed by the CMD_CHANNEL
-system command.</p>
+<div><p>cmdsets. This includes cmdsets on exits.</p>
 </div></blockquote>
 <ul class="simple">
-<li><p>object cmdsets: all objects at caller’s location are scanned for non-empty
-cmdsets. This includes cmdsets on exits.</p></li>
 <li><p>caller: the caller is searched for its own currently active cmdset.</p></li>
 <li><p>account: lastly the cmdsets defined on caller.account are added.</p></li>
 </ul>
@@ -67,19 +63,10 @@ input string for possible command matches.</p></li>
 cmdset, or fallback to error message. Exit.</p></li>
 <li><p>If no match was found -&gt; check for CMD_NOMATCH in current cmdset or
 fallback to error message. Exit.</p></li>
-<li><p>A single match was found. If this is a channel-command (i.e. the
-ommand name is that of a channel), –&gt; check for CMD_CHANNEL in
-current cmdset or use channelhandler default. Exit.</p></li>
 <li><p>At this point we have found a normal command. We assign useful variables to it that
 will be available to the command coder at run-time.</p></li>
-</ol>
-<ol class="arabic simple" start="12">
-<li><p>We have a unique cmdobject, primed for use. Call all hooks:</p></li>
-</ol>
-<blockquote>
-<div><p><strong>at_pre_cmd()</strong>, <strong>cmdobj.parse()</strong>, <strong>cmdobj.func()</strong> and finally <strong>at_post_cmd()</strong>.</p>
-</div></blockquote>
-<ol class="arabic simple" start="13">
+<li><p>We have a unique cmdobject, primed for use. Call all hooks:
+<strong>at_pre_cmd()</strong>, <strong>cmdobj.parse()</strong>, <strong>cmdobj.func()</strong> and finally <strong>at_post_cmd()</strong>.</p></li>
 <li><p>Return deferred that will fire with the return from <strong>cmdobj.func()</strong> (unused by default).</p></li>
 </ol>
 <dl class="py function">

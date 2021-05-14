@@ -66,7 +66,6 @@ in mind for your own game, this will give you a good start.
 ## Howto's
 
 - [Giving Exits a default error](./Default-Exit-Errors)
-- [Customize Channel output](./Customize-channels)
 - [Add a command prompt](./Command-Prompt)
 - [Don't allow spamming commands](./Command-Cooldown)
 - [Commands that take time](./Command-Duration)

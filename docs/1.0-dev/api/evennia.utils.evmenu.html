@@ -920,7 +920,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['yes', 'n', 'y', 'a', 'no', '__nomatch_command', 'abort']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'a', 'no', 'n', 'y', 'abort', 'yes']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -946,7 +946,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'yes n y a no __nomatch_command abort', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command a no n y abort yes', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1001,7 +1001,7 @@ single question.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.evmenu.ask_yes_no">
-<code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">ask_yes_no</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">prompt</span></em>, <em class="sig-param"><span class="n">yes_action</span></em>, <em class="sig-param"><span class="n">no_action</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_abort</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#ask_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.ask_yes_no" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">ask_yes_no</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">prompt</span><span class="o">=</span><span class="default_value">'Yes or No {options}?'</span></em>, <em class="sig-param"><span class="n">yes_action</span><span class="o">=</span><span class="default_value">'Yes'</span></em>, <em class="sig-param"><span class="n">no_action</span><span class="o">=</span><span class="default_value">'No'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_abort</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#ask_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.ask_yes_no" title="Permalink to this definition">¶</a></dt>
 <dd><p>A helper question for asking a simple yes/no question. This will cause
 the system to pause and wait for input from the player.</p>
 <dl class="field-list simple">
@@ -1018,8 +1018,9 @@ If a string, this string will be echoed back to the caller.</p></li>
 with <strong>(caller, *args, **kwargs)</strong> when the No-choice is made.
 If a string, this string will be echoed back to the caller.</p></li>
 <li><p><strong>default</strong> (<em>str optional</em>) – This is what the user will get if they just press the
-return key without giving any input. One of ‘N’, ‘Y’, ‘A’ or ‘None’
-for no default.  If ‘A’ is given, <strong>allow_abort</strong> is auto-set.</p></li>
+return key without giving any input. One of ‘N’, ‘Y’, ‘A’ or <strong>None</strong>
+for no default (an explicit choice must be given). If ‘A’ (abort)
+is given, <strong>allow_abort</strong> kwarg is ignored and assumed set.</p></li>
 <li><p><strong>allow_abort</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the ‘A(bort)’ option is available
 (a third option meaning neither yes or no but just exits the prompt).</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – This allows to specify the
@@ -1027,13 +1028,12 @@ session to send the prompt to. It’s usually only needed if <strong>caller</str
 is an Account in multisession modes greater than 2. The session is
 then updated by the command and is available (for example in
 callbacks) through <strong>caller.ndb._yes_no_question.session</strong>.</p></li>
-<li><p><strong>*args</strong> – These are passed into the callables.</p></li>
-<li><p><strong>**kwargs</strong> – <p>These are passed into the callables.</p>
-</p></li>
+<li><p><strong>*args</strong> – Additional arguments passed on into callables.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword args passed on into callables.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong><strong>, </strong><strong>FooError</strong> – If default and allow_abort clashes.</p>
+<dd class="field-even"><p><strong>RuntimeError</strong><strong>, </strong><strong>FooError</strong> – If default and <strong>allow_abort</strong> clashes.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>

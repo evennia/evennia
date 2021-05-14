@@ -112,11 +112,11 @@
 
         <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You start moving </span><span class="si">%s</span><span class="s2"> at a </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">move_speed</span><span class="p">))</span>
         <span class="c1"># create a delayed movement</span>
-        <span class="n">deferred</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">move_delay</span><span class="p">,</span> <span class="n">move_callback</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">move_delay</span><span class="p">,</span> <span class="n">move_callback</span><span class="p">)</span>
         <span class="c1"># we store the deferred on the character, this will allow us</span>
         <span class="c1"># to abort the movement. We must use an ndb here since</span>
         <span class="c1"># deferreds cannot be pickled.</span>
-        <span class="n">traversing_object</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">currently_moving</span> <span class="o">=</span> <span class="n">deferred</span></div></div>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">currently_moving</span> <span class="o">=</span> <span class="n">t</span></div></div>
 
 
 <span class="c1">#</span>

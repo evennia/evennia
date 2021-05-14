@@ -74,7 +74,6 @@
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_to_object</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_channelhandler</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <span class="c1"># limit symbol import from API</span>
@@ -403,22 +402,21 @@
 
 
 <div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
-    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>
+    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new communication Msg. Msgs represent a unit of</span>
 <span class="sd">    database-persistent communication between entites.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        senderobj (Object or Account): The entity sending the Msg.</span>
+<span class="sd">        senderobj (Object, Account, Script, str or list): The entity (or</span>
+<span class="sd">        entities) sending the Msg. If a `str`, this is the id-string</span>
+<span class="sd">            for an external sender type.</span>
 <span class="sd">        message (str): Text with the message. Eventual headers, titles</span>
 <span class="sd">            etc should all be included in this text string. Formatting</span>
 <span class="sd">            will be retained.</span>
-<span class="sd">        channels (Channel, key or list): A channel or a list of channels to</span>
-<span class="sd">            send to. The channels may be actual channel objects or their</span>
-<span class="sd">            unique key strings.</span>
-<span class="sd">        receivers (Object, Account, str or list): An Account/Object to send</span>
-<span class="sd">            to, or a list of them. May be Account objects or accountnames.</span>
+<span class="sd">        receivers (Object, Account or list): An Account/Object to send</span>
+<span class="sd">            to, or a list of them.</span>
 <span class="sd">        locks (str): Lock definition string.</span>
 <span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
 <span class="sd">        header (str): Mime-type or other optional information for the message</span>
@@ -430,6 +428,12 @@
 <span class="sd">        limit this as desired.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;channels&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;create_message() does not accept &#39;channel&#39; kwarg anymore &quot;</span>
+            <span class="s2">&quot;- channels no longer accept Msg objects.&quot;</span>
+        <span class="p">)</span>
+
     <span class="k">global</span> <span class="n">_Msg</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_Msg</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span> <span class="k">as</span> <span class="n">_Msg</span>
@@ -441,8 +445,6 @@
     <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senderobj</span><span class="p">):</span>
         <span class="n">new_message</span><span class="o">.</span><span class="n">senders</span> <span class="o">=</span> <span class="n">sender</span>
     <span class="n">new_message</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
-    <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
-        <span class="n">new_message</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channel</span>
     <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
         <span class="n">new_message</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receiver</span>
     <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>

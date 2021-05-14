@@ -141,7 +141,7 @@
         <span class="s2">&quot;You work and work but you are not happy with the result. You need to start over.&quot;</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Making a sword blade takes skill. Here we emulate this by introducing a</span>
 <span class="sd">        random chance of failure (in a real game this could be a skill check</span>
@@ -168,7 +168,7 @@
         <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.8</span><span class="p">:</span>
             <span class="c1"># 80% chance of success. This will spawn the sword and show</span>
             <span class="c1"># success-message.</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_craft</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># fail and show failed message</span>
             <span class="k">return</span> <span class="kc">None</span>

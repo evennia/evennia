@@ -987,7 +987,8 @@ permission lock will be checked before returning each
 looked-after Attribute.</p></li>
 <li><p><strong>default_access</strong> (<em>bool</em><em>, </em><em>optional</em>) – If no <strong>attrread</strong> lock is set on
 object, this determines if the lock should then be passed or not.</p></li>
-<li><p><strong>return_list</strong> (<em>bool</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>return_list</strong> (<em>bool</em><em>, </em><em>optional</em>) – Always return a list, also if there is only
+one or zero matches found.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1187,20 +1188,31 @@ Attributes has no lock of type <strong>attrread</strong> defined on them.</p></l
 
 <dl class="py function">
 <dt id="evennia.typeclasses.attributes.initialize_nick_templates">
-<code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">initialize_nick_templates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_template</span></em>, <em class="sig-param"><span class="n">out_template</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#initialize_nick_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.initialize_nick_templates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">initialize_nick_templates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span></em>, <em class="sig-param"><span class="n">replacement</span></em>, <em class="sig-param"><span class="n">pattern_is_regex</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#initialize_nick_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.initialize_nick_templates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the nick templates for matching and remapping a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>in_template</strong> (<em>str</em>) – The template to be used for nick recognition.</p></li>
-<li><p><strong>out_template</strong> (<em>str</em>) – The template to be used to replace the string
-matched by the in_template.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) – The pattern to be used for nick recognition. This will
+be parsed for shell patterns into a regex, unless <strong>pattern_is_regex</strong>
+is <strong>True</strong>, in which case it must be an already valid regex string. In
+this case, instead of <strong>$N</strong>, numbered arguments must instead be given
+as matching groups named as <strong>argN</strong>, such as <strong>(?P&lt;arg1&gt;.+?)</strong>.</p></li>
+<li><p><strong>replacement</strong> (<em>str</em>) – The template to be used to replace the string
+matched by the pattern. This can contain <strong>$N</strong> markers and is never
+parsed into a regex.</p></li>
+<li><p><strong>pattern_is_regex</strong> (<em>bool</em>) – If set, <strong>pattern</strong> is a full regex string
+instead of containing shell patterns.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>regex  (regex)</em> – Regex to match against strings
-template (str): Template with markers <strong>**{arg1}, {arg2}**</strong>, etc for
-replacement using the standard .format method.</p>
+<dd class="field-even"><p><p><em>regex, template  (str)</em> –</p>
+<dl class="simple">
+<dt>Regex to match against strings and template</dt><dd><p>with markers <strong>**{arg1}, {arg2}**</strong>, etc for replacement using the standard
+<strong>.format</strong> method.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1209,6 +1221,12 @@ replacement using the standard .format method.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li><p><strong>pattern</strong> (shell syntax): <strong>“grin $1”</strong></p></li>
+<li><p><strong>pattern</strong> (regex): <strong>“grin (?P&lt;arg1.+?&gt;)”</strong></p></li>
+<li><p><strong>replacement</strong>: <strong>“emote gives a wicked grin to $1”</strong></p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
@@ -1218,12 +1236,14 @@ replacement using the standard .format method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>string</strong> (<em>str</em>) – The input string to processj</p></li>
+<li><p><strong>string</strong> (<em>str</em>) – The input string to process</p></li>
 <li><p><strong>template_regex</strong> (<em>regex</em>) – A template regex created with
 initialize_nick_template.</p></li>
 <li><p><strong>outtemplate</strong> (<em>str</em>) – The template to which to map the matches
 produced by the template_regex. This should have $1, $2,
-etc to match the regex.</p></li>
+etc to match the template-regex. Un-found $N-markers (possible if
+the regex has optional matching groups) are replaced with empty
+strings.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1292,25 +1312,51 @@ a string.</p></li>
 <li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These are passed on to <strong>AttributeHandler.get</strong>.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str or tuple</em> – The nick replacement string or nick tuple.</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.NickHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">replacement</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'inputline'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NickHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NickHandler.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new nick.</p>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span></em>, <em class="sig-param"><span class="n">replacement</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'inputline'</span></em>, <em class="sig-param"><span class="n">pattern_is_regex</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NickHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NickHandler.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new nick, a mapping pattern -&gt; replacement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – A key (or template) for the nick to match for.</p></li>
-<li><p><strong>replacement</strong> (<em>str</em>) – The string (or template) to replace <strong>key</strong> with (the “nickname”).</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) – A pattern to match for. This will be parsed for
+shell patterns using the <strong>fnmatch</strong> library and can contain
+<strong>$N</strong>-markers to indicate the locations of arguments to catch. If
+<strong>pattern_is_regex=True</strong>, this must instead be a valid regular
+expression and the <strong>$N</strong>-markers must be named <strong>argN</strong> that matches
+numbered regex groups (see examples).</p></li>
+<li><p><strong>replacement</strong> (<em>str</em>) – The string (or template) to replace <strong>key</strong> with
+(the “nickname”). This may contain <strong>$N</strong> markers to indicate where to
+place the argument-matches</p></li>
 <li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – the category within which to
 retrieve the nick. The “inputline” means replacing data
 sent by the user.</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These are passed on to <strong>AttributeHandler.get</strong>.</p></li>
+<li><p><strong>pattern_is_regex</strong> (<em>bool</em>) – If <strong>True</strong>, the <strong>pattern</strong> will be parsed as a
+raw regex string. Instead of using <strong>$N</strong> markers in this string, one
+then must mark numbered arguments as a named regex-groupd named <strong>argN</strong>.
+For example, <strong>(?P&lt;arg1&gt;.+?)</strong> will match the behavior of using <strong>$1</strong>
+in the shell pattern.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These are passed on to <strong>AttributeHandler.get</strong>.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>For most cases, the shell-pattern is much shorter and easier. The
+regex pattern form can be useful for more complex matchings though,
+for example in order to add optional arguments, such as with
+<strong>(?P&lt;argN&gt;.*?)</strong>.</p>
+<p class="rubric">Example</p>
+<ul class="simple">
+<li><p>pattern (default shell syntax): <strong>“gr $1 at $2”</strong></p></li>
+<li><p>pattern (with pattern_is_regex=True): <strong>r”gr (?P&lt;arg1&gt;.+?) at (?P&lt;arg2&gt;.+?)”</strong></p></li>
+<li><p>replacement: <strong>“emote With a flourish, $1 grins at $2.”</strong></p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">

@@ -934,7 +934,7 @@
         <span class="c1"># Before the move, call eventual pre-commands.</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_before_move()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
@@ -946,7 +946,7 @@
         <span class="c1"># Call hook on source location</span>
         <span class="k">if</span> <span class="n">move_hooks</span> <span class="ow">and</span> <span class="n">source_location</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">source_location</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+                <span class="n">source_location</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_leave()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -978,7 +978,7 @@
             <span class="c1"># Perform eventual extra commands on the receiving location</span>
             <span class="c1"># (the object has already arrived at this point)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
+                <span class="n">destination</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_receive()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -987,7 +987,7 @@
         <span class="c1"># (usually calling &#39;look&#39;)</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_after_move&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>

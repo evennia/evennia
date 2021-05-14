@@ -147,7 +147,7 @@ one of the arguments must be given to do a search.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sender</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – Get messages sent by a particular account or object</p></li>
+<li><p><strong>sender</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Script</em><em>, </em><em>optional</em>) – Get messages sent by a particular sender.</p></li>
 <li><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Channel</em><em>, </em><em>optional</em>) – Get messages
 received by a certain account,object or channel</p></li>
 <li><p><strong>freetext</strong> (<em>str</em>) – Search for a text string in a message.  NOTE:
@@ -159,7 +159,7 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list or Msg)</em> – A list of message matches or a single match if <strong>dbref</strong> was given.</p>
+<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
 </dd>
 </dl>
 </dd></dl>

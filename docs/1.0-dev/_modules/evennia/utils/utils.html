@@ -210,16 +210,18 @@
         <span class="k">return</span> <span class="n">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dedent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.dedent">[docs]</a><span class="k">def</span> <span class="nf">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">baseline_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dedent"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.dedent">[docs]</a><span class="k">def</span> <span class="nf">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">baseline_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safely clean all whitespace at the left of a paragraph.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        text (str): The text to dedent.</span>
-<span class="sd">        baseline_index (int or None, optional): Which row to use as a &#39;base&#39;</span>
+<span class="sd">        baseline_index (int, optional): Which row to use as a &#39;base&#39;</span>
 <span class="sd">            for the indentation. Lines will be dedented to this level but</span>
 <span class="sd">            no further. If None, indent so as to completely deindent the</span>
 <span class="sd">            least indented text.</span>
+<span class="sd">        indent (int, optional): If given, force all lines to this indent.</span>
+<span class="sd">            This bypasses `baseline_index`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        text (str): Dedented string.</span>
@@ -232,7 +234,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">baseline_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">indent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
+        <span class="n">indline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">ind</span>
+        <span class="k">return</span> <span class="n">ind</span> <span class="o">+</span> <span class="n">indline</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">baseline_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1068,7 +1075,7 @@
 
 <div class="viewcode-block" id="delay"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.delay">[docs]</a><span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Delay the return of a value.</span>
+<span class="sd">    Delay the calling of a callback (function).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        timedelay (int or float): The delay in seconds</span>
@@ -1076,24 +1083,35 @@
 <span class="sd">            after `timedelay` seconds.</span>
 <span class="sd">        *args: Will be used as arguments to callback</span>
 <span class="sd">    Keyword Args:</span>
-<span class="sd">        persistent (bool): Make the delay persistent over a reboot or reload.</span>
-<span class="sd">        any: Any other keywords will be use as keyword arguments to callback.</span>
+<span class="sd">        persistent (bool, optional): Should make the delay persistent</span>
+<span class="sd">            over a reboot or reload. Defaults to False.</span>
+<span class="sd">        any (any): Will be used as keyword arguments to callback.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        deferred: Will fire with callback after `timedelay` seconds. Note that</span>
-<span class="sd">        if `timedelay()` is used in the</span>
-<span class="sd">        commandhandler callback chain, the callback chain can be</span>
-<span class="sd">        defined directly in the command body and don&#39;t need to be</span>
-<span class="sd">        specified here.</span>
+<span class="sd">        deferred or int: If ``persistent`` kwarg is `False`, return deferred</span>
+<span class="sd">            that will fire with callback after `timedelay` seconds. Note that</span>
+<span class="sd">            if `timedelay()` is used in the commandhandler callback chain, the</span>
+<span class="sd">            callback chain can be defined directly in the command body and</span>
+<span class="sd">            don&#39;t need to be specified here. Reference twisted.internet.defer.Deferred.</span>
+<span class="sd">            If persistent kwarg is set, return the task&#39;s ID as an integer. This is</span>
+<span class="sd">            intended for use with ``evennia.scripts.taskhandler.TASK_HANDLER``</span>
+<span class="sd">            `.do_task` and `.remove` methods.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will</span>
 <span class="sd">        be called for persistent or non-persistent tasks.</span>
 <span class="sd">        If persistent is set to True, the callback, its arguments</span>
-<span class="sd">        and other keyword arguments will be saved in the database,</span>
+<span class="sd">        and other keyword arguments will be saved (serialized) in the database,</span>
 <span class="sd">        assuming they can be.  The callback will be executed even after</span>
 <span class="sd">        a server restart/reload, taking into account the specified delay</span>
 <span class="sd">        (and server down time).</span>
+<span class="sd">        Keep in mind that persistent tasks arguments and callback should not</span>
+<span class="sd">        use memory references.</span>
+<span class="sd">        If persistent is set to True the delay function will return an int</span>
+<span class="sd">        which is the task&#39;s id itended for use with TASK_HANDLER&#39;s do_task</span>
+<span class="sd">        and remove methods.</span>
+
+<span class="sd">        All task&#39;s whose time delays have passed will be called on server startup.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_TASK_HANDLER</span>
@@ -1370,18 +1388,19 @@
 <span class="sd">            already imported module object (e.g. `models`)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        variables (dict): A dict of {variablename: variable} for all</span>
+<span class="sd">        dict: A dict of {variablename: variable} for all</span>
 <span class="sd">            variables in the given module.</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        Ignores modules and variable names starting with an underscore.</span>
+<span class="sd">        Ignores modules and variable names starting with an underscore, as well</span>
+<span class="sd">        as variables imported into the module from other modules.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mod</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mod</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="c1"># make sure to only return variables actually defined in this</span>
-    <span class="c1"># module if available (try to avoid not imports)</span>
+    <span class="c1"># module if available (try to avoid imports)</span>
     <span class="n">members</span> <span class="o">=</span> <span class="n">getmembers</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="k">lambda</span> <span class="n">obj</span><span class="p">:</span> <span class="n">getmodule</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span></div>
 
@@ -1869,7 +1888,7 @@
     <span class="k">return</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span></div>
 
 
-<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function makes a &#39;grid&#39; output, where it distributes the given</span>
 <span class="sd">    string-elements as evenly as possible to fill out the given width.</span>
@@ -1888,84 +1907,118 @@
 <span class="sd">            decorations in the grid, such as horizontal bars.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        gridstr: The grid as a list of ready-formatted rows. We return it</span>
+<span class="sd">        list: The grid as a list of ready-formatted rows. We return it</span>
 <span class="sd">        like this to make it easier to insert decorations between rows, such</span>
 <span class="sd">        as horizontal bars.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_minimal_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Minimalistic distribution with minimal spacing, good for single-line</span>
+<span class="sd">        grids but will look messy over many lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+            <span class="n">rowlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">elen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rowlen</span> <span class="o">+</span> <span class="n">elen</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+                <span class="n">rows</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">element</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rows</span>
+
+    <span class="k">def</span> <span class="nf">_weighted_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dynamic-space, good for making even columns in a multi-line grid but</span>
+<span class="sd">        will look strange for a single line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">wls</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
+        <span class="n">wls_percentile</span> <span class="o">=</span> <span class="p">[</span><span class="n">wl</span> <span class="k">for</span> <span class="n">iw</span><span class="p">,</span> <span class="n">wl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wls</span><span class="p">)</span> <span class="k">if</span> <span class="n">iw</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">verbatim_elements</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">wls_percentile</span><span class="p">:</span>
+            <span class="c1"># get the nth percentile as a good representation of average width</span>
+            <span class="n">averlen</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">percentile</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">wls_percentile</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">))</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># include extra space</span>
+            <span class="n">aver_per_row</span> <span class="o">=</span> <span class="n">width</span> <span class="o">//</span> <span class="n">averlen</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># no adjustable rows, just keep all as-is</span>
+            <span class="n">aver_per_row</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">aver_per_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># one line per row, output directly since this is trivial</span>
+            <span class="c1"># we use rstrip here to remove extra spaces added by sep</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()))</span>
+                <span class="k">for</span> <span class="n">iel</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">averlen</span> <span class="o">*</span> <span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ie</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+
+            <span class="n">wl</span> <span class="o">=</span> <span class="n">wls</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span>
+            <span class="n">lrow</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">debug</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lrow</span> <span class="o">+</span> <span class="n">wl</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
+                <span class="c1"># this slot extends outside grid, move to next line</span>
+                <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">wl</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
+                    <span class="c1"># remove sep if this fills the entire line</span>
+                    <span class="n">element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+                <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">ic</span> <span class="o">&gt;=</span> <span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># no more slots available on this line</span>
+                <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">))</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+                <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="n">lrow</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]):</span>
+                        <span class="c1"># slot too wide, extend into adjacent slot</span>
+                        <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="c1"># we extended past edge of grid, crop or move to next line</span>
+                    <span class="k">if</span> <span class="n">ic</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
+                    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                    <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># add a new slot</span>
+                    <span class="n">row</span> <span class="o">+=</span> <span class="n">element</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">averlen</span> <span class="o">-</span> <span class="n">wl</span><span class="p">)</span>
+                    <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">ie</span> <span class="o">&gt;=</span> <span class="n">nelements</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># last element, make sure to store</span>
+                <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rows</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">elements</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">verbatim_elements</span><span class="p">:</span>
         <span class="n">verbatim_elements</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">nelements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
     <span class="c1"># add sep to all but the very last element</span>
     <span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">elements</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span> <span class="o">+</span> <span class="n">sep</span> <span class="k">for</span> <span class="n">ie</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nelements</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">elements</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">wls</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
-    <span class="n">wls_percentile</span> <span class="o">=</span> <span class="p">[</span><span class="n">wl</span> <span class="k">for</span> <span class="n">iw</span><span class="p">,</span> <span class="n">wl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wls</span><span class="p">)</span> <span class="k">if</span> <span class="n">iw</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">verbatim_elements</span><span class="p">]</span>
-    <span class="c1"># from pudb import debugger</span>
-    <span class="c1"># debugger.Debugger().set_trace()</span>
 
-    <span class="c1"># get the nth percentile as a good representation of average width</span>
-    <span class="n">averlen</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">percentile</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">wls_percentile</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">))</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># include extra space</span>
-    <span class="n">aver_per_row</span> <span class="o">=</span> <span class="n">width</span> <span class="o">//</span> <span class="n">averlen</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+        <span class="c1"># grid fits in one line</span>
+        <span class="k">return</span> <span class="n">_minimal_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># full multi-line grid</span>
+        <span class="k">return</span> <span class="n">_weighted_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span></div>
 
-    <span class="k">if</span> <span class="n">aver_per_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># one line per row, output directly since this is trivial</span>
-        <span class="c1"># we use rstrip here to remove extra spaces added by sep</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()))</span>
-            <span class="k">for</span> <span class="n">iel</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
-        <span class="p">]</span>
 
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">averlen</span> <span class="o">*</span> <span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
-
-    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">row</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">ie</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
-
-        <span class="n">wl</span> <span class="o">=</span> <span class="n">wls</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span>
-        <span class="n">lrow</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-        <span class="n">debug</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">lrow</span> <span class="o">+</span> <span class="n">wl</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
-            <span class="c1"># this slot extends outside grid, move to next line</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">wl</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
-                <span class="c1"># remove sep if this fills the entire line</span>
-                <span class="n">element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-            <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">ic</span> <span class="o">&gt;=</span> <span class="n">aver_per_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># no more slots available on this line</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">))</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-            <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">while</span> <span class="n">lrow</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]):</span>
-                    <span class="c1"># slot too wide, extend into adjacent slot</span>
-                    <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="c1"># we extended past edge of grid, crop or move to next line</span>
-                <span class="k">if</span> <span class="n">ic</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">row</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="n">lrow</span><span class="p">)</span>
-                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-                <span class="n">ic</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># add a new slot</span>
-                <span class="n">row</span> <span class="o">+=</span> <span class="n">element</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">averlen</span> <span class="o">-</span> <span class="n">wl</span><span class="p">)</span>
-                <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="k">if</span> <span class="n">ie</span> <span class="o">&gt;=</span> <span class="n">nelements</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># last element, make sure to store</span>
-            <span class="n">row</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">rows</span></div>
 
 
 <div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>
