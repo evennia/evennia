@@ -12,6 +12,7 @@ from evennia.comms.models import Msg
 from evennia.accounts.models import AccountDB
 from evennia.accounts import bots
 from evennia.locks.lockhandler import LockException
+from evennia.comms.comms import DefaultChannel
 from evennia.utils import create, logger, utils
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
@@ -229,17 +230,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     # disable this in child command classes if wanting on-character channels
     account_caller = True
 
-    # note - changing this will invalidate existing aliases in db
-    # channel_msg_nick_alias = r"{alias}\s*?(?P<arg1>.+?){{0,1}}"
-    channel_msg_nick_alias = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
-    channel_msg_nick_replacement = "channel {channelname} = $1"
-
-    # to make it easier to override help functionality, we add the ability to
-    # tweak access to different sub-functionality. Note that the system will
-    # still check control lock etc even if you can use this functionality.
-    # changing these does not change access to this command itself (that's the
-    # locks property)
-
     def search_channel(self, channelname, exact=False, handle_errors=True):
         """
         Helper function for searching for a single channel with some error
@@ -323,9 +313,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         caller = self.caller
-
-        log_file = channel.attributes.get(
-            "log_file", default=channel.log_to_file.format(channel_key=channel.key))
+        log_file = channel.get_log_filename()
 
         def send_msg(lines):
             return self.msg(
@@ -351,11 +339,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if channel.has_connection(caller):
             return False, f"Already listening to channel {channel.key}."
-        result = channel.connect(caller)
 
-        key_and_aliases = [channel.key.lower()] + [alias.lower() for alias in channel.aliases.all()]
-        for key_or_alias in key_and_aliases:
-            self.add_alias(channel, key_or_alias)
+        # this sets up aliases in post_join_channel by default
+        result = channel.connect(caller)
 
         return result, "" if result else f"Were not allowed to subscribe to channel {channel.key}"
 
@@ -377,14 +363,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if not channel.has_connection(caller):
             return False, f"Not listening to channel {channel.key}."
-        # clear aliases
-        for key_or_alias in self.get_channel_aliases(channel):
-            self.remove_alias(key_or_alias, **kwargs)
-        # remove the channel-name alias too
-        msg_alias = self.channel_msg_nick_alias.format(alias=channel.key.lower())
-        caller.nicks.remove(msg_alias, category="inputline", **kwargs)
 
+        # this will also clean aliases
         result = channel.disconnect(caller)
+
         return result, "" if result else f"Could not unsubscribe from channel {channel.key}"
 
     def add_alias(self, channel, alias, **kwargs):
@@ -401,7 +383,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             we need to be able to reference this channel easily. The other
             is a templated nick to easily be able to send messages to the
             channel without needing to give the full `channel` command. The
-            structure of this nick is given by `self.channel_msg_nick_alias`
+            structure of this nick is given by `self.channel_msg_pattern`
             and `self.channel_msg_nick_replacement`. By default it maps
             `alias <msg> -> channel <channelname> = <msg>`, so that you can
             for example just write `pub Hello` to send a message.
@@ -410,16 +392,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             for sending to channel using the main channel command.
 
         """
-        chan_key = channel.key.lower()
-        # the message-pattern allows us to type the channel on its own without
-        # needing to use the `channel` command explicitly.
-        msg_pattern = self.channel_msg_nick_alias.format(alias=alias)
-        msg_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
-
-        if chan_key != alias:
-            self.caller.nicks.add(alias, chan_key, category="channel", **kwargs)
-        self.caller.nicks.add(msg_pattern, msg_replacement, category="inputline",
-                              pattern_is_regex=True, **kwargs)
+        channel.add_user_channel_alias(self.caller, alias, **kwargs)
 
     def remove_alias(self, alias, **kwargs):
         """
@@ -440,13 +413,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             nick used for easily sending messages to the channel.
 
         """
-        caller = self.caller
-        if caller.nicks.get(alias, category="channel", **kwargs):
-            caller.nicks.remove(alias, category="chan nel", **kwargs)
-            msg_alias = self.channel_msg_nick_alias.format(alias=alias)
-            caller.nicks.remove(msg_alias, category="inputline", **kwargs)
+        if self.caller.nicks.has(alias, category="channel", **kwargs):
+            DefaultChannel.remove_user_channel_alias(self.caller, alias)
             return True, ""
-
         return False, "No such alias was defined."
 
     def get_channel_aliases(self, channel):
@@ -462,7 +431,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         chan_key = channel.key.lower()
-        nicktuples = self.caller.nicks.get(category="channel", return_tuple=True)
+        nicktuples = self.caller.nicks.get(category="channel", return_tuple=True, return_list=True)
         if nicktuples:
             return [tup[2] for tup in nicktuples if tup[3].lower() == chan_key]
         return []
@@ -915,6 +884,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # first 'channel name' is in fact 'channelname text'
             no_rhs_channel_name = self.args.split(" ", 1)[0]
             possible_lhs_message = self.args[len(no_rhs_channel_name):]
+            if possible_lhs_message.strip() == '=':
+                possible_lhs_message = ""
             channel_names.append(no_rhs_channel_name)
 
 
@@ -952,13 +923,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 subscribed, available = self.list_channels()
                 if channel in subscribed:
                     table = self.display_subbed_channels([channel])
-                    inputname = self.raw_cmdname
-                    if inputname.lower() != channel.key.lower():
-                        header = f"Channel |w{inputname}|n (alias for {channel.key} channel)"
-                    else:
-                        header = f"Channel |w{channel.key}|n"
-                    self.msg(f"{header}\n(use |w{inputname} <msg>|n to chat and "
-                             f"the 'channel' command to customize)\n{table}")
+                    header = f"Channel |w{channel.key}|n"
+                    self.msg(f"{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) "
+                             f"to chat and the 'channel' command "
+                             f"to customize)\n{table}")
                 elif channel in available:
                     table = self.display_all_channels([], [channel])
                     self.msg(
@@ -1055,7 +1023,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             ask_yes_no(
                 caller,
                 prompt=f"Are you sure you want to delete channel '{channel.key}' "
-                "(make sure name is correct!)? This will disconnect and "
+                "(make sure name is correct!)?\nThis will disconnect and "
                 "remove all users' aliases. {options}?",
                 yes_action=_perform_delete,
                 no_action="Aborted.",

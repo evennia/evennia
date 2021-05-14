@@ -315,6 +315,12 @@ gets its data from. A channel's log will rotate when it grows too big, which
 thus also automatically limits the max amount of history a user can view with
 `/history`.
 
+The log file name is set on the channel class as the `log_file` property. This
+is a string that takes the formatting token `{channelname}` to be replaced with
+the (lower-case) name of the channel. By default the log is written to in the
+channel's `at_post_channel_msg` method.
+
+
 ### Properties on Channels
 
 Channels have all the standard properties of a Typeclassed entity (`key`,
@@ -323,16 +329,24 @@ see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
 
 - `send_to_online_only` - this class boolean defaults to `True` and is a
   sensible optimization since people offline people will not see the message anyway.
-- `log_to_file` - this is a string that determines the name of the channel log file. Default
-  is `"channel_{channel_key}.log"`. You should usually not change this.
+- `log_file` - this is a string that determines the name of the channel log file. Default
+  is `"channel_{channelname}.log"`. The log file will appear in `settings.LOG_DIR` (usually
+  `mygame/server/logs/`). You should usually not change this.
 - `channel_prefix_string` - this property is a string to easily change how
-  the channel is prefixed. It takes the `channel_key` format key. Default is `"[{channel_key}] "`
+  the channel is prefixed. It takes the `channelname` format key. Default is `"[{channelname}] "`
   and produces output like `[public] ...``.
 - `subscriptions` - this is the [SubscriptionHandler](`api:evennia.comms.comms.SubscriptionHandler`), which
   has methods `has`, `add`, `remove`, `all`, `clear` and also `online` (to get
   only actually online channel-members).
 - `wholist`, `mutelist`, `banlist` are properties that return a list of subscribers,
   as well as who are currently muted or banned.
+- `channel_msg_nick_pattern` - this is a regex pattern for performing the in-place nick
+  replacement (detect that `channelalias <msg` means that you want to send a message to a channel).
+  This pattern accepts an `{alias}` formatting marker. Don't mess with this unless you really
+  want to change how channels work.
+- `channel_msg_nick_replacement` - this is a string on the [nick replacement
+- form](Nicks). It accepts the `{channelname}` formatting tag. This is strongly tied to the
+  `channel` command and is by default `channel {channelname} = $1`.
 
 Notable `Channel` hooks:
 
@@ -347,12 +361,19 @@ Notable `Channel` hooks:
   also just remove that call.
 - every channel message. By default it just returns `channel_prefix_string`.
 - `has_connection(subscriber)` - shortcut to check if an entity subscribes to
-  this channel
+  this channel.
 - `mute/unmute(subscriber)` - this mutes the channel for this user.
 - `ban/unban(subscriber)` - adds/remove user from banlist.
 - `connect/disconnect(subscriber)` - adds/removes a subscriber.
+- `add_user_channel_alias(user, alias, **kwargs)` - sets up a user-nick for this channel. This is
+  what maps e.g. `alias <msg>` to `channel channelname = <msg>`.
+- `remove_user_channel_alias(user, alias, **kwargs)` - remove an alias. Note that this is
+  a class-method that will happily remove found channel-aliases from the user linked to _any_
+  channel, not only from the channel the method is called on.
 - `pre_join_channel(subscriber)` - if this returns `False`, connection will be refused.
-- `post_join_channel(subscriber)` - unused by default.
+- `post_join_channel(subscriber)` - by default this sets up a users's channel-nicks/aliases.
 - `pre_leave_channel(subscriber)` - if this returns `False`, the user is not allowed to leave.
-- `post_leave_channel(subscriber)` - unused by default.
+- `post_leave_channel(subscriber)` - this will clean up any channel aliases/nicks of the user.
+- `delete` the standard typeclass-delete mechanism will also automatically un-subscribe all
+  subscribers (and thus wipe all their aliases).
 

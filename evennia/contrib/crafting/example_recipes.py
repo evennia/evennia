@@ -99,7 +99,7 @@ class _SwordSmithingBaseRecipe(CraftingRecipe):
         "You work and work but you are not happy with the result. You need to start over."
     )
 
-    def do_craft(self, **kwargs):
+    def craft(self, **kwargs):
         """
         Making a sword blade takes skill. Here we emulate this by introducing a
         random chance of failure (in a real game this could be a skill check
@@ -126,7 +126,7 @@ class _SwordSmithingBaseRecipe(CraftingRecipe):
         if random.random() < 0.8:
             # 80% chance of success. This will spawn the sword and show
             # success-message.
-            return super().do_craft(**kwargs)
+            return super().craft(**kwargs)
         else:
             # fail and show failed message
             return None

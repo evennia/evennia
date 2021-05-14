@@ -21,12 +21,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     Class-level variables:
         - `send_to_online_only` (bool, default True) - if set, will only try to
           send to subscribers that are actually active. This is a useful optimization.
-        - `log_to_file` (str, default `"channel_{channel_key}.log"`). This is the
-          log file to which the channel history will be saved. The `{channel_key}` tag
+        - `log_file` (str, default `"channel_{channelname}.log"`). This is the
+          log file to which the channel history will be saved. The `{channelname}` tag
           will be replaced by the key of the Channel. If an Attribute 'log_file'
           is set, this will be used instead. If this is None and no Attribute is found,
           no history will be saved.
-        - `channel_prefix_string` (str, default `"[{channel_key} ]"`) - this is used
+        - `channel_prefix_string` (str, default `"[{channelname} ]"`) - this is used
           as a simple template to get the channel prefix with `.channel_prefix()`.
 
     """
@@ -40,10 +40,15 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     send_to_online_only = True
     # store log in log file. `channel_key tag will be replace with key of channel.
     # Will use log_file Attribute first, if given
-    log_to_file = "channel_{channel_key}.log"
+    log_file = "channel_{channelname}.log"
     # which prefix to use when showing were a message is coming from. Set to
     # None to disable and set this later.
-    channel_prefix_string = "[{channel_key}] "
+    channel_prefix_string = "[{channelname}] "
+
+    # default nick-alias replacements (default using the 'channel' command)
+    channel_msg_nick_pattern = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
+    channel_msg_nick_replacement = "channel {channelname} = $1"
+
 
     def at_first_save(self):
         """
@@ -54,7 +59,6 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_channel_creation()
-        self.attributes.add("log_file", "channel_%s.log" % self.key)
         if hasattr(self, "_createdict"):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.
@@ -78,6 +82,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     def basetype_setup(self):
         self.locks.add("send:all();listen:all();control:perm(Admin)")
 
+        # make sure we don't have access to a same-named old channel's history.
+        log_file = self.get_log_filename()
+        logger.rotate_log_file(log_file, num_lines_to_append=0)
+
     def at_channel_creation(self):
         """
         Called once, when the channel is first created.
@@ -86,6 +94,33 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         pass
 
     # helper methods, for easy overloading
+
+    _log_file = None
+
+    def get_log_filename(self):
+        """
+        File name to use for channel log.
+
+        Returns:
+            str: The filename to use (this is always assumed to be inside
+                settings.LOG_DIR)
+
+        """
+        if not self._log_file:
+            self._log_file = self.attributes.get(
+                "log_file", self.log_file.format(channelname=self.key.lower()))
+        return self._log_file
+
+    def set_log_filename(self, filename):
+        """
+        Set a custom log filename.
+
+        Args:
+            filename (str): The filename to set. This is a path starting from
+                inside the settings.LOG_DIR location.
+
+        """
+        self.attributes.add("log_file", filename)
 
     def has_connection(self, subscriber):
         """
@@ -368,6 +403,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         self.attributes.clear()
         self.aliases.clear()
+        for subscriber in self.subscriptions.all():
+            self.disconnect(subscriber)
         super().delete()
 
     def channel_prefix(self):
@@ -378,7 +415,73 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             str: The channel prefix.
 
         """
-        return self.channel_prefix_string.format(channel_key=self.key)
+        return self.channel_prefix_string.format(channelname=self.key)
+
+    def add_user_channel_alias(self, user, alias, **kwargs):
+        """
+        Add a personal user-alias for this channel to a given subscriber.
+
+        Args:
+            user (Object or Account): The one to alias this channel.
+            alias (str): The desired alias.
+
+        Note:
+            This is tightly coupled to the default `channel` command. If you
+            change that, you need to change this as well.
+
+            We add two nicks - one is a plain `alias -> channel.key` that
+            users need to be able to reference this channel easily. The other
+            is a templated nick to easily be able to send messages to the
+            channel without needing to give the full `channel` command. The
+            structure of this nick is given by `self.channel_msg_nick_pattern`
+            and `self.channel_msg_nick_replacement`. By default it maps
+            `alias <msg> -> channel <channelname> = <msg>`, so that you can
+            for example just write `pub Hello` to send a message.
+
+            The alias created is `alias $1 -> channel channel = $1`, to allow
+            for sending to channel using the main channel command.
+
+        """
+        chan_key = self.key.lower()
+
+        # the message-pattern allows us to type the channel on its own without
+        # needing to use the `channel` command explicitly.
+        msg_nick_pattern = self.channel_msg_nick_pattern.format(alias=alias)
+        msg_nick_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
+        user.nicks.add(msg_nick_pattern, msg_nick_replacement, category="inputline",
+                             pattern_is_regex=True, **kwargs)
+
+        if chan_key != alias:
+            # this allows for using the alias for general channel lookups
+            user.nicks.add(alias, chan_key, category="channel", **kwargs)
+
+    @classmethod
+    def remove_user_channel_alias(cls, user, alias, **kwargs):
+        """
+        Remove a personal channel alias from a user.
+
+        Args:
+           user (Object or Account): The user to remove an alias from.
+           alias (str): The alias to remove.
+           **kwargs: Unused by default. Can be used to pass extra variables
+                into a custom implementation.
+
+        Notes:
+            The channel-alias actually consists of two aliases - one
+            channel-based one for searching channels with the alias and one
+            inputline one for doing the 'channelalias msg' - call.
+
+            This is a classmethod because it doesn't actually operate on the
+            channel instance.
+
+            It sits on the channel because the nick structure for this is
+            pretty complex and needs to be located in a central place (rather
+            on, say, the channel command).
+
+        """
+        user.nicks.remove(alias, category="channel", **kwargs)
+        msg_nick_pattern = cls.channel_msg_nick_pattern.format(alias=alias)
+        user.nicks.remove(msg_nick_pattern, category="inputline", **kwargs)
 
     def at_pre_msg(self, message, **kwargs):
         """
@@ -472,9 +575,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         # save channel history to log file
-        default_log_file = (self.log_to_file.format(channel_key=self.key)
-                            if self.log_to_file else None)
-        log_file = self.attributes.get("log_file", default=default_log_file)
+        log_file = self.get_log_filename()
         if log_file:
             senders = ",".join(sender.key for sender in kwargs.get("senders", []))
             senders = f"{senders}: " if senders else ""
@@ -506,8 +607,13 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Notes:
+            By default this adds the needed channel nicks to the joiner.
+
         """
-        pass
+        key_and_aliases = [self.key.lower()] + [alias.lower() for alias in self.aliases.all()]
+        for key_or_alias in key_and_aliases:
+            self.add_user_channel_alias(joiner, key_or_alias, **kwargs)
 
     def pre_leave_channel(self, leaver, **kwargs):
         """
@@ -535,7 +641,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
 
         """
-        pass
+        chan_key = self.key.lower()
+        key_or_aliases = [self.key.lower()] + [alias.lower() for alias in self.aliases.all()]
+        nicktuples = leaver.nicks.get(category="channel", return_tuple=True, return_list=True)
+        key_or_aliases += [tup[2] for tup in nicktuples if tup[3].lower() == chan_key]
+        for key_or_alias in key_or_aliases:
+            self.remove_user_channel_alias(leaver, key_or_alias, **kwargs)
 
     def at_init(self):
         """

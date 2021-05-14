@@ -995,7 +995,8 @@ class AttributeHandler:
                 looked-after Attribute.
             default_access (bool, optional): If no `attrread` lock is set on
                 object, this determines if the lock should then be passed or not.
-            return_list (bool, optional):
+            return_list (bool, optional): Always return a list, also if there is only
+                one or zero matches found.
 
         Returns:
             result (any or list): One or more matches for keys and/or
