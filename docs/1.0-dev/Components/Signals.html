@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Signals &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="signals">
+  <section id="signals">
 <h1>Signals<a class="headerlink" href="#signals" title="Permalink to this headline">¶</a></h1>
 <p><em>This is feature available from evennia 0.9 and onward</em>.</p>
 <p>There are multiple ways for you to plug in your own functionality into Evennia.
@@ -51,20 +52,20 @@ you can “attach” any number of event-handlers to these signals. You can atta
 any number of handlers and they’ll all fire whenever any entity triggers the
 signal.</p>
 <p>Evennia uses the <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/signals/">Django Signal system</a>.</p>
-<div class="section" id="attaching-a-handler-to-a-signal">
+<section id="attaching-a-handler-to-a-signal">
 <h2>Attaching a handler to a signal<a class="headerlink" href="#attaching-a-handler-to-a-signal" title="Permalink to this headline">¶</a></h2>
 <p>First you create your handler</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">myhandler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
   <span class="c1"># do stuff</span>
 </pre></div>
 </td></tr></table></div>
 <p>The <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is mandatory. Then you attach it to the signal of your choice:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_CREATE</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">myhandler</span><span class="p">)</span>
 </pre></div>
@@ -73,19 +74,19 @@ signal.</p>
 When that happens, <code class="docutils literal notranslate"><span class="pre">myhandler</span></code> will fire with the <code class="docutils literal notranslate"><span class="pre">sender</span></code> being the Account that just connected.</p>
 <p>If you want to respond only to the effects of a specific entity you can do so
 like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_account</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_account</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">account</span> <span class="o">=</span> <span class="n">search_account</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_ACCOUNT_POST_CONNECT</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">myhandler</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="available-signals">
+</section>
+<section id="available-signals">
 <h2>Available signals<a class="headerlink" href="#available-signals" title="Permalink to this headline">¶</a></h2>
 <p>All signals (including some django-specific defaults) are available in the module
 <code class="docutils literal notranslate"><span class="pre">evennia.server.signals</span></code>
@@ -153,8 +154,8 @@ decorator (only relevant for unit testing)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">template_rendered</span></code> - sent when test system renders http template (only useful for unit tests).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">connection_creation</span></code> - sent when making initial connection to database.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

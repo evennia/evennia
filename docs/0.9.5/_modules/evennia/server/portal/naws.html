@@ -52,10 +52,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">codecs_encode</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
-<span class="n">NAWS</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>  <span class="c1"># b&quot;\x1f&quot;</span>
-<span class="n">IS</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># b&quot;\x00&quot;</span>
+<span class="n">NAWS</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">31</span><span class="p">])</span>  <span class="c1"># b&quot;\x1f&quot;</span>
+<span class="n">IS</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># b&quot;\x00&quot;</span>
+
 <span class="c1"># default taken from telnet specification</span>
 <span class="n">DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 <span class="n">DEFAULT_HEIGHT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span>
@@ -63,7 +63,7 @@
 <span class="c1"># try to get the customized mssp info, if it exists.</span>
 
 
-<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span> <span class="nc">Naws</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span> <span class="nc">Naws</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the NAWS protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
@@ -159,7 +159,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="naws.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Weather Tutorial &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="weather-tutorial">
+  <section id="weather-tutorial">
 <h1>Weather Tutorial<a class="headerlink" href="#weather-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will have us create a simple weather system for our MUD.  The way we want to use this
 is to have all outdoor rooms echo weather-related messages to the room at regular and semi-random
@@ -60,27 +61,27 @@ computing overhead.</p>
 will use it for our weather system.</p>
 <p>We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials.
 We will create a new WeatherRoom typeclass that is aware of the day-night cycle.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
     <span class="kn">import</span> <span class="nn">random</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span>
     
@@ -111,7 +112,7 @@ call sign required by TickerHandler hooks.</p>
 <p>Henceforth the room will inform everyone inside it when the weather changes. This particular example
 is of course very simplistic - the weather echoes are just randomly chosen and don’t care what
 weather came before it. Expanding it to be more realistic is a useful exercise.</p>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -161,7 +162,6 @@ weather came before it. Expanding it to be more realistic is a useful exercise.<
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Weather-Tutorial.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

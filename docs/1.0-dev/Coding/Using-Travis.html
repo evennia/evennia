@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Using Travis &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-travis">
+  <section id="using-travis">
 <h1>Using Travis<a class="headerlink" href="#using-travis" title="Permalink to this headline">¶</a></h1>
 <p>Evennia uses <a class="reference external" href="http://travis-ci.org/">Travis CI</a> to check that it’s building successfully after every
 commit to its Github repository (you can for example see the <code class="docutils literal notranslate"><span class="pre">build:</span> <span class="pre">passing</span></code> badge at the top of
@@ -49,18 +50,18 @@ need to set up yourself is a Travis config file named <code class="docutils lite
 This should be created in the root of your game directory. The idea with this file is that it
 describes what Travis needs to import and build in order to create an instance of Evennia from
 scratch and then run validation tests on it. Here is an example:</p>
-<div class="highlight-yaml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<div class="highlight-yaml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
 <span class="nt">python</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="s">&quot;2.7&quot;</span>
 <span class="nt">install</span><span class="p">:</span>
@@ -81,7 +82,7 @@ will be able to see it.</p>
 <p>For properly testing your game you of course also need to write unittests. [We have a page](Unit-
 Testing) on how we set those up for Evennia, you should be able to refer to that for making tests
 fitting your game.</p>
-</div>
+</section>
 
 
             <div class="clearer"></div>

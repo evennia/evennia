@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>HAProxy Config (Optional) &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,9 +37,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="haproxy-config-optional">
+  <section id="haproxy-config-optional">
 <h1>HAProxy Config (Optional)<a class="headerlink" href="#haproxy-config-optional" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="making-evennia-https-and-secure-websockets-play-nicely-together">
+<section id="making-evennia-https-and-secure-websockets-play-nicely-together">
 <h2>Making Evennia, HTTPS and Secure Websockets play nicely together<a class="headerlink" href="#making-evennia-https-and-secure-websockets-play-nicely-together" title="Permalink to this headline">¶</a></h2>
 <p>This we can do by installing a <em>proxy</em> between Evennia and the outgoing ports of your server.
 Essentially,
@@ -66,8 +67,8 @@ So you can’t really run another webserver alongside this setup without tweakin
 <li><p>You must open port 443 (HTTPS) in your firewall.</p></li>
 <li><p>You must open port 4002 (the default Websocket port) in your firewall.</p></li>
 </ul>
-</div>
-<div class="section" id="getting-certificates">
+</section>
+<section id="getting-certificates">
 <h2>Getting certificates<a class="headerlink" href="#getting-certificates" title="Permalink to this headline">¶</a></h2>
 <p>Certificates guarantee that you are you. Easiest is to get this with
 <a class="reference external" href="https://letsencrypt.org/getting-started/">Letsencrypt</a> and the
@@ -100,8 +101,8 @@ for our purposes are <code class="docutils literal notranslate"><span class="pre
 <p>This will create a new <code class="docutils literal notranslate"><span class="pre">.pem</span></code> file by concatenating the two files together. The <code class="docutils literal notranslate"><span class="pre">yourhostname.pem</span></code>
 file (or whatever you named it) is what we will use when the the HAProxy config file (below) asks
 for “your-certificate.pem”.</p>
-</div>
-<div class="section" id="installing-and-configuring-haproxy">
+</section>
+<section id="installing-and-configuring-haproxy">
 <h2>Installing and configuring HAProxy<a class="headerlink" href="#installing-and-configuring-haproxy" title="Permalink to this headline">¶</a></h2>
 <p>Installing HaProxy is usually as simple as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Debian derivatives (Ubuntu, Mint etc)</span>
@@ -132,7 +133,7 @@ values.</p>
 <span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">https</span><span class="o">-</span><span class="n">website</span>
     <span class="n">bind</span> <span class="o">&lt;</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">hostname</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">SSL</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">443</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span>
 <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span>
-    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">evennia</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">port</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4001</span><span class="o">&gt;</span>
+    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">evennia</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">port</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4001</span><span class="o">&gt;</span>
     <span class="n">timeout</span> <span class="n">client</span> <span class="mi">10</span><span class="n">m</span>
     <span class="n">timeout</span> <span class="n">server</span> <span class="mi">10</span><span class="n">m</span>
     <span class="n">timeout</span> <span class="n">connect</span> <span class="mi">5</span><span class="n">m</span>
@@ -140,14 +141,14 @@ values.</p>
 <span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">secure</span><span class="o">-</span><span class="n">websocket</span>
     <span class="n">bind</span> <span class="o">&lt;</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">hostname</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">wss</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">4002</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span>
 <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span>
-    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_PORT</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4002</span><span class="o">&gt;</span>
+    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_PORT</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4002</span><span class="o">&gt;</span>
     <span class="n">timeout</span> <span class="n">client</span> <span class="mi">10</span><span class="n">m</span>
     <span class="n">timeout</span> <span class="n">server</span> <span class="mi">10</span><span class="n">m</span>
     <span class="n">timeout</span> <span class="n">connect</span> <span class="mi">5</span><span class="n">m</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="putting-it-all-together">
+</section>
+<section id="putting-it-all-together">
 <h2>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
 <p>Get back to the Evennia game dir and edit mygame/server/conf/settings.py. Add:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">]</span>
@@ -183,8 +184,8 @@ Linux mechanism for running things at specific times.</p>
 </pre></div>
 </div>
 <p>Save the file and haproxy should start up automatically when you reboot the server.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -239,7 +240,6 @@ Linux mechanism for running things at specific times.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="HAProxy-Config.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

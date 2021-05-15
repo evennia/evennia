@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.contrib.simpledoor &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.contrib.simpledoor">
+  <section id="module-evennia.contrib.simpledoor">
 <span id="evennia-contrib-simpledoor"></span><h1>evennia.contrib.simpledoor<a class="headerlink" href="#module-evennia.contrib.simpledoor" title="Permalink to this headline">¶</a></h1>
 <p>SimpleDoor</p>
 <p>Contribution - Griatch 2016</p>
@@ -179,6 +180,11 @@ unique.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'open', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The &lt;return exit&gt; argument sets up an exit at the\n    destination leading back to the current room. Destination name\n    can be given both as a #dbref and a name, if that name is globally\n    unique.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -222,9 +228,14 @@ close &lt;door&gt;</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'close', 'category': 'general', 'key': 'open', 'tags': '', 'text': '\n    Open and close a door\n\n    Usage:\n        open &lt;door&gt;\n        close &lt;door&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -268,7 +279,6 @@ close &lt;door&gt;</p>
   <li><a href="../../1.0-dev/api/evennia.contrib.simpledoor.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.simpledoor.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

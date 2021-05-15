@@ -172,10 +172,9 @@
     <span class="n">goduser</span> <span class="o">=</span> <span class="n">get_god_account</span><span class="p">()</span>
 
     <span class="n">channel_mudinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_mudinfo</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;settings.CHANNEL_MUDINFO must be defined.&quot;</span><span class="p">)</span>
-    <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_mudinfo</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">channel_mudinfo</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_mudinfo</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span>
 
     <span class="n">channel_connectinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span>
     <span class="k">if</span> <span class="n">channel_connectinfo</span><span class="p">:</span>
@@ -314,7 +313,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="initial_setup.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

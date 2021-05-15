@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Command Cooldown &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="command-cooldown">
+  <section id="command-cooldown">
 <h1>Command Cooldown<a class="headerlink" href="#command-cooldown" title="Permalink to this headline">¶</a></h1>
 <p>Some types of games want to limit how often a command can be run. If a
 character casts the spell <em>Firestorm</em>, you might not want them to spam that
@@ -48,7 +49,7 @@ a while. Such effects are called <em>cooldowns</em>.</p>
 ‘active’ way is to use asynchronous delays as in the <a class="reference external" href="Howto/Command-Duration.html#Blocking-Commands">command duration
 tutorial</a>, the two might be useful to
 combine if you want to echo some message to the user after the cooldown ends.</p>
-<div class="section" id="non-persistent-cooldown">
+<section id="non-persistent-cooldown">
 <h2>Non-persistent cooldown<a class="headerlink" href="#non-persistent-cooldown" title="Permalink to this headline">¶</a></h2>
 <p>This little recipe will limit how often a particular command can be run. Since
 Commands are class instances, and those are cached in memory, a command
@@ -56,37 +57,37 @@ instance will remember things you store on it. So just store the current time
 of execution! Next time the command is run, it just needs to check if it has
 that time stored, and compare it with the current time to see if a desired
 delay has passed.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span> 
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span> 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
     
 <span class="k">class</span> <span class="nc">CmdSpellFirestorm</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
@@ -125,29 +126,29 @@ drawback of this simple scheme is that it’s non-persistent. If you do
 <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, the cache is cleaned and all such ongoing cooldowns will be
 forgotten. It is also limited only to this one command, other commands cannot
 (easily) check for this value.</p>
-</div>
-<div class="section" id="persistent-cooldown">
+</section>
+<section id="persistent-cooldown">
 <h2>Persistent cooldown<a class="headerlink" href="#persistent-cooldown" title="Permalink to this headline">¶</a></h2>
 <p>This is essentially the same mechanism as the simple one above, except we use
 the database to store the information which means the cooldown will survive a
 server reload/reboot. Since commands themselves have no representation in the
 database, you need to use the caster for the storage.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># inside the func() of CmdSpellFirestorm as above</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># inside the func() of CmdSpellFirestorm as above</span>
 
     <span class="c1"># check cooldown (5 minute cooldown)</span>
             
@@ -173,8 +174,8 @@ for example let all fire-related spells check the same cooldown to make sure
 the casting of <em>Firestorm</em> blocks all fire-related spells for a while. Or, in
 the case of taking that big swing with the sword, this could now block all
 other types of attacks for a while before the warrior can recover.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.commands.cmdsethandler &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.commands.cmdsethandler">
+  <section id="module-evennia.commands.cmdsethandler">
 <span id="evennia-commands-cmdsethandler"></span><h1>evennia.commands.cmdsethandler<a class="headerlink" href="#module-evennia.commands.cmdsethandler" title="Permalink to this headline">¶</a></h1>
 <p>CmdSethandler</p>
 <p>The Cmdsethandler tracks an object’s ‘Current CmdSet’, which is the
@@ -175,7 +176,7 @@ to the central <strong>cmdhandler.get_and_merge_cmdsets()</strong>!</p>
 
 <dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a cmdset to the handler, on top of the old ones, unless it
 is set as the default one (it will then end up at the bottom of the stack)</p>
 <dl class="field-list simple">
@@ -184,7 +185,9 @@ is set as the default one (it will then end up at the bottom of the stack)</p>
 <li><p><strong>cmdset</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a><em> or </em><em>str</em>) – Can be a cmdset object or the python path
 to such an object.</p></li>
 <li><p><strong>emit_to_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – An object to receive error messages.</p></li>
-<li><p><strong>permanent</strong> (<em>bool</em><em>, </em><em>optional</em>) – This cmdset will remain across a server reboot.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Let cmdset remain across server reload.</p></li>
+<li><p><strong>permanent</strong> (<em>bool</em><em>, </em><em>optional</em>) – DEPRECATED. This has the same use as
+<strong>persistent</strong>.</p></li>
 <li><p><strong>default_cmdset</strong> (<em>Cmdset</em><em>, </em><em>optional</em>) – Insert this to replace the
 default cmdset position (there is only one such position,
 always at the bottom of the stack).</p></li>
@@ -345,7 +348,7 @@ handled automatically by &#64;reload).</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -389,7 +392,6 @@ handled automatically by &#64;reload).</p>
   <li><a href="../../1.0-dev/api/evennia.commands.cmdsethandler.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.cmdsethandler.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

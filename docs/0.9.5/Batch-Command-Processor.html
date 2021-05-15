@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Batch Command Processor &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,12 +37,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="batch-command-processor">
+  <section id="batch-command-processor">
 <h1>Batch Command Processor<a class="headerlink" href="#batch-command-processor" title="Permalink to this headline">¶</a></h1>
 <p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc">here</span></a>. This
 page describes the Batch-<em>command</em> processor. The Batch-<em>code</em> one is covered [here](Batch-Code-
 Processor).</p>
-<div class="section" id="basic-usage">
+<section id="basic-usage">
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor is a superuser-only function, invoked by</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcommand</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">batchcmdfile</span>
@@ -60,8 +61,8 @@ processor will run the batch file from beginning to end. Note that <em>it will n
 it fail</em> (there is no universal way for the processor to know what a failure looks like for all
 different commands). So keep a close watch on the output, or use <em>Interactive mode</em> (see below) to
 run the file in a more controlled, gradual manner.</p>
-</div>
-<div class="section" id="the-batch-file">
+</section>
+<section id="the-batch-file">
 <h2>The batch file<a class="headerlink" href="#the-batch-file" title="Permalink to this headline">¶</a></h2>
 <p>The batch file is a simple plain-text file containing Evennia commands. Just like you would write
 them in-game, except you have more freedom with line breaks.</p>
@@ -86,46 +87,46 @@ batch-files together, use the <code class="docutils literal notranslate"><span c
 <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
 </ul>
 <p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/batch_cmds.ev</span></code>.</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
     <span class="c1"># This is an example batch build file for Evennia.</span>
     <span class="c1">#</span>
     
@@ -135,7 +136,7 @@ batch-files together, use the <code class="docutils literal notranslate"><span c
     <span class="c1"># Next command. Let&#39;s create something.</span>
     @set button/desc <span class="o">=</span>
       This is a large red button. Now and <span class="k">then</span>
-      it flashes in an evil, yet strangely tantalizing way.
+      it flashes <span class="k">in</span> an evil, yet strangely tantalizing way.
     
       A big sign sits next to it. It says:
 
@@ -177,8 +178,8 @@ calling the command.</p>
 <div><p>Note that if you interact with the button, you might find that its description changes, loosing
 your custom-set description above. This is just the way this particular object works.</p>
 </div></blockquote>
-</div>
-<div class="section" id="interactive-mode">
+</section>
+<section id="interactive-mode">
 <h2>Interactive mode<a class="headerlink" href="#interactive-mode" title="Permalink to this headline">¶</a></h2>
 <p>Interactive mode allows you to more step-wise control over how the batch file is executed. This is
 useful for debugging and also if you have a large batch file and is only updating a small part of it
@@ -207,8 +208,8 @@ operate on).</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> (next and back) to step through the file; e.g. <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">12</span></code> will jump 12 steps forward
 (without processing any command in between). All normal commands of Evennia should work too while
 working in interactive mode.</p>
-</div>
-<div class="section" id="limitations-and-caveats">
+</section>
+<section id="limitations-and-caveats">
 <h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor is great for automating smaller builds or for testing new commands and
 objects repeatedly without having to write so much. There are several caveats you have to be aware
@@ -233,8 +234,8 @@ you’ve had time to finish describing and equipping them!</p></li>
 <p>The solution to all these is to plan ahead. Make sure that superusers are never affected by whatever
 effects are in play. Add an on/off switch to objects and make sure it’s always set to <em>off</em> upon
 creation. It’s all doable, one just needs to keep it in mind.</p>
-</div>
-<div class="section" id="assorted-notes">
+</section>
+<section id="assorted-notes">
 <h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
 <p>The fact that you build as ‘yourself’ can also be considered an advantage however, should you ever
 decide to change the default command to allow others than superusers to call the processor. Since
@@ -249,8 +250,8 @@ header of that file for installation instructions.</p></li>
 <li><p><a class="reference external" href="http://www.vim.org/">VIM</a> users can use amfl’s <a class="reference external" href="https://github.com/amfl/vim-evennia">vim-evennia</a>
 mode instead, see its readme for install instructions.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -306,7 +307,6 @@ mode instead, see its readme for install instructions.</p></li>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Batch-Command-Processor.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

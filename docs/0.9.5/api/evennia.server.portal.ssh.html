@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.server.portal.ssh &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.server.portal.ssh">
+  <section id="module-evennia.server.portal.ssh">
 <span id="evennia-server-portal-ssh"></span><h1>evennia.server.portal.ssh<a class="headerlink" href="#module-evennia.server.portal.ssh" title="Permalink to this headline">¶</a></h1>
 <p>This module implements the ssh (Secure SHell) protocol for encrypted
 connections.</p>
@@ -224,18 +225,18 @@ reaching this point.</p>
 are considered.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – <p>Send-option flags:</p>
+<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – <p>Send-option flags (booleans)</p>
 <ul class="simple">
-<li><p>mxp: Enforce MXP link support.</p></li>
-<li><p>ansi: Enforce no ANSI colors.</p></li>
-<li><p>xterm256: Enforce xterm256 colors, regardless of TTYPE setting.</p></li>
-<li><p>nocolor: Strip all colors.</p></li>
-<li><p>raw: Pass string through without any ansi processing
-(i.e. include Evennia ansi markers but do not
+<li><p>mxp: enforce mxp link support.</p></li>
+<li><p>ansi: enforce no ansi colors.</p></li>
+<li><p>xterm256: enforce xterm256 colors, regardless of ttype setting.</p></li>
+<li><p>nocolor: strip all colors.</p></li>
+<li><p>raw: pass string through without any ansi processing
+(i.e. include evennia ansi markers but do not
 convert them into ansi tokens)</p></li>
-<li><p>echo: Turn on/off line echo on the client. Turn
+<li><p>echo: turn on/off line echo on the client. turn
 off line echo for client, for example for password.
-Note that it must be actively turned back on again!</p></li>
+note that it must be actively turned back on again!</p></li>
 </ul>
 </p>
 </dd>
@@ -359,7 +360,7 @@ do not exist, the keypair is created.</p>
 <dd><p>Creates the ssh server factory.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -403,7 +404,6 @@ do not exist, the keypair is created.</p>
   <li><a href="../../1.0-dev/api/evennia.server.portal.ssh.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.server.portal.ssh.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

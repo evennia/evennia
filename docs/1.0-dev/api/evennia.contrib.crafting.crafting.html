@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.contrib.crafting.crafting &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -46,7 +47,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.contrib.crafting.crafting">
+  <section id="module-evennia.contrib.crafting.crafting">
 <span id="evennia-contrib-crafting-crafting"></span><h1>evennia.contrib.crafting.crafting<a class="headerlink" href="#module-evennia.contrib.crafting.crafting" title="Permalink to this headline">¶</a></h1>
 <p>Crafting - Griatch 2020</p>
 <p>This is a general crafting engine. The basic functionality of crafting is to
@@ -56,7 +57,7 @@ combine any number of of items or tools in a ‘recipe’ to produce a new resul
 </div></blockquote>
 <p>This is useful not only for traditional crafting but the engine is flexible
 enough to also be useful for puzzles or similar.</p>
-<div class="section" id="installation">
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Add the <strong>CmdCraft</strong> Command from this module to your default cmdset. This
@@ -72,8 +73,8 @@ this recipe.</p></li>
 tag-category <strong>crafting_material</strong> or <strong>crafting_tool</strong>. The name of the object
 doesn’t matter, only its tag.</p></li>
 </ul>
-</div>
-<div class="section" id="crafting-in-game">
+</section>
+<section id="crafting-in-game">
 <h2>Crafting in game<a class="headerlink" href="#crafting-in-game" title="Permalink to this headline">¶</a></h2>
 <p>The default <strong>craft</strong> command handles all crafting needs.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">spiked</span> <span class="n">club</span> <span class="kn">from</span> <span class="nn">club</span><span class="p">,</span> <span class="n">nails</span>
@@ -88,8 +89,8 @@ during the crafting process.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">wooden</span> <span class="n">doll</span> <span class="kn">from</span> <span class="nn">wood</span> <span class="k">with</span> <span class="n">knife</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="crafting-in-code">
+</section>
+<section id="crafting-in-code">
 <h2>Crafting in code<a class="headerlink" href="#crafting-in-code" title="Permalink to this headline">¶</a></h2>
 <p>In code, you should use the helper function <strong>craft</strong> from this module. This
 specifies the name of the recipe to use and expects all suitable
@@ -103,8 +104,8 @@ tools will be identified before consumables).</p>
 <p>The result is always a list with zero or more objects. A fail leads to an empty
 list. The crafter should already have been notified of any error in this case
 (this should be handle by the recipe itself).</p>
-</div>
-<div class="section" id="recipes">
+</section>
+<section id="recipes">
 <h2>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h2>
 <p>A <em>recipe</em> is a class that works like an input/output blackbox: you initialize
 it with consumables (and/or tools) if they match the recipe, a new
@@ -815,8 +816,8 @@ the <strong>crafting_tool_err_msg</strong> if available.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

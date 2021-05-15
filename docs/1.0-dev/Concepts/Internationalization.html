@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Internationalization &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,17 +38,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="internationalization">
+  <section id="internationalization">
 <h1>Internationalization<a class="headerlink" href="#internationalization" title="Permalink to this headline">¶</a></h1>
 <p><em>Internationalization</em> (often abbreviated <em>i18n</em> since there are 18 characters between the first “i”
 and the last “n” in that word) allows Evennia’s core server to return texts in other languages than
 English - without anyone having to edit the source code. Take a look at the <code class="docutils literal notranslate"><span class="pre">locale</span></code> directory of
 the Evennia installation, there you will find which languages are currently supported.</p>
-<div class="section" id="changing-server-language">
+<section id="changing-server-language">
 <h2>Changing server language<a class="headerlink" href="#changing-server-language" title="Permalink to this headline">¶</a></h2>
 <p>Change language by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;en&#39;</span>
 </pre></div>
 </td></tr></table></div>
@@ -60,8 +61,8 @@ documentation</a>. A
 self-installing and up-to-date version of gettext for Windows (32/64-bit) is available on
 <a class="reference external" href="https://github.com/mlocati/gettext-iconv-windows">Github</a>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="translating-evennia">
+</section>
+<section id="translating-evennia">
 <h2>Translating Evennia<a class="headerlink" href="#translating-evennia" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p><strong>Important Note:</strong> Evennia offers translations of hard-coded strings in the server, things like
@@ -121,8 +122,8 @@ again:</p>
 to be done whenever a <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file is updated.</p>
 <p>When you are done, send the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> and <code class="docutils literal notranslate"><span class="pre">*.mo</span></code> file to the Evennia developer list (or push it into
 your own repository clone) so we can integrate your translation into Evennia!</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

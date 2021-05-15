@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Grapevine &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,12 +38,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="grapevine">
+  <section id="grapevine">
 <h1>Grapevine<a class="headerlink" href="#grapevine" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="http://grapevine.haus">Grapevine</a> is a new chat network for <code class="docutils literal notranslate"><span class="pre">MU*</span></code>*** games. By
 connecting an in-game channel to the grapevine network, players on your game
 can chat with players in other games, also non-Evennia ones.</p>
-<div class="section" id="configuring-grapevine">
+<section id="configuring-grapevine">
 <h2>Configuring Grapevine<a class="headerlink" href="#configuring-grapevine" title="Permalink to this headline">¶</a></h2>
 <p>To use Grapevine, you first need the <code class="docutils literal notranslate"><span class="pre">pyopenssl</span></code> module. Install it into your
 Evennia python environment with</p>
@@ -50,7 +51,7 @@ Evennia python environment with</p>
 </pre></div>
 </div>
 <p>To configure Grapevine, you’ll need to activate it in your settings file.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">GRAPEVINE_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">GRAPEVINE_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </td></tr></table></div>
 <p>Next, register an account at https://grapevine.haus. When you have logged in,
@@ -58,8 +59,8 @@ go to your Settings/Profile and to the <code class="docutils literal notranslate
 new game by filling in its information. At the end of registration you are going
 to get a <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and a <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code>. These should not be shared.</p>
 <p>Open/create the file <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/secret_settings.py</span></code> and add the following:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">GRAPEVINE_CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;&lt;client ID&gt;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">GRAPEVINE_CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;&lt;client ID&gt;&quot;</span>
   <span class="n">GRAPEVINE_CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&quot;&lt;client_secret&gt;&quot;</span>
 </pre></div>
 </td></tr></table></div>
@@ -78,8 +79,8 @@ command available: <code class="docutils literal notranslate"><span class="pre">
 <code class="docutils literal notranslate"><span class="pre">testing</span></code> and <code class="docutils literal notranslate"><span class="pre">gossip</span></code>. Evennia defaults to allowing connecting to both. Use
 <code class="docutils literal notranslate"><span class="pre">testing</span></code> for trying your connection.</p>
 </div></blockquote>
-</div>
-<div class="section" id="setting-up-grapevine-step-by-step">
+</section>
+<section id="setting-up-grapevine-step-by-step">
 <h2>Setting up Grapevine, step by step<a class="headerlink" href="#setting-up-grapevine-step-by-step" title="Permalink to this headline">¶</a></h2>
 <p>You can connect Grapevine to any Evennia channel (so you could connect it to
 the default <em>public</em> channel if you like), but for testing, let’s set up a
@@ -98,8 +99,8 @@ to https://grapevine.haus/chat to check.</p>
 the Grapevine chat. Write a reply in the chat and the grapevine bot should echo
 it to your channel in-game.</p>
 <p>Your Evennia gamers can now chat with users on external Grapevine channels!</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

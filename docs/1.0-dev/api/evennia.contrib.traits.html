@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.contrib.traits &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.contrib.traits">
+  <section id="module-evennia.contrib.traits">
 <span id="evennia-contrib-traits"></span><h1>evennia.contrib.traits<a class="headerlink" href="#module-evennia.contrib.traits" title="Permalink to this headline">¶</a></h1>
 <p>Traits</p>
 <p>Whitenoise 2014, Ainneve contributors,
@@ -47,7 +48,7 @@ be used to represent everything from attributes (str, agi etc) to skills
 (hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.</p>
 <p>Traits use Evennia Attributes under the hood, making them persistent (they survive
 a server reload/reboot).</p>
-<div class="section" id="adding-traits-to-a-typeclass">
+<section id="adding-traits-to-a-typeclass">
 <h2>Adding Traits to a typeclass<a class="headerlink" href="#adding-traits-to-a-typeclass" title="Permalink to this headline">¶</a></h2>
 <p>To access and manipulate traits on an entity, its Typeclass needs to have a
 <strong>TraitHandler</strong> assigned it. Usually, the handler is made available as <strong>.traits</strong>
@@ -71,8 +72,8 @@ initialized until it’s actually accessed).</p>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-traits">
+</section>
+<section id="using-traits">
 <h2>Using traits<a class="headerlink" href="#using-traits" title="Permalink to this headline">¶</a></h2>
 <p>A trait is added to the traithandler, after which one can access it
 as a property on the handler (similarly to how you can do .db.attrname for Attributes
@@ -107,8 +108,8 @@ in Evennia).</p>
 with a more human-friendly name (“Hunting Skill”). The latter will show if you
 print the trait etc. The <strong>trait_type</strong> is important, this specifies which type
 of trait this is.</p>
-</div>
-<div class="section" id="trait-types">
+</section>
+<section id="trait-types">
 <h2>Trait types<a class="headerlink" href="#trait-types" title="Permalink to this headline">¶</a></h2>
 <p>All default traits have a read-only <strong>.value</strong> property that shows the relevant or
 ‘current’ value of the trait. Exactly what this means depends on the type of trait.</p>
@@ -129,8 +130,8 @@ all sorts of rule-resolution.</p>
     <span class="c1"># do stuff</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="static-trait">
+</section>
+<section id="static-trait">
 <h2>Static trait<a class="headerlink" href="#static-trait" title="Permalink to this headline">¶</a></h2>
 <p><strong>value = base + mod</strong></p>
 <p>The static trait has a <strong>base</strong> value and an optional <strong>mod</strong>-ifier. A typical use
@@ -148,7 +149,7 @@ that varies slowly or not at all, and which may be modified in-place.</p>
 <span class="go">12</span>
 </pre></div>
 </div>
-<div class="section" id="counter">
+<section id="counter">
 <h3>Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span><span class="o">/</span><span class="n">unset</span>     <span class="n">base</span>    <span class="n">base</span><span class="o">+</span><span class="n">mod</span>                       <span class="nb">max</span><span class="o">/</span><span class="n">unset</span>
 <span class="o">|--------------|--------|---------</span><span class="n">X</span><span class="o">--------</span><span class="n">X</span><span class="o">------------|</span>
@@ -177,7 +178,7 @@ remove it. A suggested use for a Counter Trait would be to track skill values.</
 </pre></div>
 </div>
 <p>Counters have some extra properties:</p>
-<div class="section" id="descs">
+<section id="descs">
 <h4>.descs<a class="headerlink" href="#descs" title="Permalink to this headline">¶</a></h4>
 <p>The <strong>descs</strong> property is a dict {upper_bound:text_description}. This allows for easily
 storing a more human-friendly description of the current value in the
@@ -203,8 +204,8 @@ value.</p>
 <span class="s2">&quot;expert&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rate">
+</section>
+<section id="rate">
 <h4>.rate<a class="headerlink" href="#rate" title="Permalink to this headline">¶</a></h4>
 <p>The <strong>rate</strong> property defaults to 0. If set to a value different from 0, it
 allows the trait to change value dynamically. This could be used for example
@@ -239,8 +240,8 @@ a previous value.</p>
 reaches a boundary or rate-target) will also come out a float (so you can get a
 very exact value at the current time). If you expect an integer, you must run
 <strong>int()</strong> (or something like <strong>round()</strong>) on the result yourself.</p>
-</div>
-<div class="section" id="percent">
+</section>
+<section id="percent">
 <h4>.percent()<a class="headerlink" href="#percent" title="Permalink to this headline">¶</a></h4>
 <p>If both min and max are defined, the <strong>.percent()</strong> method of the trait will
 return the value as a percentage.</p>
@@ -250,9 +251,9 @@ return the value as a percentage.</p>
 <span class="go">71.0</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="gauge">
+</section>
+</section>
+<section id="gauge">
 <h3>Gauge<a class="headerlink" href="#gauge" title="Permalink to this headline">¶</a></h3>
 <p>This emulates a [fuel-] gauge that empties from a base+mod value.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span><span class="o">/</span><span class="mi">0</span>                                            <span class="nb">max</span><span class="o">=</span><span class="n">base</span><span class="o">+</span><span class="n">mod</span>
@@ -284,8 +285,8 @@ methods and properties where they make sense. So gauges can also have a
 get how filled it is as a percentage etc.</p>
 <p>The <strong>.rate</strong> is particularly relevant for gauges - useful for everything
 from poison slowly draining your health, to resting gradually increasing it.</p>
-</div>
-<div class="section" id="trait">
+</section>
+<section id="trait">
 <h3>Trait<a class="headerlink" href="#trait" title="Permalink to this headline">¶</a></h3>
 <p>A single value of any type.</p>
 <p>This is the ‘base’ Trait, meant to inherit from if you want to invent
@@ -302,9 +303,9 @@ Attribute.</p>
 <span class="go">&quot;stringvalue&quot;</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="expanding-with-your-own-traits">
+</section>
+</section>
+<section id="expanding-with-your-own-traits">
 <h2>Expanding with your own Traits<a class="headerlink" href="#expanding-with-your-own-traits" title="Permalink to this headline">¶</a></h2>
 <p>A Trait is a class inhering from <strong>evennia.contrib.traits.Trait</strong> (or from one of
 the existing Trait classes).</p>
@@ -841,8 +842,8 @@ returned.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

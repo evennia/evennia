@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.utils.batchprocessors &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.utils.batchprocessors">
+  <section id="module-evennia.utils.batchprocessors">
 <span id="evennia-utils-batchprocessors"></span><h1>evennia.utils.batchprocessors<a class="headerlink" href="#module-evennia.utils.batchprocessors" title="Permalink to this headline">¶</a></h1>
 <p>This module contains the core methods for the Batch-command- and
 Batch-code-processors respectively. In short, these are two different ways to
@@ -66,7 +67,7 @@ permission-checks, and you have full access to modifying objects
 etc. You also need to know Python and Evennia’s API. Hence it’s
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.</p>
-<div class="section" id="batch-command-processor-file-syntax">
+<section id="batch-command-processor-file-syntax">
 <h2>Batch-command processor file syntax<a class="headerlink" href="#batch-command-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor accepts ‘batchcommand files’ e.g
 <strong>batch.ev</strong>, containing a sequence of valid Evennia commands in a
@@ -88,7 +89,7 @@ end.</p>
 especially useful in order to create long room descriptions where a
 real offline text editor is often much better than any online text
 editor or prompt.</p>
-<div class="section" id="example-of-batch-ev-file">
+<section id="example-of-batch-ev-file">
 <h3>Example of batch.ev file:<a class="headerlink" href="#example-of-batch-ev-file" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># batch file</span>
 <span class="c1"># all lines starting with # are comments; they also indicate</span>
@@ -126,9 +127,9 @@ editor or prompt.</p>
 </pre></div>
 </div>
 <p>An example batch file is <strong>contrib/examples/batch_example.ev</strong>.</p>
-</div>
-</div>
-<div class="section" id="batch-code-processor-file-syntax">
+</section>
+</section>
+<section id="batch-code-processor-file-syntax">
 <h2>Batch-code processor file syntax<a class="headerlink" href="#batch-code-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
 <p>The Batch-code processor accepts full python modules (e.g. <strong>batch.py</strong>)
 that looks identical to normal Python files. The difference from
@@ -169,7 +170,7 @@ when running a CODE block multiple times during testing.
 </dl>
 </li>
 </ul>
-<div class="section" id="example-batch-py-file">
+<section id="example-batch-py-file">
 <h3>Example batch.py file<a class="headerlink" href="#example-batch-py-file" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#HEADER</span>
 
@@ -334,9 +335,9 @@ namespace.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

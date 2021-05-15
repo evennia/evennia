@@ -51,13 +51,13 @@
 
 <span class="sd">All data will be stored on the protocol&#39;s protocol_flags dictionary,</span>
 <span class="sd">under the &#39;TTYPE&#39; key.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
 <span class="c1"># telnet option codes</span>
-<span class="n">TTYPE</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>  <span class="c1"># b&quot;\x18&quot;</span>
-<span class="n">IS</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># b&quot;\x00&quot;</span>
-<span class="n">SEND</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># b&quot;\x01&quot;</span>
+<span class="n">TTYPE</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">24</span><span class="p">])</span>  <span class="c1"># b&quot;\x18&quot;</span>
+<span class="n">IS</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># b&quot;\x00&quot;</span>
+<span class="n">SEND</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># b&quot;\x01&quot;</span>
 
 <span class="c1"># terminal capabilities and their codes</span>
 <span class="n">MTTS</span> <span class="o">=</span> <span class="p">[</span>
@@ -72,7 +72,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="Ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype">[docs]</a><span class="k">class</span> <span class="nc">Ttype</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Ttype"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ttype.html#evennia.server.portal.ttype.Ttype">[docs]</a><span class="k">class</span> <span class="nc">Ttype</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles ttype negotiations. Called and initiated by the</span>
 <span class="sd">    telnet protocol.</span>

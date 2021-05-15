@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Installing on Android &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,12 +38,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="installing-on-android">
+  <section id="installing-on-android">
 <h1>Installing on Android<a class="headerlink" href="#installing-on-android" title="Permalink to this headline">¶</a></h1>
 <p>This page describes how to install and run the Evennia server on an Android phone. This will involve
 installing a slew of third-party programs from the Google Play store, so make sure you are okay with
 this before starting.</p>
-<div class="section" id="install-termux">
+<section id="install-termux">
 <h2>Install Termux<a class="headerlink" href="#install-termux" title="Permalink to this headline">¶</a></h2>
 <p>The first thing to do is install a terminal emulator that allows a “full” version of linux to be
 run. Note that Android is essentially running on top of linux so if you have a rooted phone, you may
@@ -59,8 +60,8 @@ prerequisites for Evennia. Commands you should run in Termux will look like this
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">$</span></code> symbol is your prompt - do not include it when running commands.</p>
-</div>
-<div class="section" id="prerequisites">
+</section>
+<section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>To install some of the libraries Evennia requires, namely Pillow and Twisted, we have to first
 install some packages they depend on. In Termux, run the following</p>
@@ -89,7 +90,7 @@ following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span> <span class="n">setuptools</span> <span class="n">wheel</span>
 </pre></div>
 </div>
-<div class="section" id="installing-evennia">
+<section id="installing-evennia">
 <h3>Installing Evennia<a class="headerlink" href="#installing-evennia" title="Permalink to this headline">¶</a></h3>
 <p>Now that we have everything in place, we’re ready to download and install Evennia itself.</p>
 <p>Mysterious incantations</p>
@@ -106,8 +107,8 @@ following command:</p>
 building all of the requirements for Evennia to run. If you run into trouble on this step, please
 see <a class="reference external" href="Setup/Installing-on-Android.html#troubleshooting">Troubleshooting</a>.</p>
 <p>You can go to the dir where Evennia is installed with <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">$VIRTUAL_ENV/src/evennia</span></code>. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">grep</span> <span class="pre">(something)</span></code> can be handy, as can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p>
-</div>
-<div class="section" id="final-steps">
+</section>
+<section id="final-steps">
 <h3>Final steps<a class="headerlink" href="#final-steps" title="Permalink to this headline">¶</a></h3>
 <p>At this point, Evennia is installed on your phone! You can now continue with the original
 <a class="reference internal" href="Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a> instruction, we repeat them here for clarity.</p>
@@ -125,9 +126,9 @@ mygame evenv
 </div>
 <p>Your game should now be running! Open a web browser at http://localhost:4001 or point a telnet
 client to localhost:4000 and log in with the user you created.</p>
-</div>
-</div>
-<div class="section" id="running-evennia">
+</section>
+</section>
+<section id="running-evennia">
 <h2>Running Evennia<a class="headerlink" href="#running-evennia" title="Permalink to this headline">¶</a></h2>
 <p>When you wish to run Evennia, get into your Termux console and make sure you have activated your
 virtualenv as well as are in your game’s directory. You can then run evennia start as normal.</p>
@@ -137,8 +138,8 @@ virtualenv as well as are in your game’s directory. You can then run evennia s
 </pre></div>
 </div>
 <p>You may wish to look at the <a class="reference external" href="Setup/Getting-Started#linux-install">Linux Instructions</a> for more.</p>
-</div>
-<div class="section" id="caveats">
+</section>
+<section id="caveats">
 <h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Android’s os module doesn’t support certain functions - in particular getloadavg. Thusly, running
@@ -147,8 +148,8 @@ the command &#64;server in-game will throw an exception. So far, there is no fix
 <li><p>Android is fairly aggressive about memory handling, and you may find that your server process is
 killed if your phone is heavily taxed. Termux seems to keep a notification up to discourage this.</p></li>
 </ul>
-</div>
-<div class="section" id="troubleshooting">
+</section>
+<section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
 <p>As time goes by and errors are reported, this section will be added to.</p>
 <p>Some steps to try anyway:</p>
@@ -160,8 +161,8 @@ killed if your phone is heavily taxed. Termux seems to keep a notification up to
 <li><p>See if a shell will start: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">~/mygame</span> <span class="pre">;</span> <span class="pre">evennia</span> <span class="pre">shell</span></code></p></li>
 <li><p>Look at the log files in ~/mygame/server/logs/</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Command Duration &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="command-duration">
+  <section id="command-duration">
 <h1>Command Duration<a class="headerlink" href="#command-duration" title="Permalink to this headline">¶</a></h1>
 <p>Before reading this tutorial, if you haven’t done so already, you might want to
 read <a class="reference internal" href="Commands.html"><span class="doc">the documentation on commands</span></a> to get a basic understanding of
@@ -55,29 +56,29 @@ Loading a crossbow might take a bit of time to do - time you don’t have when
 the enemy comes rushing at you. Crafting that armour will not be immediate
 either. For some types of games the very act of moving or changing pose all
 comes with a certain time associated with it.</p>
-<div class="section" id="the-simple-way-to-pause-commands-with-yield">
+<section id="the-simple-way-to-pause-commands-with-yield">
 <h2>The simple way to pause commands with yield<a class="headerlink" href="#the-simple-way-to-pause-commands-with-yield" title="Permalink to this headline">¶</a></h2>
 <p>Evennia allows a shortcut in syntax to create simple pauses in commands.  This
 syntax uses the <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword.  The <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword is used in Python to
 create generators, although you don’t need to know what generators are to use
 this syntax.  A short example will probably make it clear:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A test command just to test waiting.</span>
@@ -114,40 +115,40 @@ other players aren’t frozen either.</p>
 while a command is “paused”, it will not resume after the server has
 reloaded.</p>
 </div></blockquote>
-</div>
-<div class="section" id="the-more-advanced-way-with-utils-delay">
+</section>
+<section id="the-more-advanced-way-with-utils-delay">
 <h2>The more advanced way with utils.delay<a class="headerlink" href="#the-more-advanced-way-with-utils-delay" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">yield</span></code> syntax is easy to read, easy to understand, easy to use.  But it’s not that flexible if
 you want more advanced options.  Learning to use alternatives might be much worth it in the end.</p>
 <p>Below is a simple command example for adding a duration for a command to finish.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
     
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -181,7 +182,7 @@ you want more advanced options.  Learning to use alternatives might be much wort
 it will take 10 seconds before you see your shout coming back. You will also find that this is a
 <em>non-blocking</em> effect; you can issue other commands in the interim and the game will go on as usual.
 The echo will come back to you in its own time.</p>
-<div class="section" id="about-utils-delay">
+<section id="about-utils-delay">
 <h3>About utils.delay()<a class="headerlink" href="#about-utils-delay" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">utils.delay(timedelay,</span> <span class="pre">callback,</span> <span class="pre">persistent=False,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> is a useful function.  It will
 wait <code class="docutils literal notranslate"><span class="pre">timedelay</span></code> seconds, then call the <code class="docutils literal notranslate"><span class="pre">callback</span></code> function, optionally passing to it the arguments
@@ -210,43 +211,43 @@ called (the way <code class="docutils literal notranslate"><span class="pre">yie
 actually execute <em>right away</em>. What you must do is to tell it which function to call <em>after the time
 has passed</em> (its “callback”). This may sound strange at first, but it is normal practice in
 asynchronous systems. You can also link such calls together as seen below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
     
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -293,9 +294,9 @@ delay.</p>
 ... hello! ...
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="blocking-commands">
+</section>
+</section>
+<section id="blocking-commands">
 <h2>Blocking commands<a class="headerlink" href="#blocking-commands" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned, a great thing about the delay introduced by <code class="docutils literal notranslate"><span class="pre">yield</span></code> or <code class="docutils literal notranslate"><span class="pre">utils.delay()</span></code> is that it does
 not block. It just goes on in the background and you are free to play normally in the interim. In
@@ -310,43 +311,43 @@ the stored time to determine if enough time had passed for a renewed use. This i
 efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player
 when enough time has passed unless they keep trying.</p>
 <p>Here is an example where we will use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to tell the player when the cooldown has passed:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
     
 <span class="k">class</span> <span class="nc">CmdBigSwing</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -391,102 +392,102 @@ another swing.</p>
 itself) it can be accessed by other Commands too. Other attacks may also not work when you are off
 balance. You could also have an enemy Command check your <code class="docutils literal notranslate"><span class="pre">off_balance</span></code> status to gain bonuses, to
 take another example.</p>
-</div>
-<div class="section" id="abortable-commands">
+</section>
+<section id="abortable-commands">
 <h2>Abortable commands<a class="headerlink" href="#abortable-commands" title="Permalink to this headline">¶</a></h2>
 <p>One can imagine that you will want to abort a long-running command before it has a time to finish.
 If you are in the middle of crafting your armor you will probably want to stop doing that when a
 monster enters your smithy.</p>
 <p>You can implement this in the same way as you do the “blocking” command above, just in reverse.
 Below is an example of a crafting command that can be aborted by starting a fight:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
     
 <span class="k">class</span> <span class="nc">CmdCraftArmour</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -579,8 +580,8 @@ Below is an example of a crafting command that can be aborted by starting a figh
 <p>The above code creates a delayed crafting command that will gradually create the armour. If the
 <code class="docutils literal notranslate"><span class="pre">attack</span></code> command is issued during this process it will set a flag that causes the crafting to be
 quietly canceled next time it tries to update.</p>
-</div>
-<div class="section" id="persistent-delays">
+</section>
+<section id="persistent-delays">
 <h2>Persistent delays<a class="headerlink" href="#persistent-delays" title="Permalink to this headline">¶</a></h2>
 <p>In the latter examples above we used <code class="docutils literal notranslate"><span class="pre">.ndb</span></code> storage. This is fast and easy but it will reset all
 cooldowns/blocks/crafting etc if you reload the server. If you don’t want that you can replace
@@ -589,36 +590,36 @@ the use of <code class="docutils literal notranslate"><span class="pre">delay</s
 keyword. But wait! Making something persistent will add some extra complications, because now you
 must make sure Evennia can properly store things to the database.</p>
 <p>Here is the original echo-command reworked to function with persistence:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
     
 <span class="c1"># this is now in the outermost scope and takes two args!</span>
 <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -662,8 +663,8 @@ access to them directly since this is now a stand-alone function).</p></li>
 cannot do this correctly when the method sits on the command class. Now this behave the same as the
 first version except if you reload (or even shut down) the server mid-delay it will still fire the
 callback when the server comes back up (it will resume the countdown and ignore the downtime).</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -728,7 +729,6 @@ callback when the server comes back up (it will resume the countdown and ignore 
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Command-Duration.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

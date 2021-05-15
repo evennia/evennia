@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Adding Command Tutorial &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="adding-command-tutorial">
+  <section id="adding-command-tutorial">
 <h1>Adding Command Tutorial<a class="headerlink" href="#adding-command-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This is a quick first-time tutorial expanding on the <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> documentation.</p>
 <p>Let’s assume you have just downloaded Evennia, installed it and created your game folder (let’s call
 it just <code class="docutils literal notranslate"><span class="pre">mygame</span></code> here). Now you want to try to add a new command. This is the fastest way to do it.</p>
-<div class="section" id="step-1-creating-a-custom-command">
+<section id="step-1-creating-a-custom-command">
 <h2>Step 1: Creating a custom command<a class="headerlink" href="#step-1-creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
 <ol class="simple">
 <li><p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> in a text editor. This is just one place commands could be
@@ -66,27 +67,27 @@ entry for the Command (see
 <li><p>Define a class method <code class="docutils literal notranslate"><span class="pre">func(self)</span></code> that echoes your input back to you.</p></li>
 </ol>
 <p>Below is an example how this all could look for the echo command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="c1"># file mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="c1"># file mygame/commands/command.py</span>
         <span class="c1">#[...]</span>
         <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
         <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
@@ -109,8 +110,8 @@ entry for the Command (see
                     <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You gave the string: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="step-2-adding-the-command-to-a-default-cmdset">
+</section>
+<section id="step-2-adding-the-command-to-a-default-cmdset">
 <h2>Step 2: Adding the Command to a default Cmdset<a class="headerlink" href="#step-2-adding-the-command-to-a-default-cmdset" title="Permalink to this headline">¶</a></h2>
 <p>The command is not available to use until it is part of a <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Set</span></a>. In this
 example we will go the easiest route and add it to the default Character commandset that already
@@ -122,22 +123,22 @@ exists.</p>
 template tells you where).</p></li>
 </ol>
 <p>This is approximately how it should look at this point:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="c1"># file mygame/commands/default_cmdsets.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="c1"># file mygame/commands/default_cmdsets.py</span>
         <span class="c1">#[...]</span>
         <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdEcho</span>
         <span class="c1">#[...]</span>
@@ -170,24 +171,24 @@ command with the same key as the old one - it will then replace it. Just remembe
 <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to see any changes.</p>
 <p>See <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> for many more details and possibilities when defining Commands and using
 Cmdsets in various ways.</p>
-</div>
-<div class="section" id="adding-the-command-to-specific-object-types">
+</section>
+<section id="adding-the-command-to-specific-object-types">
 <h2>Adding the command to specific object types<a class="headerlink" href="#adding-the-command-to-specific-object-types" title="Permalink to this headline">¶</a></h2>
 <p>Adding your Command to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> is just one easy exapmple. The cmdset system is very
 generic. You can create your own cmdsets (let’s say in a module <code class="docutils literal notranslate"><span class="pre">mycmdsets.py</span></code>) and add them to
 objects as you please (how to control their merging is described in detail in the <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Set
 documentation</span></a>).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># file mygame/commands/mycmdsets.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># file mygame/commands/mycmdsets.py</span>
     <span class="c1">#[...]</span>
     <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdEcho</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
@@ -213,14 +214,14 @@ only make the new merged cmdset permanent on that <em>single</em> object. Often 
 this particular class to have this cmdset.</p>
 <p>To make sure all new created objects get your new merged set, put the <code class="docutils literal notranslate"><span class="pre">cmdset.add</span></code> call in your
 custom <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>’ <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
 
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
     <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -244,8 +245,8 @@ the following:</p>
 each. The good news is that you only have to do this if you want to post-add <em>cmdsets</em>. If you just
 want to add a new <em>command</em>, you can simply add that command to the cmdset’s <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>
 and <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to make the Command immediately available.</p>
-</div>
-<div class="section" id="change-where-evennia-looks-for-command-sets">
+</section>
+<section id="change-where-evennia-looks-for-command-sets">
 <h2>Change where Evennia looks for command sets<a class="headerlink" href="#change-where-evennia-looks-for-command-sets" title="Permalink to this headline">¶</a></h2>
 <p>Evennia uses settings variables to know where to look for its default command sets. These are
 normally not changed unless you want to re-organize your game folder in some way. For example, the
@@ -254,8 +255,8 @@ default character cmdset defaults to being defined as</p>
 </pre></div>
 </div>
 <p>See <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code> for the other settings.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -316,7 +317,6 @@ default character cmdset defaults to being defined as</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Adding-Command-Tutorial.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

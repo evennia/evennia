@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Web Character Generation &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,9 +46,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="web-character-generation">
+  <section id="web-character-generation">
 <h1>Web Character Generation<a class="headerlink" href="#web-character-generation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This tutorial will create a simple web-based interface for generating a new in-game Character.
 Accounts will need to have first logged into the website (with their <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code> account). Once
@@ -65,8 +66,8 @@ at the <a class="reference external" href="https://docs.djangoproject.com/en/1.8
 does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
 interface). This guide will outline the format of the models, views, urls, and html templates
 needed.</p>
-</div>
-<div class="section" id="pictures">
+</section>
+<section id="pictures">
 <h2>Pictures<a class="headerlink" href="#pictures" title="Permalink to this headline">¶</a></h2>
 <p>Here are some screenshots of the simple app we will be making.</p>
 <p>Index page, with no character application yet done:</p>
@@ -91,9 +92,9 @@ AEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif)</p>
 <hr class="docutils" />
 <p>![Detail view of character application.](https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/
 AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif)</p>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="installing-an-app">
+<section id="installing-an-app">
 <h2>Installing an App<a class="headerlink" href="#installing-an-app" title="Permalink to this headline">¶</a></h2>
 <p>Assuming your game is named “mygame”, navigate to your <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> directory, and type:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">startapp</span> <span class="n">chargen</span>
@@ -111,15 +112,15 @@ Evennia (and Django) aware of our new app:</p>
 <p>After this, we will get into defining our <em>models</em> (the description of the database storage),
 <em>views</em> (the server-side website content generators), <em>urls</em> (how the web browser finds the pages)
 and <em>templates</em> (how the web page should be structured).</p>
-<div class="section" id="installing-checkpoint">
+<section id="installing-checkpoint">
 <h3>Installing - Checkpoint:<a class="headerlink" href="#installing-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>you should have a folder named <code class="docutils literal notranslate"><span class="pre">chargen</span></code> or whatever you chose in your mygame/web/ directory</p></li>
 <li><p>you should have your application name added to your INSTALLED_APPS in settings.py</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="create-models">
+</section>
+</section>
+<section id="create-models">
 <h2>Create Models<a class="headerlink" href="#create-models" title="Permalink to this headline">¶</a></h2>
 <p>Models are created in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/models.py</span></code>.</p>
 <p>A <a class="reference internal" href="New-Models.html"><span class="doc">Django database model</span></a> is a Python class that describes the database storage of the
@@ -141,17 +142,17 @@ AccountID from the AccountDB object.</p></li>
 attributes and so on.</p>
 </div></blockquote>
 <p>Our <code class="docutils literal notranslate"><span class="pre">models.py</span></code> file should look something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/chargen/models.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/chargen/models.py</span>
 
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
@@ -170,15 +171,15 @@ which characters are owned by which accounts. Since the account id is a primary 
 is a good candidate, as you will never have two of the same IDs in Evennia. You can feel free to use
 anything else, but for the purposes of this guide, we are going to use account ID to join the
 character applications with the proper account.</p>
-<div class="section" id="model-checkpoint">
+<section id="model-checkpoint">
 <h3>Model - Checkpoint:<a class="headerlink" href="#model-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>you should have filled out <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/models.py</span></code> with the model class shown above
 (eventually adding fields matching what you need for your game).</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="create-views">
+</section>
+</section>
+<section id="create-views">
 <h2>Create Views<a class="headerlink" href="#create-views" title="Permalink to this headline">¶</a></h2>
 <p><em>Views</em> are server-side constructs that make dynamic data available to a web page. We are going to
 add them to <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen.views.py</span></code>. Each view in our example represents the backbone of a
@@ -190,22 +191,22 @@ specific web page. We will use three views and three pages here:</p>
 given Character.</p></li>
 <li><p>Character creation sheet (manages <code class="docutils literal notranslate"><span class="pre">create.html</span></code>). This is the main form with fields to fill in.</p></li>
 </ul>
-<div class="section" id="index-view">
+<section id="index-view">
 <h3><em>Index</em> view<a class="headerlink" href="#index-view" title="Permalink to this headline">¶</a></h3>
 <p>Let’s get started with the index first.</p>
 <p>We’ll want characters to be able to see their created characters so let’s</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
 
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
 
@@ -219,8 +220,8 @@ given Character.</p></li>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/index.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="detail-view">
+</section>
+<section id="detail-view">
 <h3><em>Detail</em> view<a class="headerlink" href="#detail-view" title="Permalink to this headline">¶</a></h3>
 <p>Our detail page will have pertinent character application information our users can see. Since this
 is a basic demonstration, our detail page will only show two fields:</p>
@@ -230,17 +231,17 @@ is a basic demonstration, our detail page will only show two fields:</p>
 </ul>
 <p>We will use the account ID again just to double-check that whoever tries to check our character page
 is actually the account who owns the application.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen.views.py</span>
 
 <span class="k">def</span> <span class="nf">detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app_id</span><span class="p">):</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">CharApp</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_id</span><span class="o">=</span><span class="n">app_id</span><span class="p">)</span>
@@ -253,22 +254,22 @@ is actually the account who owns the application.</p>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/detail.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
-<div class="section" id="creating-view">
+</section>
+</section>
+<section id="creating-view">
 <h2><em>Creating</em> view<a class="headerlink" href="#creating-view" title="Permalink to this headline">¶</a></h2>
 <p>Predictably, our <em>create</em> function will be the most complicated of the views, as it needs to accept
 information from the user, validate the information, and send the information to the server. Once
 the form content is validated will actually create a playable Character.</p>
 <p>The form itself we will define first. In our simple example we are just looking for the Character’s
 name and background. This form we create in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/forms.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/forms.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/forms.py</span>
 
 <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
 
@@ -278,50 +279,50 @@ name and background. This form we create in <code class="docutils literal notran
 </pre></div>
 </td></tr></table></div>
 <p>Now we make use of this form in our view.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
 
 <span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
 <span class="kn">from</span> <span class="nn">web.chargen.forms</span> <span class="kn">import</span> <span class="n">AppForm</span>
@@ -386,69 +387,69 @@ character. It may be a good idea to decompose this function and create a separat
 function in order to set up your character object the account owns. But with the Evennia API,
 setting custom attributes is as easy as doing it in the meat of your Evennia game directory.</p>
 <p>After all of this, our <code class="docutils literal notranslate"><span class="pre">views.py</span></code> file should look like something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
    
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 <span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
@@ -513,7 +514,7 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;chargen/create.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">})</span>
 </pre></div>
 </td></tr></table></div>
-<div class="section" id="create-views-checkpoint">
+<section id="create-views-checkpoint">
 <h3>Create Views - Checkpoint:<a class="headerlink" href="#create-views-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>you’ve defined a <code class="docutils literal notranslate"><span class="pre">views.py</span></code> that has an index, detail, and creating functions.</p></li>
@@ -521,25 +522,25 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
 <code class="docutils literal notranslate"><span class="pre">views.py</span></code>.</p></li>
 <li><p>your <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen</span></code> directory should now have a <code class="docutils literal notranslate"><span class="pre">views.py</span></code> and <code class="docutils literal notranslate"><span class="pre">forms.py</span></code> file</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="create-urls">
+</section>
+</section>
+<section id="create-urls">
 <h2>Create URLs<a class="headerlink" href="#create-urls" title="Permalink to this headline">¶</a></h2>
 <p>URL patterns helps redirect requests from the web browser to the right views. These patterns are
 created in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/urls.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/urls.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/urls.py</span>
 
 <span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
 <span class="kn">from</span> <span class="nn">web.chargen</span> <span class="kn">import</span> <span class="n">views</span>
@@ -560,24 +561,24 @@ account_id to find all the character application objects to display.</p>
 <p>We must also update the main <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code> file (that is, one level up from our chargen app),
 so the main website knows where our app’s views are located. Find the <code class="docutils literal notranslate"><span class="pre">patterns</span></code> variable, and
 change it to include:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in file mygame/web/urls.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in file mygame/web/urls.py</span>
 
 <span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
 
@@ -597,15 +598,15 @@ change it to include:</p>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">custom_patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
 </pre></div>
 </td></tr></table></div>
-<div class="section" id="urls-checkpoint">
+<section id="urls-checkpoint">
 <h3>URLs - Checkpoint:<a class="headerlink" href="#urls-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>You’ve created a urls.py file in the <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen</span></code> directory</p></li>
 <li><p>You have edited the main <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code> file to include urls to the <code class="docutils literal notranslate"><span class="pre">chargen</span></code> directory.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="html-templates">
+</section>
+</section>
+<section id="html-templates">
 <h2>HTML Templates<a class="headerlink" href="#html-templates" title="Permalink to this headline">¶</a></h2>
 <p>So we have our url patterns, views, and models defined. Now we must define our HTML templates that
 the actual user will see and interact with. For this tutorial we us the basic <em>prosimii</em> template
@@ -613,32 +614,32 @@ that comes with Evennia.</p>
 <p>Take note that we use <code class="docutils literal notranslate"><span class="pre">user.is_authenticated</span></code> to make sure that the user cannot create a character
 without logging in.</p>
 <p>These files will all go into the <code class="docutils literal notranslate"><span class="pre">/mygame/web/chargen/templates/chargen/</span></code> directory.</p>
-<div class="section" id="index-html">
+<section id="index-html">
 <h3>index.html<a class="headerlink" href="#index-html" title="Permalink to this headline">¶</a></h3>
 <p>This HTML template should hold a list of all the applications the account currently has active. For
 this demonstration, we will only list the applications that the account has submitted. You could
 easily adjust this to include saved applications, or other types of applications if you have
 different kinds.</p>
 <p>Please refer back to <code class="docutils literal notranslate"><span class="pre">views.py</span></code> to see where we define the variables these templates make use of.</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/index.html--&gt;</span>
+<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/index.html--&gt;</span>
 
 {% extends &quot;base.html&quot; %}
 {% block content %}
@@ -659,31 +660,31 @@ different kinds.</p>
 {% endblock %}
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="detail-html">
+</section>
+<section id="detail-html">
 <h3>detail.html<a class="headerlink" href="#detail-html" title="Permalink to this headline">¶</a></h3>
 <p>This page should show a detailed character sheet of their application. This will only show their
 name and character background. You will likely want to extend this to show many more fields for your
 game. In a full-fledged character generation, you may want to extend the boolean attribute of
 submitted to allow accounts to save character applications and submit them later.</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/detail.html--&gt;</span>
+<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/detail.html--&gt;</span>
 
 {% extends &quot;base.html&quot; %}
 {% block content %}
@@ -703,29 +704,29 @@ submitted to allow accounts to save character applications and submit them later
 {% endblock %}
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="create-html">
+</section>
+<section id="create-html">
 <h3>create.html<a class="headerlink" href="#create-html" title="Permalink to this headline">¶</a></h3>
 <p>Our create HTML template will use the Django form we defined back in views.py/forms.py to drive the
 majority of the application process. There will be a form input for every field we defined in
 forms.py, which is handy. We have used POST as our method because we are sending information to the
 server that will update the database. As an alternative, GET would be much less secure. You can read
 up on documentation elsewhere on the web for GET vs. POST.</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/create.html--&gt;</span>
+<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c">&lt;!-- file mygame/web/chargen/templates/chargen/create.html--&gt;</span>
 
 {% extends &quot;base.html&quot; %}
 {% block content %}
@@ -742,25 +743,25 @@ up on documentation elsewhere on the web for GET vs. POST.</p>
 {% endblock %}
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="templates-checkpoint">
+</section>
+<section id="templates-checkpoint">
 <h3>Templates - Checkpoint:<a class="headerlink" href="#templates-checkpoint" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Create a <code class="docutils literal notranslate"><span class="pre">index.html</span></code>, <code class="docutils literal notranslate"><span class="pre">detail.html</span></code> and <code class="docutils literal notranslate"><span class="pre">create.html</span></code> template in your
 <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/templates/chargen</span></code> directory</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="activating-your-new-character-generation">
+</section>
+</section>
+<section id="activating-your-new-character-generation">
 <h2>Activating your new character generation<a class="headerlink" href="#activating-your-new-character-generation" title="Permalink to this headline">¶</a></h2>
 <p>After finishing this tutorial you should have edited or created the following files:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>mygame/web/urls.py
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>mygame/web/urls.py
 mygame/web/chargen/models.py
 mygame/web/chargen/views.py
 mygame/web/chargen/urls.py
@@ -770,8 +771,8 @@ mygame/web/chargen/templates/chargen/detail.html
 </pre></div>
 </td></tr></table></div>
 <p>Once you have all these files stand in your <code class="docutils literal notranslate"><span class="pre">mygame/</span></code>folder and run:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>evennia makemigrations
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>evennia makemigrations
 evennia migrate
 </pre></div>
 </td></tr></table></div>
@@ -783,8 +784,8 @@ be something like <code class="docutils literal notranslate"><span class="pre">h
 <p>This should hopefully give you a good starting point in figuring out how you’d like to approach your
 own web generation. The main difficulties are in setting the appropriate settings on your newly
 created character object. Thankfully, the Evennia API makes this easy.</p>
-</div>
-<div class="section" id="adding-a-no-capcha-recapcha-on-your-character-generation">
+</section>
+<section id="adding-a-no-capcha-recapcha-on-your-character-generation">
 <h2>Adding a no CAPCHA reCAPCHA on your character generation<a class="headerlink" href="#adding-a-no-capcha-recapcha-on-your-character-generation" title="Permalink to this headline">¶</a></h2>
 <p>As sad as it is, if your server is open to the web, bots might come to visit and take advantage of
 your open form to create hundreds, thousands, millions of characters if you give them the
@@ -796,7 +797,7 @@ inside.  It’s worth pointing out that, as long as Google doesn’t suspect you
 is quite useful, not only for common users, but to screen-reader users, to which reading inside of
 an image is pretty difficult, if not impossible.  And to top it all, it will be so easy to add in
 your website.</p>
-<div class="section" id="step-1-obtain-a-sitekey-and-secret-from-google">
+<section id="step-1-obtain-a-sitekey-and-secret-from-google">
 <h3>Step 1: Obtain a SiteKey and secret from Google<a class="headerlink" href="#step-1-obtain-a-sitekey-and-secret-from-google" title="Permalink to this headline">¶</a></h3>
 <p>The first thing is to ask Google for a way to safely authenticate your website to their service.  To
 do it, we need to create a site key and a secret.  Go to
@@ -804,8 +805,8 @@ do it, we need to create a site key and a secret.  Go to
 site key.  It’s quite easy when you have a Google account.</p>
 <p>When you have created your site key, save it safely.  Also copy your secret key as well.  You should
 find both information on the web page.  Both would contain a lot of letters and figures.</p>
-</div>
-<div class="section" id="step-2-installing-and-configuring-the-dedicated-django-app">
+</section>
+<section id="step-2-installing-and-configuring-the-dedicated-django-app">
 <h3>Step 2: installing and configuring the dedicated Django app<a class="headerlink" href="#step-2-installing-and-configuring-the-dedicated-django-app" title="Permalink to this headline">¶</a></h3>
 <p>Since Evennia runs on Django, the easiest way to add our CAPCHA and perform the proper check is to
 install the dedicated Django app.  Quite easy:</p>
@@ -814,11 +815,11 @@ install the dedicated Django app.  Quite easy:</p>
 </div>
 <p>And add it to the installed apps in your settings.  In your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>, you
 might have something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">(</span>
     <span class="s1">&#39;web.chargen&#39;</span><span class="p">,</span>
     <span class="s1">&#39;nocaptcha_recaptcha&#39;</span><span class="p">,</span>
@@ -827,28 +828,28 @@ might have something like this:</p>
 </td></tr></table></div>
 <p>Don’t close the setting file just yet.  We have to add in the site key and secret key.  You can add
 them below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># NoReCAPCHA site key</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># NoReCAPCHA site key</span>
 <span class="n">NORECAPTCHA_SITE_KEY</span> <span class="o">=</span> <span class="s2">&quot;PASTE YOUR SITE KEY HERE&quot;</span>
 <span class="c1"># NoReCAPCHA secret key</span>
 <span class="n">NORECAPTCHA_SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;PUT YOUR SECRET KEY HERE&quot;</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="step-3-adding-the-capcha-to-our-form">
+</section>
+<section id="step-3-adding-the-capcha-to-our-form">
 <h3>Step 3: Adding the CAPCHA to our form<a class="headerlink" href="#step-3-adding-the-capcha-to-our-form" title="Permalink to this headline">¶</a></h3>
 <p>Finally we have to add the CAPCHA to our form.  It will be pretty easy too.  First, open your
 <code class="docutils literal notranslate"><span class="pre">web/chargen/forms.py</span></code> file.  We’re going to add a new field, but hopefully, all the hard work has
 been done for us.  Update at your convenience, You might end up with something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span> <span class="nn">nocaptcha_recaptcha.fields</span> <span class="kn">import</span> <span class="n">NoReCaptchaField</span>
 
 <span class="k">class</span> <span class="nc">AppForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
@@ -860,27 +861,27 @@ been done for us.  Update at your convenience, You might end up with something l
 <p>As you see, we added a line of import (line 2) and a field in our form.</p>
 <p>And lastly, we need to update our HTML file to add in the Google library.  You can open
 <code class="docutils literal notranslate"><span class="pre">web/chargen/templates/chargen/create.html</span></code>.  There’s only one line to add:</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://www.google.com/recaptcha/api.js&quot;</span> <span class="na">async</span> <span class="na">defer</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://www.google.com/recaptcha/api.js&quot;</span> <span class="na">async</span> <span class="na">defer</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </td></tr></table></div>
 <p>And you should put it at the bottom of the page.  Just before the closing body would be good, but
 for the time being, the base page doesn’t provide a footer block, so we’ll put it in the content
 block.  Note that it’s not the best place, but it will work.  In the end, your
 <code class="docutils literal notranslate"><span class="pre">web/chargen/templates/chargen/create.html</span></code> file should look like this:</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span>{% extends &quot;base.html&quot; %}
+<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>{% extends &quot;base.html&quot; %}
 {% block content %}
 <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Character Creation<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
 {% if user.is_authenticated %}
@@ -899,9 +900,9 @@ block.  Note that it’s not the best place, but it will work.  In the end, your
 <p>Reload and open <a class="reference external" href="http://localhost:4001/chargen/create/">http://localhost:4001/chargen/create</a> and
 you should see your beautiful CAPCHA just before the “submit” button.  Try not to check the checkbox
 to see what happens.  And do the same while checking the checkbox!</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -995,7 +996,6 @@ to see what happens.  And do the same while checking the checkbox!</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Web-Character-Generation.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Profiling &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,10 +38,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="profiling">
+  <section id="profiling">
 <h1>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h1>
 <p><em>This is considered an advanced topic mainly of interest to server developers.</em></p>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes it can be useful to try to determine just how efficient a particular piece of code is, or
 to figure out if one could speed up things more than they are. There are many ways to test the
@@ -54,18 +55,18 @@ wisdom</a>:</p>
 so. This means your code must actually be working before you start to consider optimization.
 Optimization will also often make your code more complex and harder to read. Consider readability
 and maintainability and you may find that a small gain in speed is just not worth it.</p>
-</div>
-<div class="section" id="simple-timer-tests">
+</section>
+<section id="simple-timer-tests">
 <h2>Simple timer tests<a class="headerlink" href="#simple-timer-tests" title="Permalink to this headline">¶</a></h2>
 <p>Python’s <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module is very good for testing small things. For example, in order to test if it
 is faster to use a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop or a list comprehension you could use the following code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">timeit</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">timeit</span>
     <span class="c1"># Time to do 1000000 for loops</span>
     <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">&quot;for i in range(100):</span><span class="se">\n</span><span class="s2">    a.append(i)&quot;</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="s2">&quot;a = []&quot;</span><span class="p">)</span>
    <span class="o">&lt;&lt;&lt;</span> <span class="mf">10.70982813835144</span>
@@ -80,8 +81,8 @@ like <code class="docutils literal notranslate"><span class="pre">a</span> <span
 time</em> to do so (so <em>not</em> the average per test). A hint is to not use this default for testing
 something that includes database writes - for that you may want to use a lower number of repeats
 (say 100 or 1000) using the <code class="docutils literal notranslate"><span class="pre">number=100</span></code> keyword.</p>
-</div>
-<div class="section" id="using-cprofile">
+</section>
+<section id="using-cprofile">
 <h2>Using cProfile<a class="headerlink" href="#using-cprofile" title="Permalink to this headline">¶</a></h2>
 <p>Python comes with its own profiler, named cProfile (this is for cPython, no tests have been done
 with <code class="docutils literal notranslate"><span class="pre">pypy</span></code> at this point). Due to the way Evennia’s processes are handled, there is no point in
@@ -103,8 +104,8 @@ likely also mess with the profiler. Instead either use <code class="docutils lit
 better), use <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> from inside the game.</p>
 <p>Once the server has fully shut down (this may be a lot slower than usual) you will find that
 profiler has created a new file <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/server.prof</span></code>.</p>
-</div>
-<div class="section" id="analyzing-the-profile">
+</section>
+<section id="analyzing-the-profile">
 <h2>Analyzing the profile<a class="headerlink" href="#analyzing-the-profile" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file is a binary file. There are many ways to analyze and display its contents,
 all of which has only been tested in Linux (If you are a Windows/Mac user, let us know what works).</p>
@@ -119,8 +120,8 @@ Python profiles you also need the wrapper script
 profiling for. Evennia being an asynchronous server can also confuse profiling. Ask on the mailing
 list if you need help and be ready to be able to supply your <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file for comparison,
 along with the exact conditions under which it was obtained.</p>
-</div>
-<div class="section" id="the-dummyrunner">
+</section>
+<section id="the-dummyrunner">
 <h2>The Dummyrunner<a class="headerlink" href="#the-dummyrunner" title="Permalink to this headline">¶</a></h2>
 <p>It is difficult to test “actual” game performance without having players in your game. For this
 reason Evennia comes with the <em>Dummyrunner</em> system. The Dummyrunner is a stress-testing system: a
@@ -145,7 +146,7 @@ extra settings line when running a public server.</p>
 settings file is <code class="docutils literal notranslate"><span class="pre">evennia/server/server/profiling/dummyrunner_settings.py</span></code> but you shouldn’t modify
 this directly. Rather create/copy the default file to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/</span></code> and modify it there. To
 make sure to use your file over the default, add the following line to your settings file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server/conf/dummyrunner_settings.py&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server/conf/dummyrunner_settings.py&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <blockquote>
@@ -155,8 +156,8 @@ intensely than an equal number of human players. A good dummy number to start wi
 <p>Once you have the dummyrunner running, stop it with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>.</p>
 <p>Generally, the dummyrunner system makes for a decent test of general performance; but it is of
 course hard to actually mimic human user behavior. For this, actual real-game testing is required.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

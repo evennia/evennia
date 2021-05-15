@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Scripts &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="scripts">
+  <section id="scripts">
 <h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="../api/evennia.scripts.scripts.html">Script API reference</a></p>
 <p><em>Scripts</em> are the out-of-character siblings to the in-character
@@ -71,7 +72,7 @@ in various ways. For historical reasons, a Script <em>not</em> attached to an ob
 Starting with this version, the timer can be start/stopped separately and <cite>.delete()</cite> must be called
 on the Script explicitly to delete it.</p>
 </div>
-<div class="section" id="in-game-command-examples">
+<section id="in-game-command-examples">
 <h2>In-game command examples<a class="headerlink" href="#in-game-command-examples" title="Permalink to this headline">¶</a></h2>
 <p>There are two main commands controlling scripts in the default cmdset:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">addscript</span></code> command is used for attaching scripts to existing objects:</p>
@@ -89,27 +90,27 @@ on the Script explicitly to delete it.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>The <cite>addscript</cite> command used to be only <cite>script</cite> which was easy to confuse with <cite>scripts</cite>.</p>
 </div>
-</div>
-<div class="section" id="code-examples">
+</section>
+<section id="code-examples">
 <h2>Code examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h2>
 <p>Here are some examples of working with Scripts in-code (more details to follow in later
 sections).</p>
 <p>Create a new script:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">new_script</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;myscript&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=...</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">new_script</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;myscript&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=...</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Create script with timer component:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># (note that this will call `timed_script.at_repeat` which is empty by default)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># (note that this will call `timed_script.at_repeat` which is empty by default)</span>
 <span class="n">timed_script</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Timed script&quot;</span><span class="p">,</span> 
                                      <span class="n">interval</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span>  <span class="c1"># seconds &lt;=0 means off</span>
                                      <span class="n">start_delay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># wait interval before first call</span>
@@ -123,23 +124,23 @@ sections).</p>
 </pre></div>
 </td></tr></table></div>
 <p>Attach script to another object:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">myobj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_script</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">myobj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_script</span><span class="p">)</span>
 <span class="n">myobj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">DefaultScript</span><span class="p">)</span>
 <span class="n">all_scripts_on_obj</span> <span class="o">=</span> <span class="n">myobj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 <p>Search/find scripts in various ways:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># regular search (this is always a list, also if there is only one match)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># regular search (this is always a list, also if there is only one match)</span>
 <span class="n">list_of_myscripts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
 
 <span class="c1"># search through Evennia&#39;s GLOBAL_SCRIPTS container (based on </span>
@@ -151,32 +152,32 @@ sections).</p>
 </pre></div>
 </td></tr></table></div>
 <p>Delete the Script (this will also stop its timer):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">new_script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">new_script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="n">timed_script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="defining-new-scripts">
+</section>
+<section id="defining-new-scripts">
 <h2>Defining new Scripts<a class="headerlink" href="#defining-new-scripts" title="Permalink to this headline">¶</a></h2>
 <p>A Script is defined as a class and is created in the same way as other
 <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> entities. The parent class is <code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code>.</p>
-<div class="section" id="simple-storage-script">
+<section id="simple-storage-script">
 <h3>Simple storage script<a class="headerlink" href="#simple-storage-script" title="Permalink to this headline">¶</a></h3>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> is an empty <code class="docutils literal notranslate"><span class="pre">Script</span></code> class already set up. You
 can use this as a base for your own scripts.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 
@@ -191,13 +192,13 @@ can use this as a base for your own scripts.</p>
 </pre></div>
 </td></tr></table></div>
 <p>Once created, this simple Script could act as a global storage:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.scripts.MyScript&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.scripts.MyScript&#39;</span><span class="p">)</span>
 
 <span class="c1"># from somewhere else </span>
 
@@ -208,10 +209,10 @@ can use this as a base for your own scripts.</p>
 </td></tr></table></div>
 <p>Note that if you give keyword arguments to <code class="docutils literal notranslate"><span class="pre">create_script</span></code> you can override the values
 you set in your <code class="docutils literal notranslate"><span class="pre">at_script_creation</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.scripts.MyScript&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;another name&quot;</span><span class="p">,</span>
                       <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar-alternative&quot;</span><span class="p">)])</span>
             
@@ -220,21 +221,21 @@ you set in your <code class="docutils literal notranslate"><span class="pre">at_
 <p>See the <a class="reference external" href="../api/evennia.utils.create.html#evennia.utils.create.create_script">create_script</a> and
 <a class="reference external" href="../api/evennia.utils.search.html#evennia.utils.search.search_script">search_script</a> API documentation for more options
 on creating and finding Scripts.</p>
-</div>
-<div class="section" id="timed-scripts">
+</section>
+<section id="timed-scripts">
 <h3>Timed Scripts<a class="headerlink" href="#timed-scripts" title="Permalink to this headline">¶</a></h3>
 <p>There are several properties one can set on the Script to control its timer component.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
 
 <span class="k">class</span> <span class="nc">TimerScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
 
@@ -289,7 +290,7 @@ at which time the <code class="docutils literal notranslate"><span class="pre">m
 <li><p><code class="docutils literal notranslate"><span class="pre">.force_repeat()</span></code> - this prematurely forces <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> to be called right away. Doing so will reset the
 countdown so that next call will again happen after <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds.</p></li>
 </ul>
-<div class="section" id="script-timers-vs-delay-repeat">
+<section id="script-timers-vs-delay-repeat">
 <h4>Script timers vs delay/repeat<a class="headerlink" href="#script-timers-vs-delay-repeat" title="Permalink to this headline">¶</a></h4>
 <p>If the <em>only</em> goal is to get a repeat/delay effect, the
 <a class="reference external" href="../api/evennia.utils.utils.html#evennia.utils.utils.delay">evennia.utils.delay</a> and
@@ -306,40 +307,40 @@ tickers of all other Scripts.</p>
 <p>It’s also worth noting that once the script object has <em>already been created</em>,
 starting/stopping/pausing/unpausing the timer has very little overhead. The pause/unpause and update
 methods of the script also offers a bit more fine-control than using <code class="docutils literal notranslate"><span class="pre">utils.delays/repeat</span></code>.</p>
-</div>
-</div>
-<div class="section" id="script-attached-to-another-object">
+</section>
+</section>
+<section id="script-attached-to-another-object">
 <h3>Script attached to another object<a class="headerlink" href="#script-attached-to-another-object" title="Permalink to this headline">¶</a></h3>
 <p>Scripts can be attached to an <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> or (more commonly) an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a>.
 If so, the ‘parent object’ will be available to the script as either <code class="docutils literal notranslate"><span class="pre">.obj</span></code> or <code class="docutils literal notranslate"><span class="pre">.account</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py  </span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py  </span>
     <span class="c1"># Script class is defined at the top of this module</span>
 
     <span class="kn">import</span> <span class="nn">random</span>
@@ -371,7 +372,7 @@ If so, the ‘parent object’ will be available to the script as either <code c
 </td></tr></table></div>
 <p>If attached to a room, this Script will randomly report some weather
 to everyone in the room every 5 minutes.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">myroom</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scripts</span><span class="o">.</span><span class="n">Weather</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">myroom</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scripts</span><span class="o">.</span><span class="n">Weather</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <blockquote>
@@ -380,12 +381,12 @@ Therefore we don’t need to give the full path (<code class="docutils literal n
 but only <code class="docutils literal notranslate"><span class="pre">scripts.Weather</span></code> above.</p>
 </div></blockquote>
 <p>You can also attach the script as part of creating it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.weather.Weather&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">myroom</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.weather.Weather&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">myroom</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
-<div class="section" id="other-script-methods">
+</section>
+</section>
+<section id="other-script-methods">
 <h2>Other Script methods<a class="headerlink" href="#other-script-methods" title="Permalink to this headline">¶</a></h2>
 <p>A Script has all the properties of a typeclassed object, such as <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code>(see
 <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>). Setting <code class="docutils literal notranslate"><span class="pre">key</span></code> is useful in order to manage scripts (delete them by name
@@ -410,23 +411,23 @@ it will also stop the timer (if it runs), leading to the <code class="docutils l
 <p>In addition, Scripts support <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>, <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a> and <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a> etc like other
 Typeclassed entities.</p>
 <p>See also the methods involved in controlling a <a class="reference external" href="#Timed_Scripts">Timed Script</a> above.</p>
-</div>
-<div class="section" id="the-global-scripts-container">
+</section>
+<section id="the-global-scripts-container">
 <h2>The GLOBAL_SCRIPTS container<a class="headerlink" href="#the-global-scripts-container" title="Permalink to this headline">¶</a></h2>
 <p>A Script not attached to another entity is commonly referred to as a <em>Global</em> script since it’t available
 to access from anywhere. This means they need to be searched for in order to be used.</p>
 <p>Evennia supplies a convenient “container” <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code> to help organize your global
 scripts. All you need is the Script’s <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 
 <span class="c1"># access as a property on the container, named the same as the key</span>
 <span class="n">my_script</span> <span class="o">=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">my_script</span>
@@ -454,17 +455,17 @@ that it should check if a script with that <code class="docutils literal notrans
 This is very useful for scripts that must always exist and/or should be auto-created with your server.</p></li>
 </ol>
 <p>Here’s how to tell Evennia to manage the script in settings:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
 
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;my_script&quot;</span><span class="p">:</span> <span class="p">{</span>               
@@ -489,12 +490,12 @@ does not have any critical errors (test it separately). If there are, you’ll s
 and your Script will temporarily fall back to being a <cite>DefaultScript</cite> type.</p>
 </div>
 <p>Moreover, a script defined this way is <em>guaranteed</em> to exist when you try to access it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 <span class="c1"># Delete the script</span>
 <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">storagescript</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="c1"># running the `scripts` command now will show no storagescript</span>
@@ -504,27 +505,27 @@ and your Script will temporarily fall back to being a <cite>DefaultScript</cite>
 </td></tr></table></div>
 <p>That is, if the script is deleted, next time you get it from <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>, Evennia will use the
 information in settings to recreate it for you on the fly.</p>
-</div>
-<div class="section" id="hints-dealing-with-script-errors">
+</section>
+<section id="hints-dealing-with-script-errors">
 <h2>Hints: Dealing with Script Errors<a class="headerlink" href="#hints-dealing-with-script-errors" title="Permalink to this headline">¶</a></h2>
 <p>Errors inside a timed, executing script can sometimes be rather terse or point to
 parts of the execution mechanism that is hard to interpret. One way to make it
 easier to debug scripts is to import Evennia’s native logger and wrap your
 functions in a try/catch block. Evennia’s logger can show you where the
 traceback occurred in your script.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span> 
@@ -539,8 +540,8 @@ traceback occurred in your script.</p>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

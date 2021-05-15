@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Dialogues in events &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="dialogues-in-events">
+  <section id="dialogues-in-events">
 <h1>Dialogues in events<a class="headerlink" href="#dialogues-in-events" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-
@@ -69,7 +70,7 @@ useful to create a dialogue system taking advantage of the in-game Python system
 </div></blockquote>
 <p>In this tutorial, we are going to create a basic dialogue to have several characters automatically
 respond to specific messages said by others.</p>
-<div class="section" id="a-first-example-with-a-first-character">
+<section id="a-first-example-with-a-first-character">
 <h2>A first example with a first character<a class="headerlink" href="#a-first-example-with-a-first-character" title="Permalink to this headline">¶</a></h2>
 <p>Let’s create a character to begin with.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@charcreate</span> <span class="n">a</span> <span class="n">merchant</span>
@@ -104,7 +105,7 @@ our system, you might be more interested by the line describing the <code class=
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;call</span></code> is the command name, <code class="docutils literal notranslate"><span class="pre">/add</span></code> is a switch.  You can read the help of the command to get the
 help of available switches and a brief overview of syntax.</p></li>
-<li><p>We then enter the object’s name, here “a merchant”.  You can enter the ID too (“#3” in my case),
+<li><p>We then enter the object’s name, here “a merchant”.  You can enter the ID too (”#3” in my case),
 which is useful to edit the object when you’re not in the same room.  You can even enter part of the
 name, as usual.</p></li>
 <li><p>An equal sign, a simple separator.</p></li>
@@ -158,8 +159,8 @@ when the function was called.</p>
 </pre></div>
 </div>
 <p>For our first test, let’s type something like:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> shrugs and says: &#39;well, yes, hello to you!&#39;&quot;</span><span class="p">,</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> shrugs and says: &#39;well, yes, hello to you!&#39;&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
@@ -183,11 +184,11 @@ have also used mapping to easily display the character’s name.  This is not sp
 Python system.  If you feel overwhelmed by the code we’ve used, just shorten it and use something
 more simple, for instance:</p></li>
 </ol>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have said something to me.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have said something to me.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="the-same-callback-for-several-keywords">
+</section>
+<section id="the-same-callback-for-several-keywords">
 <h2>The same callback for several keywords<a class="headerlink" href="#the-same-callback-for-several-keywords" title="Permalink to this headline">¶</a></h2>
 <p>It’s easy to create a callback that will be triggered if the sentence contains one of several
 keywords.</p>
@@ -195,8 +196,8 @@ keywords.</p>
 </pre></div>
 </div>
 <p>And in the editor that opens:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Ho well, trade&#39;s fine as long as roads are</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Ho well, trade&#39;s fine as long as roads are</span>
 <span class="n">safe</span><span class="o">.</span><span class="s1">&#39;&quot;, mapping=dict(character=character))</span>
 </pre></div>
 </td></tr></table></div>
@@ -207,8 +208,8 @@ call the callback:</p>
 </pre></div>
 </div>
 <p>We can set several keywords when adding the callback.  We just need to separate them with commas.</p>
-</div>
-<div class="section" id="a-longer-callback">
+</section>
+<section id="a-longer-callback">
 <h2>A longer callback<a class="headerlink" href="#a-longer-callback" title="Permalink to this headline">¶</a></h2>
 <p>So far, we have only set one line in our callbacks.  Which is useful, but we often need more.  For
 an entire dialogue, you might want to do a bit more than that.</p>
@@ -216,17 +217,17 @@ an entire dialogue, you might want to do a bit more than that.</p>
 </pre></div>
 </div>
 <p>And in the editor you can paste the following lines:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Bandits he?&#39;&quot;</span><span class="p">,</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Bandits he?&#39;&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
 <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> scratches his head, considering.&quot;</span><span class="p">,</span>
 <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
@@ -262,8 +263,8 @@ him to move, gives you something, attack if you have a combat system, or whateve
 <li><p>You can add in “pauses” between some instructions using chained events.  This tutorial won’t
 describe how to do that however.  You already have a lot to play with.</p></li>
 </ul>
-</div>
-<div class="section" id="tutorial-f-a-q">
+</section>
+<section id="tutorial-f-a-q">
 <h2>Tutorial F.A.Q.<a class="headerlink" href="#tutorial-f-a-q" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Q:</strong> can I create several characters who would answer to specific dialogue?</p></li>
@@ -284,8 +285,8 @@ code.</p></li>
 <li><p>Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-
 events).</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -346,7 +347,6 @@ events).</p></li>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Dialogues-in-events.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

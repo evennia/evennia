@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Messagepath &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,13 +46,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="messagepath">
+  <section id="messagepath">
 <h1>Messagepath<a class="headerlink" href="#messagepath" title="Permalink to this headline">¶</a></h1>
 <p>The main functionality of Evennia is to communicate with clients connected to it; a player enters
 commands or their client queries for a gui update (ingoing data). The server responds or sends data
 on its own as the game changes (outgoing data). It’s important to understand how this flow of
 information works in Evennia.</p>
-<div class="section" id="the-ingoing-message-path">
+<section id="the-ingoing-message-path">
 <h2>The ingoing message path<a class="headerlink" href="#the-ingoing-message-path" title="Permalink to this headline">¶</a></h2>
 <p>We’ll start by tracing data from the client to the server. Here it is in short:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">-&gt;</span>
@@ -63,7 +64,7 @@ information works in Evennia.</p>
         <span class="n">Inputfunc</span>
 </pre></div>
 </div>
-<div class="section" id="client-ingoing">
+<section id="client-ingoing">
 <h3>Client (ingoing)<a class="headerlink" href="#client-ingoing" title="Permalink to this headline">¶</a></h3>
 <p>The client sends data to Evennia in two ways.</p>
 <ul class="simple">
@@ -87,39 +88,39 @@ active, the string will be encrypted.</p></li>
 <li><p>SSH: An encrypted string</p></li>
 <li><p>Webclient: A JSON-serialized string.</p></li>
 </ul>
-</div>
-<div class="section" id="portal-session-ingoing">
+</section>
+<section id="portal-session-ingoing">
 <h3>Portal Session (ingoing)<a class="headerlink" href="#portal-session-ingoing" title="Permalink to this headline">¶</a></h3>
 <p>Each client is connected to the game via a <em>Portal Session</em>, one per connection. This Session is
 different depending on the type of connection (telnet, webclient etc) and thus know how to handle
 that particular data type. So regardless of how the data arrives, the Session will identify the type
 of the instruction and any arguments it should have. For example, the telnet protocol will figure
 that anything arriving normally over the wire should be passed on as a “text” type.</p>
-</div>
-<div class="section" id="portalsessionhandler-ingoing">
+</section>
+<section id="portalsessionhandler-ingoing">
 <h3>PortalSessionHandler (ingoing)<a class="headerlink" href="#portalsessionhandler-ingoing" title="Permalink to this headline">¶</a></h3>
 <p>The <em>PortalSessionhandler</em> manages all connected Sessions in the Portal. Its <code class="docutils literal notranslate"><span class="pre">data_in</span></code> method
 (called by each Portal Session) will parse the command names and arguments from the protocols and
 convert them to a standardized form we call the <em>inputcommand</em>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="n">commandname</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="n">commandname</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
 </pre></div>
 </td></tr></table></div>
 <p>All inputcommands must have a name, but they may or may not have arguments and keyword arguments -
 in fact no default inputcommands use kwargs at all. The most common inputcommand is “text”, which
 has the argument the player input on the command line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="p">{})</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="p">{})</span>
 </pre></div>
 </td></tr></table></div>
 <p>This inputcommand-structure is pickled together with the unique session-id of the Session to which
 it belongs. This is then sent over the AMP connection.</p>
-</div>
-<div class="section" id="serversessionhandler-ingoing">
+</section>
+<section id="serversessionhandler-ingoing">
 <h3>ServerSessionHandler (ingoing)<a class="headerlink" href="#serversessionhandler-ingoing" title="Permalink to this headline">¶</a></h3>
 <p>On the Server side, the AMP unpickles the data and associates the session id with the server-side
 <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a>. Data and Session are passed to the server-side <code class="docutils literal notranslate"><span class="pre">SessionHandler.data_in</span></code>. This
 in turn calls <code class="docutils literal notranslate"><span class="pre">ServerSession.data_in()</span></code></p>
-</div>
-<div class="section" id="serversession-ingoing">
+</section>
+<section id="serversession-ingoing">
 <h3>ServerSession (ingoing)<a class="headerlink" href="#serversession-ingoing" title="Permalink to this headline">¶</a></h3>
 <p>The method <code class="docutils literal notranslate"><span class="pre">ServerSession.data_in</span></code> is meant to offer a single place to override if they want to
 examine <em>all</em> data passing into the server from the client. It is meant to call the
@@ -132,13 +133,13 @@ just normal functions and one can plugin new ones by simply putting them in a mo
 looks for such functions.</p>
 <p>If a matching inputfunc is found, it will be called with the Session and the inputcommand’s
 arguments:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">text</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="o">**</span><span class="p">{})</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">text</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="o">**</span><span class="p">{})</span>
 </pre></div>
 </td></tr></table></div>
 <p>If no matching inputfunc is found, an inputfunc named “default” will be tried and if that is also
 not found, an error will be raised.</p>
-</div>
-<div class="section" id="inputfunc">
+</section>
+<section id="inputfunc">
 <h3>Inputfunc<a class="headerlink" href="#inputfunc" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a> must be on the form <code class="docutils literal notranslate"><span class="pre">func(session,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>. An exception is
 the <code class="docutils literal notranslate"><span class="pre">default</span></code> inputfunc which has form <code class="docutils literal notranslate"><span class="pre">default(session,</span> <span class="pre">cmdname,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>, where <code class="docutils literal notranslate"><span class="pre">cmdname</span></code>
@@ -147,9 +148,9 @@ is the un-matched inputcommand string.</p>
 inputfunc was triggered. In the example of sending “look”, the inputfunc is named “text”. It will
 pass the argument to the <code class="docutils literal notranslate"><span class="pre">cmdhandler</span></code> which will eventually lead to the <code class="docutils literal notranslate"><span class="pre">look</span></code> command being
 executed.</p>
-</div>
-</div>
-<div class="section" id="the-outgoing-message-path">
+</section>
+</section>
+<section id="the-outgoing-message-path">
 <h2>The outgoing message path<a class="headerlink" href="#the-outgoing-message-path" title="Permalink to this headline">¶</a></h2>
 <p>Next let’s trace the passage from server to client.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span> <span class="o">-&gt;</span>
@@ -161,7 +162,7 @@ executed.</p>
       <span class="n">Client</span>
 </pre></div>
 </div>
-<div class="section" id="msg">
+<section id="msg">
 <h3>msg<a class="headerlink" href="#msg" title="Permalink to this headline">¶</a></h3>
 <p>All outgoing messages start in the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method. This is accessible from three places:</p>
 <ul class="simple">
@@ -170,7 +171,7 @@ executed.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">Session.msg</span></code></p></li>
 </ul>
 <p>The call sign of the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method looks like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>For our purposes, what is important to know is that with the exception of <code class="docutils literal notranslate"><span class="pre">from_obj</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and
@@ -178,9 +179,9 @@ executed.</p>
 arguments. So <code class="docutils literal notranslate"><span class="pre">text</span></code> is actually such a command, taking a string as its argument. The reason <code class="docutils literal notranslate"><span class="pre">text</span></code>
 sits as the first keyword argument is that it’s so commonly used (<code class="docutils literal notranslate"><span class="pre">caller.msg(&quot;Text&quot;)</span></code> for example).
 Here are some examples</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>   <span class="c1"># using the &#39;text&#39; outputfunc</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>   <span class="c1"># using the &#39;text&#39; outputfunc</span>
     <span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;HP:</span><span class="si">%i</span><span class="s2">, SP: </span><span class="si">%i</span><span class="s2">, MP: </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">HP</span><span class="p">,</span> <span class="n">SP</span><span class="p">,</span> <span class="n">MP</span><span class="p">))</span>
     <span class="n">msg</span><span class="p">(</span><span class="n">mycommand</span><span class="o">=</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
 </pre></div>
@@ -194,13 +195,13 @@ path.</p>
 override <code class="docutils literal notranslate"><span class="pre">msg</span></code> and make custom- or per-object modifications to the flow of data as it passes
 through.</p>
 </div></blockquote>
-</div>
-<div class="section" id="serversession-outgoing">
+</section>
+<section id="serversession-outgoing">
 <h3>ServerSession (outgoing)<a class="headerlink" href="#serversession-outgoing" title="Permalink to this headline">¶</a></h3>
 <p>Nothing is processed on the Session, it just serves as a gathering points for all different <code class="docutils literal notranslate"><span class="pre">msg</span></code>.
 It immediately passes the data on to …</p>
-</div>
-<div class="section" id="serversessionhandler-outgoing">
+</section>
+<section id="serversessionhandler-outgoing">
 <h3>ServerSessionHandler (outgoing)<a class="headerlink" href="#serversessionhandler-outgoing" title="Permalink to this headline">¶</a></h3>
 <p>In the <em>ServerSessionhandler</em>, the keywords from the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method are collated into one or more
 <em>outputcommands</em> on a standardized form (identical to inputcommands):</p>
@@ -212,8 +213,8 @@ an outputcommand <code class="docutils literal notranslate"><span class="pre">(&
 <p>This is also the point where <a class="reference external" href="TextTags.html#inline-functions">Inlinefuncs</a> are parsed, depending on the
 session to receive the data. Said data is pickled together with the Session id then sent over the
 AMP bridge.</p>
-</div>
-<div class="section" id="portalsessionhandler-outgoing">
+</section>
+<section id="portalsessionhandler-outgoing">
 <h3>PortalSessionHandler (outgoing)<a class="headerlink" href="#portalsessionhandler-outgoing" title="Permalink to this headline">¶</a></h3>
 <p>After the AMP connection has unpickled the data and paired the session id to the matching
 PortalSession, the handler next determines if this Session has a suitable method for handling the
@@ -226,8 +227,8 @@ called as <code class="docutils literal notranslate"><span class="pre">send_text
 called. In all other cases the <code class="docutils literal notranslate"><span class="pre">send_default(cmdname,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> will be called - this is the
 case for all client-custom outputcommands, like when wanting to tell the client to update a graphic
 or play a sound.</p>
-</div>
-<div class="section" id="portalsession-outgoing">
+</section>
+<section id="portalsession-outgoing">
 <h3>PortalSession (outgoing)<a class="headerlink" href="#portalsession-outgoing" title="Permalink to this headline">¶</a></h3>
 <p>At this point it is up to the session to convert the command into a form understood by this
 particular protocol. For telnet, <code class="docutils literal notranslate"><span class="pre">send_text</span></code> will just send the argument as a string (since that is
@@ -235,33 +236,33 @@ what telnet clients expect when “text” is coming). If <code class="docutils 
 everything that is not traditional text or a prompt), it will pack the data as an GMCP or MSDP
 command packet if the telnet client supports either (otherwise it won’t send at all). If sending to
 the webclient, the data will get packed into a JSON structure at all times.</p>
-</div>
-<div class="section" id="client-outgoing">
+</section>
+<section id="client-outgoing">
 <h3>Client (outgoing)<a class="headerlink" href="#client-outgoing" title="Permalink to this headline">¶</a></h3>
 <p>Once arrived at the client, the outputcommand is handled in the way supported by the client (or it
 may be quietly ignored if not). “text” commands will be displayed in the main window while others
 may trigger changes in the GUI or play a sound etc.</p>
-</div>
-<div class="section" id="full-example-of-outgoing-message">
+</section>
+<section id="full-example-of-outgoing-message">
 <h3>Full example of Outgoing Message<a class="headerlink" href="#full-example-of-outgoing-message" title="Permalink to this headline">¶</a></h3>
 <p>For a full outgoing message, you need to have the outgoing function defined in the javascript. See
 https://evennia.readthedocs.io/en/latest/Web-Client-Webclient.html for getting set up with custom
 webclient code. Once you have a custom plugin defined and loaded, create a new function in the
 plugin, onCustomFunc() for example:</p>
-<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="kd">var</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kd">var</span><span class="p">)</span>
     <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
 <p>You’ll also need to add the function to what the main plugin function returns:</p>
-<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
+<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
         <span class="nx">init</span><span class="o">:</span> <span class="nx">init</span><span class="p">,</span>
         <span class="nx">onCustomFunc</span><span class="p">,</span>
     <span class="p">}</span>
@@ -271,17 +272,17 @@ plugin, onCustomFunc() for example:</p>
 in place in your custom plugin, you also need to update the static/webclient/js/webclient_gui.js
 file to recognize the new function when it’s called. First you should add a new function inside the
 plugin_handler function to recognize the new function:</p>
-<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cmdname</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cmdname</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">for</span><span class="p">(</span> <span class="kd">let</span> <span class="nx">n</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;</span> <span class="nx">ordered_plugins</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">n</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
             <span class="kd">let</span> <span class="nx">plugin</span> <span class="o">=</span> <span class="nx">ordered_plugins</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span>
             <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;onCustomFunc&#39;</span> <span class="k">in</span> <span class="nx">plugin</span> <span class="p">)</span> <span class="p">{</span>
@@ -296,22 +297,22 @@ plugin_handler function to recognize the new function:</p>
 </td></tr></table></div>
 <p>This looks through all the plugins for a function that corresponds to the custom function being
 called. Next, add the custom function to the return statement of the plugin handler:</p>
-<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
+<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
         <span class="nx">add</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span>
         <span class="nx">onKeydown</span><span class="o">:</span> <span class="nx">onKeydown</span><span class="p">,</span>
         <span class="nx">onBeforeUnload</span><span class="o">:</span> <span class="nx">onBeforeUnload</span><span class="p">,</span>
@@ -331,20 +332,20 @@ called. Next, add the custom function to the return statement of the plugin hand
 </td></tr></table></div>
 <p>Lastly, you will also need to need to add an entry to the Evennia emitter to tie the python function
 call to this new javascript function (this is in the $(document).ready function):</p>
-<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="nx">Evennia</span><span class="p">.</span><span class="nx">emitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;customFunc&quot;</span><span class="p">,</span> <span class="nx">plugin_handler</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="nx">Evennia</span><span class="p">.</span><span class="nx">emitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;customFunc&quot;</span><span class="p">,</span> <span class="nx">plugin_handler</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 <p>Now you can make a call from your python code to the new custom function to pass information from
 the server to the client:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">customFunc</span><span class="o">=</span><span class="p">({</span><span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="s2">&quot;blarg&quot;</span><span class="p">}))</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">customFunc</span><span class="o">=</span><span class="p">({</span><span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="s2">&quot;blarg&quot;</span><span class="p">}))</span>
 </pre></div>
 </td></tr></table></div>
 <p>When this code in your python is run, you should be able to see the “blarg” string printed in the
 web client console. You should now be able to update the function call and definition to pass any
 information needed between server and client.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -420,7 +421,6 @@ information needed between server and client.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Messagepath.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

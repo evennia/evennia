@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Online Setup &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="online-setup">
+  <section id="online-setup">
 <h1>Online Setup<a class="headerlink" href="#online-setup" title="Permalink to this headline">¶</a></h1>
 <p>Evennia development can be made without any Internet connection beyond fetching updates. At some
 point however, you are likely to want to make your game visible online, either as part opening it to
 the public or to allow other developers or beta testers access to it.</p>
-<div class="section" id="connecting-from-the-outside">
+<section id="connecting-from-the-outside">
 <h2>Connecting from the outside<a class="headerlink" href="#connecting-from-the-outside" title="Permalink to this headline">¶</a></h2>
 <p>Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to
 the various security measures your computer, network or hosting service has. These will generally
@@ -111,7 +112,7 @@ requests use and web browsers automatically look for - if you do that you could 
 <code class="docutils literal notranslate"><span class="pre">http://203.0.113.0</span></code> without having to add the port at the end. This would collide with any other
 web services you are running through this router though.</p>
 </div></blockquote>
-<div class="section" id="settings-example">
+<section id="settings-example">
 <h3>Settings example<a class="headerlink" href="#settings-example" title="Permalink to this headline">¶</a></h3>
 <p>You can connect Evennia to the Internet without any changes to your settings. The default settings
 are easy to use but are not necessarily the safest. You can customize your online presence in your
@@ -120,25 +121,25 @@ to do a full <code class="docutils literal notranslate"><span class="pre">evenni
 <p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require
 access to five computer ports, of which three (only) should be open to the outside world. Below we
 continue to assume that our server address is <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
 
 <span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;MyGame&quot;</span>
 
@@ -160,17 +161,17 @@ continue to assume that our server address is <code class="docutils literal notr
 </pre></div>
 </td></tr></table></div>
 <p>Read on for a description of the individual settings.</p>
-</div>
-<div class="section" id="telnet">
+</section>
+<section id="telnet">
 <h3>Telnet<a class="headerlink" href="#telnet" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. Change to whichever outgoing Telnet port(s)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. Change to whichever outgoing Telnet port(s)</span>
 <span class="c1"># you are allowed to use on your host.</span>
 <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
 <span class="c1"># Optional for security. Restrict which telnet</span>
@@ -183,23 +184,23 @@ continue to assume that our server address is <code class="docutils literal notr
 <p>The <code class="docutils literal notranslate"><span class="pre">TELNET_*</span></code> settings are the most important ones for getting a traditional base game going. Which
 IP addresses you have available depends on your server hosting solution (see the next sections).
 Some hosts will restrict which ports you are allowed you use so make sure to check.</p>
-</div>
-<div class="section" id="web-server">
+</section>
+<section id="web-server">
 <h3>Web server<a class="headerlink" href="#web-server" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. This is a list of tuples</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. This is a list of tuples</span>
 <span class="c1"># (outgoing_port, internal_port). Only the outgoing</span>
 <span class="c1"># port should be open to the world!</span>
 <span class="c1"># set outgoing port to 80 if you want to run Evennia</span>
@@ -222,20 +223,20 @@ any other web server on the machine.
 The <em>internal</em> port (<code class="docutils literal notranslate"><span class="pre">4005</span></code> by default) is used internally by Evennia to communicate between the
 Server and the Portal. It should not be available to the outside world. You usually only need to
 change the outgoing port unless the default internal port is clashing with some other program.</p>
-</div>
-<div class="section" id="web-client">
+</section>
+<section id="web-client">
 <h3>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. Change this to the main IP address of your server.</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Required. Change this to the main IP address of your server.</span>
 <span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
 <span class="c1"># Optional and needed only if using a proxy or similar. Change</span>
 <span class="c1"># to the IP or address where the client can reach</span>
@@ -252,19 +253,19 @@ change the outgoing port unless the default internal port is clashing with some 
 be changed for it to find where to look. If it cannot find the server you will get an warning in
 your browser’s Console (in the dev tools of the browser), and the client will revert to the AJAX-
 based of the client instead, which tends to be slower.</p>
-</div>
-<div class="section" id="other-ports">
+</section>
+<section id="other-ports">
 <h3>Other ports<a class="headerlink" href="#other-ports" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Optional public facing. Only allows SSL connections (off by default).</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Optional public facing. Only allows SSL connections (off by default).</span>
 <span class="n">SSL_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4003</span><span class="p">]</span>
 <span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
 <span class="c1"># Optional public facing. Only if you allow SSH connections (off by default).</span>
@@ -279,16 +280,16 @@ based of the client instead, which tends to be slower.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">AMP_PORT</span></code> is required to work, since this is the internal port linking Evennia’s <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server and
 Portal</span></a> components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.</p>
-</div>
-<div class="section" id="lockdown-mode">
+</section>
+<section id="lockdown-mode">
 <h3>Lockdown mode<a class="headerlink" href="#lockdown-mode" title="Permalink to this headline">¶</a></h3>
 <p>When you test things out and check configurations you may not want players to drop in on you.
 Similarly, if you are doing maintenance on a live game you may want to take it offline for a while
 to fix eventual problems without risking people connecting. To do this, stop the server with
 <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> and add <code class="docutils literal notranslate"><span class="pre">LOCKDOWN_MODE</span> <span class="pre">=</span> <span class="pre">True</span></code> to your settings file. When you start the server
 again, your game will only be accessible from localhost.</p>
-</div>
-<div class="section" id="registering-with-the-evennia-game-directory">
+</section>
+<section id="registering-with-the-evennia-game-directory">
 <h3>Registering with the Evennia game directory<a class="headerlink" href="#registering-with-the-evennia-game-directory" title="Permalink to this headline">¶</a></h3>
 <p>Once your game is online you should make sure to register it with the <a class="reference external" href="http://games.evennia.com/">Evennia Game
 Index</a>. Registering with the index will help  people find your server,
@@ -300,9 +301,9 @@ as <em>Not yet public</em> and just be a teaser. If so, pick <em>pre-alpha</em> 
 </pre></div>
 </div>
 <p>and follow the instructions. See the <a class="reference internal" href="Evennia-Game-Index.html"><span class="doc">Game index page</span></a> for more details.</p>
-</div>
-</div>
-<div class="section" id="ssl">
+</section>
+</section>
+<section id="ssl">
 <h2>SSL<a class="headerlink" href="#ssl" title="Permalink to this headline">¶</a></h2>
 <p>SSL can be very useful for web clients. It will protect the credentials and gameplay of your users
 over a web client if they are in a public place, and your websocket can also be switched to WSS for
@@ -319,7 +320,7 @@ that issues them for free with assisted setup to make the entire process less pa
 <span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="s2">&quot;wss://fqdn:4002&quot;</span>
 </pre></div>
 </div>
-<div class="section" id="let-s-encrypt">
+<section id="let-s-encrypt">
 <h3>Let’s Encrypt<a class="headerlink" href="#let-s-encrypt" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://letsencrypt.org">Let’s Encrypt</a> is a certificate authority offering free certificates to
 secure a website with HTTPS. To get started issuing a certificate for your web server using Let’s
@@ -340,19 +341,19 @@ Domain Validation (DV)). This can be done either with configuring a certain path
 or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can
 also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have
 to use DNS verification.</p>
-</div>
-</div>
-<div class="section" id="relevant-ssl-proxy-setup-information">
+</section>
+</section>
+<section id="relevant-ssl-proxy-setup-information">
 <h2>Relevant SSL Proxy Setup Information<a class="headerlink" href="#relevant-ssl-proxy-setup-information" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="HAProxy-Config.html"><span class="doc">HAProxy Config</span></a> - this is recommended for use with letsencrypt. This
 page also has a more full description on how to set things up.</p></li>
 <li><p><a class="reference internal" href="Apache-Config.html"><span class="doc">Apache webserver configuration</span></a> (optional)</p></li>
 </ul>
-</div>
-<div class="section" id="hosting-locally-or-remotely">
+</section>
+<section id="hosting-locally-or-remotely">
 <h2>Hosting locally or remotely?<a class="headerlink" href="#hosting-locally-or-remotely" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="using-your-own-computer-as-a-server">
+<section id="using-your-own-computer-as-a-server">
 <h3>Using your own computer as a server<a class="headerlink" href="#using-your-own-computer-as-a-server" title="Permalink to this headline">¶</a></h3>
 <p>What we showed above is by far the simplest and probably cheapest option: Run Evennia on your own
 home computer. Moreover, since Evennia is its own web server, you don’t need to install anything
@@ -380,7 +381,7 @@ network, goes against your ISP’s terms of service (many ISPs insist on upselli
 tier connection) or you are the subject of legal action by a copyright holder, you may find your
 main internet connection terminated as a consequence.</p></li>
 </ul>
-<div class="section" id="setting-up-your-own-machine-as-a-server">
+<section id="setting-up-your-own-machine-as-a-server">
 <h4>Setting up your own machine as a server<a class="headerlink" href="#setting-up-your-own-machine-as-a-server" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="Online-Setup.html#connecting-from-the-outside">The first section</a> of this page describes how to do this
 and allow users to connect to the IP address of your machine/router.</p>
@@ -415,9 +416,9 @@ unique “hash”. Copy this string.</p></li>
 from FreeDNS. The <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> means we run in the background (might not  be valid in other operating
 systems). <code class="docutils literal notranslate"><span class="pre">inadyn</span></code> will henceforth check for changes every 60 seconds. You should put the <code class="docutils literal notranslate"><span class="pre">inadyn</span></code>
 command string in a startup script somewhere so it kicks into gear whenever your computer starts.</p>
-</div>
-</div>
-<div class="section" id="remote-hosting">
+</section>
+</section>
+<section id="remote-hosting">
 <h3>Remote hosting<a class="headerlink" href="#remote-hosting" title="Permalink to this headline">¶</a></h3>
 <p>Your normal “web hotel” will probably not be enough to run Evennia. A web hotel is normally aimed at
 a very specific usage - delivering web pages, at the most with some dynamic content. The “Python
@@ -454,7 +455,7 @@ least 100MB RAM and likely much more for a large production game.</p></li>
 usage might be limited. Also, if the server people decides to take the server down for maintenance,
 you have no choice but to sit it out (but you’ll hopefully be warned ahead of time).</p></li>
 </ul>
-<div class="section" id="installing-evennia-on-a-remote-server">
+<section id="installing-evennia-on-a-remote-server">
 <h4>Installing Evennia on a remote server<a class="headerlink" href="#installing-evennia-on-a-remote-server" title="Permalink to this headline">¶</a></h4>
 <p>Firstly, if you are familiar with server infrastructure, consider using [Docker](Running-Evennia-in-
 Docker) to deploy your game to the remote server; it will likely ease installation and deployment.
@@ -468,9 +469,9 @@ needed.</p>
 from <a class="reference external" href="https://pypi.python.org/pypi/virtualenv">the virtualenv pypi</a>. Using <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> you can
 install everything without actually needing to have further <code class="docutils literal notranslate"><span class="pre">root</span></code> access. Ports might be an issue,
 so make sure you know which ports are available to use and reconfigure Evennia accordingly.</p>
-</div>
-</div>
-<div class="section" id="hosting-options">
+</section>
+</section>
+<section id="hosting-options">
 <h3>Hosting options<a class="headerlink" href="#hosting-options" title="Permalink to this headline">¶</a></h3>
 <p>To find commercial solutions, browse the web for “shell access”, “VPS” or “Cloud services” in your
 region. You may find useful offers for “low cost” VPS hosting on [Low End Box][7]. The associated
@@ -565,9 +566,9 @@ game. This host is <em>not</em> recommended for Evennia.</p></td>
 </table>
 </div></blockquote>
 <p><em>Please help us expand this list.</em></p>
-</div>
-</div>
-<div class="section" id="cloud9">
+</section>
+</section>
+<section id="cloud9">
 <h2>Cloud9<a class="headerlink" href="#cloud9" title="Permalink to this headline">¶</a></h2>
 <p>If you are interested in running Evennia in the online dev environment <a class="reference external" href="https://c9.io/">Cloud9</a>, you
 can spin it up through their normal online setup using the Evennia Linux install instructions. The
@@ -578,8 +579,8 @@ else as normal.</p>
 service offering. New customers entitled to the 1 year AWS “free tier” may find it provides
 sufficient resources to operate a Cloud9 development environment without charge.
 https://aws.amazon.com/cloud9/</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -664,7 +665,6 @@ https://aws.amazon.com/cloud9/</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Online-Setup.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

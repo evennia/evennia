@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Start Stop Reload &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="start-stop-reload">
+  <section id="start-stop-reload">
 <h1>Start Stop Reload<a class="headerlink" href="#start-stop-reload" title="Permalink to this headline">¶</a></h1>
 <p>You control Evennia from your game folder (we refer to it as <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> here), using the <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
 program. If the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program is not available on the command line you must first install
@@ -63,7 +64,7 @@ available, make sure your <a class="reference external" href="Glossary.html#virt
 </pre></div>
 </div>
 <p>to give you a menu with options.</p>
-<div class="section" id="starting-evennia">
+<section id="starting-evennia">
 <h2>Starting Evennia<a class="headerlink" href="#starting-evennia" title="Permalink to this headline">¶</a></h2>
 <p>Evennia consists of two components, the Evennia <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server and Portal</span></a>.  Briefly,
 the  <em>Server</em> is what is running the mud. It handles all game-specific things but doesn’t care
@@ -87,8 +88,8 @@ those logs directly in your terminal by attaching <code class="docutils literal 
 <blockquote>
 <div><p>To stop viewing the log files, press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="foreground-mode">
+</section>
+<section id="foreground-mode">
 <h2>Foreground mode<a class="headerlink" href="#foreground-mode" title="Permalink to this headline">¶</a></h2>
 <p>Normally, Evennia runs as a ‘daemon’, in the background. If you want you can start either of the
 processes (but not both) as foreground processes in <em>interactive</em> mode. This means they will log
@@ -104,8 +105,8 @@ kill the process (not just the log-file view) with <code class="docutils literal
 </div>
 <p>will start the <em>Portal</em> in interactive mode. This is usually only necessary if you want to run
 Evennia under the control of some other type of process.</p>
-</div>
-<div class="section" id="reloading">
+</section>
+<section id="reloading">
 <h2>Reloading<a class="headerlink" href="#reloading" title="Permalink to this headline">¶</a></h2>
 <p>The act of <em>reloading</em> means the Portal will tell the Server to shut down and then boot it back up
 again. Everyone will get a message and the game will be briefly paused for all accounts as the
@@ -121,8 +122,8 @@ can save eventual temporary properties you want.</p>
 </div>
 <p>Sometimes reloading from “the outside” is necessary in case you have added some sort of bug that
 blocks in-game input.</p>
-</div>
-<div class="section" id="resetting">
+</section>
+<section id="resetting">
 <h2>Resetting<a class="headerlink" href="#resetting" title="Permalink to this headline">¶</a></h2>
 <p><em>Resetting</em> is the equivalent of a “cold reboot” - the Server will shut down and then restarted
 again, but will behave as if it was fully shut down. As opposed to a “real” shutdown, no accounts
@@ -133,8 +134,8 @@ hooks. It can be a good way to clean unsafe scripts during development, for exam
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reset</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rebooting">
+</section>
+<section id="rebooting">
 <h2>Rebooting<a class="headerlink" href="#rebooting" title="Permalink to this headline">¶</a></h2>
 <p>This will shut down <em>both</em> Server and Portal, which means all connected players will lose their
 connection. It can only be initiated from the terminal:</p>
@@ -146,8 +147,8 @@ connection. It can only be initiated from the terminal:</p>
  <span class="n">evennia</span> <span class="n">start</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="shutting-down">
+</section>
+<section id="shutting-down">
 <h2>Shutting down<a class="headerlink" href="#shutting-down" title="Permalink to this headline">¶</a></h2>
 <p>A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
 systems saved and turned off cleanly.</p>
@@ -158,8 +159,8 @@ systems saved and turned off cleanly.</p>
 <p>You will see messages of both Server and Portal closing down. All accounts will see the shutdown
 message and then be disconnected. The same effect happens if you press <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> while the server
 runs in interactive mode.</p>
-</div>
-<div class="section" id="status-and-info">
+</section>
+<section id="status-and-info">
 <h2>Status and info<a class="headerlink" href="#status-and-info" title="Permalink to this headline">¶</a></h2>
 <p>To check basic Evennia settings, such as which ports and services are active, this will repeat the
 initial return given when starting the server:</p>
@@ -171,8 +172,8 @@ initial return given when starting the server:</p>
 </pre></div>
 </div>
 <p>This can be useful for automating checks to make sure the game is running and is responding.</p>
-</div>
-<div class="section" id="killing-linux-mac-only">
+</section>
+<section id="killing-linux-mac-only">
 <h2>Killing (Linux/Mac only)<a class="headerlink" href="#killing-linux-mac-only" title="Permalink to this headline">¶</a></h2>
 <p>In the extreme case that neither of the server processes locks up and does not respond to commands,
 you can send them kill-signals to force them to shut down. To kill only the Server:</p>
@@ -184,22 +185,22 @@ you can send them kill-signals to force them to shut down. To kill only the Serv
 </pre></div>
 </div>
 <p>Note that this functionality is not supported on Windows.</p>
-</div>
-<div class="section" id="django-options">
+</section>
+<section id="django-options">
 <h2>Django options<a class="headerlink" href="#django-options" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program will also pass-through options used by the <code class="docutils literal notranslate"><span class="pre">django-admin</span></code>. These operate on
 the database in various ways.</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> evennia migrate <span class="c1"># migrate the database</span>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span> evennia migrate <span class="c1"># migrate the database</span>
  evennia shell   <span class="c1"># launch an interactive, django-aware python shell</span>
  evennia dbshell <span class="c1"># launch database shell</span>
 </pre></div>
 </td></tr></table></div>
 <p>For (many) more options, see <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage">the django-admin
 docs</a>.</p>
-</div>
-<div class="section" id="advanced-handling-of-evennia-processes">
+</section>
+<section id="advanced-handling-of-evennia-processes">
 <h2>Advanced handling of Evennia processes<a class="headerlink" href="#advanced-handling-of-evennia-processes" title="Permalink to this headline">¶</a></h2>
 <p>If you should need to manually manage Evennia’s processors (or view them in a task manager program
 such as Linux’ <code class="docutils literal notranslate"><span class="pre">top</span></code> or the more advanced <code class="docutils literal notranslate"><span class="pre">htop</span></code>), you will find the following processes to be
@@ -211,7 +212,7 @@ game. The other processes (with the same name but different process id) handle�
 internal web server threads. You can look at <code class="docutils literal notranslate"><span class="pre">mygame/server/server.pid</span></code> to determine which is the
 main process.</p></li>
 </ul>
-<div class="section" id="syntax-errors-during-live-development">
+<section id="syntax-errors-during-live-development">
 <h3>Syntax errors during live development<a class="headerlink" href="#syntax-errors-during-live-development" title="Permalink to this headline">¶</a></h3>
 <p>During development, you will usually modify code and then reload the server to see your changes.
 This is done by Evennia re-importing your custom modules from disk. Usually bugs in a module will
@@ -230,9 +231,9 @@ wrong.</p>
 </div>
 <p>Assuming the bug was fixed, this will start the Server manually (while not restarting the Portal).
 In-game you should now get the message that the Server has successfully restarted.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -302,7 +303,6 @@ In-game you should now get the message that the Server has successfully restarte
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Start-Stop-Reload.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

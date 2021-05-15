@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Locks &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="locks">
+  <section id="locks">
 <h1>Locks<a class="headerlink" href="#locks" title="Permalink to this headline">¶</a></h1>
 <p>For most games it is a good idea to restrict what people can do. In Evennia such restrictions are
 applied and checked by something called <em>locks</em>. All Evennia entities (<a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>,
@@ -61,7 +62,7 @@ the specific ID of, say, <code class="docutils literal notranslate"><span class=
 on the object, the <code class="docutils literal notranslate"><span class="pre">delete</span></code> command makes sure to check if this player is really allowed to do so.
 It calls the lock, which in turn checks if the player’s id is <code class="docutils literal notranslate"><span class="pre">34</span></code>. Only then will it allow <code class="docutils literal notranslate"><span class="pre">delete</span></code>
 to go on with its job.</p>
-<div class="section" id="setting-and-checking-a-lock">
+<section id="setting-and-checking-a-lock">
 <h2>Setting and checking a lock<a class="headerlink" href="#setting-and-checking-a-lock" title="Permalink to this headline">¶</a></h2>
 <p>The in-game command for setting locks on objects is <code class="docutils literal notranslate"><span class="pre">lock</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="n">lock</span> <span class="n">obj</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">lockstring</span><span class="o">&gt;</span>
@@ -71,7 +72,7 @@ to go on with its job.</p>
 into more detail on how <code class="docutils literal notranslate"><span class="pre">&lt;lockstring&gt;</span></code> should look in the next section.</p>
 <p>Code-wise, Evennia handles locks through what is usually called <code class="docutils literal notranslate"><span class="pre">locks</span></code> on all relevant entities.
 This is a handler that allows you to add, delete and check locks.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">myobj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">&lt;</span><span class="n">lockstring</span><span class="o">&gt;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">myobj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">&lt;</span><span class="n">lockstring</span><span class="o">&gt;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>One can call <code class="docutils literal notranslate"><span class="pre">locks.check()</span></code> to perform a lock check, but to hide the underlying implementation all
@@ -79,30 +80,30 @@ objects also have a convenience function called <code class="docutils literal no
 example below, <code class="docutils literal notranslate"><span class="pre">accessing_obj</span></code> is the object requesting the ‘delete’ access whereas <code class="docutils literal notranslate"><span class="pre">obj</span></code> is the
 object that might get deleted. This is how it would look (and does look) from inside the <code class="docutils literal notranslate"><span class="pre">delete</span></code>
 command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">):</span>
          <span class="n">accessing_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Sorry, you may not delete that.&quot;</span><span class="p">)</span>
          <span class="k">return</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="defining-locks">
+</section>
+<section id="defining-locks">
 <h2>Defining locks<a class="headerlink" href="#defining-locks" title="Permalink to this headline">¶</a></h2>
 <p>Defining a lock (i.e. an access restriction) in Evennia is done by adding simple strings of lock
 definitions to the object’s <code class="docutils literal notranslate"><span class="pre">locks</span></code> property using <code class="docutils literal notranslate"><span class="pre">obj.locks.add()</span></code>.</p>
 <p>Here are some examples of lock strings (not including the quotes):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span>   <span class="c1"># only allow obj #34 to delete</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span>   <span class="c1"># only allow obj #34 to delete</span>
      <span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>      <span class="c1"># let everyone edit</span>
      <span class="c1"># only those who are not &quot;very_weak&quot; or are Admins may pick this up</span>
      <span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Formally, a lockstring has the following syntax:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">access_type</span><span class="p">:</span> <span class="p">[</span><span class="n">NOT</span><span class="p">]</span> <span class="n">lockfunc1</span><span class="p">([</span><span class="n">arg1</span><span class="p">,</span><span class="o">..</span><span class="p">])</span> <span class="p">[</span><span class="n">AND</span><span class="o">|</span><span class="n">OR</span><span class="p">]</span> <span class="p">[</span><span class="n">NOT</span><span class="p">]</span> <span class="n">lockfunc2</span><span class="p">([</span><span class="n">arg1</span><span class="p">,</span><span class="o">...</span><span class="p">])</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">access_type</span><span class="p">:</span> <span class="p">[</span><span class="n">NOT</span><span class="p">]</span> <span class="n">lockfunc1</span><span class="p">([</span><span class="n">arg1</span><span class="p">,</span><span class="o">..</span><span class="p">])</span> <span class="p">[</span><span class="n">AND</span><span class="o">|</span><span class="n">OR</span><span class="p">]</span> <span class="p">[</span><span class="n">NOT</span><span class="p">]</span> <span class="n">lockfunc2</span><span class="p">([</span><span class="n">arg1</span><span class="p">,</span><span class="o">...</span><span class="p">])</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
 </pre></div>
 </td></tr></table></div>
 <p>where <code class="docutils literal notranslate"><span class="pre">[]</span></code> marks optional parts. <code class="docutils literal notranslate"><span class="pre">AND</span></code>, <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> are not case sensitive and excess spaces are
@@ -116,7 +117,7 @@ the lockstring. The string below yields the same result as the previous example:
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">);</span><span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span><span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="valid-access-types">
+<section id="valid-access-types">
 <h3>Valid access_types<a class="headerlink" href="#valid-access-types" title="Permalink to this headline">¶</a></h3>
 <p>An <code class="docutils literal notranslate"><span class="pre">access_type</span></code>, the first part of a lockstring, defines what kind of capability a lock controls,
 such as “delete” or “edit”. You may in principle name your <code class="docutils literal notranslate"><span class="pre">access_type</span></code> anything as long as it is
@@ -192,15 +193,15 @@ boot listeners etc.</p></li>
 </ul>
 <p>So to take an example, whenever an exit is to be traversed, a lock of the type <em>traverse</em> will be
 checked. Defining a suitable lock type for an exit object would thus involve a lockstring <code class="docutils literal notranslate"><span class="pre">traverse:</span> <span class="pre">&lt;lock</span> <span class="pre">functions&gt;</span></code>.</p>
-</div>
-<div class="section" id="custom-access-types">
+</section>
+<section id="custom-access-types">
 <h3>Custom access_types<a class="headerlink" href="#custom-access-types" title="Permalink to this headline">¶</a></h3>
 <p>As stated above, the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> part of the lock is simply the ‘name’ or ‘type’ of the lock. The
 text is an arbitrary string that must be unique for an object. If adding a lock with the same
 <code class="docutils literal notranslate"><span class="pre">access_type</span></code> as one that already exists on the object, the new one override the old one.</p>
 <p>For example, if you wanted to create a bulletin board system and wanted to restrict who can either
 read a board or post to a board. You could then define locks such as:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;read:perm(Player);post:perm(Admin)&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;read:perm(Player);post:perm(Admin)&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This will create a ‘read’ access type for Characters having the <code class="docutils literal notranslate"><span class="pre">Player</span></code> permission or above and a
@@ -208,15 +209,15 @@ read a board or post to a board. You could then define locks such as:</p>
 function works).  When it comes time to test these permissions, simply check like this (in this
 example, the <code class="docutils literal notranslate"><span class="pre">obj</span></code> may be a board on the bulletin board system and <code class="docutils literal notranslate"><span class="pre">accessing_obj</span></code> is the player
 trying to read the board):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">):</span>
          <span class="n">accessing_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Sorry, you may not read that.&quot;</span><span class="p">)</span>
          <span class="k">return</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="lock-functions">
+</section>
+<section id="lock-functions">
 <h3>Lock functions<a class="headerlink" href="#lock-functions" title="Permalink to this headline">¶</a></h3>
 <p>A lock function is a normal Python function put in a place Evennia looks for such functions. The
 modules Evennia looks at is the list <code class="docutils literal notranslate"><span class="pre">settings.LOCK_FUNC_MODULES</span></code>. <em>All functions</em> in any of those
@@ -228,14 +229,14 @@ your own with the same name.</p>
 object wanting to get access) and the <em>accessed object</em> (this is the object with the lock). Those
 two are fed automatically as the first two arguments to the function when the lock is checked. Any
 arguments explicitly given in the lock definition will appear as extra arguments.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A simple example lock function. Called with e.g. `id(34)`. This is</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A simple example lock function. Called with e.g. `id(34)`. This is</span>
     <span class="c1"># defined in, say mygame/server/conf/lockfuncs.py</span>
     
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -246,16 +247,16 @@ arguments explicitly given in the lock definition will appear as extra arguments
 </pre></div>
 </td></tr></table></div>
 <p>The above could for example be used in a lock function like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># we have `obj` and `owner_object` from before</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># we have `obj` and `owner_object` from before</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;edit: id(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">owner_object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We could check if the “edit” lock is passed with something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># as part of a Command&#39;s func() method, for example</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># as part of a Command&#39;s func() method, for example</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">):</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have access to edit this!&quot;</span><span class="p">)</span>
         <span class="k">return</span>
@@ -290,17 +291,17 @@ permissions and dbrefs of <em>Accounts</em>, not on Characters.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">serversetting(settingname,</span> <span class="pre">value)</span></code> - Only returns True if Evennia has a given setting or a
 setting set to a given value.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="checking-simple-strings">
+</section>
+</section>
+<section id="checking-simple-strings">
 <h2>Checking simple strings<a class="headerlink" href="#checking-simple-strings" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes you don’t really need to look up a certain lock, you just want to check a lockstring. A
 common use is inside Commands, in order to check if a user has a certain permission. The lockhandler
 has a method <code class="docutils literal notranslate"><span class="pre">check_lockstring(accessing_obj,</span> <span class="pre">lockstring,</span> <span class="pre">bypass_superuser=False)</span></code> that allows this.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="c1"># inside command definition</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="c1"># inside command definition</span>
      <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;dummy:perm(Admin)&quot;</span><span class="p">):</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must be an Admin or higher to do this!&quot;</span><span class="p">)</span>
          <span class="k">return</span>
@@ -308,8 +309,8 @@ has a method <code class="docutils literal notranslate"><span class="pre">check_
 </td></tr></table></div>
 <p>Note here that the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> can be left to a dummy value since this method does not actually do
 a Lock lookup.</p>
-</div>
-<div class="section" id="default-locks">
+</section>
+<section id="default-locks">
 <h2>Default locks<a class="headerlink" href="#default-locks" title="Permalink to this headline">¶</a></h2>
 <p>Evennia sets up a few basic locks on all new objects and accounts (if we didn’t, noone would have
 any access to anything from the start).  This is all defined in the root <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>
@@ -319,9 +320,9 @@ This is called once, before <code class="docutils literal notranslate"><span cla
 child object to change the default. Also creation commands like <code class="docutils literal notranslate"><span class="pre">create</span></code> changes the locks of
 objects you create - for example it sets the <code class="docutils literal notranslate"><span class="pre">control</span></code> lock_type so as to allow you, its creator, to
 control and delete the object.</p>
-</div>
-</div>
-<div class="section" id="permissions">
+</section>
+</section>
+<section id="permissions">
 <h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>This section covers the underlying code use of permissions. If you just want to learn how to
@@ -345,13 +346,13 @@ check the permissions set on the key and only return true if the permission is t
 <p>Finally we need to actually check this lock somehow. Let’s say the chest has an command <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">&lt;key&gt;</span></code>
 sitting on itself. Somewhere in its code the command needs to figure out which key you are using and
 test if this key has the correct permission:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># self.obj is the chest</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># self.obj is the chest</span>
     <span class="c1"># and used_key is the key we used as argument to</span>
     <span class="c1"># the command. The self.caller is the one trying</span>
     <span class="c1"># to unlock the chest</span>
@@ -401,28 +402,28 @@ from the <em>hierarchy tree</em> - as mentioned above, an Account’s permission
 character. So to be sure to avoid confusion you should generally put hierarchy permissions on the
 Account, not on their Characters (but see also <a class="reference external" href="Locks.html#Quelling">quelling</a>).</p>
 <p>Below is an example of an object without any connected account</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">obj1</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">obj1</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">]</span>
     <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
     
     <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns True!</span>
 </pre></div>
 </td></tr></table></div>
 <p>And one example of a puppet with a connected account:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Accounts&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Accounts&quot;</span><span class="p">)</span>
     <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
     <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
     
     <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns False!</span>
 </pre></div>
 </td></tr></table></div>
-<div class="section" id="superusers">
+<section id="superusers">
 <h2>Superusers<a class="headerlink" href="#superusers" title="Permalink to this headline">¶</a></h2>
 <p>There is normally only one <em>superuser</em> account and that is the one first created when starting
 Evennia (User #1). This is sometimes known as the “Owner” or “God” user.  A superuser has more than
@@ -430,8 +431,8 @@ full access - it completely <em>bypasses</em> all locks so no checks are even ru
 superuser to always have access to everything in an emergency. But it also hides any eventual errors
 you might have made in your lock definitions. So when trying out game systems you should either use
 quelling (see below) or make a second Developer-level character so your locks get tested correctly.</p>
-</div>
-<div class="section" id="quelling">
+</section>
+<section id="quelling">
 <h2>Quelling<a class="headerlink" href="#quelling" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">quell</span></code> command can be used to enforce the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lockfunc to ignore permissions on the
 Account and instead use the permissions on the Character only. This can be used e.g. by staff to
@@ -439,8 +440,8 @@ test out things with a lower permission level. Return to the normal operation wi
 that quelling will use the smallest of any hierarchical permission on the Account or Character, so
 one cannot escalate one’s Account permission by quelling to a high-permission Character. Also the
 superuser can quell their powers this way, making them affectable by locks.</p>
-</div>
-<div class="section" id="more-lock-definition-examples">
+</section>
+<section id="more-lock-definition-examples">
 <h2>More Lock definition examples<a class="headerlink" href="#more-lock-definition-examples" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">examine</span><span class="p">:</span> <span class="n">attr</span><span class="p">(</span><span class="n">eyesight</span><span class="p">,</span> <span class="n">excellent</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Builders</span><span class="p">)</span>
 </pre></div>
@@ -467,10 +468,10 @@ lock type the command will not even appear in their <code class="docutils litera
 would be be added as a lock string to the <code class="docutils literal notranslate"><span class="pre">tell</span></code> command. This will allow everyone <em>not</em> having the
 “permission” <code class="docutils literal notranslate"><span class="pre">no_tell</span></code> to use the <code class="docutils literal notranslate"><span class="pre">tell</span></code> command. You could easily give an account the “permission”
 <code class="docutils literal notranslate"><span class="pre">no_tell</span></code> to disable their use of this particular command henceforth.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">dbref</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">id</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">dbref</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">id</span>
     <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">%s</span><span class="s2">);examine:perm(Builders);delete:id(</span><span class="si">%s</span><span class="s2">) or perm(Admin);get:all()&quot;</span> <span class="o">%</span>
 <span class="p">(</span><span class="n">dbref</span><span class="p">,</span> <span class="n">dbref</span><span class="p">)</span>
     <span class="n">new_obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
@@ -479,8 +480,8 @@ would be be added as a lock string to the <code class="docutils literal notransl
 <p>This is how the <code class="docutils literal notranslate"><span class="pre">create</span></code> command sets up new objects. In sequence, this permission string sets the
 owner of this object be the creator (the one  running <code class="docutils literal notranslate"><span class="pre">create</span></code>). Builders may examine the object
 whereas only Admins and the creator may delete it. Everyone can pick it up.</p>
-</div>
-<div class="section" id="a-complete-example-of-setting-locks-on-an-object">
+</section>
+<section id="a-complete-example-of-setting-locks-on-an-object">
 <h2>A complete example of setting locks on an object<a class="headerlink" href="#a-complete-example-of-setting-locks-on-an-object" title="Permalink to this headline">¶</a></h2>
 <p>Assume we have two objects - one is ourselves (not superuser) and the other is an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a>
 called <code class="docutils literal notranslate"><span class="pre">box</span></code>.</p>
@@ -497,12 +498,12 @@ assign it to ourselves to begin with.</p>
 <p>Ok, so for testing we made ourselves strong, but not strong enough.  Now we need to look at what
 happens when someone tries to pick up the the box - they use the <code class="docutils literal notranslate"><span class="pre">get</span></code> command (in the default set).
 This is defined in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code>. In its code we find this snippet:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;get&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;get&#39;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -527,21 +528,21 @@ such a one included in evennia (see <code class="docutils literal notranslate"><
 <p>Try to <code class="docutils literal notranslate"><span class="pre">get</span></code> the object and you should get the message that we are not strong enough. Increase your
 strength above 50 however and you’ll pick it up no problem. Done! A very heavy box!</p>
 <p>If you wanted to set this up in python code, it would look something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span>   
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>   
  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
     
     <span class="c1"># create, then set the lock</span>
@@ -558,8 +559,8 @@ strength above 50 however and you’ll pick it up no problem. Done! A very heavy
     <span class="c1"># one heavy box, ready to withstand all but the strongest...</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="on-django-s-permission-system">
+</section>
+<section id="on-django-s-permission-system">
 <h2>On Django’s permission system<a class="headerlink" href="#on-django-s-permission-system" title="Permalink to this headline">¶</a></h2>
 <p>Django also implements a comprehensive permission/security system of its own.  The reason we don’t
 use that is because it is app-centric (app in the Django sense).  Its permission strings are of the
@@ -573,8 +574,8 @@ when we try to hide away as much of the underlying architecture as possible.</p>
 login. It is also used exclusively for managing Evennia’s web-based admin site, which is a graphical
 front-end for the database of Evennia. You edit and assign such permissions directly from the web
 interface. It’s stand-alone from the permissions described above.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -648,7 +649,6 @@ interface. It’s stand-alone from the permissions described above.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Locks.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

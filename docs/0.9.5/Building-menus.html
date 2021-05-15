@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Building menus &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,10 +37,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="building-menus">
+  <section id="building-menus">
 <h1>Building menus<a class="headerlink" href="#building-menus" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="the-building-menu-contrib">
+</section>
+<section id="the-building-menu-contrib">
 <h1>The building_menu contrib<a class="headerlink" href="#the-building-menu-contrib" title="Permalink to this headline">¶</a></h1>
 <p>This contrib allows you to write custom and easy to use building menus.  As the name implies, these
 menus are most useful for building things, that is, your builders might appreciate them, although
@@ -49,7 +50,7 @@ are intended to make building easier.  They replicate what other engines refer t
 editors”, which allow to you to build in a menu instead of having to enter a lot of complex
 commands.  Builders might appreciate this simplicity, and if the code that was used to create them
 is simple as well, coders could find this contrib useful.</p>
-<div class="section" id="a-simple-menu">
+<section id="a-simple-menu">
 <h2>A simple menu<a class="headerlink" href="#a-simple-menu" title="Permalink to this headline">¶</a></h2>
 <p>Before diving in, there are some things to point out:</p>
 <ul class="simple">
@@ -64,54 +65,54 @@ choice and go back to the entire menu.  (All of this can be changed).</p></li>
 demonstration, but we will override it in this example, using the same code with more flexibility.</p></li>
 </ul>
 <p>So let’s add a very basic example to begin with.</p>
-<div class="section" id="a-generic-editing-command">
+<section id="a-generic-editing-command">
 <h3>A generic editing command<a class="headerlink" href="#a-generic-editing-command" title="Permalink to this headline">¶</a></h3>
 <p>Let’s begin by adding a new command.  You could add or edit the following file (there’s no trick
 here, feel free to organize the code differently):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file: commands/building.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file: commands/building.py</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -182,14 +183,14 @@ create an instance of our building menu and call its <code class="docutils liter
 <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> yet.</p>
 <p>To add this command, edit <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>.  Import our command, adding an import line
 at the top of the file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">...</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -200,23 +201,23 @@ at the top of the file:</p>
 </pre></div>
 </td></tr></table></div>
 <p>And in the class below (<code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>), add the last line of this code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
@@ -235,25 +236,25 @@ at the top of the file:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EditCmd</span><span class="p">())</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="our-first-menu">
+</section>
+<section id="our-first-menu">
 <h3>Our first menu<a class="headerlink" href="#our-first-menu" title="Permalink to this headline">¶</a></h3>
 <p>So far, we can’t use our building menu.  Our <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> command will throw an error.  We have to define
 the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class.  Open the <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> file and add to the end of the file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... at the end of commands/building.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... at the end of commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -344,21 +345,21 @@ room key (the way we have done here).  You can use <code class="docutils literal
 </ul>
 <p>We then check, with the <code class="docutils literal notranslate"><span class="pre">look</span></code> command, that the menu has modified this room key.  So by adding a
 class, with a method and a single line of code within, we’ve added a menu with two choices.</p>
-</div>
-<div class="section" id="code-explanation">
+</section>
+<section id="code-explanation">
 <h3>Code explanation<a class="headerlink" href="#code-explanation" title="Permalink to this headline">¶</a></h3>
 <p>Let’s examine our code again:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -396,13 +397,13 @@ attribute or a typeclass persistent or non-persistent attribute (we’ll see oth
 don’t have this feature).  You can, however, override it to provide a different “quit” message or to
 perform some actions.</p>
 <p>I encourage you to play with this code.  As simple as it is, it offers some functionalities already.</p>
-</div>
-</div>
-<div class="section" id="customizing-building-menus">
+</section>
+</section>
+<section id="customizing-building-menus">
 <h2>Customizing building menus<a class="headerlink" href="#customizing-building-menus" title="Permalink to this headline">¶</a></h2>
 <p>This somewhat long section explains how to customize building menus.  There are different ways
 depending on what you would like to achieve.  We’ll go from specific to more advanced here.</p>
-<div class="section" id="generic-choices">
+<section id="generic-choices">
 <h3>Generic choices<a class="headerlink" href="#generic-choices" title="Permalink to this headline">¶</a></h3>
 <p>In the previous example, we’ve used <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>.  This is one of three methods you can use to add
 choices.  The other two are to handle more generic actions:</p>
@@ -425,16 +426,16 @@ can specify the title and key of this menu.  You can also call a function when t
 </ul>
 <p>So here’s a more complete example (you can replace your <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
 <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> to see it):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -498,8 +499,8 @@ commands (like we did here, <code class="docutils literal notranslate"><span cla
 the description is saved (here, in <code class="docutils literal notranslate"><span class="pre">room.db.desc</span></code>) and you go back to the building menu.</p>
 <p>Notice that the choice to quit has changed too, which is due to our adding <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code>.  In
 most cases, you will probably not use this method, since the quit menu is added automatically.</p>
-</div>
-<div class="section" id="add-choice-options">
+</section>
+<section id="add-choice-options">
 <h3><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> options<a class="headerlink" href="#add-choice-options" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> and the two methods <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> and <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code> take a lot of optional
 arguments to make customization easier.  Some of these options might not apply to <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>
@@ -537,26 +538,26 @@ choice.  This can be useful for cleanup as well.</p></li>
 <p>These are a lot of possibilities, and most of the time you won’t need them all.  Here is a short
 example using some of these arguments (again, replace the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
 <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> with the following code to see it working):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -619,8 +620,8 @@ information between braces… sometimes using double braces.  What might be a bi
 them.</p></li>
 </ul>
 <p>In <code class="docutils literal notranslate"><span class="pre">glance</span></code>, we also use <code class="docutils literal notranslate"><span class="pre">{obj.key}</span></code> to indicate we want to show the room’s key.</p>
-</div>
-<div class="section" id="everything-can-be-a-function">
+</section>
+<section id="everything-can-be-a-function">
 <h3>Everything can be a function<a class="headerlink" href="#everything-can-be-a-function" title="Permalink to this headline">¶</a></h3>
 <p>The keyword arguments of <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> are often strings (type <code class="docutils literal notranslate"><span class="pre">str</span></code>).  But each of these arguments
 can also be a function.  This allows for a lot of customization, since we define the callbacks that
@@ -651,38 +652,38 @@ can we show that?</p>
 great.  Perhaps even add new exits?</p>
 <p>First of all, let’s write a function to display the <code class="docutils literal notranslate"><span class="pre">glance</span></code> on existing exits.  Here’s the code,
 it’s explained below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Building menu to edit a room.</span>
@@ -759,7 +760,7 @@ building menu.</p></li>
 <li><p>Anything else: any other argument will contain the object being edited by the building menu.</p></li>
 </ul>
 <p>So in our case:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 </pre></div>
 </td></tr></table></div>
 <p>The only argument we need is <code class="docutils literal notranslate"><span class="pre">room</span></code>.  It’s not present in the list of possible arguments, so the
@@ -773,59 +774,59 @@ possibilities.  Just know that they exist.</p>
 <p>We should also define a text callback, so that we can enter our menu to see the room exits.  We’ll
 see how to edit them in the next section but this is a good opportunity to show a more complete
 callback.  To see it in action, as usual, replace the class and functions in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Our building menu</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
@@ -920,8 +921,8 @@ destination of exits accurately.  Here is a demonstration of this menu:</p>
 </pre></div>
 </div>
 <p>Using callbacks allows a great flexibility.  We’ll now see how to handle sub-menus.</p>
-</div>
-<div class="section" id="sub-menus-for-complex-menus">
+</section>
+<section id="sub-menus-for-complex-menus">
 <h3>Sub-menus for complex menus<a class="headerlink" href="#sub-menus-for-complex-menus" title="Permalink to this headline">¶</a></h3>
 <p>A menu is relatively flat: it has a root (where you see all the menu choices) and individual choices
 you can go to using the menu choice keys.  Once in a choice you can type some input or go back to
@@ -934,7 +935,7 @@ go beyond just one menu/choice, to have menus with more layers.  Using them is q
 a bit counter-intuitive at first.  Another option is to create a different menu class and redirect
 from the first to the second.  This option might require more lines but is more explicit and can be
 re-used for multiple menus.  Adopt one of them depending of your taste.</p>
-<div class="section" id="nested-menu-keys">
+<section id="nested-menu-keys">
 <h4>Nested menu keys<a class="headerlink" href="#nested-menu-keys" title="Permalink to this headline">¶</a></h4>
 <p>So far, we’ve only used menu keys with one letter.  We can add more, of course, but menu keys in
 their simple shape are just command keys.  Press “e” to go to the “exits” choice.</p>
@@ -1024,108 +1025,108 @@ you could change the exit key or description.</p>
 </div>
 <p>This needs a bit of code and a bit of explanation.  So here we go… the code first, the
 explanations next!</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
- 31
- 32
- 33
- 34
- 35
- 36
- 37
- 38
- 39
- 40
- 41
- 42
- 43
- 44
- 45
- 46
- 47
- 48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
- 61
- 62
- 63
- 64
- 65
- 66
- 67
- 68
- 69
- 70
- 71
- 72
- 73
- 74
- 75
- 76
- 77
- 78
- 79
- 80
- 81
- 82
- 83
- 84
- 85
- 86
- 87
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1263,8 +1264,8 @@ called whenever the user enters some text.  If so, we change the exit name.</p><
 we want a more complex menu for exits, it makes sense to use a real sub-menu, not nested keys like
 this.  But sometimes, you will find yourself in a situation where you don’t need a full menu to
 handle a choice.</p>
-</div>
-<div class="section" id="full-sub-menu-as-separate-classes">
+</section>
+<section id="full-sub-menu-as-separate-classes">
 <h4>Full sub-menu as separate classes<a class="headerlink" href="#full-sub-menu-as-separate-classes" title="Permalink to this headline">¶</a></h4>
 <p>The best way to handle individual exits is to create two separate classes:</p>
 <ul class="simple">
@@ -1273,85 +1274,85 @@ handle a choice.</p>
 </ul>
 <p>The first one will have to redirect on the second.  This might be more intuitive and flexible,
 depending on what you want to achieve.  So let’s build two menus:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
 <span class="c1"># Our building menus</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1546,7 +1547,7 @@ This is the northern exit.  Cool huh?
 </div>
 <p>Very simply, we created two menus and bridged them together.  This needs much less callbacks.  There
 is only one line in the <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> to add:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">menu</span><span class="o">.</span><span class="n">open_submenu</span><span class="p">(</span><span class="s2">&quot;commands.building.ExitBuildingMenu&quot;</span><span class="p">,</span> <span class="n">exit</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">menu</span><span class="o">.</span><span class="n">open_submenu</span><span class="p">(</span><span class="s2">&quot;commands.building.ExitBuildingMenu&quot;</span><span class="p">,</span> <span class="n">exit</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">])</span>
 </pre></div>
 </td></tr></table></div>
 <p>We have to call <code class="docutils literal notranslate"><span class="pre">open_submenu</span></code> on the menu object (which opens, as its name implies, a sub menu)
@@ -1561,9 +1562,9 @@ since the parent menus is the “exits” choice.</p></li>
 </ul>
 <p>And that’s it.  The new class will be automatically created.  As you can see, we have to create a
 <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback to open the sub-menu, but once opened, it automatically close whenever needed.</p>
-</div>
-</div>
-<div class="section" id="generic-menu-options">
+</section>
+</section>
+<section id="generic-menu-options">
 <h3>Generic menu options<a class="headerlink" href="#generic-menu-options" title="Permalink to this headline">¶</a></h3>
 <p>There are some options that can be set on any menu class.  These options allow for greater
 customization.  They are class attributes (see the example below), so just set them in the class
@@ -1582,16 +1583,16 @@ without giving it a key.  If so, the menu system will try to “guess” the key
 change the minimum length of any key for security reasons.</p></li>
 </ul>
 <p>To set one of them just do so in your menu class(es):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
     <span class="n">keys_go_back</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">]</span>
     <span class="n">min_shortcut</span> <span class="o">=</span> <span class="mi">2</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
-<div class="section" id="conclusion">
+</section>
+</section>
+<section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
 <p>Building menus mean to save you time and create a rich yet simple interface.  But they can be
 complicated to learn and require reading the source code to find out how to do such and such a
@@ -1599,8 +1600,8 @@ thing.  This documentation, however long, is an attempt at describing this syste
 you’ll still have questions about it after reading it, especially if you try to push this system to
 a great extent.  Do not hesitate to read the documentation of this contrib, it’s meant to be
 exhaustive but user-friendly.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1671,7 +1672,6 @@ exhaustive but user-friendly.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Building-menus.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

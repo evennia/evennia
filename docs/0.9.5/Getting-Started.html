@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Getting Started &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -44,7 +45,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="getting-started">
+  <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>This will help you download, install and start Evennia for the first time.</p>
 <blockquote>
@@ -63,7 +64,7 @@ internet connection until you feel ready to share your game with the world.</p>
 <li><p><a class="reference external" href="Getting-Started.html#troubleshooting">Troubleshooting</a></p></li>
 <li><p><a class="reference internal" href="Glossary.html"><span class="doc">Glossary of terms</span></a></p></li>
 </ul>
-<div class="section" id="quick-start">
+<section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>For the impatient. If you have trouble with a step, you should jump on to the
 more detailed instructions for your platform.</p>
@@ -85,8 +86,8 @@ not recognize <code class="docutils literal notranslate"><span class="pre">local
 </ol>
 <p>We also release <a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc">Docker images</span></a>
 based on <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches.</p>
-</div>
-<div class="section" id="requirements">
+</section>
+<section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p>Any system that supports Python3.7+ should work. We’ll describe how to install
 everything in the following sections.</p>
@@ -116,8 +117,8 @@ Twisted packages</p></li>
 <li><p><a class="reference external" href="http://www.djangoproject.com">Django</a> (v2.2.x), be warned that latest dev
 version is usually untested with Evennia)</p></li>
 </ul>
-</div>
-<div class="section" id="linux-install">
+</section>
+<section id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation and first start, please
 check out <a class="reference external" href="Getting-Started.html#linux-troubleshooting">Linux Troubleshooting</a>.</p>
@@ -129,7 +130,7 @@ install the <a class="reference external" href="Getting-Started.html#requirement
 
 <span class="c1"># If you are using an Ubuntu version that defaults to Python3, like 18.04+, use this instead:</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">virtualenv</span> <span class="n">gcc</span>
+<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="mf">.7</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="mf">.7</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">virtualenv</span> <span class="n">gcc</span>
 </pre></div>
 </div>
 <p>Note that, the default Python version for your distribution may still not be Python3.7 after this.
@@ -157,7 +158,7 @@ virtualenv</a>.</p>
 
 <span class="c1"># If your Linux defaults to Python2 or an older version</span>
 <span class="c1"># of Python3, you must instead point to Python3.7+ explicitly:</span>
-<span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="n">evenv</span>
+<span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span><span class="mf">.7</span> <span class="n">evenv</span>
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
@@ -210,8 +211,8 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
 created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
-</div>
-<div class="section" id="mac-install">
+</section>
+<section id="mac-install">
 <h2>Mac Install<a class="headerlink" href="#mac-install" title="Permalink to this headline">¶</a></h2>
 <p>The Evennia server is a terminal program. Open the terminal e.g. from
 <em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac
@@ -249,7 +250,7 @@ virtualenv is and why it’s useful, see the <a class="reference external" href=
 <span class="n">virtualenv</span> <span class="n">evenv</span>
 
 <span class="c1"># If your Mac defaults to Python2 you need to specify the Python3.7 binary explicitly:</span>
-<span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="n">evenv</span>
+<span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">python3</span><span class="mf">.7</span> <span class="n">evenv</span>
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
@@ -302,8 +303,8 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
 created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
-</div>
-<div class="section" id="windows-install">
+</section>
+<section id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation, please check out
 <a class="reference external" href="Getting-Started.html#windows-troubleshooting">Windows Troubleshooting</a>.</p>
@@ -427,8 +428,8 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
 created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
-</div>
-<div class="section" id="where-to-go-next">
+</section>
+<section id="where-to-go-next">
 <h2>Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permalink to this headline">¶</a></h2>
 <p>Welcome to Evennia! Your new game is fully functioning, but empty. If you just
 logged in, stand in the <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> room and run</p>
@@ -458,8 +459,8 @@ Server</a>.</p>
 <p>Finally, if you are itching to help out or support Evennia (awesome!) have an
 issue to report or a feature to request, <a class="reference internal" href="How-To-Get-And-Give-Help.html"><span class="doc">see here</span></a>.</p>
 <p>Enjoy your stay!</p>
-</div>
-<div class="section" id="troubleshooting">
+</section>
+<section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
 <p>If you have issues with installing or starting Evennia for the first time,
 check the section for your operating system below. If you have an issue not
@@ -467,7 +468,7 @@ covered here, <a class="reference external" href="https://github.com/evennia/eve
 so it can be fixed or a workaround found!</p>
 <p>Remember, the server logs are in <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code>. To easily view server logs in the terminal,
 you can run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code>, or (in the future) start the server with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span> <span class="pre">-l</span></code>.</p>
-<div class="section" id="linux-troubleshooting">
+<section id="linux-troubleshooting">
 <h3>Linux Troubleshooting<a class="headerlink" href="#linux-troubleshooting" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>If you get an error when installing Evennia (especially with lines mentioning
@@ -487,8 +488,8 @@ install the <code class="docutils literal notranslate"><span class="pre">redhat-
 with symlinks not being supported. Answer is to not use NTFS (seriously, why would you do that to
 yourself?)</p></li>
 </ul>
-</div>
-<div class="section" id="mac-troubleshooting">
+</section>
+<section id="mac-troubleshooting">
 <h3>Mac Troubleshooting<a class="headerlink" href="#mac-troubleshooting" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Mac users have reported a critical <code class="docutils literal notranslate"><span class="pre">MemoryError</span></code> when trying to start Evennia on Mac with a Python
@@ -497,8 +498,8 @@ version below <code class="docutils literal notranslate"><span class="pre">2.7.1
 so, try to connect to <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> instead, which is the same thing. Use port 4000 from mud clients
 and port 4001 from the web browser as usual.</p></li>
 </ul>
-</div>
-<div class="section" id="windows-troubleshooting">
+</section>
+<section id="windows-troubleshooting">
 <h3>Windows Troubleshooting<a class="headerlink" href="#windows-troubleshooting" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>If you installed Python but the <code class="docutils literal notranslate"><span class="pre">python</span></code> command is not available (even in a new console), then
@@ -525,9 +526,9 @@ you should update the line to the real location.</p></li>
 development. Timeout errors and the inability to run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">connections</span></code> may be due to your anti-
 virus software interfering. Try disabling or changing your anti-virus software settings.</p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -596,7 +597,6 @@ virus software interfering. Try disabling or changing your anti-virus software s
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Getting-Started.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

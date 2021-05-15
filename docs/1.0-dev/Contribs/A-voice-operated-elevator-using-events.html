@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>A voice operated elevator using events &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -46,7 +47,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="a-voice-operated-elevator-using-events">
+  <section id="a-voice-operated-elevator-using-events">
 <h1>A voice operated elevator using events<a class="headerlink" href="#a-voice-operated-elevator-using-events" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Previous tutorial: <a class="reference internal" href="Dialogues-in-events.html"><span class="doc">Adding dialogues in events</span></a></p></li>
@@ -74,7 +75,7 @@ will:</p>
 <li><p>Learn about chained events.</p></li>
 <li><p>Play with variable modification in callbacks.</p></li>
 </ul>
-<div class="section" id="our-study-case">
+<section id="our-study-case">
 <h2>Our study case<a class="headerlink" href="#our-study-case" title="Permalink to this headline">¶</a></h2>
 <p>Let’s summarize what we want to achieve first.  We would like to create a room that will represent
 the inside of our elevator.  In this room, a character could just say “1”, “2” or “3”, and the
@@ -82,8 +83,8 @@ elevator will start moving.  The doors will close and open on the new floor (the
 and out of the elevator will be modified).</p>
 <p>We will work on basic features first, and then will adjust some, showing you how easy and powerfully
 independent actions can be configured through the in-game Python system.</p>
-</div>
-<div class="section" id="creating-the-rooms-and-exits-we-need">
+</section>
+<section id="creating-the-rooms-and-exits-we-need">
 <h2>Creating the rooms and exits we need<a class="headerlink" href="#creating-the-rooms-and-exits-we-need" title="Permalink to this headline">¶</a></h2>
 <p>We’ll create an elevator right in our room (generally called “Limbo”, of ID 2).  You could easily
 adapt the following instructions if you already have some rooms and exits, of course, just remember
@@ -131,8 +132,8 @@ need exits leading there, not yet anyway.</p>
 </pre></div>
 </div>
 <p>Add these IDs to your list, we will use them too.</p>
-</div>
-<div class="section" id="our-first-callback-in-the-elevator">
+</section>
+<section id="our-first-callback-in-the-elevator">
 <h2>Our first callback in the elevator<a class="headerlink" href="#our-first-callback-in-the-elevator" title="Permalink to this headline">¶</a></h2>
 <p>Let’s go to the elevator (you could use <code class="docutils literal notranslate"><span class="pre">tel</span> <span class="pre">#3</span></code> if you have the same IDs I have).</p>
 <p>This is our elevator room.  It looks a bit empty, feel free to add a prettier description or other
@@ -178,7 +179,7 @@ all, the list of variables that are available in this callback:</p>
 </div>
 <p>This is important, in order to know what variables we can use in our callback out-of-the-box.  Let’s
 write a single line to be sure our callback is called when we expect it to:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You just said </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You just said </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
 <p>You can paste this line in-game, then type the <code class="docutils literal notranslate"><span class="pre">:wq</span></code> command to exit the editor and save your
@@ -210,8 +211,8 @@ it.</p>
 <div><p>Auto-indentation is an interesting feature of the code editor, but we’d better not use it at this
 point, it will make copy/pasting more complicated.</p>
 </div></blockquote>
-</div>
-<div class="section" id="our-entire-callback-in-the-elevator">
+</section>
+<section id="our-entire-callback-in-the-elevator">
 <h2>Our entire callback in the elevator<a class="headerlink" href="#our-entire-callback-in-the-elevator" title="Permalink to this headline">¶</a></h2>
 <p>So here’s the time to truly code our callback in-game.  Here’s a little reminder:</p>
 <ol class="simple">
@@ -221,29 +222,29 @@ exits.  Remember, we already have the exits, we just need to change their locati
 </ol>
 <p>It’s a good idea to try to write this callback yourself, but don’t feel bad about checking the
 solution right now.  Here’s a possible code that you could paste in the code editor:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># First let&#39;s have some constants</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># First let&#39;s have some constants</span>
 <span class="n">ELEVATOR</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">FLOORS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
@@ -294,8 +295,8 @@ one.</p></li>
 <p>Feel free to expand on this example, changing messages, making further checks.  Usage and practice
 are keys.</p>
 <p>You can quit the editor as usual with <code class="docutils literal notranslate"><span class="pre">:wq</span></code> and test it out.</p>
-</div>
-<div class="section" id="adding-a-pause-in-our-callback">
+</section>
+<section id="adding-a-pause-in-our-callback">
 <h2>Adding a pause in our callback<a class="headerlink" href="#adding-a-pause-in-our-callback" title="Permalink to this headline">¶</a></h2>
 <p>Let’s improve our callback.  One thing that’s worth adding would be a pause: for the time being,
 when we say the floor number in the elevator, the doors close and open right away.  It would be
@@ -317,12 +318,12 @@ event in our elevator, that will only contain the code necessary to open the doo
 <p>The callback is added to the “chain_1” event, an event that will not be automatically called by the
 system when something happens.  Inside this event, you can paste the code to open the doors at the
 new floor.  You can notice a few differences:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">floor</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">TO_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">floor</span>
 <span class="n">TO_EXIT</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">ELEVATOR</span>
 <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">ELEVATOR</span>
 <span class="n">BACK_EXIT</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">floor</span>
@@ -347,30 +348,30 @@ new floor.  You can notice a few differences:</p>
 </pre></div>
 </div>
 <p>And you can paste instead the following code.  Notice the differences with our first attempt:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># First let&#39;s have some constants</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># First let&#39;s have some constants</span>
 <span class="n">ELEVATOR</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">FLOORS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
@@ -422,8 +423,8 @@ will be restored and accessible again when the chained event is called.</p>
 <p>You can use the <code class="docutils literal notranslate"><span class="pre">call/tasks</span></code> command to see the tasks waiting to be executed.  For instance, say “2”
 in the room, notice the doors closing, and then type the <code class="docutils literal notranslate"><span class="pre">call/tasks</span></code> command.  You will see a task
 in the elevator, waiting to call the <code class="docutils literal notranslate"><span class="pre">chain_1</span></code> event.</p>
-</div>
-<div class="section" id="changing-exit-messages">
+</section>
+<section id="changing-exit-messages">
 <h2>Changing exit messages<a class="headerlink" href="#changing-exit-messages" title="Permalink to this headline">¶</a></h2>
 <p>Here’s another nice little feature of events: you can modify the message of a single exit without
 altering the others.  In this case, when someone goes north into our elevator, we’d like to see
@@ -448,7 +449,7 @@ Let’s do that:</p>
 <p>Take the time to read the help.  It gives you all the information you should need.  We’ll need to
 change the “message” variable, and use custom mapping (between braces) to alter the message.  We’re
 given an example, let’s use it.  In the code editor, you can paste the following line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks out of the elevator.&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks out of the elevator.&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Again, save and quit the editor by entering <code class="docutils literal notranslate"><span class="pre">:wq</span></code>.  You can create a new character to see it leave.</p>
@@ -470,15 +471,15 @@ then edit “msg_leave” of “north”:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">call</span><span class="o">/</span><span class="n">add</span> <span class="n">north</span> <span class="o">=</span> <span class="n">msg_leave</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks into the elevator.&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> walks into the elevator.&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Again, you can force our beggar to move and see the message we have just set.  This modification
 applies to these two exits, obviously: the custom message won’t be used for other exits.  Since we
 use the same exits for every floor, this will be available no matter at what floor the elevator is,
 which is pretty neat!</p>
-</div>
-<div class="section" id="tutorial-f-a-q">
+</section>
+<section id="tutorial-f-a-q">
 <h2>Tutorial F.A.Q.<a class="headerlink" href="#tutorial-f-a-q" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Q:</strong> what happens if the game reloads or shuts down while a task is waiting to happen?</p></li>
@@ -512,8 +513,8 @@ with the expected behavior, which makes porting code very easy.  This side of ch
 shown in the next tutorial.</p></li>
 <li><p>Previous tutorial: <a class="reference internal" href="Dialogues-in-events.html"><span class="doc">Adding dialogues in events</span></a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

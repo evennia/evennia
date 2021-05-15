@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.utils.evtable &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,15 +37,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.utils.evtable">
+  <section id="module-evennia.utils.evtable">
 <span id="evennia-utils-evtable"></span><h1>evennia.utils.evtable<a class="headerlink" href="#module-evennia.utils.evtable" title="Permalink to this headline">¶</a></h1>
-<p>This is an advanced ASCII table creator. It was inspired by
-[prettytable](<a class="reference external" href="https://code.google.com/p/prettytable/">https://code.google.com/p/prettytable/</a>) but shares no code.</p>
+<p>This is an advanced ASCII table creator. It was inspired by Prettytable
+(<a class="reference external" href="https://code.google.com/p/prettytable/">https://code.google.com/p/prettytable/</a>) but shares no code and is considerably
+more advanced, supporting auto-balancing of incomplete tables and ANSI colors among
+other things.</p>
 <p>Example usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
 
 <span class="n">table</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;Heading1&quot;</span><span class="p">,</span> <span class="s2">&quot;Heading2&quot;</span><span class="p">,</span>
-              <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]],</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">)</span>
+                <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]],</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">)</span>
 <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;This is long data&quot;</span><span class="p">,</span> <span class="s2">&quot;This is even longer data&quot;</span><span class="p">)</span>
 <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;This is a single row&quot;</span><span class="p">)</span>
 <span class="nb">print</span> <span class="n">table</span>
@@ -98,8 +101,9 @@ Here we change the width and alignment of the column at index 3
 (Python starts from 0):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
 <span class="nb">print</span> <span class="n">table</span>
-
-<span class="o">+-----------+-------+-----+-----------------------------+---------+</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+-----------+-------+-----+-----------------------------+---------+</span>
 <span class="o">|</span> <span class="n">Heading1</span>  <span class="o">|</span> <span class="n">Headi</span> <span class="o">|</span>     <span class="o">|</span>                             <span class="o">|</span>         <span class="o">|</span>
 <span class="o">|</span>           <span class="o">|</span> <span class="n">ng2</span>   <span class="o">|</span>     <span class="o">|</span>                             <span class="o">|</span>         <span class="o">|</span>
 <span class="o">+~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+</span>
@@ -120,14 +124,13 @@ Here we change the width and alignment of the column at index 3
 <p>If the height is restricted, cells will be restricted from expanding
 vertically. This will lead to text contents being cropped. Each cell
 can only shrink to a minimum width and height of 1.</p>
-<p><strong>EvTable</strong> is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)
-for supporting ANSI-coloured string types.</p>
-<p>When a cell is auto-wrapped across multiple lines, ANSI-reset
-sequences will be put at the end of each wrapped line. This means that
-the colour of a wrapped cell will not “bleed”, but it also means that
-eventual colour outside the table will not transfer “across” a table,
-you need to re-set the color to have it appear on both sides of the
-table string.</p>
+<p><strong>EvTable</strong> is intended to be used with <strong>ANSIString</strong> for supporting ANSI-coloured
+string types.</p>
+<p>When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be
+put at the end of each wrapped line. This means that the colour of a wrapped
+cell will not “bleed”, but it also means that eventual colour outside the table
+will not transfer “across” a table, you need to re-set the color to have it
+appear on both sides of the table string.</p>
 <hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.utils.evtable.ANSITextWrapper">
@@ -603,7 +606,7 @@ given from 0 to Ncolumns-1.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -647,7 +650,6 @@ given from 0 to Ncolumns-1.</p>
   <li><a href="../../1.0-dev/api/evennia.utils.evtable.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.evtable.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

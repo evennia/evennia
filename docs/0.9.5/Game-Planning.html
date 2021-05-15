@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Game Planning &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="game-planning">
+  <section id="game-planning">
 <h1>Game Planning<a class="headerlink" href="#game-planning" title="Permalink to this headline">¶</a></h1>
 <p>So you have Evennia up and running. You have a great game idea in mind. Now it’s time to start
 cracking!  But where to start? Here are some ideas for a workflow. Note that the suggestions on this
@@ -67,7 +68,7 @@ code in isolation forever until you burn out, lose interest or your hard drive c
 <p>Like is common with online games, getting a game out the door does not mean you are going to be
 “finished” with the game - most MUDs add features gradually over the course of years - it’s often
 part of the fun!</p>
-<div class="section" id="planning-step-1">
+<section id="planning-step-1">
 <h2>Planning (step 1)<a class="headerlink" href="#planning-step-1" title="Permalink to this headline">¶</a></h2>
 <p>This is what you do before having coded a single line or built a single room. Many prospective game
 developers are very good at <em>parts</em> of this process, namely in defining what their world is “about”:
@@ -78,7 +79,7 @@ Evennia.</p>
 <p>A good start is to begin by planning out the basic primitives of the game and what they need to be
 able to do. Below are a far-from-complete list of examples (and for your first version you should
 definitely try for a much shorter list):</p>
-<div class="section" id="systems">
+<section id="systems">
 <h3>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h3>
 <p>These are the behind-the-scenes features that exist in your game, often without being represented by
 a specific in-game object.</p>
@@ -99,8 +100,8 @@ rooms.</p></li>
 <li><p>What should a Builder be able to build and what commands do they need in order to do that?</p></li>
 <li><p>etc.</p></li>
 </ul>
-</div>
-<div class="section" id="rooms">
+</section>
+<section id="rooms">
 <h3>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h3>
 <p>Consider the most basic room in your game.</p>
 <ul class="simple">
@@ -112,8 +113,8 @@ these things something admins/game masters should handle manually?</p></li>
 <li><p>Can objects be hidden in the room? Can a person hide in the room? How does the room display this?</p></li>
 <li><p>etc.</p></li>
 </ul>
-</div>
-<div class="section" id="objects">
+</section>
+<section id="objects">
 <h3>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h3>
 <p>Consider the most basic (non-player-controlled) object in your game.</p>
 <ul class="simple">
@@ -135,8 +136,8 @@ same object with different names or completely different types of objects, with 
 multiple players try to do the same quest? Do you use instances or some other mechanism?</p></li>
 <li><p>etc.</p></li>
 </ul>
-</div>
-<div class="section" id="characters">
+</section>
+<section id="characters">
 <h3>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h3>
 <p>These are the objects controlled directly by Players.</p>
 <ul class="simple">
@@ -159,9 +160,9 @@ enemies? Solving quests? By roleplaying?</p></li>
 can easily become overwhelming and it’s tempting to want <em>all</em> functionality right out of the door.
 Try to identify the basic things that “make” your game and focus <em>only</em> on them for your first
 release. Make a list. Keep future expansions in mind but limit yourself.</p>
-</div>
-</div>
-<div class="section" id="coding-step-2">
+</section>
+</section>
+<section id="coding-step-2">
 <h2>Coding (step 2)<a class="headerlink" href="#coding-step-2" title="Permalink to this headline">¶</a></h2>
 <p>This is the actual work of creating the “game” part of your game. Many “game-designer” types tend to
 gloss over this bit and jump directly to <strong>World Building</strong>. Vice versa, many “game-coder” types
@@ -185,7 +186,7 @@ The earlier you revise problems, the easier they will be to fix.</p>
 this make it easy for multiple coders to collaborate (and have a bug-tracker etc), it also means
 your work is backed up at all times. The <a class="reference internal" href="Version-Control.html"><span class="doc">Version Control</span></a> tutorial has
 instructions for setting up a sane developer environment with proper version control.</p>
-<div class="section" id="tech-demo-building">
+<section id="tech-demo-building">
 <h3>“Tech Demo” Building<a class="headerlink" href="#tech-demo-building" title="Permalink to this headline">¶</a></h3>
 <p>This is an integral part of your Coding. It might seem obvious to experienced coders, but it cannot
 be emphasized enough that you should <em>test things on a small scale</em> before putting your untested
@@ -200,9 +201,9 @@ functioning (if not guaranteed bug-free) miniature tech demo that shows <em>all<
 in the first release of your game. There does not need to be any game play or even a theme to your
 tests, this is only for you and your co-coders to see. The more testing you do on this small scale,
 the less headaches you will have in the next phase.</p>
-</div>
-</div>
-<div class="section" id="world-building-step-3">
+</section>
+</section>
+<section id="world-building-step-3">
 <h2>World Building (step 3)<a class="headerlink" href="#world-building-step-3" title="Permalink to this headline">¶</a></h2>
 <p>Up until this point we’ve only had a few tech-demo objects in the database. This step is the act of
 populating the database with a larger, thematic world. Too many would-be developers jump to this
@@ -225,8 +226,8 @@ balanced. You can always add new areas later.</p>
 have made at this point. Since Building often involves different people than those Coding, you also
 get a chance to hear if some things are hard to understand or non-intuitive.  Make sure to respond
 to this feedback.</p>
-</div>
-<div class="section" id="alpha-release">
+</section>
+<section id="alpha-release">
 <h2>Alpha Release<a class="headerlink" href="#alpha-release" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned, don’t hold onto your world more than necessary. <em>Get it out there</em> with a huge <em>Alpha</em>
 flag and let people try it! Call upon your alpha-players to try everything - they <em>will</em> find ways
@@ -237,21 +238,21 @@ instructions for <a class="reference internal" href="Online-Setup.html"><span cl
 already, make sure to put up your game on the <a class="reference external" href="http://games.evennia.com/">Evennia game index</a> so
 people know it’s in the works (actually, even pre-alpha games are allowed in the index so don’t be
 shy)!</p>
-</div>
-<div class="section" id="beta-release-perpetual-beta">
+</section>
+<section id="beta-release-perpetual-beta">
 <h2>Beta Release/Perpetual Beta<a class="headerlink" href="#beta-release-perpetual-beta" title="Permalink to this headline">¶</a></h2>
 <p>Once things stabilize in Alpha you can move to <em>Beta</em> and let more people in. Many MUDs are in
 <a class="reference external" href="http://en.wikipedia.org/wiki/Perpetual_beta">perpetual beta</a>, meaning they are never considered
 “finished”, but just repeat the cycle of Planning, Coding, Testing and Building over and over as new
 features get implemented or Players come with suggestions. As the game designer it is now up to you
 to gradually perfect your vision.</p>
-</div>
-<div class="section" id="congratulate-yourself">
+</section>
+<section id="congratulate-yourself">
 <h2>Congratulate yourself!<a class="headerlink" href="#congratulate-yourself" title="Permalink to this headline">¶</a></h2>
 <p>You are worthy of a celebration since at this point you have joined the small, exclusive crowd who
 have made their dream game a reality!</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -323,7 +324,6 @@ have made their dream game a reality!</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Game-Planning.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

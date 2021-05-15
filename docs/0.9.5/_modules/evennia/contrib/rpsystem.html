@@ -324,7 +324,8 @@
 <span class="sd">            the markers and a tuple (langname, saytext), where</span>
 <span class="sd">            langname can be None.</span>
 <span class="sd">    Raises:</span>
-<span class="sd">        rplanguage.LanguageError: If an invalid language was specified.</span>
+<span class="sd">        evennia.contrib.rpsystem.LanguageError: If an invalid language was</span>
+<span class="sd">        specified.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        Note that no errors are raised if the wrong language identifier</span>
@@ -521,7 +522,7 @@
     <span class="k">return</span> <span class="n">string</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main access function for distribute an emote.</span>
 
@@ -549,7 +550,9 @@
     <span class="c1"># we escape the object mappings since we&#39;ll do the language ones first</span>
     <span class="c1"># (the text could have nested object mappings).</span>
     <span class="n">emote</span> <span class="o">=</span> <span class="n">_RE_REF</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{{#\1}}&quot;</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
-
+    <span class="c1"># if anonymous_add is passed as a kwarg, collect and remove it from kwargs</span>
+    <span class="k">if</span> <span class="s1">&#39;anonymous_add&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">anonymous_add</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;anonymous_add&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="p">:</span>
         <span class="c1"># no self-reference in the emote - add to the end</span>
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span>
@@ -607,7 +610,7 @@
             <span class="n">receiver_sdesc_mapping</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_sdesc</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">)</span>
 
         <span class="c1"># do the template replacement of the sdesc/recog {#num} markers</span>
-        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">))</span></div>
+        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -1699,7 +1702,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="rpsystem.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

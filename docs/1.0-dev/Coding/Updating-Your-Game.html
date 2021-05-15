@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Updating Your Game &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,11 +38,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="updating-your-game">
+  <section id="updating-your-game">
 <h1>Updating Your Game<a class="headerlink" href="#updating-your-game" title="Permalink to this headline">¶</a></h1>
 <p>Fortunately, it’s extremely easy to keep your Evennia server up-to-date. If you haven’t already, see
 the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Getting Started guide</span></a> and get everything running.</p>
-<div class="section" id="updating-with-the-latest-evennia-code-changes">
+<section id="updating-with-the-latest-evennia-code-changes">
 <h2>Updating with the latest Evennia code changes<a class="headerlink" href="#updating-with-the-latest-evennia-code-changes" title="Permalink to this headline">¶</a></h2>
 <p>Very commonly we make changes to the Evennia code to improve things. There are many ways to get told
 when to update: You can subscribe to the RSS feed or manually check up on the feeds from
@@ -63,8 +64,8 @@ function, or use one of the menus (if applicable).</p>
 the new code affect your game. If you want to be really sure you should run a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code>
 so that both Server and Portal can restart (this will disconnect everyone though, so if you know the
 Portal has had no updates you don’t have to do that).</p>
-</div>
-<div class="section" id="upgrading-evennia-dependencies">
+</section>
+<section id="upgrading-evennia-dependencies">
 <h2>Upgrading Evennia dependencies<a class="headerlink" href="#upgrading-evennia-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>On occasion we update the versions of third-party libraries Evennia depend on (or we may add a new
 dependency). This will be announced on the mailing list/forum. If you run into errors when starting
@@ -92,8 +93,8 @@ currently available in your python environment after the upgrade, use</p>
 </div>
 <p>This will show you the version of all installed packages. The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> package will also show the
 location of its source code.</p>
-</div>
-<div class="section" id="migrating-the-database-schema">
+</section>
+<section id="migrating-the-database-schema">
 <h2>Migrating the Database Schema<a class="headerlink" href="#migrating-the-database-schema" title="Permalink to this headline">¶</a></h2>
 <p>Whenever we change the database layout of Evennia upstream (such as when we add new features) you
 will need to <em>migrate</em> your existing database. When this happens it will be clearly noted in the
@@ -107,8 +108,8 @@ announced on the Evennia <a class="reference external" href="https://groups.goog
 <div><p>Hint: If the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command is not found, you most likely need to activate your
 <a class="reference external" href="Glossary.html#virtualenv">virtualenv</a>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="resetting-your-database">
+</section>
+<section id="resetting-your-database">
 <h2>Resetting your database<a class="headerlink" href="#resetting-your-database" title="Permalink to this headline">¶</a></h2>
 <p>Should you ever want to start over completely from scratch, there is no need to re-download Evennia
 or anything like that. You just need to clear your database. Once you are done, you just rebuild it
@@ -145,8 +146,8 @@ command-line shell program</a>. It’s a single executable file
 (sqlite3.exe) that you should place in the root of either your MUD folder or Evennia’s (it’s the
 same, in both cases Django will find it).</p>
 </div></blockquote>
-</div>
-<div class="section" id="more-about-schema-migrations">
+</section>
+<section id="more-about-schema-migrations">
 <h2>More about schema migrations<a class="headerlink" href="#more-about-schema-migrations" title="Permalink to this headline">¶</a></h2>
 <p>If and when an Evennia update modifies the database <em>schema</em> (that is, the under-the-hood details as
 to how data is stored in the database), you must update your existing database correspondingly to
@@ -164,8 +165,8 @@ automatically for you. Basically, whenever the schema changes we distribute smal
 have to do so manually. When a migration has been added we will tell you so on Evennia’s mailing
 lists and in commit messages -
 you then just run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> to be up-to-date again.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

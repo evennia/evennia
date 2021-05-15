@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.accounts.accounts &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.accounts.accounts">
+  <section id="module-evennia.accounts.accounts">
 <span id="evennia-accounts-accounts"></span><h1>evennia.accounts.accounts<a class="headerlink" href="#module-evennia.accounts.accounts" title="Permalink to this headline">¶</a></h1>
 <p>Typeclass for Account objects</p>
 <p>Note that this object is primarily intended to
@@ -178,6 +179,24 @@ at_account_creation()</p>
 <dt id="evennia.accounts.accounts.DefaultAccount.characters">
 <em class="property">property </em><code class="sig-name descname">characters</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_display_name">
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_display_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used by channels and other OOC communications methods to give a
+custom display of this account’s input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>looker</strong> (<em>Account</em>) – The one that will see this name.</p></li>
+<li><p><strong>**kwargs</strong> – Unused by default, can be used to pass game-specific data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The name, possibly modified.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.disconnect_session_from_account">
@@ -549,6 +568,81 @@ found command object instance as variables before it
 executes. This is unused by default Evennia but may be
 used to set flags and change operating paramaters for
 commands at run-time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_pre_channel_msg">
+<code class="sig-name descname">at_pre_channel_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_pre_channel_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_pre_channel_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the Channel just before passing a message into <strong>channel_msg</strong>.
+This allows for tweak messages per-user and also to abort the
+receive on the receiver-level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message sent to the channel.</p></li>
+<li><p><strong>channel</strong> (<em>Channel</em>) – The sending channel.</p></li>
+<li><p><strong>senders</strong> (<em>list</em><em>, </em><em>optional</em>) – Accounts or Objects acting as senders.
+For most normal messages, there is only a single sender. If
+there are no senders, this may be a broadcasting message.</p></li>
+<li><p><strong>**kwargs</strong> – These are additional keywords passed into <strong>channel_msg</strong>.
+If <strong>no_prefix=True</strong> or <strong>emit=True</strong> are passed, the channel
+prefix will not be added (<a href="#id9"><span class="problematic" id="id10">**</span></a>[channelname]: ** by default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str or None</em> –</p>
+<dl class="simple">
+<dt>Allows for customizing the message for this recipient.</dt><dd><p>If returning <strong>None</strong> (or <strong>False</strong>) message-receiving is aborted.
+The returning string will be passed into <strong>self.channel_msg</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This support posing/emotes by starting channel-send with : or ;.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.channel_msg">
+<code class="sig-name descname">channel_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.channel_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.channel_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actions of receiving a message to an un-muted
+channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message sent to the channel.</p></li>
+<li><p><strong>channel</strong> (<em>Channel</em>) – The sending channel.</p></li>
+<li><p><strong>senders</strong> (<em>list</em><em>, </em><em>optional</em>) – Accounts or Objects acting as senders.
+For most normal messages, there is only a single sender. If
+there are no senders, this may be a broadcasting message or
+similar.</p></li>
+<li><p><strong>**kwargs</strong> – These are additional keywords originally passed into
+<strong>Channel.msg</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Before this, <strong>Channel.at_pre_channel_msg</strong> will fire, which offers a way
+to customize the message for the receiver on the channel-level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_channel_msg">
+<code class="sig-name descname">at_post_channel_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_channel_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_channel_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by <strong>self.channel_msg</strong> after message was received.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message sent to the channel.</p></li>
+<li><p><strong>channel</strong> (<em>Channel</em>) – The sending channel.</p></li>
+<li><p><strong>senders</strong> (<em>list</em><em>, </em><em>optional</em>) – Accounts or Objects acting as senders.
+For most normal messages, there is only a single sender. If
+there are no senders, this may be a broadcasting message.</p></li>
+<li><p><strong>**kwargs</strong> – These are additional keywords passed into <strong>channel_msg</strong>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -939,7 +1033,95 @@ overriding the call (unused by default).</p></li>
 
 </dd></dl>
 
-</div>
+<dl class="py class">
+<dt id="evennia.accounts.accounts.DefaultGuest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.accounts.</code><code class="sig-name descname">DefaultGuest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
+<p>This class is used for guest logins. Unlike Accounts, Guests and
+their characters are deleted after disconnection.</p>
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.create">
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forwards request to cls.authenticate(); returns a DefaultGuest object
+if one is available for use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.authenticate">
+<em class="property">classmethod </em><code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets or creates a Guest account object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requestor; used for ban checking,
+throttling and logging</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Object)</em> – Guest account object, if available
+errors (list): List of error messages accrued during this request.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_post_login">
+<code class="sig-name descname">at_post_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>In theory, guests only have one character regardless of which
+MULTISESSION_MODE we’re in. They don’t get a choice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session connecting.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_server_shutdown">
+<code class="sig-name descname">at_server_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_server_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_server_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>We repeat the functionality of <strong>at_disconnect()</strong> here just to
+be on the safe side.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_post_disconnect">
+<code class="sig-name descname">at_post_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once having disconnected, destroy the guest’s characters and</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultGuest.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.DoesNotExist" title="evennia.accounts.accounts.DefaultAccount.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned" title="evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultGuest.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.accounts.accounts.DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultGuest.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 
 
             <div class="clearer"></div>
@@ -983,7 +1165,6 @@ overriding the call (unused by default).</p></li>
   <li><a href="../../1.0-dev/api/evennia.accounts.accounts.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.accounts.accounts.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Creating things &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -46,7 +47,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="creating-things">
+  <section id="creating-things">
 <h1>Creating things<a class="headerlink" href="#creating-things" title="Permalink to this headline">¶</a></h1>
 <p>We have already created some things - dragons for example. There are many different things to create
 in Evennia though. In the last lesson we learned about typeclasses, the way to make objects persistent in the database.</p>
@@ -77,7 +78,7 @@ are available on <code class="docutils literal notranslate"><span class="pre">ev
 to let regular players or builders without Python-access help build the game world.</p>
 </li>
 </ul>
-<div class="section" id="creating-objects">
+<section id="creating-objects">
 <h2>Creating Objects<a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h2>
 <p>This is one of the most common creation-types. These are entities that inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> at any distance.
 They have an existence in the game world and includes rooms, characters, exits, weapons, flower pots and castles.</p>
@@ -88,14 +89,14 @@ They have an existence in the game world and includes rooms, characters, exits, 
 </div>
 <p>Since we didn’t specify the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> as the first argument, the default given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code>
 (<code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>) will be used.</p>
-</div>
-<div class="section" id="creating-accounts">
+</section>
+<section id="creating-accounts">
 <h2>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Permalink to this headline">¶</a></h2>
 <p>An <em>Account</em> is an out-of-character (OOC) entity, with no existence in the game world.
 You can find the parent class for Accounts in <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>.</p>
 <p><em>TODO</em></p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

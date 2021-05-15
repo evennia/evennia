@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.web.api.filters &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.web.api.filters">
+  <section id="module-evennia.web.api.filters">
 <span id="evennia-web-api-filters"></span><h1>evennia.web.api.filters<a class="headerlink" href="#module-evennia.web.api.filters" title="Permalink to this headline">¶</a></h1>
 <p>FilterSets allow clients to specify querystrings that will determine the data
 that is retrieved in GET requests. By default, Django Rest Framework uses the
@@ -61,7 +62,7 @@ documentation specifically regarding DRF integration.</p>
 
 <dl class="py class">
 <dt id="evennia.web.api.filters.TagTypeFilter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">TagTypeFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#TagTypeFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.TagTypeFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">TagTypeFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#TagTypeFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.TagTypeFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_filters.filters.CharFilter</span></code></p>
 <p>This class lets you create different filters for tags of a specified db_tagtype.</p>
 <dl class="py attribute">
@@ -78,7 +79,7 @@ documentation specifically regarding DRF integration.</p>
 
 <dl class="py class">
 <dt id="evennia.web.api.filters.AliasFilter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">AliasFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#AliasFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.AliasFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">AliasFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#AliasFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.AliasFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.TagTypeFilter" title="evennia.web.api.filters.TagTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.TagTypeFilter</span></code></a></p>
 <p>A filter for objects by their aliases (tags with a tagtype of ‘alias’</p>
 <dl class="py attribute">
@@ -90,7 +91,7 @@ documentation specifically regarding DRF integration.</p>
 
 <dl class="py class">
 <dt id="evennia.web.api.filters.PermissionFilter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">PermissionFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#PermissionFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.PermissionFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">PermissionFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup_expr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distinct</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#PermissionFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.PermissionFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.filters.TagTypeFilter" title="evennia.web.api.filters.TagTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.TagTypeFilter</span></code></a></p>
 <p>A filter for objects by their permissions (tags with a tagtype of ‘permission’</p>
 <dl class="py attribute">
@@ -233,7 +234,7 @@ documentation specifically regarding DRF integration.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>

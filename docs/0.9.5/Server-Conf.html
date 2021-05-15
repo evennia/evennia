@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Server Conf &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,11 +46,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="server-conf">
+  <section id="server-conf">
 <h1>Server Conf<a class="headerlink" href="#server-conf" title="Permalink to this headline">¶</a></h1>
 <p>Evennia runs out of the box without any changes to its settings. But there are several important
 ways to customize the server and expand it with your own plugins.</p>
-<div class="section" id="settings-file">
+<section id="settings-file">
 <h2>Settings file<a class="headerlink" href="#settings-file" title="Permalink to this headline">¶</a></h2>
 <p>The “Settings” file referenced throughout the documentation is the file
 <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. This is automatically created on the first run of <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code>
@@ -74,11 +75,11 @@ able to take advantage of upstream changes and additions to Evennia for anything
 customize.</p>
 </div></blockquote>
 <p>In code, the settings is accessed through</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
      <span class="c1"># or (shorter):</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings</span>
      <span class="c1"># example:</span>
@@ -94,8 +95,8 @@ only</em>. You <em>cannot</em> edit your settings from your code! The only way t
 to edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> directly. You also generally need to restart the server
 (possibly also the Portal) before a changed setting becomes available.</p>
 </div></blockquote>
-</div>
-<div class="section" id="other-files-in-the-server-conf-directory">
+</section>
+<section id="other-files-in-the-server-conf-directory">
 <h2>Other files in the <code class="docutils literal notranslate"><span class="pre">server/conf</span></code> directory<a class="headerlink" href="#other-files-in-the-server-conf-directory" title="Permalink to this headline">¶</a></h2>
 <p>Apart from the main <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file,</p>
 <ul class="simple">
@@ -140,15 +141,15 @@ change how errors are echoed and how multi-matches are resolved and reported (li
 understands that “2-ball” should match the second “ball” object if there are two of them in the
 room).</p></li>
 </ul>
-</div>
-<div class="section" id="serverconf">
+</section>
+<section id="serverconf">
 <h2>ServerConf<a class="headerlink" href="#serverconf" title="Permalink to this headline">¶</a></h2>
 <p>There is a special database model called <code class="docutils literal notranslate"><span class="pre">ServerConf</span></code> that stores server internal data and settings
 such as current account count (for interfacing with the webserver), startup status and many other
 things.  It’s rarely of use outside the server core itself but may be good to
 know about if you are an Evennia developer.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -208,7 +209,6 @@ know about if you are an Evennia developer.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Server-Conf.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Help System &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="help-system">
+  <section id="help-system">
 <h1>Help System<a class="headerlink" href="#help-system" title="Permalink to this headline">¶</a></h1>
 <p>Evennia has an extensive help system covering both command-help and regular
 free-form help documentation. It supports subtopics and if failing to find a
@@ -67,7 +68,7 @@ finding mentions of the search term in help entries.</p>
 <span class="o">-----------------------------------------------------------------------------</span>
 </pre></div>
 </div>
-<div class="section" id="using-the-help-system-from-in-game">
+<section id="using-the-help-system-from-in-game">
 <h2>Using the help system from in-game<a class="headerlink" href="#using-the-help-system-from-in-game" title="Permalink to this headline">¶</a></h2>
 <p>The help system is accessed in-game by use of the <code class="docutils literal notranslate"><span class="pre">help</span></code> command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help</span> <span class="o">&lt;</span><span class="n">topic</span><span class="o">&gt;</span>
@@ -85,8 +86,8 @@ finding mentions of the search term in help entries.</p>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch to open the EvEditor for more convenient in-game writing
 (but note that devs can also create help entries outside the game using their
 regular code editor, see below).</p>
-</div>
-<div class="section" id="sources-of-help-entries">
+</section>
+<section id="sources-of-help-entries">
 <h2>Sources of help entries<a class="headerlink" href="#sources-of-help-entries" title="Permalink to this headline">¶</a></h2>
 <p>Evennia collects help entries from three sources:</p>
 <ul class="simple">
@@ -99,7 +100,7 @@ as exemplified in the previous section).</p></li>
 normal Python modules. They allows developers to write and maintain their help files using
 a proper text editor.</p></li>
 </ul>
-<div class="section" id="the-help-entry">
+<section id="the-help-entry">
 <h3>The Help Entry<a class="headerlink" href="#the-help-entry" title="Permalink to this headline">¶</a></h3>
 <p>All help entries (no matter the source) have the following properties:</p>
 <ul class="simple">
@@ -120,7 +121,7 @@ the <a class="reference internal" href="EvMore.html"><span class="doc">EvMore</s
 <code class="docutils literal notranslate"><span class="pre">settings.HELP_MORE_ENABLED=False</span></code>). If you use EvMore and want to control
 exactly where the pager should break the page, mark the break with the control
 character <code class="docutils literal notranslate"><span class="pre">\f</span></code>.</p>
-<div class="section" id="subtopics">
+<section id="subtopics">
 <h4>Subtopics<a class="headerlink" href="#subtopics" title="Permalink to this headline">¶</a></h4>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.0.</span></p>
@@ -179,35 +180,35 @@ He always keeps an eye on the door and ...
 (`help theatre/drama/gate`)
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="command-auto-help-system">
+</section>
+</section>
+<section id="command-auto-help-system">
 <h3>Command Auto-help system<a class="headerlink" href="#command-auto-help-system" title="Permalink to this headline">¶</a></h3>
 <p>The auto-help system uses the <code class="docutils literal notranslate"><span class="pre">__doc__</span></code> strings of your command classes and
 formats this to a nice- looking help entry. This makes for a very easy way to
 keep the help updated - just document your commands well and updating the help
 file is just a <code class="docutils literal notranslate"><span class="pre">reload</span></code> away.</p>
 <p>Example (from a module with command definitions):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">       mycmd - my very own command</span>
 <span class="sd">    </span>
@@ -244,16 +245,16 @@ command definition.</p>
 command helps.  You can do so by overriding the command’s <code class="docutils literal notranslate"><span class="pre">get_help(caller,</span> <span class="pre">cmdset)</span></code> method.  By default, this
 method will return the class docstring.  You could modify it to add custom behavior:  the text
 returned by this method will be displayed to the character asking for help in this command.</p>
-</div>
-<div class="section" id="database-help-entries">
+</section>
+<section id="database-help-entries">
 <h3>Database-help entries<a class="headerlink" href="#database-help-entries" title="Permalink to this headline">¶</a></h3>
 <p>These are most commonly created in-game using the <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command. If you need to create one
 manually, you can do so with <code class="docutils literal notranslate"><span class="pre">evennia.create_help_entry()</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
 <span class="n">entry</span> <span class="o">=</span> <span class="n">create_help_entry</span><span class="p">(</span><span class="s2">&quot;emote&quot;</span><span class="p">,</span> 
                 <span class="s2">&quot;Emoting is important because ...&quot;</span><span class="p">,</span> 
@@ -267,8 +268,8 @@ text is stored in a field <code class="docutils literal notranslate"><span class
 like commands, stores and returns the <code class="docutils literal notranslate"><span class="pre">entrytext</span></code> directly.</p>
 <p>You can search for <code class="docutils literal notranslate"><span class="pre">HelpEntry</span></code> objects using <code class="docutils literal notranslate"><span class="pre">evennia.search_help</span></code> but note
 that this will not return the two other types of help entries.</p>
-</div>
-<div class="section" id="file-help-entries">
+</section>
+<section id="file-help-entries">
 <h3>File-help entries<a class="headerlink" href="#file-help-entries" title="Permalink to this headline">¶</a></h3>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.0.</span></p>
@@ -290,38 +291,38 @@ be ignored in this case.</p></li>
 will override coming before.</p>
 <p>Each entry dict must define keys to match that needed by all help entries.
 Here’s an example of a help module:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="c1"># in a module pointed to by settings.FILE_HELP_ENTRY_MODULES</span>
   
 <span class="n">HELP_ENTRY_DICTS</span> <span class="o">=</span> <span class="p">[</span>
@@ -358,9 +359,9 @@ Here’s an example of a help module:</p>
 <p>The help entry text will be dedented and will retain paragraphs. You should try
 to keep your strings a reasonable width (it will look better). Just reload the
 server and the file-based help entries will be available to view.</p>
-</div>
-</div>
-<div class="section" id="customizing-the-look-of-the-help-system">
+</section>
+</section>
+<section id="customizing-the-look-of-the-help-system">
 <h2>Customizing the look of the help system<a class="headerlink" href="#customizing-the-look-of-the-help-system" title="Permalink to this headline">¶</a></h2>
 <p>This is done almost exclusively by overriding the <code class="docutils literal notranslate"><span class="pre">help</span></code> command
 <a class="reference external" href="../api/evennia.commands.default.help.html#CmdHelp">evennia.commands.default.help.CmdHelp</a>.</p>
@@ -372,8 +373,8 @@ the output.</p>
 visual presentation has been broken out into separate methods <code class="docutils literal notranslate"><span class="pre">format_help_entry</span></code> and
 <code class="docutils literal notranslate"><span class="pre">format_help_index</span></code> - override these in your version of <code class="docutils literal notranslate"><span class="pre">help</span></code> to change the display
 as you please. See the api link above for details.</p>
-</div>
-<div class="section" id="technical-notes">
+</section>
+<section id="technical-notes">
 <h2>Technical notes<a class="headerlink" href="#technical-notes" title="Permalink to this headline">¶</a></h2>
 <p>Since it needs to search so different types of data, the help system has to
 collect all possibilities in memory before searching through the entire set. It
@@ -386,8 +387,8 @@ at that point).</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Replaced the bag-of-words algorithm with lunr.</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

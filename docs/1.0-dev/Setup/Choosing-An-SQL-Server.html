@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Choosing An SQL Server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="choosing-an-sql-server">
+  <section id="choosing-an-sql-server">
 <h1>Choosing An SQL Server<a class="headerlink" href="#choosing-an-sql-server" title="Permalink to this headline">¶</a></h1>
 <p>This page gives an overview of the supported SQL databases as well as instructions on install:</p>
 <ul class="simple">
@@ -49,7 +50,7 @@
 know from the community and their documentation. While the information below may be useful, you can
 always find the most up-to-date and “correct” information at Django’s <a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/databases/#ref-databases">Notes about supported
 Databases</a> page.</p>
-<div class="section" id="sqlite3">
+<section id="sqlite3">
 <h2>SQLite3<a class="headerlink" href="#sqlite3" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://sqlite.org/">SQLite3</a> is a light weight single-file database. It is our default database
 and Evennia will set this up for you automatically if you give no other options. SQLite stores the
@@ -74,7 +75,7 @@ its records. This has to do with file-locking clashes of the database file. So f
 server making heavy use of process- or thread pools (or when using a third-party webserver like
 Apache), a proper database is a more appropriate choice.</p></li>
 </ul>
-<div class="section" id="install-of-sqlite3">
+<section id="install-of-sqlite3">
 <h3>Install of SQlite3<a class="headerlink" href="#install-of-sqlite3" title="Permalink to this headline">¶</a></h3>
 <p>This is installed and configured as part of Evennia. The database file is created as
 <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code> when you run</p>
@@ -87,23 +88,23 @@ evennia database is <code class="docutils literal notranslate"><span class="pre"
 distro while Mac/Windows should get the <a class="reference external" href="https://sqlite.org/download.html">sqlite-tools package from this
 page</a>.</p>
 <p>To inspect the default Evennia database (once it’s been created), go to your game dir and do</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    sqlite3 server/evennia.db3
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    sqlite3 server/evennia.db3
     <span class="c1"># or </span>
     evennia dbshell
 </pre></div>
 </td></tr></table></div>
 <p>This will bring you into the sqlite command line. Use <code class="docutils literal notranslate"><span class="pre">.help</span></code> for instructions and <code class="docutils literal notranslate"><span class="pre">.quit</span></code> to exit.
 See <a class="reference external" href="https://gist.github.com/vincent178/10889334">here</a> for a cheat-sheet of commands.</p>
-</div>
-</div>
-<div class="section" id="postgresql">
+</section>
+</section>
+<section id="postgresql">
 <h2>PostgreSQL<a class="headerlink" href="#postgresql" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> is an open-source database engine, recommended by Django.
 While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
 game has an very large database and/or extensive web presence through a separate server process.</p>
-<div class="section" id="install-and-initial-setup-of-postgresql">
+<section id="install-and-initial-setup-of-postgresql">
 <h3>Install and initial setup of PostgreSQL<a class="headerlink" href="#install-and-initial-setup-of-postgresql" title="Permalink to this headline">¶</a></h3>
 <p>First, install the posgresql server. Version <code class="docutils literal notranslate"><span class="pre">9.6</span></code> is tested with Evennia. Packages are readily
 available for all distributions. You need to also get the <code class="docutils literal notranslate"><span class="pre">psql</span></code> client (this is called <code class="docutils literal notranslate"><span class="pre">postgresql-</span> <span class="pre">client</span></code> on debian-derived systems). Windows/Mac users can <a class="reference external" href="https://www.postgresql.org/download/">find what they need on the postgresql
@@ -111,7 +112,7 @@ download page</a>. You should be setting up a password for your
 database-superuser (always called <code class="docutils literal notranslate"><span class="pre">postgres</span></code>) when you install.</p>
 <p>For interaction with Evennia you need to also install <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> to your Evennia install (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">psycopg2-binary</span></code> in your virtualenv). This acts as the python bridge to the database server.</p>
 <p>Next, start the postgres client:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    psql -U postgres --password
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    psql -U postgres --password
 </pre></div>
 </td></tr></table></div>
 <div class="admonition warning">
@@ -122,19 +123,19 @@ have to since the resulting command, and your password, will be logged in the sh
 </div>
 <p>This will open a console to the postgres service using the psql client.</p>
 <p>On the psql command line:</p>
-<div class="highlight-sql notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">evennia</span> <span class="k">WITH</span> <span class="n">PASSWORD</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
+<div class="highlight-sql notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">evennia</span> <span class="k">WITH</span> <span class="n">PASSWORD</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
 <span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
 
 <span class="c1">-- Postgres-specific optimizations</span>
@@ -156,22 +157,22 @@ read/write etc to it.
 If you in the future wanted to completely wipe the database, an easy way to do is to log in as the
 <code class="docutils literal notranslate"><span class="pre">postgres</span></code> superuser again, then do <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">DATABASE</span> <span class="pre">evennia;</span></code>, then <code class="docutils literal notranslate"><span class="pre">CREATE</span></code> and <code class="docutils literal notranslate"><span class="pre">GRANT</span></code> steps above
 again to recreate the database and grant privileges.</p>
-</div>
-<div class="section" id="evennia-postgresql-configuration">
+</section>
+<section id="evennia-postgresql-configuration">
 <h3>Evennia PostgreSQL configuration<a class="headerlink" href="#evennia-postgresql-configuration" title="Permalink to this headline">¶</a></h3>
 <p>Edit `mygame/server/conf/secret_settings.py and add the following section:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#</span>
 <span class="c1"># PostgreSQL Database Configuration</span>
 <span class="c1">#</span>
 <span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
@@ -197,8 +198,8 @@ also use</p>
 <p>as a shortcut to get into the postgres command line for the right database and user.</p>
 <p>With the database setup you should now be able to start start Evennia normally with your new
 database.</p>
-</div>
-<div class="section" id="advanced-postgresql-usage-remote-server">
+</section>
+<section id="advanced-postgresql-usage-remote-server">
 <h3>Advanced Postgresql Usage (Remote Server)<a class="headerlink" href="#advanced-postgresql-usage-remote-server" title="Permalink to this headline">¶</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -218,9 +219,9 @@ Depending on distribution, PostgreSQL will only accept connections on the local
 machine (localhost).  In order to enable remote access, two files need to be
 changed.</p>
 <p>First, determine which cluster is running your database. Use <code class="docutils literal notranslate"><span class="pre">pg_lscluster</span></code>:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_lsclusters
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
 <span class="m">12</span>  main    <span class="m">5432</span> online postgres /var/lib/postgresql/12/main /var/log/postgresql/postgresql-12-main.log
 </pre></div>
@@ -254,11 +255,11 @@ for more details.)</p>
 <p>Finally, modify the <code class="docutils literal notranslate"><span class="pre">pg_hba.conf</span></code> (in the same directory as <code class="docutils literal notranslate"><span class="pre">postgresql.conf</span></code>).
 Look for a line with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># IPv4 local connections:</span>
-<span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">/</span><span class="mi">32</span>            <span class="n">md5</span>
+<span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">127.0.0.1</span><span class="o">/</span><span class="mi">32</span>            <span class="n">md5</span>
 </pre></div>
 </div>
 <p>Add a line with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">0</span>               <span class="n">md5</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">0.0.0.0</span><span class="o">/</span><span class="mi">0</span>               <span class="n">md5</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -267,7 +268,7 @@ Look for a line with:</p>
 the PosgreSQL documentation on how to limit this.</p>
 </div>
 <p>Now, restart your cluster:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_ctlcluster <span class="m">12</span> main restart
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>$ pg_ctlcluster <span class="m">12</span> main restart
 </pre></div>
 </td></tr></table></div>
 <p>Finally, update the database settings in your Evennia secret_settings.py (as
@@ -275,14 +276,14 @@ described <a class="reference external" href="#evennia-postgresql-configuration"
 <code class="docutils literal notranslate"><span class="pre">PORT</span></code> to match your server.</p>
 <p>Now your Evennia installation should be able to connect and talk with a remote
 server.</p>
-</div>
-</div>
-<div class="section" id="mysql-mariadb">
+</section>
+</section>
+<section id="mysql-mariadb">
 <h2>MySQL / MariaDB<a class="headerlink" href="#mysql-mariadb" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.mysql.com/">MySQL</a> is a commonly used proprietary database system, on par with
 PostgreSQL. There is an open-source alternative called <a class="reference external" href="https://mariadb.org/">MariaDB</a> that mimics
 all functionality and command syntax of the former. So this section covers both.</p>
-<div class="section" id="installing-and-initial-setup-of-mysql-mariadb">
+<section id="installing-and-initial-setup-of-mysql-mariadb">
 <h3>Installing and initial setup of MySQL/MariaDB<a class="headerlink" href="#installing-and-initial-setup-of-mysql-mariadb" title="Permalink to this headline">¶</a></h3>
 <p>First, install and setup MariaDB or MySQL for your specific server. Linux users should look for the
 <code class="docutils literal notranslate"><span class="pre">mysql-server</span></code> or <code class="docutils literal notranslate"><span class="pre">mariadb-server</span></code> packages for their respective distributions. Windows/Mac users
@@ -293,19 +294,19 @@ should usually be asked to set up the database root user and password.</p>
 <p>You will finally also need a Python interface to allow Evennia to talk to the database. Django
 recommends the  <code class="docutils literal notranslate"><span class="pre">mysqlclient</span></code> one. Install this into the evennia virtualenv with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mysqlclient</span></code>.</p>
 <p>Start the database client (this is named the same for both mysql and mariadb):</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>mysql -u root -p
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>mysql -u root -p
 </pre></div>
 </td></tr></table></div>
 <p>You should get to enter your database root password (set this up when you installed the database
 server).</p>
 <p>Inside the database client interface:</p>
-<div class="highlight-sql notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
+<div class="highlight-sql notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
 <span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
 <span class="k">ALTER</span> <span class="k">DATABASE</span> <span class="o">`</span><span class="n">evennia</span><span class="o">`</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span><span class="p">;</span> <span class="c1">-- note that it&#39;s `evennia` with back-ticks, not</span>
 <span class="n">quotes</span><span class="o">!</span>
@@ -327,9 +328,9 @@ you can use <code class="docutils literal notranslate"><span class="pre">evennia
 way of easy reset. Without this extra privilege you will be able to drop the database but not re-
 create it without first switching to the database-root user.</p>
 </div></blockquote>
-</div>
-</div>
-<div class="section" id="add-mysql-configuration-to-evennia">
+</section>
+</section>
+<section id="add-mysql-configuration-to-evennia">
 <h2>Add MySQL configuration to Evennia<a class="headerlink" href="#add-mysql-configuration-to-evennia" title="Permalink to this headline">¶</a></h2>
 <p>To tell Evennia to use your new database you need to edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> (or
 <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> if you don’t want your db info passed around on git repositories).</p>
@@ -339,19 +340,19 @@ formatted file. Evennia users have however found that this leads to problems (se
 #1184</a>). To avoid trouble we recommend you simply put the configuration in
 your settings as below.</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
     <span class="c1"># MySQL Database Configuration</span>
     <span class="c1">#</span>
     <span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
@@ -378,14 +379,14 @@ also use</p>
 <p>as a shortcut to get into the postgres command line for the right database and user.</p>
 <p>With the database setup you should now be able to start start Evennia normally with your new
 database.</p>
-</div>
-<div class="section" id="others">
+</section>
+<section id="others">
 <h2>Others<a class="headerlink" href="#others" title="Permalink to this headline">¶</a></h2>
 <p>No testing has been performed with Oracle, but it is also supported through Django. There are
 community maintained drivers for <a class="reference external" href="http://code.google.com/p/django-mssql/">MS SQL</a> and possibly a few
 others. If you try other databases out, consider expanding this page with instructions.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

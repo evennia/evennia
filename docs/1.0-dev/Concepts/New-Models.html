@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>New Models &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="new-models">
+  <section id="new-models">
 <h1>New Models<a class="headerlink" href="#new-models" title="Permalink to this headline">¶</a></h1>
 <p><em>Note: This is considered an advanced topic.</em></p>
 <p>Evennia offers many convenient ways to store object data, such as via Attributes or Scripts. This is
@@ -47,7 +48,7 @@ store guild data for guild members to be able to change, tracking the flow of mo
 wide economic system or implement other custom game systems that requires the storage of custom data
 in a quickly accessible way. Whereas <a class="reference internal" href="../Components/Tags.html"><span class="doc">Tags</span></a> or <a class="reference internal" href="../Components/Scripts.html"><span class="doc">Scripts</span></a> can handle many situations,
 sometimes things may be easier to handle by adding your own database model.</p>
-<div class="section" id="overview-of-database-tables">
+<section id="overview-of-database-tables">
 <h2>Overview of database tables<a class="headerlink" href="#overview-of-database-tables" title="Permalink to this headline">¶</a></h2>
 <p>SQL-type databases (which is what Evennia supports) are basically highly optimized systems for
 retrieving text stored in tables. A table may look like this</p>
@@ -82,8 +83,8 @@ manipulation and allows you to search and manipulate your database entirely in P
 table is in Django represented by a class commonly called a <em>model</em> since it describes the look of
 the table. In Evennia, Objects, Scripts, Channels etc are examples of Django models that we then
 extend and build on.</p>
-</div>
-<div class="section" id="adding-a-new-database-table">
+</section>
+<section id="adding-a-new-database-table">
 <h2>Adding a new database table<a class="headerlink" href="#adding-a-new-database-table" title="Permalink to this headline">¶</a></h2>
 <p>Here is how you add your own database table/models:</p>
 <ol>
@@ -120,8 +121,8 @@ you put <code class="docutils literal notranslate"><span class="pre">myapp</span
 <p>This will add your new database table to the database. If you have put your game under version
 control (if not, <a class="reference internal" href="../Coding/Version-Control.html"><span class="doc">you should</span></a>), don’t forget to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">myapp/*</span></code> to add all items
 to version control.</p>
-</div>
-<div class="section" id="defining-your-models">
+</section>
+<section id="defining-your-models">
 <h2>Defining your models<a class="headerlink" href="#defining-your-models" title="Permalink to this headline">¶</a></h2>
 <p>A Django <em>model</em> is the Python representation of a database table. It can be handled like any other
 Python class. It defines <em>fields</em> on itself, objects of a special type. These become the “columns”
@@ -130,17 +131,17 @@ database.</p>
 <p>We won’t describe all aspects of Django models here, for that we refer to the vast <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/models/">Django
 documentation</a> on the subject. Here is a
 (very) brief example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 <span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="s2">&quot;A simple model for storing some data&quot;</span>
@@ -175,17 +176,17 @@ them, see django docs for more info.</p>
 are able to do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">inspectdb</span></code> to get an automated listing of model information for an existing
 database.  As is the case with any model generating tool you should only use this as a starting
 point for your models.</p>
-</div>
-<div class="section" id="creating-a-new-model-instance">
+</section>
+<section id="creating-a-new-model-instance">
 <h2>Creating a new model instance<a class="headerlink" href="#creating-a-new-model-instance" title="Permalink to this headline">¶</a></h2>
 <p>To create a new row in your table, you instantiate the model and then call its <code class="docutils literal notranslate"><span class="pre">save()</span></code> method:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
 
      <span class="n">new_datastore</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;LargeSword&quot;</span><span class="p">,</span>
                                  <span class="n">db_category</span><span class="o">=</span><span class="s2">&quot;weapons&quot;</span><span class="p">,</span>
@@ -199,15 +200,15 @@ makes sure to set it to the current date when the object is created (it can also
 further after creation).</p>
 <p>When you update an existing object with some new field value, remember that you have to save the
 object afterwards, otherwise the database will not update:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
     <span class="n">my_datastore</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 <p>Evennia’s normal models don’t need to explicitly save, since they are based on <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code>
 rather than the raw django model. This is covered in the next section.</p>
-</div>
-<div class="section" id="using-the-sharedmemorymodel-parent">
+</section>
+<section id="using-the-sharedmemorymodel-parent">
 <h2>Using the <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> parent<a class="headerlink" href="#using-the-sharedmemorymodel-parent" title="Permalink to this headline">¶</a></h2>
 <p>Evennia doesn’t base most of its models on the raw <code class="docutils literal notranslate"><span class="pre">django.db.models</span></code> but on the Evennia base model
 <code class="docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code>. There are two main reasons for this:</p>
@@ -220,7 +221,7 @@ will automatically create field wrappers for them. This happens in the model’s
 <a class="reference external" href="http://en.wikibooks.org/wiki/Python_Programming/Metaclasses">Metaclass</a> so there is no speed
 penalty for this. The name of the wrapper will be the same name as the field, minus the <code class="docutils literal notranslate"><span class="pre">db_</span></code>
 prefix. So the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> field will have a wrapper property named <code class="docutils literal notranslate"><span class="pre">key</span></code>. You can then do:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>and don’t have to explicitly call <code class="docutils literal notranslate"><span class="pre">save()</span></code> afterwards. The saving also happens in a more efficient
@@ -229,14 +230,14 @@ Note that if you were to manually add the property or method <code class="docuti
 instead of the automatic wrapper and allows you to fully customize access as needed.</p>
 <p>To explain the second and more important point, consider the following example using the default
 Django model parent:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
     <span class="n">shield</span><span class="o">.</span><span class="n">cracked</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># where cracked is not a database field</span>
 </pre></div>
 </td></tr></table></div>
 <p>And then later:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">cracked</span><span class="p">)</span>  <span class="c1"># error!</span>
 </pre></div>
 </td></tr></table></div>
@@ -261,16 +262,16 @@ idmapper.</p>
 <p>To use the idmapper and the field-wrapper functionality you just have to have your model classes
 inherit from <code class="docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code> instead of from the default
 <code class="docutils literal notranslate"><span class="pre">django.db.models.Model</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
 
 <span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="c1"># the rest is the same as before, but db_* is important; these will</span>
@@ -282,23 +283,23 @@ inherit from <code class="docutils literal notranslate"><span class="pre">evenni
                                             <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="searching-for-your-models">
+</section>
+<section id="searching-for-your-models">
 <h2>Searching for your models<a class="headerlink" href="#searching-for-your-models" title="Permalink to this headline">¶</a></h2>
 <p>To search your new custom database table you need to use its database <em>manager</em> to build a <em>query</em>.
 Note that even if you use <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> as described in the previous section, you have to use
 the actual <em>field names</em> in the query, not the wrapper name (so <code class="docutils literal notranslate"><span class="pre">db_key</span></code> and not just <code class="docutils literal notranslate"><span class="pre">key</span></code>).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">world.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">world.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
 
      <span class="c1"># get all datastore objects exactly matching a given key</span>
      <span class="n">matches</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;Larger Sword&quot;</span><span class="p">)</span>
@@ -313,8 +314,8 @@ the actual <em>field names</em> in the query, not the wrapper name (so <code cla
 </td></tr></table></div>
 <p>See the <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/queries/">Django query documentation</a> for a
 lot more information about querying the database.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

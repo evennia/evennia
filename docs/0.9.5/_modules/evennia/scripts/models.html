@@ -142,7 +142,7 @@
 
     <span class="c1"># how often to run Script (secs). -1 means there is no timer</span>
     <span class="n">db_interval</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span>
-        <span class="s2">&quot;interval&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;how often to repeat script, in seconds. -1 means off.&quot;</span>
+        <span class="s2">&quot;interval&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;how often to repeat script, in seconds. &lt;= 0 means off.&quot;</span>
     <span class="p">)</span>
     <span class="c1"># start script right away or wait interval seconds first</span>
     <span class="n">db_start_delay</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
@@ -151,7 +151,7 @@
     <span class="c1"># how many times this script is to be repeated, if interval!=0.</span>
     <span class="n">db_repeats</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="s2">&quot;number of repeats&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;0 means off.&quot;</span><span class="p">)</span>
     <span class="c1"># defines if this script should survive a reboot or not</span>
-    <span class="n">db_persistent</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s2">&quot;survive server reboot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">db_persistent</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s2">&quot;survive server reboot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># defines if this script has already been started in this session</span>
     <span class="n">db_is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s2">&quot;script active&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -256,7 +256,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

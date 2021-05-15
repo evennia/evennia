@@ -54,16 +54,15 @@
 <span class="sd">http://www.faqs.org/rfcs/rfc858.html</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
-<span class="n">SUPPRESS_GA</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># b&quot;\x03&quot;</span>
+<span class="n">SUPPRESS_GA</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># b&quot;\x03&quot;</span>
 
 <span class="c1"># default taken from telnet specification</span>
 
 <span class="c1"># try to get the customized mssp info, if it exists.</span>
 
 
-<div class="viewcode-block" id="SuppressGA"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA">[docs]</a><span class="k">class</span> <span class="nc">SuppressGA</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SuppressGA"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA">[docs]</a><span class="k">class</span> <span class="nc">SuppressGA</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
@@ -81,6 +80,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span>
+            <span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Used to send a GA after a prompt line only, set in TTYPE (per client)</span>
         <span class="c1"># tell the client that we prefer to suppress GA ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
 
@@ -141,7 +143,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="suppress_ga.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

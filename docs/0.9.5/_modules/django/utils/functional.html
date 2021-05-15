@@ -43,17 +43,6 @@
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span><span class="p">,</span> <span class="n">wraps</span>
 
-<span class="kn">from</span> <span class="nn">django.utils.version</span> <span class="kn">import</span> <span class="n">PY36</span><span class="p">,</span> <span class="n">get_docs_version</span>
-
-
-<span class="c1"># You can&#39;t trivially replace this with `functools.partial` because this binds</span>
-<span class="c1"># to classes and returns bound instances, whereas functools.partial (on</span>
-<span class="c1"># CPython) is a type and its instances don&#39;t bind.</span>
-<span class="k">def</span> <span class="nf">curry</span><span class="p">(</span><span class="n">_curried_func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_curried</span><span class="p">(</span><span class="o">*</span><span class="n">moreargs</span><span class="p">,</span> <span class="o">**</span><span class="n">morekwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">_curried_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">moreargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">morekwargs</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">_curried</span>
-
 
 <span class="k">class</span> <span class="nc">cached_property</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -62,8 +51,8 @@
 
 <span class="sd">    A cached property can be made out of an existing method:</span>
 <span class="sd">    (e.g. ``url = cached_property(get_absolute_url)``).</span>
-<span class="sd">    On Python &lt; 3.6, the optional ``name`` argument must be provided, e.g.</span>
-<span class="sd">    ``url = cached_property(get_absolute_url, name=&#39;url&#39;)``.</span>
+<span class="sd">    The optional ``name`` argument is obsolete as of Python 3.6 and will be</span>
+<span class="sd">    deprecated in Django 4.0 (#30127).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -74,29 +63,8 @@
             <span class="s1">&#39;__set_name__() on it.&#39;</span>
         <span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_is_mangled</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">PY36</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">real_func</span> <span class="o">=</span> <span class="n">func</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">func_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">func_name</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> can&#39;t be used as the name of a cached_property.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mangled</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;cached_property does not work with mangled methods on &#39;</span>
-                    <span class="s1">&#39;Python &lt; 3.6 without the appropriate `name` argument. See &#39;</span>
-                    <span class="s1">&#39;https://docs.djangoproject.com/en/</span><span class="si">%s</span><span class="s1">/ref/utils/&#39;</span>
-                    <span class="s1">&#39;#cached-property-mangled-name&#39;</span> <span class="o">%</span> <span class="n">get_docs_version</span><span class="p">(),</span>
-                <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">real_func</span> <span class="o">=</span> <span class="n">func</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;__doc__&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -119,6 +87,22 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="k">class</span> <span class="nc">classproperty</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator that converts a method with a single cls argument into a property</span>
+<span class="sd">    that can be accessed directly from the class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fget</span> <span class="o">=</span> <span class="n">method</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fget</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fget</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
 
 <span class="k">class</span> <span class="nc">Promise</span><span class="p">:</span>
@@ -151,7 +135,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__kw</span> <span class="o">=</span> <span class="n">kw</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepared</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_class__</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__prepared</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__prepared</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span>
@@ -231,6 +215,12 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">%</span> <span class="n">rhs</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">%</span> <span class="n">rhs</span>
+
+        <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">other</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cast</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
             <span class="c1"># Instances of this class are effectively immutable. It&#39;s just a</span>
@@ -507,7 +497,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="functional.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

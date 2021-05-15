@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Understanding Color Tags &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="understanding-color-tags">
+  <section id="understanding-color-tags">
 <h1>Understanding Color Tags<a class="headerlink" href="#understanding-color-tags" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial aims at dispelling confusions regarding the use of color tags within Evennia.</p>
 <p>Correct understanding of this topic requires having read the <a class="reference internal" href="../Concepts/TextTags.html"><span class="doc">TextTags</span></a> page and learned
@@ -46,8 +47,8 @@ apparently incoherent) behaviors of some color tags, as mentioned <em>en passant
 <a class="reference internal" href="../Concepts/TextTags.html"><span class="doc">TextTags</span></a> page.</p>
 <p>All you’ll need for this tutorial is access to a running instance of Evennia via a color-enabled
 client. The examples provided are just commands that you can type in your client.</p>
-</div>
-<div class="section" id="evennia-ansi-and-xterm256">
+</section>
+<section id="evennia-ansi-and-xterm256">
 <h1>Evennia, ANSI and Xterm256<a class="headerlink" href="#evennia-ansi-and-xterm256" title="Permalink to this headline">¶</a></h1>
 <p>All modern MUD clients support colors; nevertheless, the standards to which all clients abide dates
 back to old day of terminals, and when it comes to colors we are dealing with ANSI and Xterm256
@@ -63,8 +64,8 @@ generated text, etc.</p>
 pitfalls. ANSI and Xterm256 coexist without conflicts in Evennia, but in many ways they don’t «see»
 each other: ANSI-specific color tags will have no effect on Xterm-defined colors, as we shall see
 here.</p>
-</div>
-<div class="section" id="ansi">
+</section>
+<section id="ansi">
 <h1>ANSI<a class="headerlink" href="#ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI has a set of 16 colors, to be more precise: ANSI has 8 basic colors which come in <em>dark</em> and
 <em>bright</em> flavours—with <em>dark</em> being <em>normal</em>. The colors are: red, green, yellow, blue, magenta,
@@ -78,16 +79,16 @@ behavior of ANSI tags, as we shall see.</p>
 <p>Also, it’s important to remember that the 16 ANSI colors are a convention, and the final user can
 always customize their appearance—he might decide to have green show as red, and dark green as blue,
 etc.</p>
-</div>
-<div class="section" id="xterm256">
+</section>
+<section id="xterm256">
 <h1>Xterm256<a class="headerlink" href="#xterm256" title="Permalink to this headline">¶</a></h1>
 <p>The 16 colors of ANSI should be more than enough to handle simple coloring of text. But when an
 author wants to be sure that a given color will show as he intended it, she might choose to rely on
 Xterm256 colors.</p>
 <p>Xterm256 doesn’t rely on a palette of named colors, it instead represent colors by their values. So,
 a red color could be <code class="docutils literal notranslate"><span class="pre">|[500</span></code> (bright and pure red), or <code class="docutils literal notranslate"><span class="pre">|[300</span></code> (darker red), and so on.</p>
-</div>
-<div class="section" id="ansi-color-tags-in-evennia">
+</section>
+<section id="ansi-color-tags-in-evennia">
 <h1>ANSI Color Tags in Evennia<a class="headerlink" href="#ansi-color-tags-in-evennia" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>NOTE: for ease of reading, the examples contain extra white spaces after the
@@ -197,7 +198,7 @@ it is meant to work.</p>
 <p>ANSI operates according to a simple states-based mechanism, and it’s important to understand the
 positive effect of resetting with the <code class="docutils literal notranslate"><span class="pre">|n</span></code> tag, and not try to
 push it over the limit, so to speak.</p>
-</div>
+</section>
 
 
             <div class="clearer"></div>

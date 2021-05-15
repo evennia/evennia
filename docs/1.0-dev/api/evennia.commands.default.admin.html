@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.commands.default.admin &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.commands.default.admin">
+  <section id="module-evennia.commands.default.admin">
 <span id="evennia-commands-default-admin"></span><h1>evennia.commands.default.admin<a class="headerlink" href="#module-evennia.commands.default.admin" title="Permalink to this headline">¶</a></h1>
 <p>Admin commands</p>
 <dl class="py class">
@@ -254,7 +255,7 @@ to accounts respectively.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdEmit.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['remit', 'pemit']</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['pemit', 'remit']</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -285,7 +286,7 @@ to accounts respectively.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdEmit.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'remit pemit', 'category': 'admin', 'key': 'emit', 'tags': '', 'text': '\n    admin command for emitting message to multiple objects\n\n    Usage:\n      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n\n    Switches:\n      room     -  limit emits to rooms only (default)\n      accounts -  limit emits to accounts only\n      contents -  send to the contents of matched objects too\n\n    Emits a message to the selected objects or to\n    your immediate surroundings. If the object is a room,\n    send to its contents. remit and pemit are just\n    limited forms of emit, for sending to rooms and\n    to accounts respectively.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pemit remit', 'category': 'admin', 'key': 'emit', 'tags': '', 'text': '\n    admin command for emitting message to multiple objects\n\n    Usage:\n      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n\n    Switches:\n      room     -  limit emits to rooms only (default)\n      accounts -  limit emits to accounts only\n      contents -  send to the contents of matched objects too\n\n    Emits a message to the selected objects or to\n    your immediate surroundings. If the object is a room,\n    send to its contents. remit and pemit are just\n    limited forms of emit, for sending to rooms and\n    to accounts respectively.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -499,7 +500,7 @@ including all currently unlogged in.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>

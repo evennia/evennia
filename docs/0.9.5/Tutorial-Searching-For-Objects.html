@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial Searching For Objects &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,13 +46,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="tutorial-searching-for-objects">
+  <section id="tutorial-searching-for-objects">
 <h1>Tutorial Searching For Objects<a class="headerlink" href="#tutorial-searching-for-objects" title="Permalink to this headline">¶</a></h1>
 <p>You will often want to operate on a specific object in the database. For example when a player
 attacks a named target you’ll need to find that target so it can be attacked. Or when a rain storm
 draws in you need to find all outdoor-rooms so you can show it raining in them. This tutorial
 explains Evennia’s tools for searching.</p>
-<div class="section" id="things-to-search-for">
+<section id="things-to-search-for">
 <h2>Things to search for<a class="headerlink" href="#things-to-search-for" title="Permalink to this headline">¶</a></h2>
 <p>The first thing to consider is the base type of the thing you are searching for. Evennia organizes
 its database into a few main tables: <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>,
@@ -91,8 +92,8 @@ hard-coded #dbrefs to do your searches. It makes your code tied to the exact lay
 It’s also not very maintainable to have to remember abstract numbers. Passing the actual objects
 around and searching by Tags and/or keys will usually get you what you need.</p></li>
 </ul>
-</div>
-<div class="section" id="getting-objects-inside-another">
+</section>
+<section id="getting-objects-inside-another">
 <h2>Getting objects inside another<a class="headerlink" href="#getting-objects-inside-another" title="Permalink to this headline">¶</a></h2>
 <p>All in-game <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> have a <code class="docutils literal notranslate"><span class="pre">.contents</span></code> property that returns all objects ‘inside’ them
 (that is, all objects which has its <code class="docutils literal notranslate"><span class="pre">.location</span></code> property set to that object. This is a simple way to
@@ -106,36 +107,36 @@ their <code class="docutils literal notranslate"><span class="pre">destination</
 <li><p><code class="docutils literal notranslate"><span class="pre">obj.location.contents_get(exclude=obj)</span></code> - this helper method returns all objects in <code class="docutils literal notranslate"><span class="pre">obj</span></code>’s
 location except <code class="docutils literal notranslate"><span class="pre">obj</span></code>.</p></li>
 </ul>
-</div>
-<div class="section" id="searching-using-object-search">
+</section>
+<section id="searching-using-object-search">
 <h2>Searching using <code class="docutils literal notranslate"><span class="pre">Object.search</span></code><a class="headerlink" href="#searching-using-object-search" title="Permalink to this headline">¶</a></h2>
 <p>Say you have a <a class="reference internal" href="Commands.html"><span class="doc">command</span></a>, and you want it to do something to a target. You might be
 wondering how you retrieve that target in code, and that’s where Evennia’s search utilities come in.
 In the most common case, you’ll often use the <code class="docutils literal notranslate"><span class="pre">search</span></code> method of the <code class="docutils literal notranslate"><span class="pre">Object</span></code> or <code class="docutils literal notranslate"><span class="pre">Account</span></code>
 typeclasses. In a command, the <code class="docutils literal notranslate"><span class="pre">.caller</span></code> property will refer back to the object using the command
 (usually a <code class="docutils literal notranslate"><span class="pre">Character</span></code>, which is a type of <code class="docutils literal notranslate"><span class="pre">Object</span></code>) while <code class="docutils literal notranslate"><span class="pre">.args</span></code> will contain Command’s arguments:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># e.g. in file mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># e.g. in file mygame/commands/command.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
@@ -170,27 +171,27 @@ object: <code class="docutils literal notranslate"><span class="pre">character.s
 <p>The search method has many <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.objects.objects#defaultcharactersearch">arguments</a> that
 allow you to refine the search, such as by designating the location to search in or only matching
 specific typeclasses.</p>
-</div>
-<div class="section" id="searching-using-utils-search">
+</section>
+<section id="searching-using-utils-search">
 <h2>Searching using <code class="docutils literal notranslate"><span class="pre">utils.search</span></code><a class="headerlink" href="#searching-using-utils-search" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes you will want to find something that isn’t tied to the search methods of a character or
 account. In these cases, Evennia provides a <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.search">utility module with a number of search
 functions</a>. For example, suppose you want a command that will find and
 display all the rooms that are tagged as a ‘hangout’, for people to gather by. Here’s a simple
 Command to do this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># e.g. in file mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># e.g. in file mygame/commands/command.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.search</span> <span class="kn">import</span> <span class="n">search_tag</span>
@@ -230,8 +231,8 @@ representation of the database-query it’s about to do. Only when you convert i
 over it or try to slice or access any of its contents will the datbase-lookup happen. This means you
 could yourself customize the query further if you know what you are doing (see the next section).</p>
 </div></blockquote>
-</div>
-<div class="section" id="queries-in-django">
+</section>
+<section id="queries-in-django">
 <h2>Queries in Django<a class="headerlink" href="#queries-in-django" title="Permalink to this headline">¶</a></h2>
 <p><em>This is an advanced topic.</em></p>
 <p>Evennia’s search methods should be sufficient for the vast majority of situations. But eventually
@@ -253,9 +254,9 @@ function and modify the resulting query to your own ends to further tweak what y
 from the objects. Queries usually use the ‘manager’ object of a class, which by convention is the
 <code class="docutils literal notranslate"><span class="pre">.objects</span></code> attribute of a class. For example, a query of Accounts that contain the letter ‘a’ could
 be:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">typeclasses.accounts</span> <span class="kn">import</span> <span class="n">Account</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">typeclasses.accounts</span> <span class="kn">import</span> <span class="n">Account</span>
 
 <span class="n">queryset</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__contains</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
 </pre></div>
@@ -265,21 +266,21 @@ continue to refine the query by calling additional methods until you evaluate th
 the query to be executed and return a result. For example, if you have the result above, you could,
 without causing the queryset to be evaluated yet, get rid of matches that contain the letter ‘e by
 doing this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">username__contains</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">username__contains</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <blockquote>
 <div><p>You could also have chained <code class="docutils literal notranslate"><span class="pre">.exclude</span></code> directly to the end of the previous line.</p>
 </div></blockquote>
 <p>Once you try to access the result, the queryset will be evaluated automatically under the hood:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">accounts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">queryset</span><span class="p">)</span>  <span class="c1"># this fills list with matches</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">accounts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">queryset</span><span class="p">)</span>  <span class="c1"># this fills list with matches</span>
 
 <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">queryset</span><span class="p">:</span>
     <span class="c1"># do something with account</span>
@@ -289,31 +290,31 @@ doing this:</p>
 <span class="c1"># etc</span>
 </pre></div>
 </td></tr></table></div>
-<div class="section" id="limiting-by-typeclass">
+<section id="limiting-by-typeclass">
 <h3>Limiting by typeclass<a class="headerlink" href="#limiting-by-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>Although <code class="docutils literal notranslate"><span class="pre">Character</span></code>s, <code class="docutils literal notranslate"><span class="pre">Exit</span></code>s, <code class="docutils literal notranslate"><span class="pre">Room</span></code>s, and other children of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> all shares the same
 underlying database table, Evennia provides a shortcut to do more specific queries only for those
 typeclasses. For example, to find only <code class="docutils literal notranslate"><span class="pre">Character</span></code>s whose names start with ‘A’, you might do:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>If Character has a subclass <code class="docutils literal notranslate"><span class="pre">Npc</span></code> and you wanted to find only Npc’s you’d instead do</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Npc</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Npc</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>If you wanted to search both Characters and all its subclasses (like Npc) you use the <code class="docutils literal notranslate"><span class="pre">*_family</span></code>
 method which is added by Evennia:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The higher up in the inheritance hierarchy you go the more objects will be included in these
 searches. There is one special case, if you really want to include <em>everything</em> from a given
 database table. You do that by searching on the database model itself. These are named <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code>,
 <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ScriptDB</span></code> etc.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 
 <span class="c1"># all Accounts in the database, regardless of typeclass</span>
 <span class="nb">all</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -330,19 +331,19 @@ found.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">get_family</span></code> - like <code class="docutils literal notranslate"><span class="pre">get</span></code>, but search all sub classes as well.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">all_family</span></code> - like <code class="docutils literal notranslate"><span class="pre">all</span></code>, but return entities of all subclasses as well.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="multiple-conditions">
+</section>
+</section>
+<section id="multiple-conditions">
 <h2>Multiple conditions<a class="headerlink" href="#multiple-conditions" title="Permalink to this headline">¶</a></h2>
 <p>If you pass more than one keyword argument to a query method, the query becomes an <code class="docutils literal notranslate"><span class="pre">AND</span></code>
 relationship. For example, if we want to find characters whose names start with “A” <em>and</em> are also
 werewolves (have the <code class="docutils literal notranslate"><span class="pre">lycanthrope</span></code> tag), we might do:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthrope&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;lycanthrope&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>To exclude lycanthropes currently in rooms tagged as hangouts, we might tack on an <code class="docutils literal notranslate"><span class="pre">.exclude</span></code> as
 before:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">quersyet</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_location__db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;hangout&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">queryset</span> <span class="o">=</span> <span class="n">quersyet</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_location__db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;hangout&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Note the syntax of the keywords in building the queryset. For example, <code class="docutils literal notranslate"><span class="pre">db_location</span></code> is the name of
@@ -369,7 +370,7 @@ of building a query.</p>
 separate fields <em>on</em> that object like <code class="docutils literal notranslate"><span class="pre">db_key</span></code> or <code class="docutils literal notranslate"><span class="pre">db_location</span></code> are. You can get attached Attributes
 manually through the <code class="docutils literal notranslate"><span class="pre">db_attributes</span></code> many-to-many field in the same way as <code class="docutils literal notranslate"><span class="pre">db_tags</span></code> above.</p>
 </div></blockquote>
-<div class="section" id="complex-queries">
+<section id="complex-queries">
 <h3>Complex queries<a class="headerlink" href="#complex-queries" title="Permalink to this headline">¶</a></h3>
 <p>What if you want to have a query with with <code class="docutils literal notranslate"><span class="pre">OR</span></code> conditions or negated requirements (<code class="docutils literal notranslate"><span class="pre">NOT</span></code>)? Enter
 Django’s Complex Query object,
@@ -379,16 +380,16 @@ objects can then be chained together with set operations: <code class="docutils 
 <code class="docutils literal notranslate"><span class="pre">~</span></code> for NOT to build a combined, complex query.</p>
 <p>In our original Lycanthrope example we wanted our werewolves to have names that could start with any
 vowel except for the specific beginning “ab”.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
 
 <span class="n">query</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
@@ -408,20 +409,20 @@ that is negated with the <code class="docutils literal notranslate"><span class=
 with the string “ab”. Note that we don’t actually hit the database until we convert the query to a
 list at the end (we didn’t need to do that either, but could just have kept the query until we
 needed to do something with the matches).</p>
-</div>
-<div class="section" id="annotations-and-f-objects">
+</section>
+<section id="annotations-and-f-objects">
 <h3>Annotations and <code class="docutils literal notranslate"><span class="pre">F</span></code> objects<a class="headerlink" href="#annotations-and-f-objects" title="Permalink to this headline">¶</a></h3>
 <p>What if we wanted to filter on some condition that isn’t represented easily by a field on the
 object? Maybe we want to find rooms only containing five or more objects?</p>
 <p>We <em>could</em> retrieve all interesting candidates and run them through a for-loop to get and count
 their <code class="docutils literal notranslate"><span class="pre">.content</span></code> properties. We’d then just return a list of only those objects with enough
 contents. It would look something like this (note: don’t actually do this!):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># probably not a good idea to do it this way</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># probably not a good idea to do it this way</span>
 
 <span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 
@@ -437,16 +438,16 @@ filters.</p>
 <em>annotations</em>. So-called F expressions allow you to do a query that looks at a value of each object
 in the database, while annotations allow you to calculate and attach a value to a query. So, let’s
 do the same example as before directly in the database:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
 
 <span class="n">room_count</span> <span class="o">=</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">num_objects</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;locations_set&#39;</span><span class="p">))</span>
@@ -468,12 +469,12 @@ harder to get one’s head around but much more efficient than lopping over all 
 <p>What if we wanted to compare two parameters against one another in a query? For example, what if
 instead of having 5 or more objects, we only wanted objects that had a bigger inventory than they
 had tags? Here an F-object comes in handy:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">F</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">F</span>
 <span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">num_objects</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;locations_set&#39;</span><span class="p">),</span>
@@ -483,8 +484,8 @@ had tags? Here an F-object comes in handy:</p>
 </td></tr></table></div>
 <p>F-objects allows for wrapping an annotated structure on the right-hand-side of the expression. It
 will be evaluated on-the-fly as needed.</p>
-</div>
-<div class="section" id="grouping-by-and-values">
+</section>
+<section id="grouping-by-and-values">
 <h3>Grouping By and Values<a class="headerlink" href="#grouping-by-and-values" title="Permalink to this headline">¶</a></h3>
 <p>Suppose you used tags to mark someone belonging an organization. Now you want to make a list and
 need to get the membership count of every organization all at once. That’s where annotations and the
@@ -492,10 +493,10 @@ need to get the membership count of every organization all at once. That’s whe
 queryset - instead of objects, you get a list of dicts or tuples that hold selected properties from
 the the matches. It also allows you a way to ‘group up’ queries for returning information. For
 example, to get a display about each tag per Character and the names of the tag:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_category</span><span class="o">=</span><span class="s2">&quot;organization&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_category</span><span class="o">=</span><span class="s2">&quot;organization&quot;</span><span class="p">)</span>
                            <span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s1">&#39;db_tags__db_key&#39;</span><span class="p">)</span>
                            <span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">cnt</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span>
                            <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-cnt&#39;</span><span class="p">))</span>
@@ -508,9 +509,9 @@ in a format like the following:</p>
  <span class="p">(</span><span class="s2">&quot;Volund&#39;s Bikeshed Design Crew&quot;</span><span class="p">,</span> <span class="mi">1764</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Tehom&#39;s Misanthropes&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -581,7 +582,6 @@ in a format like the following:</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Tutorial-Searching-For-Objects.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

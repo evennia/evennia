@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Version Control &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="version-control">
+  <section id="version-control">
 <h1>Version Control<a class="headerlink" href="#version-control" title="Permalink to this headline">¶</a></h1>
 <p>Version control software allows you to track the changes you make to your code, as well as being
 able to easily backtrack these changes, share your development efforts and more. Even if you are not
@@ -50,12 +51,12 @@ deals with commands for Linux operating systems, and the steps below may vary fo
 however where possible links will be provided for alternative instructions.</p>
 <p>For more help on using Git, please refer to the <a class="reference external" href="https://help.github.com/articles/set-up-git#platform-all">Official GitHub
 documentation</a>.</p>
-<div class="section" id="setting-up-git">
+<section id="setting-up-git">
 <h2>Setting up Git<a class="headerlink" href="#setting-up-git" title="Permalink to this headline">¶</a></h2>
 <p>If you have gotten Evennia installed, you will have Git already and can skip to <strong>Step 2</strong> below.
 Otherwise you will need to install Git on your platform. You can find expanded instructions for
 installation <a class="reference external" href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</p>
-<div class="section" id="step-1-install-git">
+<section id="step-1-install-git">
 <h3>Step 1: Install Git<a class="headerlink" href="#step-1-install-git" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p><strong>Fedora Linux</strong></p>
@@ -73,8 +74,8 @@ installation <a class="reference external" href="http://git-scm.com/book/en/Gett
 out about <a class="reference external" href="http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">here</a>, or
 you can use the <a class="reference external" href="https://sourceforge.net/projects/git-osx-installer/">Git OSX Installer</a>.</p></li>
 </ul>
-</div>
-<div class="section" id="step-2-define-user-e-mail-settings-for-git">
+</section>
+<section id="step-2-define-user-e-mail-settings-for-git">
 <h3>Step 2: Define user/e-mail Settings for Git<a class="headerlink" href="#step-2-define-user-e-mail-settings-for-git" title="Permalink to this headline">¶</a></h3>
 <p>To avoid a common issue later, you will need to set a couple of settings; first you will need to
 tell Git your username, followed by your e-mail address, so that when you commit code later you will
@@ -96,9 +97,9 @@ real, full name online, put a nickname here.</p>
 </div>
 </li>
 </ol>
-</div>
-</div>
-<div class="section" id="putting-your-game-folder-under-version-control">
+</section>
+</section>
+<section id="putting-your-game-folder-under-version-control">
 <h2>Putting your game folder under version control<a class="headerlink" href="#putting-your-game-folder-under-version-control" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Note: The game folder’s version control is completely separate from Evennia’s repository.</p>
@@ -117,7 +118,7 @@ commit:</p>
 </pre></div>
 </div>
 <p>Read on for help on what these commands do.</p>
-<div class="section" id="tracking-files">
+<section id="tracking-files">
 <h3>Tracking files<a class="headerlink" href="#tracking-files" title="Permalink to this headline">¶</a></h3>
 <p>When working on your code or fix bugs in your local branches you may end up creating new files. If
 you do you must tell Git to track them by using the add command:</p>
@@ -128,8 +129,8 @@ you do you must tell Git to track them by using the add command:</p>
 any modified, added or otherwise changed files. Some files, like database files, logs and temporary
 PID files are usually <em>not</em> tracked in version control. These should either not show up or have a
 question mark in front of them.</p>
-</div>
-<div class="section" id="controlling-tracking">
+</section>
+<section id="controlling-tracking">
 <h3>Controlling tracking<a class="headerlink" href="#controlling-tracking" title="Permalink to this headline">¶</a></h3>
 <p>You will notice that some files are not covered by your git version control, notably your settings
 file (<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>) and your sqlite3 database file <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>.
@@ -144,8 +145,8 @@ chance you’ll confuse yourself so that after a few commits and reverts don’t
 database or not. If you want to backup your database, do so by simply copying the file on your hard
 drive to a backup-name.</p>
 </div></blockquote>
-</div>
-<div class="section" id="committing-your-code">
+</section>
+<section id="committing-your-code">
 <h3>Committing your Code<a class="headerlink" href="#committing-your-code" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Committing means storing the current snapshot of your code within git. This creates a “save point”
@@ -165,8 +166,8 @@ directly by using the <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">commit</span> <span class="o">--</span><span class="nb">all</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;This fixes a bug in the combat code.&quot;</span>  
 </pre></div>
 </div>
-</div>
-<div class="section" id="changing-your-mind">
+</section>
+<section id="changing-your-mind">
 <h3>Changing your mind<a class="headerlink" href="#changing-your-mind" title="Permalink to this headline">¶</a></h3>
 <p>If you have non-committed changes that you realize you want to throw away, you can do the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="o">&lt;</span><span class="n">file</span> <span class="n">to</span> <span class="n">revert</span><span class="o">&gt;</span>
@@ -175,8 +176,8 @@ directly by using the <code class="docutils literal notranslate"><span class="pr
 <p>This will revert the file to the state it was in at your last <code class="docutils literal notranslate"><span class="pre">commit</span></code>, throwing away the changes
 you did to it since. It’s a good way to make wild experiments without having to remember just what
 you changed. If you do <code class="docutils literal notranslate"> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">.</span></code> you will throw away <em>all</em> changes since the last commit.</p>
-</div>
-<div class="section" id="pushing-your-code-online">
+</section>
+<section id="pushing-your-code-online">
 <h3>Pushing your code online<a class="headerlink" href="#pushing-your-code-online" title="Permalink to this headline">¶</a></h3>
 <p>So far your code is only located on your private machine. A good idea is to back it up online. The
 easiest way to do this is to push it to your own remote repository on GitHub.</p>
@@ -200,13 +201,13 @@ clone might not be what you want for all parts of your development process - you
 private venue when sharing your revolutionary work with your team. If that’s the case you can change
 your repository to “Private” in the github settings. Then your code will only be visible to those
 you specifically grant access.</p>
-</div>
-</div>
-<div class="section" id="forking-evennia">
+</section>
+</section>
+<section id="forking-evennia">
 <h2>Forking Evennia<a class="headerlink" href="#forking-evennia" title="Permalink to this headline">¶</a></h2>
 <p>This helps you set up an online <em>fork</em> of Evennia so you can easily commit fixes and help with
 upstream development.</p>
-<div class="section" id="step-1-fork-the-evennia-master-repository">
+<section id="step-1-fork-the-evennia-master-repository">
 <h3>Step 1: Fork the evennia/master repository<a class="headerlink" href="#step-1-fork-the-evennia-master-repository" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Before proceeding with the following step, make sure you have registered and created an account on
@@ -217,8 +218,8 @@ Evennia.</p>
 <p>A <em>fork</em> is a clone of the master repository that you can make your own commits and changes to. At
 the top of <a class="reference external" href="https://github.com/evennia/evennia">this page</a>, click the “Fork” button, as it appears
 below.  <img alt="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" /></p>
-</div>
-<div class="section" id="step-2-clone-your-fork">
+</section>
+<section id="step-2-clone-your-fork">
 <h3>Step 2: Clone your fork<a class="headerlink" href="#step-2-clone-your-fork" title="Permalink to this headline">¶</a></h3>
 <p>The fork only exists online as of yet. In a terminal, change your directory to the folder you wish
 to develop in. From this directory run the following command:</p>
@@ -227,8 +228,8 @@ to develop in. From this directory run the following command:</p>
 </div>
 <p>This will download your fork to your computer. It creates a new folder <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> at your current
 location.</p>
-</div>
-<div class="section" id="step-3-configure-remotes">
+</section>
+<section id="step-3-configure-remotes">
 <h3>Step 3: Configure remotes<a class="headerlink" href="#step-3-configure-remotes" title="Permalink to this headline">¶</a></h3>
 <p>A <em>remote</em> is a repository stored on another computer, in this case on GitHub’s server. When a
 repository is cloned, it has a default remote called <code class="docutils literal notranslate"><span class="pre">origin</span></code>. This points to your fork on GitHub,
@@ -249,9 +250,9 @@ following:</p>
 </div>
 <p>You should now have the upstream branch available locally. You can use this instead of <code class="docutils literal notranslate"><span class="pre">master</span></code>
 below if you are contributing new features rather than bug fixes.</p>
-</div>
-</div>
-<div class="section" id="working-with-your-fork">
+</section>
+</section>
+<section id="working-with-your-fork">
 <h2>Working with your fork<a class="headerlink" href="#working-with-your-fork" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>A <em>branch</em> is a separate instance of your code. Changes you do to code in a branch does not affect
@@ -266,7 +267,7 @@ existing code.</p>
 make modifications directly to your local copy of the master branch. Rather keep the master clean
 and only update it by pulling our latest changes to it. Any work you do should instead happen in a
 local, other branches.</p>
-<div class="section" id="making-a-work-branch">
+<section id="making-a-work-branch">
 <h3>Making a work branch<a class="headerlink" href="#making-a-work-branch" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">myfixes</span>
 </pre></div>
@@ -279,8 +280,8 @@ every bug you want to work on or feature you want to create, then create a <em>p
 branch to be merged upstream (see below). Not only will this organize your work, it will also make
 sure that <em>your</em> master branch version of Evennia is always exactly in sync with the upstream
 version’s master branch.</p>
-</div>
-<div class="section" id="updating-with-upstream-changes">
+</section>
+<section id="updating-with-upstream-changes">
 <h3>Updating with upstream changes<a class="headerlink" href="#updating-with-upstream-changes" title="Permalink to this headline">¶</a></h3>
 <p>When Evennia’s official repository updates, first make sure to commit all your changes to your
 branch and then checkout the “clean” master branch:</p>
@@ -305,9 +306,9 @@ the server or run <code class="docutils literal notranslate"><span class="pre">m
 commit log and on the mailing list). See the <a class="reference external" href="http://git-scm.com/documentation">Git manuals</a> for
 learning more about useful day-to-day commands, and special situations such as dealing with merge
 collisions.</p>
-</div>
-</div>
-<div class="section" id="sharing-your-code-publicly">
+</section>
+</section>
+<section id="sharing-your-code-publicly">
 <h2>Sharing your Code Publicly<a class="headerlink" href="#sharing-your-code-publicly" title="Permalink to this headline">¶</a></h2>
 <p>Up to this point your <code class="docutils literal notranslate"><span class="pre">myfixes</span></code> branch only exists on your local computer. No one else can see it.
 If you want a copy of this branch to also appear in your online fork on GitHub, make sure to have
@@ -326,15 +327,15 @@ we can’t see the code you want to share).</p>
 <p><em>Note: If you hadn’t setup a public key on GitHub or aren’t asked for a username/password, you might
 get an error <code class="docutils literal notranslate"><span class="pre">403:</span> <span class="pre">Forbidden</span> <span class="pre">Access</span></code> at this stage. In that case, some users have reported that the
 workaround is to create a file <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> under your home directory and add your credentials there:</em></p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>machine github.com
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>machine github.com
 login &lt;my_github_username&gt;
 password &lt;my_github_password&gt;
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="committing-fixes-to-evennia">
+</section>
+<section id="committing-fixes-to-evennia">
 <h2>Committing fixes to Evennia<a class="headerlink" href="#committing-fixes-to-evennia" title="Permalink to this headline">¶</a></h2>
 <p><em>Contributing</em> can mean both bug-fixes or adding new features to Evennia.  Please note that if your
 change is not already listed and accepted in the <a class="reference external" href="https://github.com/evennia/evennia/issues">Issue
@@ -400,8 +401,8 @@ deemed suitable.</p>
 </div>
 <p>to delete your work branch. Update your master branch (<code class="docutils literal notranslate"><span class="pre">checkout</span> <span class="pre">master</span></code> and then <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>) and
 you should get your fix back, now as a part of official Evennia!</p>
-</div>
-<div class="section" id="git-tips-and-tricks">
+</section>
+<section id="git-tips-and-tricks">
 <h2>GIT tips and tricks<a class="headerlink" href="#git-tips-and-tricks" title="Permalink to this headline">¶</a></h2>
 <p>Some of the GIT commands can feel a little long and clunky if you need to do them often. Luckily you
 can create aliases for those. Here are some useful commands to run:</p>
@@ -463,8 +464,8 @@ template.</p>
 it</a> - it’s a bit long but it will help you
 understand the underlying ideas behind GIT
 (which in turn makes it a lot more intuitive to use).</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

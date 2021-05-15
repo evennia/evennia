@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Building Quickstart &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="building-quickstart">
+  <section id="building-quickstart">
 <h1>Building Quickstart<a class="headerlink" href="#building-quickstart" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference internal" href="Default-Command-Help.html"><span class="doc">default command</span></a> definitions coming with Evennia
 follows a style <a class="reference internal" href="Using-MUX-as-a-Standard.html"><span class="doc">similar</span></a> to that of MUX, so the
@@ -66,7 +67,7 @@ or more inputs to the commands. It’s common to use an equal sign (<code class=
 an object.</p>
 <p>Below are some examples of commands you can try when logged in to the game. Use <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">&lt;command&gt;</span></code> for
 learning more about each command and their detailed options.</p>
-<div class="section" id="stepping-down-from-godhood">
+<section id="stepping-down-from-godhood">
 <h2>Stepping Down From Godhood<a class="headerlink" href="#stepping-down-from-godhood" title="Permalink to this headline">¶</a></h2>
 <p>If you just installed Evennia, your very first player account is called user #1, also known as the
 <em>superuser</em> or <em>god user</em>. This user is very powerful, so powerful that it will override many game
@@ -80,8 +81,8 @@ want to test.</p>
 superuser level. If you didn’t change any settings your game Character should have an <em>Developer</em>
 level permission - high as can be without bypassing locks like the superuser does. This will work
 fine for the examples on this page. Use <code class="docutils literal notranslate"><span class="pre">unquell</span></code> to get back to superuser status again afterwards.</p>
-</div>
-<div class="section" id="creating-an-object">
+</section>
+<section id="creating-an-object">
 <h2>Creating an Object<a class="headerlink" href="#creating-an-object" title="Permalink to this headline">¶</a></h2>
 <p>Basic objects can be anything – swords, flowers and non-player characters. They are created using
 the <code class="docutils literal notranslate"><span class="pre">create</span></code> command:</p>
@@ -151,8 +152,8 @@ the raw description of your current room (including color codes), so that you ca
 set its description to something else.</p>
 <p>You create new Commands (or modify existing ones) in Python outside the game. See the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding
 Commands tutorial</span></a> for help with creating your first own Command.</p>
-</div>
-<div class="section" id="get-a-personality">
+</section>
+<section id="get-a-personality">
 <h2>Get a Personality<a class="headerlink" href="#get-a-personality" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> are powerful out-of-character objects useful for many “under the hood” things.
 One of their optional abilities is to do things on a timer. To try out a first script, let’s put one
@@ -177,8 +178,8 @@ output every time it fires.</p>
 </div>
 <p>You create your own scripts in Python, outside the game; the path you give to <code class="docutils literal notranslate"><span class="pre">script</span></code> is literally
 the Python path to your script file. The <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> page explains more details.</p>
-</div>
-<div class="section" id="pushing-your-buttons">
+</section>
+<section id="pushing-your-buttons">
 <h2>Pushing Your Buttons<a class="headerlink" href="#pushing-your-buttons" title="Permalink to this headline">¶</a></h2>
 <p>If we get back to the box we made, there is only so much fun you can do with it at this point. It’s
 just a dumb generic object. If you renamed it to <code class="docutils literal notranslate"><span class="pre">stone</span></code> and changed its description noone would be
@@ -203,8 +204,8 @@ that the <a class="reference internal" href="Typeclasses.html"><span class="doc"
 <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/</span></code>.</p>
 <p>If you wait for a while (make sure you dropped it!) the button will blink invitingly. Why don’t you
 try to push it …? Surely a big red button is meant to be pushed. You know you want to.</p>
-</div>
-<div class="section" id="making-yourself-a-house">
+</section>
+<section id="making-yourself-a-house">
 <h2>Making Yourself a House<a class="headerlink" href="#making-yourself-a-house" title="Permalink to this headline">¶</a></h2>
 <p>The main command for shaping the game world is <code class="docutils literal notranslate"><span class="pre">dig</span></code>. For example, if you are standing in Limbo you
 can dig a route to your new house location like this:</p>
@@ -246,8 +247,8 @@ This can be found with the <code class="docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <p>(or give limbo’s dbref which is #2)</p>
-</div>
-<div class="section" id="reshuffling-the-world">
+</section>
+<section id="reshuffling-the-world">
 <h2>Reshuffling the World<a class="headerlink" href="#reshuffling-the-world" title="Permalink to this headline">¶</a></h2>
 <p>You can find things using the <code class="docutils literal notranslate"><span class="pre">find</span></code> command. Assuming you are back at <code class="docutils literal notranslate"><span class="pre">Limbo</span></code>, let’s teleport the
 <em>large box to our house</em>.</p>
@@ -275,16 +276,16 @@ without actually yourself going to <code class="docutils literal notranslate"><s
 </div>
 <p>You can destroy many objects in one go by giving a comma-separated list of objects (or their
 #dbrefs, if they are not in the same location) to the command.</p>
-</div>
-<div class="section" id="adding-a-help-entry">
+</section>
+<section id="adding-a-help-entry">
 <h2>Adding a Help Entry<a class="headerlink" href="#adding-a-help-entry" title="Permalink to this headline">¶</a></h2>
 <p>An important part of building is keeping the help files updated. You can add, delete and append to
 existing help entries using the <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sethelp</span><span class="o">/</span><span class="n">add</span> <span class="n">MyTopic</span> <span class="o">=</span> <span class="n">This</span> <span class="n">help</span> <span class="n">topic</span> <span class="ow">is</span> <span class="n">about</span> <span class="o">...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="adding-a-world">
+</section>
+<section id="adding-a-world">
 <h2>Adding a World<a class="headerlink" href="#adding-a-world" title="Permalink to this headline">¶</a></h2>
 <p>After this brief introduction to building you may be ready to see a more fleshed-out example.
 Evennia comes with a tutorial world for you to explore.</p>
@@ -302,8 +303,8 @@ coding).</p>
 file</a> to see
 exactly how it’s built, step by step. See also more info about the tutorial world [here](Tutorial-
 World-Introduction).</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -368,7 +369,6 @@ World-Introduction).</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Building-Quickstart.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

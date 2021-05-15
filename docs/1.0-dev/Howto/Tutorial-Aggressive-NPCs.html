@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial Aggressive NPCs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="tutorial-aggressive-npcs">
+  <section id="tutorial-aggressive-npcs">
 <h1>Tutorial Aggressive NPCs<a class="headerlink" href="#tutorial-aggressive-npcs" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial shows the implementation of an NPC object that responds to characters entering their
 location. In this example the NPC has the option to respond aggressively or not, but any actions
@@ -55,21 +56,21 @@ the <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-l
 </ul>
 <p>To begin with, we need to create an NPC typeclass. Create a new file inside of your typeclasses
 folder and name it <code class="docutils literal notranslate"><span class="pre">npcs.py</span></code> and then add the following code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span> 
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span> 
 
 <span class="k">class</span> <span class="nc">NPC</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -92,21 +93,21 @@ player enters that room.  You’ll notice that right now, the NPC merely speaks.
 part as you like and trigger all sorts of effects here (like combat code, fleeing, bartering or
 quest-giving) as your game design dictates.</p>
 <p>Now your <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code> module needs to have the following added:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Add this import to the top of your file.</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Add this import to the top of your file.</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
 
     <span class="c1"># Add this hook in any empty area within your Room class.</span>
@@ -142,14 +143,14 @@ contents and inform any <code class="docutils literal notranslate"><span class="
 overload.  This means that a character entering would see the NPC perform its actions before the
 ‘look’ command. Deactivate the look command in the default <code class="docutils literal notranslate"><span class="pre">Character</span></code> class within the
 <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code> module:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># Add this hook in any blank area within your Character class.</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># Add this hook in any blank area within your Character class.</span>
     <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Default is to look around after a move </span>
@@ -182,7 +183,7 @@ AI code).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Orc</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Graaah, die, Anna!&quot;</span>
 </pre></div>
 </div>
-</div>
+</section>
 
 
             <div class="clearer"></div>

@@ -57,17 +57,20 @@
 <span class="kn">import</span> <span class="nn">django</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">global_settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
-<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RemovedInDjango30Warning</span><span class="p">,</span> <span class="n">RemovedInDjango31Warning</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango40Warning</span>
 <span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">LazyObject</span><span class="p">,</span> <span class="n">empty</span>
 
 <span class="n">ENVIRONMENT_VARIABLE</span> <span class="o">=</span> <span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span>
 
-<span class="n">DEFAULT_CONTENT_TYPE_DEPRECATED_MSG</span> <span class="o">=</span> <span class="s1">&#39;The DEFAULT_CONTENT_TYPE setting is deprecated.&#39;</span>
-<span class="n">FILE_CHARSET_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;The FILE_CHARSET setting is deprecated. Starting with Django 3.1, all &#39;</span>
-    <span class="s1">&#39;files read from disk must be UTF-8 encoded.&#39;</span>
+<span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The PASSWORD_RESET_TIMEOUT_DAYS setting is deprecated. Use &#39;</span>
+    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT instead.&#39;</span>
+<span class="p">)</span>
+
+<span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The DEFAULT_HASHING_ALGORITHM transitional setting is deprecated. &#39;</span>
+    <span class="s1">&#39;Support for it and tokens, cookies, sessions, and signatures that use &#39;</span>
+    <span class="s1">&#39;SHA-1 hashing algorithm will be removed in Django 4.0.&#39;</span>
 <span class="p">)</span>
 
 
@@ -119,6 +122,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Special case some settings which require further modification.</span>
+        <span class="c1"># This is done here for performance reasons so the modified value is cached.</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;MEDIA_URL&#39;</span><span class="p">,</span> <span class="s1">&#39;STATIC_URL&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_script_prefix</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SECRET_KEY&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The SECRET_KEY setting must not be empty.&quot;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="k">return</span> <span class="n">val</span>
 
@@ -148,8 +159,24 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Settings already configured.&#39;</span><span class="p">)</span>
         <span class="n">holder</span> <span class="o">=</span> <span class="n">UserSettingsHolder</span><span class="p">(</span><span class="n">default_settings</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Setting </span><span class="si">%r</span><span class="s1"> must be uppercase.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">holder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">holder</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_script_prefix</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add SCRIPT_NAME prefix to relative paths.</span>
+
+<span class="sd">        Useful when the app is being served at a subpath and manually prefixing</span>
+<span class="sd">        subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Don&#39;t apply prefix to absolute paths and URLs.</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">get_script_prefix</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">get_script_prefix</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">configured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -157,32 +184,18 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">DEFAULT_CONTENT_TYPE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">PASSWORD_RESET_TIMEOUT_DAYS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
         <span class="c1"># Show a warning if the setting is used outside of Django.</span>
         <span class="c1"># Stack index: -1 this line, -2 the caller.</span>
-        <span class="n">filename</span><span class="p">,</span> <span class="n">_line_number</span><span class="p">,</span> <span class="n">_function_name</span><span class="p">,</span> <span class="n">_text</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">DEFAULT_CONTENT_TYPE_DEPRECATED_MSG</span><span class="p">,</span>
-                <span class="n">RemovedInDjango30Warning</span><span class="p">,</span>
+                <span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span>
+                <span class="n">RemovedInDjango40Warning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;DEFAULT_CONTENT_TYPE&#39;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">FILE_CHARSET</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
-        <span class="c1"># Show a warning if the setting is used outside of Django.</span>
-        <span class="c1"># Stack index: -1 this line, -2 the caller.</span>
-        <span class="n">filename</span><span class="p">,</span> <span class="n">_line_number</span><span class="p">,</span> <span class="n">_function_name</span><span class="p">,</span> <span class="n">_text</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">FILE_CHARSET_DEPRECATED_MSG</span><span class="p">,</span>
-                <span class="n">RemovedInDjango31Warning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;FILE_CHARSET&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
@@ -213,13 +226,17 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">SECRET_KEY</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The SECRET_KEY setting must not be empty.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS/PASSWORD_RESET_TIMEOUT are &#39;</span>
+                    <span class="s1">&#39;mutually exclusive.&#39;</span>
+                <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;DEFAULT_CONTENT_TYPE&#39;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_CONTENT_TYPE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango30Warning</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;FILE_CHARSET&#39;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">FILE_CHARSET_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango31Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="s1">&#39;tzset&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">:</span>
             <span class="c1"># When we can, attempt to validate the timezone. If we can&#39;t find</span>
@@ -258,16 +275,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span> <span class="o">=</span> <span class="n">default_settings</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;DEFAULT_CONTENT_TYPE&#39;</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_CONTENT_TYPE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango30Warning</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;FILE_CHARSET&#39;</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">FILE_CHARSET_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango31Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="n">value</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>EvMore &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,18 +38,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evmore">
+  <section id="evmore">
 <h1>EvMore<a class="headerlink" href="#evmore" title="Permalink to this headline">¶</a></h1>
 <p>When sending a very long text to a user client, it might scroll beyond of the height of the client
 window. The <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmore.EvMore</span></code> class gives the user the in-game ability to only view one
 page of text at a time. It is usually used via its access function, <code class="docutils literal notranslate"><span class="pre">evmore.msg</span></code>.</p>
 <p>The name comes from the famous unix pager utility <em>more</em> which performs just this function.</p>
-<div class="section" id="using-evmore">
+<section id="using-evmore">
 <h2>Using EvMore<a class="headerlink" href="#using-evmore" title="Permalink to this headline">¶</a></h2>
 <p>To use the pager, just pass the long text through it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
 
 <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">long_text</span><span class="p">)</span>
 </pre></div>
@@ -71,8 +72,8 @@ commands to jump to previous pages, to the top or bottom of the document as well
 paging.</p>
 <p>The pager takes several more keyword arguments for controlling the message output. See the
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evmore">evmore-API</a> for more info.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

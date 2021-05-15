@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Planning the use of some useful contribs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -47,7 +48,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="planning-the-use-of-some-useful-contribs">
+  <section id="planning-the-use-of-some-useful-contribs">
 <h1>Planning the use of some useful contribs<a class="headerlink" href="#planning-the-use-of-some-useful-contribs" title="Permalink to this headline">¶</a></h1>
 <p>Evennia is deliberately bare-bones out of the box. The idea is that you should be as unrestricted as possible
 in designing your game. This is why you can easily replace the few defaults we have and why we don’t try to
@@ -70,7 +71,7 @@ are wise to read their doc-strings yourself for the details.</p>
 <li><p>Quests</p></li>
 <li><p>Combat (with players and against monsters)</p></li>
 </ul>
-<div class="section" id="barter-contrib">
+<section id="barter-contrib">
 <h2>Barter contrib<a class="headerlink" href="#barter-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.barter.html">source</a></p>
 <p>Reviewing this contrib suggests that it allows for safe trading between two parties. The basic principle
@@ -98,15 +99,15 @@ to run away with your money.</p>
 <p>We will use the barter contrib as an optional feature for player-player bartering. More importantly we can
 add it for NPC shopkeepers and expand it with a little AI, which allows them to potentially trade in other
 things than boring gold coin.</p>
-</div>
-<div class="section" id="character-generation-contrib">
+</section>
+<section id="character-generation-contrib">
 <h2>Character generation contrib<a class="headerlink" href="#character-generation-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.chargen.html">source</a></p>
 <p>This contrib is an example module for creating characters. Since we will be using <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code> we will
 get a selection screen like this automatically. We also plan to use a proper menu to build our character, so
 we will <em>not</em> be using this contrib.</p>
-</div>
-<div class="section" id="clothing-contrib">
+</section>
+<section id="clothing-contrib">
 <h2>Clothing contrib<a class="headerlink" href="#clothing-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.clothing.html">source</a></p>
 <p>This contrib provides a full system primarily aimed at wearing clothes, but it could also work for armor. You wear
@@ -119,8 +120,8 @@ also add roleplaying flavor:</p>
 </div>
 <p>By default there are no ‘body locations’ in this contrib, we will need to expand on it a little to make it useful
 for things like armor. It’s a good contrib to build from though, so that’s what we’ll do.</p>
-</div>
-<div class="section" id="dice-contrib">
+</section>
+<section id="dice-contrib">
 <h2>Dice contrib<a class="headerlink" href="#dice-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.dice.html">source</a></p>
 <p>The dice contrib presents a general dice roller to use in game.</p>
@@ -139,8 +140,8 @@ we will emulate rolls for our rule system, we’ll do this as simply as possible
 module.</p>
 <p>So while this contrib is fun to have around for GMs or for players who want to get a random result
 or play a game, we will not need it for the core of our game.</p>
-</div>
-<div class="section" id="extended-room-contrib">
+</section>
+<section id="extended-room-contrib">
 <h2>Extended room contrib<a class="headerlink" href="#extended-room-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.extended_room.html">source</a></p>
 <p>This is a custom Room typeclass that changes its description based on time of day and season.</p>
@@ -154,8 +155,8 @@ get a description of the windows without there needing to be an actual <code cla
 like a normal room.</p>
 <p>The contrib is simple to add and provides a lot of optional flexibility, so we’ll add it to our
 game, why not!</p>
-</div>
-<div class="section" id="rp-system-contrib">
+</section>
+<section id="rp-system-contrib">
 <h2>RP-System contrib<a class="headerlink" href="#rp-system-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.rpsystem.html">source</a></p>
 <p>This contrib adds a full roleplaying subsystem to your game. It gives every character a “short-description”
@@ -193,14 +194,14 @@ like <code class="docutils literal notranslate"><span class="pre">a</span> <span
 <p>The RPSystem gives a lot of roleplaying power out of the box, so we will add it. There is also a separate
 <a class="reference external" href="../../../api/evennia.contrib.rplanguage.html">rplanguage</a> module that integrates with the spoken words in your emotes and garbles them if you don’t understand
 the language spoken. In order to restrict the scope we will not include languages for the tutorial game.</p>
-</div>
-<div class="section" id="talking-npc-contrib">
+</section>
+<section id="talking-npc-contrib">
 <h2>Talking NPC contrib<a class="headerlink" href="#talking-npc-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.talking_npc.html">source</a></p>
 <p>This exemplifies an NPC with a menu-driven dialogue tree. We will not use this contrib explicitly, but it’s
 good as inspiration for how we’ll do quest-givers later.</p>
-</div>
-<div class="section" id="traits-contrib">
+</section>
+<section id="traits-contrib">
 <h2>Traits contrib<a class="headerlink" href="#traits-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.traits.html">source</a></p>
 <p>An issue with dealing with roleplaying attributes like strength, dexterity, or skills like hunting, sword etc
@@ -249,8 +250,8 @@ effects of slow poisons and healing both.</p></li>
 </pre></div>
 </div>
 <p>Traits will be very practical to use for our character sheets.</p>
-</div>
-<div class="section" id="turnbattle-contrib">
+</section>
+<section id="turnbattle-contrib">
 <h2>Turnbattle contrib<a class="headerlink" href="#turnbattle-contrib" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="../../../api/evennia.contrib.turnbattle.html">source</a></p>
 <p>This contrib consists of several implementations of a turn-based combat system, divivided into complexity:</p>
@@ -263,8 +264,8 @@ effects of slow poisons and healing both.</p></li>
 </ul>
 <p>The turnbattle system is comprehensive, but it’s meant as a base to start from rather than offer
 a complete system. It’s also not built with <em>Traits</em> in mind, so we will need to adjust it for that.</p>
-</div>
-<div class="section" id="conclusions">
+</section>
+<section id="conclusions">
 <h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>With some contribs selected, we have pieces to build from and don’t have to write everything from scratch.
 We will need Quests and will likely need to do a bunch of work on Combat to adapt the combat contrib
@@ -272,8 +273,8 @@ to our needs.</p>
 <p>We will now move into actually starting to implement our tutorial game
 in the next part of this tutorial series. When doing this for yourself, remember to refer
 back to your planning and adjust it as you learn what works and what does not.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

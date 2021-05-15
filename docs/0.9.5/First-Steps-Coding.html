@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>First Steps Coding &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="first-steps-coding">
+  <section id="first-steps-coding">
 <h1>First Steps Coding<a class="headerlink" href="#first-steps-coding" title="Permalink to this headline">¶</a></h1>
 <p>This section gives a brief step-by-step introduction on how to set up Evennia for the first time so
 you can modify and overload the defaults easily. You should only need to do these steps once. It
@@ -60,11 +61,11 @@ Started</span></a> instructions. You should have initialized a new game folder w
 terminal/command line. You also need to have a text editor to edit and create source text files.
 There are plenty of online tutorials on how to use the terminal and plenty of good free text
 editors. We will assume these things are already familiar to you henceforth.</p>
-<div class="section" id="your-first-changes">
+<section id="your-first-changes">
 <h2>Your First Changes<a class="headerlink" href="#your-first-changes" title="Permalink to this headline">¶</a></h2>
 <p>Below are some first things to try with your new custom modules. You can test these to get a feel
 for the system. See also <a class="reference internal" href="Tutorials.html"><span class="doc">Tutorials</span></a> for more step-by-step help and special cases.</p>
-<div class="section" id="tweak-default-character">
+<section id="tweak-default-character">
 <h3>Tweak Default Character<a class="headerlink" href="#tweak-default-character" title="Permalink to this headline">¶</a></h3>
 <p>We will add some simple rpg attributes to our default Character. In the next section we will follow
 up with a new command to view those attributes.</p>
@@ -72,26 +73,26 @@ up with a new command to view those attributes.</p>
 <li><p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> and modify the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class.  The
 <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method also exists on the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> parent and will overload it. The
 <code class="docutils literal notranslate"><span class="pre">get_abilities</span></code> method is unique to our version of <code class="docutils literal notranslate"><span class="pre">Character</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="c1"># [...]</span>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -118,7 +119,7 @@ up with a new command to view those attributes.</p>
 this). Note that if you examine <em>yourself</em> you will <em>not</em> see any new Attributes appear yet. Read
 the next section to understand why.</p></li>
 </ol>
-<div class="section" id="updating-yourself">
+<section id="updating-yourself">
 <h4>Updating Yourself<a class="headerlink" href="#updating-yourself" title="Permalink to this headline">¶</a></h4>
 <p>It’s important to note that the new <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> we added above will only be stored on
 <em>newly</em> created characters. The reason for this is simple: The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method, where we
@@ -146,11 +147,11 @@ startup-hooks will not (and should not) automatically run on <em>existing</em> o
 your existing objects manually. Luckily this is a one-time thing and pretty simple to do. If the
 typeclass you want to update is in <code class="docutils literal notranslate"><span class="pre">typeclasses.myclass.MyClass</span></code>, you can do the following (e.g.
 from <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code>):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.myclass</span> <span class="kn">import</span> <span class="n">MyClass</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.myclass</span> <span class="kn">import</span> <span class="n">MyClass</span>
 <span class="c1"># loop over all MyClass instances in the database</span>
 <span class="c1"># and call .swap_typeclass on them</span>
 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">MyClass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
@@ -166,8 +167,8 @@ what the <code class="docutils literal notranslate"><span class="pre">&#64;updat
 <p>See the <a class="reference internal" href="Adding-Object-Typeclass-Tutorial.html"><span class="doc">Object Typeclass tutorial</span></a> for more help and the
 <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a> and <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> page for detailed documentation about
 Typeclasses and Attributes.</p>
-</div>
-<div class="section" id="troubleshooting-updating-yourself">
+</section>
+<section id="troubleshooting-updating-yourself">
 <h4>Troubleshooting: Updating Yourself<a class="headerlink" href="#troubleshooting-updating-yourself" title="Permalink to this headline">¶</a></h4>
 <p>One may experience errors for a number of reasons. Common beginner errors are spelling mistakes,
 wrong indentations or code omissions leading to a <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code>. Let’s say you leave out a colon
@@ -184,7 +185,7 @@ Evennia complaining (this is called a <em>traceback</em>):</p>
 <p>Evennia will still be restarting and following the tutorial, doing <code class="docutils literal notranslate"><span class="pre">&#64;py</span> <span class="pre">self.get_abilities()</span></code> will
 return the right response <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">None,</span> <span class="pre">None)</span></code>. But when attempting to <code class="docutils literal notranslate"><span class="pre">&#64;typeclass/force</span> <span class="pre">self</span></code> you
 will get this response:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;DefaultObject&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;get_abilities&#39;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;DefaultObject&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;get_abilities&#39;</span>
 </pre></div>
 </td></tr></table></div>
 <p>The full error will show in the terminal/console but this is confusing since you did add
@@ -205,9 +206,9 @@ it’s a <code class="docutils literal notranslate"><span class="pre">SyntaxErro
 even points out <em>where</em> on the line it encountered the error (the missing colon). Learn to read
 tracebacks and you’ll be able to resolve the vast majority of common errors easily.</p>
 </div></blockquote>
-</div>
-</div>
-<div class="section" id="add-a-new-default-command">
+</section>
+</section>
+<section id="add-a-new-default-command">
 <h3>Add a New Default Command<a class="headerlink" href="#add-a-new-default-command" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command used above is only available to privileged users. We want any player to be able to
 see their stats.  Let’s add a new <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> to list the abilities we added in the previous
@@ -216,26 +217,26 @@ section.</p>
 <li><p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>. You could in principle put your command anywhere but this
 module has all the imports already set up along with some useful documentation. Make a new class at
 the bottom of this file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdAbilities</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdAbilities</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List abilities</span>
 
@@ -259,12 +260,12 @@ the bottom of this file:</p>
 </td></tr></table></div>
 </li>
 <li><p>Next you edit <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add a new import to it near the top:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdAbilities</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdAbilities</span>
 </pre></div>
 </td></tr></table></div>
 </li>
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class, add the following near the bottom (it says where):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">())</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">())</span>
 </pre></div>
 </td></tr></table></div>
 </li>
@@ -278,8 +279,8 @@ normal commands in-game:</p>
 </div>
 <p>See the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding a Command tutorial</span></a> for more examples and the
 <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> section for detailed documentation about the Command system.</p>
-</div>
-<div class="section" id="make-a-new-type-of-object">
+</section>
+<section id="make-a-new-type-of-object">
 <h3>Make a New Type of Object<a class="headerlink" href="#make-a-new-type-of-object" title="Permalink to this headline">¶</a></h3>
 <p>Let’s test to make a new type of object. This example is an “wise stone” object that returns some
 random comment when you look at it, like this:</p>
@@ -297,32 +298,32 @@ random comment when you look at it, like this:</p>
 meaning it is just a proxy for the default <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code>.</p></li>
 <li><p>Make a new class in your module inheriting from <code class="docutils literal notranslate"><span class="pre">Object</span></code>. Overload hooks on it to add new
 functionality. Here is an example of how the file could look:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
 <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
 
 <span class="k">class</span> <span class="nc">WiseObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
@@ -359,7 +360,7 @@ entire cmdset. If so, fix your bug and <a class="reference internal" href="Start
 command spits out a warning or cannot find the typeclass (it will tell you which paths it searched),
 re-check your code for bugs and that you gave the correct path. The <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command starts looking
 for Typeclasses in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code>.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">stone</span></code> to test. You will see the default description (“You see nothing special”)
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">stone</span></code> to test. You will see the default description (”You see nothing special”)
 followed by a random message of stony wisdom. Use <code class="docutils literal notranslate"><span class="pre">&#64;desc</span> <span class="pre">stone</span> <span class="pre">=</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">wise</span> <span class="pre">old</span> <span class="pre">stone.</span></code> to make
 it look nicer. See the <a class="reference internal" href="Builder-Docs.html"><span class="doc">Builder Docs</span></a> for more information.</p></li>
 </ol>
@@ -370,9 +371,9 @@ initialization.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is a special case though. Changing most other aspects of the typeclass does
 <em>not</em> require manual updating like this - you just need to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to have all changes applied
 automatically to all existing objects.</p>
-</div>
-</div>
-<div class="section" id="where-to-go-from-here">
+</section>
+</section>
+<section id="where-to-go-from-here">
 <h2>Where to Go From Here?<a class="headerlink" href="#where-to-go-from-here" title="Permalink to this headline">¶</a></h2>
 <p>There are more <a class="reference internal" href="Tutorials.html"><span class="doc">Tutorials</span></a>, including one for building a <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">whole little MUSH-like
 game</span></a> - that is instructive also if you have no interest in
@@ -380,8 +381,8 @@ MUSHes per se. A good idea is to also get onto the <a class="reference external"
 chat</a> and the <a class="reference external" href="https://groups.google.com/forum/#%21forum/evennia">mailing
 list</a> to get in touch with the community and other
 developers.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -449,7 +450,6 @@ developers.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="First-Steps-Coding.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Objects &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,31 +38,31 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="objects">
+  <section id="objects">
 <h1>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h1>
 <p>All in-game objects in Evennia, be it characters, chairs, monsters, rooms or hand grenades are
 represented by an Evennia <em>Object</em>. Objects form the core of Evennia and is probably what you’ll
 spend most time working with. Objects are <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entities.</p>
-<div class="section" id="how-to-create-your-own-object-types">
+<section id="how-to-create-your-own-object-types">
 <h2>How to create your own object types<a class="headerlink" href="#how-to-create-your-own-object-types" title="Permalink to this headline">¶</a></h2>
 <p>An Evennia Object is, per definition, a Python class that includes <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code> among its
 parents. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> there is already a class <code class="docutils literal notranslate"><span class="pre">Object</span></code> that inherits from
 <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> and that you can inherit from. You can put your new typeclass directly in that
 module or you could organize your code in some other way. Here we assume we make a new module
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/flowers.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
 
     <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
 
@@ -85,8 +86,8 @@ to make a new rose:</p>
 </div>
 <p>What the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command actually <em>does</em> is to use <code class="docutils literal notranslate"><span class="pre">evennia.create_object</span></code>. You can do the same
 thing yourself in code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
     <span class="n">new_rose</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.flowers.Rose&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyRose&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -100,8 +101,8 @@ like <a class="reference internal" href="Scripts.html"><span class="doc">Scripts
 will usually want to change this at build time (using the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command or using the
 <a class="reference internal" href="Prototypes.html"><span class="doc">Spawner</span></a>). The <code class="docutils literal notranslate"><span class="pre">Object</span></code> typeclass offers many more hooks that is available
 to use though - see next section.</p>
-</div>
-<div class="section" id="properties-and-functions-on-objects">
+</section>
+<section id="properties-and-functions-on-objects">
 <h2>Properties and functions on Objects<a class="headerlink" href="#properties-and-functions-on-objects" title="Permalink to this headline">¶</a></h2>
 <p>Beyond the properties assigned to all <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> objects (see that page for a list
 of those), the Object also has the following custom properties:</p>
@@ -160,15 +161,15 @@ these hooks at various points.  When implementing your custom objects, you will 
 base parent and overload these hooks with your own custom code. See <code class="docutils literal notranslate"><span class="pre">evennia.objects.objects</span></code> for an
 updated list of all the available hooks or the <a class="reference external" href="../api/evennia.objects.objects.html#defaultobject">API for DefaultObject
 here</a>.</p>
-</div>
-<div class="section" id="subclasses-of-object">
+</section>
+<section id="subclasses-of-object">
 <h2>Subclasses of <code class="docutils literal notranslate"><span class="pre">Object</span></code><a class="headerlink" href="#subclasses-of-object" title="Permalink to this headline">¶</a></h2>
 <p>There are three special subclasses of <em>Object</em> in default Evennia - <em>Characters</em>, <em>Rooms</em> and
 <em>Exits</em>. The reason they are separated is because these particular object types are fundamental,
 something you will always need and in some cases requires some extra attention in order to be
 recognized by the game engine (there is nothing stopping you from redefining them though). In
 practice they are all pretty similar to the base Object.</p>
-<div class="section" id="characters">
+<section id="characters">
 <h3>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h3>
 <p>Characters are objects controlled by <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>. When a new Account
 logs in to Evennia for the first time, a new <code class="docutils literal notranslate"><span class="pre">Character</span></code> object is created and
@@ -179,16 +180,16 @@ inherit your own class from <code class="docutils literal notranslate"><span cla
 <code class="docutils literal notranslate"><span class="pre">super()</span></code> to call the parent methods you should be fine. In
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> is an empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class ready for you
 to modify.</p>
-</div>
-<div class="section" id="rooms">
+</section>
+<section id="rooms">
 <h3>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h3>
 <p><em>Rooms</em> are the root containers of all other objects. The only thing really separating a room from
 any other object is that they have no <code class="docutils literal notranslate"><span class="pre">location</span></code> of their own and that default commands like <code class="docutils literal notranslate"><span class="pre">&#64;dig</span></code>
 creates objects of this class - so if you want to expand your rooms with more functionality, just
 inherit from <code class="docutils literal notranslate"><span class="pre">ev.DefaultRoom</span></code>. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/rooms.py</span></code> is an empty <code class="docutils literal notranslate"><span class="pre">Room</span></code> class ready for
 you to modify.</p>
-</div>
-<div class="section" id="exits">
+</section>
+<section id="exits">
 <h3>Exits<a class="headerlink" href="#exits" title="Permalink to this headline">¶</a></h3>
 <p><em>Exits</em> are objects connecting other objects (usually <em>Rooms</em>) together. An object named <em>North</em> or
 <em>in</em> might be an exit, as well as <em>door</em>, <em>portal</em> or <em>jump out the window</em>. An exit has two things
@@ -228,9 +229,9 @@ in order:</p>
 <p>If the move fails for whatever reason, the Exit will look for an Attribute <code class="docutils literal notranslate"><span class="pre">err_traverse</span></code> on itself
 and display this as an error message. If this is not found, the Exit will instead call
 <code class="docutils literal notranslate"><span class="pre">at_failed_traverse(obj)</span></code> on itself.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

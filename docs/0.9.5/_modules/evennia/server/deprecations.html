@@ -100,6 +100,21 @@
             <span class="s2">&quot;Update your settings file (see evennia/settings_default.py &quot;</span>
             <span class="s2">&quot;for more info).&quot;</span>
         <span class="p">)</span>
+    <span class="n">depstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;settings.</span><span class="si">{}</span><span class="s2"> was renamed to </span><span class="si">{}</span><span class="s2">. Update your settings file (the FuncParser &quot;</span>
+        <span class="s2">&quot;replaces and generalizes that which inlinefuncs used to do).&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_ENABLED&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_STACK_MAXSIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_MAX_NESTING&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INLINEFUNC_MODULES&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.INLINEFUNC_MODULES&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_OUTGOING_MESSAGES_MODULES&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;PROTFUNC_MODULES&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">depstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;settings.PROTFUNC_MODULES&quot;</span><span class="p">,</span> <span class="s2">&quot;FUNCPARSER_PROTOTYPE_VALUE_MODULES&quot;</span><span class="p">))</span>
 
     <span class="n">gametime_deprecation</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,&quot;</span>
@@ -142,8 +157,12 @@
             <span class="s2">&quot;settings.CYCLE_LOGFILES is unused and should be removed. &quot;</span>
             <span class="s2">&quot;Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE &quot;</span>
             <span class="s2">&quot;to control log cycling.&quot;</span>
-        <span class="p">)</span></div>
-
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_COMMAND_CLASS&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_HANDLER_CLASS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are &quot;</span>
+            <span class="s2">&quot;unused and should be removed. The ChannelHandler is no more; &quot;</span>
+            <span class="s2">&quot;channels are now handled by aliasing the default &#39;channel&#39; command.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="check_warnings"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_warnings">[docs]</a><span class="k">def</span> <span class="nf">check_warnings</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -199,7 +218,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="deprecations.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>
