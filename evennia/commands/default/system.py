@@ -929,11 +929,14 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wTwisted|n: {twisted}
          |wDjango|n: {django}
 
-         |wLicence|n https://opensource.org/licenses/BSD-3-Clause
-         |wWeb|n http://www.evennia.com
+         |wHomepage|n https://evennia.com
+         |wCode|n https://github.com/evennia/evennia
+         |wDemo|n https://demo.evennia.com
+         |wGame listing|n https://games.evennia.com
          |wIrc|n #evennia on irc.freenode.net:6667
          |wDiscord|n https://discord.gg/SVCkd4cY3q
          |wForum|n https://github.com/evennia/evennia/discussions
+         |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
