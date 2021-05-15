@@ -2,6 +2,8 @@
 
 ## Evennia 1.0 (2019-) (develop branch, WIP)
 
+Up requirements to Django 3.2+
+
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 - REST API allows you external access to db objects through HTTP requests (Tehom)

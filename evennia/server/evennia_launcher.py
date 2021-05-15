@@ -92,9 +92,9 @@ SRESET = chr(19)  # shutdown server in reset mode
 
 # requirements
 PYTHON_MIN = "3.7"
-TWISTED_MIN = "18.0.0"
-DJANGO_MIN = "2.2.5"
-DJANGO_LT = "3.0"
+TWISTED_MIN = "20.3.0"
+DJANGO_MIN = "3.2.0"
+DJANGO_LT = "4.0"
 
 try:
     sys.path[1] = EVENNIA_ROOT
