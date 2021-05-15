@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Help System Tutorial &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="help-system-tutorial">
+  <section id="help-system-tutorial">
 <h1>Help System Tutorial<a class="headerlink" href="#help-system-tutorial" title="Permalink to this headline">¶</a></h1>
 <p><strong>Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](Web-
 Tutorial).</strong>  Reading the three first parts of the <a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django
@@ -51,7 +52,7 @@ and regular help entries will be visible, depending on the logged-in user or an 
 <li><p>Access the help system on your website.</p></li>
 <li><p>Identify whether the viewer of this page is logged-in and, if so, to what account.</p></li>
 </ul>
-<div class="section" id="creating-our-app">
+<section id="creating-our-app">
 <h2>Creating our app<a class="headerlink" href="#creating-our-app" title="Permalink to this headline">¶</a></h2>
 <p>The first step is to create our new Django <em>app</em>.  An app in Django can contain pages and
 mechanisms: your website may contain different apps.  Actually, the website provided out-of-the-box
@@ -83,10 +84,10 @@ tutorial</a>.</p>
 <p>There is a last thing to be done: your folder has been added, but Django doesn’t know about it, it
 doesn’t know it’s a new app.  We need to tell it, and we do so by editing a simple setting.  Open
 your “server/conf/settings.py” file and add, or edit, these lines:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Web configuration</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Web configuration</span>
 <span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">(</span>
         <span class="s2">&quot;web.help_system&quot;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -95,8 +96,8 @@ your “server/conf/settings.py” file and add, or edit, these lines:</p>
 <p>You can start Evennia if you want, and go to your website, probably at
 <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> . You won’t see anything different though: we added
 the app but it’s fairly empty.</p>
-</div>
-<div class="section" id="our-new-page">
+</section>
+<section id="our-new-page">
 <h2>Our new page<a class="headerlink" href="#our-new-page" title="Permalink to this headline">¶</a></h2>
 <p>At this point, our new <em>app</em>  contains mostly empty files that you can explore.  In order to create
 a page for our help system, we need to add:</p>
@@ -109,18 +110,18 @@ a page for our help system, we need to add:</p>
 <div><p>We could get away by creating just a view and a new URL, but that’s not a recommended way to work
 with your website.  Building on templates is so much more convenient.</p>
 </div></blockquote>
-<div class="section" id="create-a-view">
+<section id="create-a-view">
 <h3>Create a view<a class="headerlink" href="#create-a-view" title="Permalink to this headline">¶</a></h3>
 <p>A <em>view</em> in Django is a simple Python function placed in the “views.py” file in your app.  It will
 handle the behavior that is triggered when a user asks for this information by entering a <em>URL</em> (the
 connection between <em>views</em> and <em>URLs</em> will be discussed later).</p>
 <p>So let’s create our view.  You can open the “web/help_system/view.py” file and paste the following
 lines:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
 <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
@@ -129,8 +130,8 @@ lines:</p>
 </td></tr></table></div>
 <p>Our view handles all code logic.  This time, there’s not much: when this function is called, it will
 render the template we will now create.  But that’s where we will do most of our work afterward.</p>
-</div>
-<div class="section" id="create-a-template">
+</section>
+<section id="create-a-template">
 <h3>Create a template<a class="headerlink" href="#create-a-template" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">render</span></code> function called into our <em>view</em> asks the <em>template</em> <code class="docutils literal notranslate"><span class="pre">help_system/index.html</span></code>.  The
 <em>templates</em> of our apps are stored in the app directory, “templates” sub-directory.  Django may have
@@ -167,20 +168,20 @@ web page.  This block is bigger, so we define it on several lines.</p></li>
 <li><p>This is perfectly normal HTML code to display a level-2 heading.</p></li>
 <li><p>And finally we close the <em>block</em> named “content”.</p></li>
 </ol>
-</div>
-<div class="section" id="create-a-new-url">
+</section>
+<section id="create-a-new-url">
 <h3>Create a new URL<a class="headerlink" href="#create-a-new-url" title="Permalink to this headline">¶</a></h3>
 <p>Last step to add our page: we need to add a <em>URL</em> leading to it… otherwise users won’t be able to
 access it.  The URLs of our apps are stored in the app’s directory “urls.py” file.</p>
 <p>Open the “web/help_system/urls.py” file (you might have to create it) and write in it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the help_system app</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the help_system app</span>
 
 <span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
 <span class="kn">from</span> <span class="nn">web.help_system.views</span> <span class="kn">import</span> <span class="n">index</span>
@@ -192,10 +193,10 @@ access it.  The URLs of our apps are stored in the app’s directory “urls.py�
 </td></tr></table></div>
 <p>We also need to add our app as a namespace holder for URLS.  Edit the file “web/urls.py”.  In it you
 will find the <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> variable.  Replace it with:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^help/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.help_system.urls&#39;</span><span class="p">,</span>
             <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;help_system&#39;</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s1">&#39;help_system&#39;</span><span class="p">)),</span>
 <span class="p">]</span>
@@ -210,17 +211,17 @@ describes to Django that all URLs beginning by ‘help/’ should be sent to the
 empty (<code class="docutils literal notranslate"><span class="pre">^$</span></code>).</p></li>
 </ol>
 <p>In other words, if the URL is ‘/help/’, then Django will execute our defined view.</p>
-</div>
-<div class="section" id="let-s-see-it-work">
+</section>
+<section id="let-s-see-it-work">
 <h3>Let’s see it work<a class="headerlink" href="#let-s-see-it-work" title="Permalink to this headline">¶</a></h3>
 <p>You can now reload or start Evennia.  Open a tab in your browser and go to
 <a class="reference external" href="http://localhost:4001/help/">http://localhost:4001/help/</a> .  If everything goes well, you should
 see your new page… which isn’t empty since Evennia uses our “base.html” <em>template</em>.  In the
 content of our page, there’s only a heading that reads “help index”.  Notice that the title of our
-page is “mygame - Help index” (“mygame” is replaced by the name of your game).</p>
+page is “mygame - Help index” (”mygame” is replaced by the name of your game).</p>
 <p>From now on, it will be easier to move forward and add features.</p>
-</div>
-<div class="section" id="a-brief-reminder">
+</section>
+<section id="a-brief-reminder">
 <h3>A brief reminder<a class="headerlink" href="#a-brief-reminder" title="Permalink to this headline">¶</a></h3>
 <p>We’ll be trying the following things:</p>
 <ul class="simple">
@@ -246,9 +247,9 @@ problem.  I have decided to use a <em>GET variable</em> here, which would create
 </div>
 <p>If you use this system, you don’t have to add a new URL:  GET and POST variables are accessible
 through our requests and we’ll see how soon enough.</p>
-</div>
-</div>
-<div class="section" id="handling-logged-in-users">
+</section>
+</section>
+<section id="handling-logged-in-users">
 <h2>Handling logged-in users<a class="headerlink" href="#handling-logged-in-users" title="Permalink to this headline">¶</a></h2>
 <p>One of our requirements is to have a help system tailored to our accounts.  If an account with admin
 access logs in, the page should display a lot of commands that aren’t accessible to common users.
@@ -261,11 +262,11 @@ anonymous Django user.  We then can use the <code class="docutils literal notran
 in or not.  Last gift by Evennia, if the user is logged in, <code class="docutils literal notranslate"><span class="pre">request.user</span></code> contains a reference to
 an account object, which will help us a lot in coupling the game and online system.</p>
 <p>So we might end up with something like:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">character</span><span class="p">:</span>
@@ -276,11 +277,11 @@ an account object, which will help us a lot in coupling the game and online syst
 <div><p>Note: this code works when your MULTISESSION_MODE is set to 0 or 1.  When it’s above, you would
 have something like:</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
@@ -299,15 +300,15 @@ create it through your game:  connect to it and enter:</p>
 </pre></div>
 </div>
 <p>So in our view, we could have something like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
 
 <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
@@ -320,99 +321,99 @@ create it through your game:  connect to it and enter:</p>
 </td></tr></table></div>
 <p>This time, we have a valid character no matter what:  remember to adapt this code if you’re running
 in multisession mode above 1.</p>
-</div>
-<div class="section" id="the-full-system">
+</section>
+<section id="the-full-system">
 <h2>The full system<a class="headerlink" href="#the-full-system" title="Permalink to this headline">¶</a></h2>
 <p>What we’re going to do is to browse through all commands and help entries, and list all the commands
 that can be seen by this character (either our ‘anonymous’ character, or our logged-in character).</p>
 <p>The code is longer, but it presents the entire concept in our view.  Edit the
 “web/help_system/views.py” file and paste into it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
 
@@ -521,7 +522,7 @@ are stored in a dictionary.  This is to simplify our job when displaying them in
 <p>Notice that, in both cases when we asked to render a <em>template</em>, we passed to <code class="docutils literal notranslate"><span class="pre">render</span></code> a third
 argument which is the dictionary of variables used in our templates.  We can pass variables this
 way, and we will use them in our templates.</p>
-<div class="section" id="the-index-template">
+<section id="the-index-template">
 <h3>The index template<a class="headerlink" href="#the-index-template" title="Permalink to this headline">¶</a></h3>
 <p>Let’s look at our full “index” <em>template</em>.  You can open the
 “web/help_system/templates/help_sstem/index.html” file and paste the following into it:</p>
@@ -560,8 +561,8 @@ table will have 5 columns at the most per row.</p></li>
 URL would look something like “help?name=say”.  We use <code class="docutils literal notranslate"><span class="pre">urlencode</span></code> to ensure special characters are
 properly escaped.</p></li>
 </ol>
-</div>
-<div class="section" id="the-detail-template">
+</section>
+<section id="the-detail-template">
 <h3>The detail template<a class="headerlink" href="#the-detail-template" title="Permalink to this headline">¶</a></h3>
 <p>It’s now time to show the detail of a topic (command or help entry).  You can create the file
 “web/help_system/templates/help_system/detail.html”.  You can paste into it the following code:</p>
@@ -576,17 +577,17 @@ properly escaped.</p></li>
 </div>
 <p>This template is much easier to read.  Some <em>filters</em> might be unknown to you, but they are just
 used to format here.</p>
-</div>
-<div class="section" id="put-it-all-together">
+</section>
+<section id="put-it-all-together">
 <h3>Put it all together<a class="headerlink" href="#put-it-all-together" title="Permalink to this headline">¶</a></h3>
 <p>Remember to reload or start Evennia, and then go to
 <a class="reference external" href="http://localhost:4001/help/">http://localhost:4001/help</a>.  You should see the list of commands and
 topics accessible by all characters.  Try to login (click the “login” link in the menu of your
 website) and go to the same page again.  You should now see a more detailed list of commands and
 help entries.  Click on one to see its detail.</p>
-</div>
-</div>
-<div class="section" id="to-improve-this-feature">
+</section>
+</section>
+<section id="to-improve-this-feature">
 <h2>To improve this feature<a class="headerlink" href="#to-improve-this-feature" title="Permalink to this headline">¶</a></h2>
 <p>As always, a tutorial is here to help you feel comfortable adding new features and code by yourself.
 Here are some ideas of things to improve this little feature:</p>
@@ -599,8 +600,8 @@ enter the URL, users won’t guess it’s there.</p></li>
 you see a help entry about how to use several commands, it would be great if these commands were
 themselves links to display their details.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

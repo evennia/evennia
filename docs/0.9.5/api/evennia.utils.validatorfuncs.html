@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.utils.validatorfuncs &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.utils.validatorfuncs">
+  <section id="module-evennia.utils.validatorfuncs">
 <span id="evennia-utils-validatorfuncs"></span><h1>evennia.utils.validatorfuncs<a class="headerlink" href="#module-evennia.utils.validatorfuncs" title="Permalink to this headline">¶</a></h1>
 <p>Contains all the validation functions.</p>
 <p>All validation functions must have a checker (probably a session) and entry arg.</p>
@@ -65,7 +66,7 @@ inputer’s timezone. Always returns a result in UTC.</p>
 <li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account performing this lookup. Unless <strong>from_tz</strong> is provided,
 the account’s timezone option will be used.</p></li>
 <li><p><strong>from_tz</strong> (<em>pytz.timezone</em>) – An instance of a pytz timezone object from the
-user. If not provided, tries to use the timezone option of the <strong>account</strong>.
+user. If not provided, tries to use the timezone option of <strong>account</strong>.
 If neither one is provided, defaults to UTC.</p></li>
 </ul>
 </dd>
@@ -158,7 +159,7 @@ If neither one is provided, defaults to UTC.</p></li>
 <code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entry</span></em>, <em class="sig-param"><span class="n">option_key</span><span class="o">=</span><span class="default_value">'locks'</span></em>, <em class="sig-param"><span class="n">access_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.lock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -202,7 +203,6 @@ If neither one is provided, defaults to UTC.</p></li>
   <li><a href="../../1.0-dev/api/evennia.utils.validatorfuncs.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.validatorfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

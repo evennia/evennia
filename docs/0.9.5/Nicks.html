@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Nicks &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="nicks">
+  <section id="nicks">
 <h1>Nicks<a class="headerlink" href="#nicks" title="Permalink to this headline">¶</a></h1>
 <p><em>Nicks</em>, short for <em>Nicknames</em> is a system allowing an object (usually a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>) to
 assign custom replacement names for other game entities.</p>
@@ -112,28 +113,28 @@ to the right of it</em> - it will then receive everything up until the end of th
 <li><p>[seq] - matches everything in the sequence, e.g. [xyz] will match both x, y and z</p></li>
 <li><p>[!seq] - matches everything <em>not</em> in the sequence. e.g. [!xyz] will match all but x,y z.</p></li>
 </ul>
-<div class="section" id="coding-with-nicks">
+<section id="coding-with-nicks">
 <h2>Coding with nicks<a class="headerlink" href="#coding-with-nicks" title="Permalink to this headline">¶</a></h2>
 <p>Nicks are stored as the <code class="docutils literal notranslate"><span class="pre">Nick</span></code> database model and are referred from the normal Evennia
 <a class="reference internal" href="Objects.html"><span class="doc">object</span></a> through the <code class="docutils literal notranslate"><span class="pre">nicks</span></code> property - this is known as the <em>NickHandler</em>. The NickHandler
 offers effective error checking, searches and conversion.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A command/channel nick:</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A command/channel nick:</span>
       <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;greetjack&quot;</span><span class="p">,</span> <span class="s2">&quot;tell Jack = Hello pal!&quot;</span><span class="p">)</span>
     
     <span class="c1"># An object nick:</span>
@@ -156,9 +157,9 @@ offers effective error checking, searches and conversion.</p>
 command in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code> for more examples.</p>
 <p>As a last note, The Evennia <a class="reference internal" href="Communications.html"><span class="doc">channel</span></a> alias systems are using nicks with the
 <code class="docutils literal notranslate"><span class="pre">nick_type=&quot;channel&quot;</span></code> in order to allow users to create their own custom aliases to channels.</p>
-</div>
-</div>
-<div class="section" id="advanced-note">
+</section>
+</section>
+<section id="advanced-note">
 <h1>Advanced note<a class="headerlink" href="#advanced-note" title="Permalink to this headline">¶</a></h1>
 <p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal
 Attributes has this set to <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
@@ -168,14 +169,14 @@ representation of the <code class="docutils literal notranslate"><span class="pr
 prepared for efficient replacement of any <code class="docutils literal notranslate"><span class="pre">$</span></code>- type markers. The <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and <code class="docutils literal notranslate"><span class="pre">raw_template</span></code> are
 basically the unchanged strings you enter to the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command (with unparsed <code class="docutils literal notranslate"><span class="pre">$</span></code> etc).</p>
 <p>If you need to access the tuple for some reason, here’s how:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># or, alternatively</span>
 <span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </td></tr></table></div>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -234,7 +235,6 @@ basically the unchanged strings you enter to the <code class="docutils literal n
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Nicks.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

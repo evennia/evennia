@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Sessions &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="sessions">
+  <section id="sessions">
 <h1>Sessions<a class="headerlink" href="#sessions" title="Permalink to this headline">¶</a></h1>
 <p>An Evennia <em>Session</em> represents one single established connection to the server. Depending on the
 Evennia session, it is possible for a person to connect multiple times, for example using different
@@ -64,7 +65,7 @@ API (so you can assume <code class="docutils literal notranslate"><span class="p
 but this is just an alias to <code class="docutils literal notranslate"><span class="pre">.ndb</span></code>. So don’t store any data on Sessions that you can’t afford to
 lose in a reload. You have been warned.</p>
 </div></blockquote>
-<div class="section" id="properties-on-sessions">
+<section id="properties-on-sessions">
 <h2>Properties on Sessions<a class="headerlink" href="#properties-on-sessions" title="Permalink to this headline">¶</a></h2>
 <p>Here are some important properties available on (Server-)Sessions</p>
 <ul class="simple">
@@ -87,8 +88,8 @@ not logged in or in OOC mode, this is <code class="docutils literal notranslate"
 last time this session was truly visibly active.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmd_total</span></code> - Total number of Commands passed through this Session.</p></li>
 </ul>
-</div>
-<div class="section" id="multisession-mode">
+</section>
+<section id="multisession-mode">
 <h2>Multisession mode<a class="headerlink" href="#multisession-mode" title="Permalink to this headline">¶</a></h2>
 <p>The number of sessions possible to connect to a given account at the same time and how it works is
 given by the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting:</p>
@@ -124,8 +125,8 @@ input/output like in mode 1. This mode otherwise works the same as mode 2.</p></
 <div><p>Note that even if multiple Sessions puppet one Character, there is only ever one instance of that
 Character.</p>
 </div></blockquote>
-</div>
-<div class="section" id="returning-data-to-the-session">
+</section>
+<section id="returning-data-to-the-session">
 <h2>Returning data to the session<a class="headerlink" href="#returning-data-to-the-session" title="Permalink to this headline">¶</a></h2>
 <p>When you use <code class="docutils literal notranslate"><span class="pre">msg()</span></code> to return data to a user, the object on which you call the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> matters. The
 <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> also matters, especially if greater than 1.</p>
@@ -149,8 +150,8 @@ This is a <em>handler</em> that tracks all Sessions attached to or puppeting the
 it (it’s always a single one). It will be <code class="docutils literal notranslate"><span class="pre">None</span></code> if no session is involved, like when a mob or
 script triggers the Command.</p></li>
 </ul>
-</div>
-<div class="section" id="customizing-the-session-object">
+</section>
+<section id="customizing-the-session-object">
 <h2>Customizing the Session object<a class="headerlink" href="#customizing-the-session-object" title="Permalink to this headline">¶</a></h2>
 <p>When would one want to customize the Session object? Consider for example a character creation
 system: You might decide to keep this on the out-of-character level. This would mean that you create
@@ -169,8 +170,8 @@ default Session class, change <code class="docutils literal notranslate"><span c
 a dangerous practice and errors can easily make your game unplayable.  Make sure to take heed of the
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/server/session.py">original</a> and make your
 changes carefully.</p>
-</div>
-<div class="section" id="portal-and-server-sessions">
+</section>
+<section id="portal-and-server-sessions">
 <h2>Portal and Server Sessions<a class="headerlink" href="#portal-and-server-sessions" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is considered an advanced topic. You don’t need to know this on a first read-through.</em></p>
 <p>Evennia is split into two parts, the <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Portal and the Server</span></a>. Each side tracks
@@ -199,13 +200,13 @@ its mirror Server session and vice versa.</p>
 make sure the corresponding Server Session is also deleted.</p></li>
 <li><p>The Player quits from inside the game, killing the Server Session.  The Server then syncs with the
 Portal to make sure to close the Portal connection cleanly.</p></li>
-<li><p>The Server is rebooted/reset/shutdown - The Server Sessions are copied over (“saved”) to the
+<li><p>The Server is rebooted/reset/shutdown - The Server Sessions are copied over (”saved”) to the
 Portal side. When the Server comes back up, this data is returned by the Portal so the two are again
 in sync. This way an Account’s login status and other connection-critical things can survive a
 server reboot (assuming the Portal is not stopped at the same time, obviously).</p></li>
 </ul>
-</div>
-<div class="section" id="sessionhandlers">
+</section>
+<section id="sessionhandlers">
 <h2>Sessionhandlers<a class="headerlink" href="#sessionhandlers" title="Permalink to this headline">¶</a></h2>
 <p>Both the Portal and Server each have a <em>sessionhandler</em> to manage the connections. These handlers
 are global entities contain all methods for relaying data across the AMP bridge. All types of
@@ -224,8 +225,8 @@ various places as well.</p>
 <p>See the
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/server/sessionhandler.py">sessionhandler.py</a>
 module for details on the capabilities of the <code class="docutils literal notranslate"><span class="pre">ServerSessionHandler</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -288,7 +289,6 @@ module for details on the capabilities of the <code class="docutils literal notr
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Sessions.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

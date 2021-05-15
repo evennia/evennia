@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Help System &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,13 +46,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="help-system">
+  <section id="help-system">
 <h1>Help System<a class="headerlink" href="#help-system" title="Permalink to this headline">¶</a></h1>
 <p>An important part of Evennia is the online help system. This allows the players and staff alike to
 learn how to use the game’s commands as well as other information pertinent to the game. The help
 system has many different aspects, from the normal editing of help entries from inside the game, to
 auto-generated help entries during code development using the <em>auto-help system</em>.</p>
-<div class="section" id="viewing-the-help-database">
+<section id="viewing-the-help-database">
 <h2>Viewing the help database<a class="headerlink" href="#viewing-the-help-database" title="Permalink to this headline">¶</a></h2>
 <p>The main command is <code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">help</span> <span class="p">[</span><span class="n">searchstring</span><span class="p">]</span>
@@ -61,8 +62,8 @@ auto-generated help entries during code development using the <em>auto-help syst
 <em>Command help entries</em> and <em>Other help entries</em> (initially you will only have the first one). You
 can use help to get more info about an entry; you can also give partial matches to get suggestions.
 If you give category names you will only be shown the topics in that category.</p>
-</div>
-<div class="section" id="command-auto-help-system">
+</section>
+<section id="command-auto-help-system">
 <h2>Command Auto-help system<a class="headerlink" href="#command-auto-help-system" title="Permalink to this headline">¶</a></h2>
 <p>A common item that requires help entries are in-game commands. Keeping these entries up-to-date with
 the actual source code functionality can be a chore. Evennia’s commands are therefore auto-
@@ -76,26 +77,26 @@ commands well and updating the help file is just a <code class="docutils literal
 create and maintain help database entries for commands; as long as you keep the docstrings updated
 your help will be dynamically updated for you as well.</p>
 <p>Example (from a module with command definitions):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">       mycmd - my very own command</span>
 <span class="sd">    </span>
@@ -131,8 +132,8 @@ command definition.</p>
 command helps.  You can do so by overriding the command’s <code class="docutils literal notranslate"><span class="pre">get_help()</span></code> method.  By default, this
 method will return the class docstring.  You could modify it to add custom behavior:  the text
 returned by this method will be displayed to the character asking for help in this command.</p>
-</div>
-<div class="section" id="database-help-entries">
+</section>
+<section id="database-help-entries">
 <h2>Database help entries<a class="headerlink" href="#database-help-entries" title="Permalink to this headline">¶</a></h2>
 <p>These are all help entries not involving commands (this is handled automatically by the <a class="reference external" href="Help-System.html#command-auto-help-system">Command
 Auto-help system</a>).  Non-automatic help entries describe how
@@ -149,10 +150,10 @@ because it’s staff-only or otherwise meant to be restricted. Help commands che
 <code class="docutils literal notranslate"><span class="pre">view</span></code> and <code class="docutils literal notranslate"><span class="pre">edit</span></code>. An example of a lock string would be <code class="docutils literal notranslate"><span class="pre">view:perm(Builders)</span></code>.</p></li>
 </ul>
 <p>You can create new help entries in code by using <code class="docutils literal notranslate"><span class="pre">evennia.create_help_entry()</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
 <span class="n">entry</span> <span class="o">=</span> <span class="n">create_help_entry</span><span class="p">(</span><span class="s2">&quot;emote&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Emoting is important because ...&quot;</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Roleplaying&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;view:all()&quot;</span><span class="p">)</span>
@@ -176,8 +177,8 @@ definition</span></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@sethelp</span><span class="o">/</span><span class="n">add</span> <span class="n">emote</span><span class="p">,</span> <span class="n">Roleplaying</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span> <span class="o">=</span> <span class="n">Emoting</span> <span class="ow">is</span> <span class="o">...</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -237,7 +238,6 @@ definition</span></a>:</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Help-System.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

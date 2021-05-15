@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Arxcode installing help &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,9 +38,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="arxcode-installing-help">
+  <section id="arxcode-installing-help">
 <h1>Arxcode installing help<a class="headerlink" href="#arxcode-installing-help" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="http://play.arxmush.org/">Arx - After the Reckoning</a> is a big and very popular
 <a class="reference external" href="http://www.evennia.com">Evennia</a>-based game. Arx is heavily roleplaying-centric, relying on game
@@ -54,8 +55,8 @@ released as of <em>Aug 12, 2018</em>.</p>
 since part of Arx has grown organically, it doesn’t follow standard Evennia paradigms everywhere.
 This page covers one take on installing and setting things up while making your new Arx-based game
 better match with the vanilla Evennia install.</p>
-</div>
-<div class="section" id="installing-evennia">
+</section>
+<section id="installing-evennia">
 <h2>Installing Evennia<a class="headerlink" href="#installing-evennia" title="Permalink to this headline">¶</a></h2>
 <p>Firstly, set aside a folder/directory on your drive for everything to follow.</p>
 <p>You need to start by installing <a class="reference external" href="http://www.evennia.com">Evennia</a> by following most of the
@@ -80,10 +81,10 @@ structure in your set-aside folder:</p>
 that and run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> to make sure your empty game is not running. We’ll instead let Evenna
 run Arx, so in principle you could erase <code class="docutils literal notranslate"><span class="pre">mygame</span></code> - but it could also be good to have a clean game
 to compare to.</p>
-</div>
-<div class="section" id="installing-arxcode">
+</section>
+<section id="installing-arxcode">
 <h2>Installing Arxcode<a class="headerlink" href="#installing-arxcode" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="clone-the-arxcode-repo">
+<section id="clone-the-arxcode-repo">
 <h3>Clone the arxcode repo<a class="headerlink" href="#clone-the-arxcode-repo" title="Permalink to this headline">¶</a></h3>
 <p>Cd to the root of your directory and clone the released source code from github:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Arx</span><span class="o">-</span><span class="n">Game</span><span class="o">/</span><span class="n">arxcode</span><span class="o">.</span><span class="n">git</span> <span class="n">myarx</span> 
@@ -93,8 +94,8 @@ to compare to.</p>
 something else if you want.</p>
 <p>Cd into <code class="docutils literal notranslate"><span class="pre">myarx</span></code>. If you wonder about the structure of the game dir, you can
 <a class="reference internal" href="../Howto/Starting/Part1/Gamedir-Overview.html"><span class="doc">read more about it here</span></a>.</p>
-</div>
-<div class="section" id="clean-up-settings">
+</section>
+<section id="clean-up-settings">
 <h3>Clean up settings<a class="headerlink" href="#clean-up-settings" title="Permalink to this headline">¶</a></h3>
 <p>Arx has split evennia’s normal settings into <code class="docutils literal notranslate"><span class="pre">base_settings.py</span></code> and <code class="docutils literal notranslate"><span class="pre">production_settings.py</span></code>. It
 also has its own solution for managing ‘secret’ parts of the settings file. We’ll keep most of Arx
@@ -124,7 +125,7 @@ the game a name. The slogan changes the sub-text shown under the name of your ga
 header. You can tweak these to your own liking later.</p>
 <p>Next, create a new, empty file <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> in the same location as the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.
 This can just contain the following:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;sefsefiwwj3 jnwidufhjw4545_oifej whewiu hwejfpoiwjrpw09&amp;4er43233fwefwfw&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;sefsefiwwj3 jnwidufhjw4545_oifej whewiu hwejfpoiwjrpw09&amp;4er43233fwefwfw&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Replace the long random string with random ASCII characters of your own. The secret key should not
@@ -135,8 +136,8 @@ hide away settings that should not be shared).</p>
 <p>Comment out <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code> by adding a <code class="docutils literal notranslate"><span class="pre">#</span></code> to the start of the line: <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code>. Then search for <code class="docutils literal notranslate"><span class="pre">config(</span></code> in the file and comment out all lines where this is used.
 Many of these are specific to the server environment where the original Arx runs, so is not that
 relevant to us.</p>
-</div>
-<div class="section" id="install-arx-dependencies">
+</section>
+<section id="install-arx-dependencies">
 <h3>Install Arx dependencies<a class="headerlink" href="#install-arx-dependencies" title="Permalink to this headline">¶</a></h3>
 <p>Arx has some further dependencies beyond vanilla Evennia. Start by <code class="docutils literal notranslate"><span class="pre">cd</span></code>:ing to the root of your
 <code class="docutils literal notranslate"><span class="pre">myarx</span></code> folder.</p>
@@ -149,8 +150,8 @@ relevant to us.</p>
 </pre></div>
 </div>
 <p>The needed Python packages will be installed for you.</p>
-</div>
-<div class="section" id="adding-logs-folder">
+</section>
+<section id="adding-logs-folder">
 <h3>Adding logs/ folder<a class="headerlink" href="#adding-logs-folder" title="Permalink to this headline">¶</a></h3>
 <p>The Arx repo does not contain the <code class="docutils literal notranslate"><span class="pre">myarx/server/logs/</span></code> folder Evennia expects for storing server
 logs. This is simple to add:</p>
@@ -160,8 +161,8 @@ logs. This is simple to add:</p>
 <span class="n">mkdir</span> <span class="n">server</span>\<span class="n">logs</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="setting-up-the-database-and-starting">
+</section>
+<section id="setting-up-the-database-and-starting">
 <h3>Setting up the database and starting<a class="headerlink" href="#setting-up-the-database-and-starting" title="Permalink to this headline">¶</a></h3>
 <p>From the <code class="docutils literal notranslate"><span class="pre">myarx</span></code> folder, run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
@@ -177,8 +178,8 @@ Alternatively, you can use your web browser to browse to <code class="docutils l
 website and get to the web client.</p>
 <p>When you log in you’ll get the standard Evennia greeting (since the database is empty), but you can
 try <code class="docutils literal notranslate"><span class="pre">help</span></code> to see that it’s indeed Arx that is running.</p>
-</div>
-<div class="section" id="additional-setup-steps">
+</section>
+<section id="additional-setup-steps">
 <h3>Additional Setup Steps<a class="headerlink" href="#additional-setup-steps" title="Permalink to this headline">¶</a></h3>
 <p>The first time you start Evennia after creating the database with the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> step above,
 it should create a few starting objects for you - your superuser account, which it will prompt you
@@ -219,9 +220,9 @@ in, if you choose to use an active roster of characters). PlayerOrNpc are more c
 as well as support for npcs with no in-game presence and just represented by a name which can be
 offscreen members of a character’s family. It also allows for membership in Organizations.
 AssetOwner holds information about a character or organization’s money and resources.</p>
-</div>
-</div>
-<div class="section" id="alternate-guide-by-pax-for-installing-on-windows">
+</section>
+</section>
+<section id="alternate-guide-by-pax-for-installing-on-windows">
 <h2>Alternate guide by Pax for installing on Windows<a class="headerlink" href="#alternate-guide-by-pax-for-installing-on-windows" title="Permalink to this headline">¶</a></h2>
 <p>If for some reason you cannot use the Windows Subsystem for Linux (which would use instructions
 identical to the ones above), it’s possible to get Evennia running under Anaconda for Windows. The
@@ -271,8 +272,8 @@ not need winpty.</p>
 <p>Once this is done, you should have your Evennia server running Arxcode up
 on localhost at port 4000, and the webserver at http://localhost:4001/</p>
 <p>And you are done! Huzzah!</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

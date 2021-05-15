@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Accounts &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="accounts">
+  <section id="accounts">
 <h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
 <p>All <em>users</em> (real people) that starts a game <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> on Evennia are doing so through an
 object called <em>Account</em>. The Account object has no in-game representation, it represents a unique
@@ -69,7 +70,7 @@ the permissions of the Character to come into play the default <code class="docu
 allows for exploring the game using a different permission set (but you can’t escalate your
 permissions this way - for hierarchical permissions like <code class="docutils literal notranslate"><span class="pre">Builder</span></code>, <code class="docutils literal notranslate"><span class="pre">Admin</span></code> etc, the <em>lower</em> of the
 permissions on the Character/Account will always be used).</p>
-<div class="section" id="how-to-create-your-own-account-types">
+<section id="how-to-create-your-own-account-types">
 <h2>How to create your own Account types<a class="headerlink" href="#how-to-create-your-own-account-types" title="Permalink to this headline">¶</a></h2>
 <p>You will usually not want more than one Account typeclass for all new accounts (but you could in
 principle create a system that changes an account’s typeclass dynamically).</p>
@@ -77,19 +78,19 @@ principle create a system that changes an account’s typeclass dynamically).</p
 its parents. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/accounts.py</span></code> there is an empty class ready for you to modify.
 Evennia defaults to using this (it inherits directly from <code class="docutils literal notranslate"><span class="pre">DefaultAccount</span></code>).</p>
 <p>Here’s an example of modifying the default Account class in code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># in mygame/typeclasses/accounts.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># in mygame/typeclasses/accounts.py</span>
 
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 
@@ -118,8 +119,8 @@ must point Evennia to it. Add <code class="docutils literal notranslate"><span c
 path to your custom class as its value. By default this points to <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code>,
 the empty template we used above.</p>
 </div></blockquote>
-</div>
-<div class="section" id="properties-on-accounts">
+</section>
+<section id="properties-on-accounts">
 <h2>Properties on Accounts<a class="headerlink" href="#properties-on-accounts" title="Permalink to this headline">¶</a></h2>
 <p>Beyond those properties assigned to all typeclassed objects (see <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>), the
 Account also has the following custom properties:</p>
@@ -153,8 +154,8 @@ any.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">execute_cmd</span></code> - runs a command as if this Account did it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">search</span></code> - search for Accounts.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -213,7 +214,6 @@ any.</p></li>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Accounts.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

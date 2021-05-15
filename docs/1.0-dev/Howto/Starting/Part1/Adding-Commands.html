@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Our own commands &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -46,19 +47,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="our-own-commands">
+  <section id="our-own-commands">
 <h1>Our own commands<a class="headerlink" href="#our-own-commands" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we’ll learn how to create our own Evennia <em>Commands</em>. If you are new to Python you’ll
 also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
 <p>A Command is something that handles the input from a user and causes a result to happen.
 An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells how it looks like and
 what is in it.</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Commands are not typeclassed</p>
 <p>If you just came from the previous lesson, you might want to know that Commands and
 CommandSets are not <cite>typeclassed</cite>. That is, instances of them are not saved to the
 database. They are “just” normal Python classes.</p>
-</div>
+</aside>
 <p>In Evennia, a Command is a Python <em>class</em>. If you are unsure about what a class is, review the
 previous lessons! A Command inherits from <code class="docutils literal notranslate"><span class="pre">evennia.Command</span></code> or from one of the alternative command-
 classes, such as <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> which is what most default commands use.</p>
@@ -73,24 +74,24 @@ commands in that cmdset available to the object. So, to summarize:</p>
 <li><p>A group of Commands is stored in a CmdSet</p></li>
 <li><p>CmdSets are stored on objects - this defines which commands are available to that object.</p></li>
 </ul>
-<div class="section" id="creating-a-custom-command">
+<section id="creating-a-custom-command">
 <h2>Creating a custom command<a class="headerlink" href="#creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -118,11 +119,11 @@ that a little later.</p>
 </div></blockquote>
 <p>We could modify this module directly, but to train imports we’ll work in a separate module. Open a new file
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and add the following code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -132,18 +133,18 @@ that a little later.</p>
 <p>This is the simplest form of command you can imagine. It just gives itself a name, “echo”. This is
 what you will use to call this command later.</p>
 <p>Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! Change your file as such:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
@@ -218,22 +219,22 @@ that this would be <code class="docutils literal notranslate"><span class="pre">
 </ul>
 <p>The reason our command doesn’t do anything yet is because it’s missing a <code class="docutils literal notranslate"><span class="pre">func</span></code> method. This is what Evennia
 looks for to figure out what a Command actually does. Modify your <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -278,22 +279,22 @@ Echo: &#39;Woo Tang!&#39;
 </div>
 <p>There are ways to force Evennia to <em>require</em> an initial space, but right now we want to just ignore it since
 it looks a bit weird for our echo example. Tweak the code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -325,7 +326,7 @@ Echo: &#39;Woo Tang!&#39;
 </pre></div>
 </div>
 <p>You will get the docstring you put in your Command-class.</p>
-<div class="section" id="making-our-cmdset-persistent">
+<section id="making-our-cmdset-persistent">
 <h3>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
 <p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple
 enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>permanent</em> change though:</p>
@@ -338,8 +339,8 @@ needing to re-add the MyCmdSet again. To remove the cmdset again, do</p>
 </pre></div>
 </div>
 <p>But for now, keep it around, we’ll expand it with some more examples.</p>
-</div>
-<div class="section" id="figuring-out-who-to-hit">
+</section>
+<section id="figuring-out-who-to-hit">
 <h3>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching
 someone in the face! This is how we want it to work:</p>
@@ -353,29 +354,29 @@ You hit &lt;target&gt; with full force!
 </div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">&lt;hitter&gt;</span></code> would be the one using the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command and <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> is the one doing the punching.</p>
 <p>Still in <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code>, add a new class, between <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> and <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -410,7 +411,7 @@ You hit &lt;target&gt; with full force!
 in a <em>local variable</em> <code class="docutils literal notranslate"><span class="pre">args</span></code>. Note that we don’t modify <code class="docutils literal notranslate"><span class="pre">self.args</span></code> by doing this, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> will still
 have the whitespace and is not the same as <code class="docutils literal notranslate"><span class="pre">args</span></code> in this example.</p></li>
 </ul>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">if-statements</p>
 <p>The full form of the if statement is</p>
 <blockquote>
@@ -426,7 +427,7 @@ have the whitespace and is not the same as <code class="docutils literal notrans
 <p>There can be any number of <cite>elifs</cite> to mark when different branches of the code should run. If
 the <cite>else</cite> condition is given, it will run if none of the other conditions was truthy. In Python
 the <cite>if..elif..else</cite> structure also serves the same function as <cite>case</cite> in some other languages.</p>
-</div>
+</aside>
 <ul>
 <li><p><strong>Line 16</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only
 if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in
@@ -450,13 +451,13 @@ In that case, <code class="docutils literal notranslate"><span class="pre">targe
 <li><p><strong>Lines 22-23</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
 </ul>
 <p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> which we made permanent earlier.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
@@ -465,7 +466,7 @@ In that case, <code class="docutils literal notranslate"><span class="pre">targe
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHit</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Errors in your code</p>
 <p>With longer code snippets to try, it gets more and more likely you’ll
 make an error and get a <cite>traceback</cite> when you reload. This will either appear
@@ -473,7 +474,7 @@ directly in-game or in your log (view it with <cite>evennia -l</cite> in a termi
 Don’t panic; tracebacks are your friends - they are to be read bottom-up and usually describe
 exactly where your problem is. Refer to <a class="reference external" href="Python-basic-introduction.html">The Python intro</a> for
 more hints. If you get stuck, reach out to the Evennia community for help.</p>
-</div>
+</aside>
 <p>Next we reload to let Evennia know of these code changes and try it out:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
 hit
@@ -490,16 +491,16 @@ You hit Smaug with full force!
 </pre></div>
 </div>
 <p>You won’t see the second string. Only Smaug sees that (and is not amused).</p>
-</div>
-</div>
-<div class="section" id="summary">
+</section>
+</section>
+<section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves.
 We also upset a dragon.</p>
 <p>In the next lesson we’ll learn how to hit Smaug with different weapons. We’ll also
 get into how we replace and extend Evennia’s default Commands.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

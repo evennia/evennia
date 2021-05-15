@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Evennia Game Index &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evennia-game-index">
+  <section id="evennia-game-index">
 <h1>Evennia Game Index<a class="headerlink" href="#evennia-game-index" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference external" href="http://games.evennia.com">Evennia game index</a> is a list of games built or
 being built with Evennia. Anyone is allowed to add their game to the index</p>
@@ -48,7 +49,7 @@ intrigued about or excited for your upcoming game!</p></li>
 </ul>
 <p>All we ask is that you check so your game-name does not collide with one
 already in the list - be nice!</p>
-<div class="section" id="connect-with-the-wizard">
+<section id="connect-with-the-wizard">
 <h2>Connect with the wizard<a class="headerlink" href="#connect-with-the-wizard" title="Permalink to this headline">¶</a></h2>
 <p>From your game dir, run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">connections</span> 
@@ -65,30 +66,30 @@ settings file and will thus override it. You can edit this new file if you
 want, but remember that if you run the wizard again, your changes may get
 over-written.</p>
 </div></blockquote>
-</div>
-<div class="section" id="manual-settings">
+</section>
+<section id="manual-settings">
 <h2>Manual Settings<a class="headerlink" href="#manual-settings" title="Permalink to this headline">¶</a></h2>
 <p>If you don’t want to use the wizard (maybe because you already have the client installed from an
 earlier version), you can also configure your index entry in your settings file
 (<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>). Add the following:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">GAME_INDEX_ENABLED</span> <span class="o">=</span> <span class="kc">True</span> 
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">GAME_INDEX_ENABLED</span> <span class="o">=</span> <span class="kc">True</span> 
 
 <span class="n">GAME_INDEX_LISTING</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># required </span>
@@ -114,16 +115,16 @@ last resort if we need to get in touch with you over any listing issue/bug (so
 far this has never happened).</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">game_name</span></code> is not set, the <code class="docutils literal notranslate"><span class="pre">settings.SERVERNAME</span></code> will be used. Use empty strings
 (<code class="docutils literal notranslate"><span class="pre">''</span></code>) for optional fields you don’t want to specify at this time.</p>
-</div>
-<div class="section" id="non-public-games">
+</section>
+<section id="non-public-games">
 <h2>Non-public games<a class="headerlink" href="#non-public-games" title="Permalink to this headline">¶</a></h2>
 <p>If you don’t specify neither <code class="docutils literal notranslate"><span class="pre">telnet_hostname</span> <span class="pre">+</span> <span class="pre">port</span></code> nor
 <code class="docutils literal notranslate"><span class="pre">web_client_url</span></code>, the Game index will list your game as <em>Not yet public</em>.
 Non-public games are moved to the bottom of the index since there is no way
 for people to try them out. But it’s a good way to show you are out there, even
 if you are not ready for players yet.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

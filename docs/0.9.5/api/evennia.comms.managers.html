@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.comms.managers &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.comms.managers">
+  <section id="module-evennia.comms.managers">
 <span id="evennia-comms-managers"></span><h1>evennia.comms.managers<a class="headerlink" href="#module-evennia.comms.managers" title="Permalink to this headline">¶</a></h1>
 <p>These managers define helper methods for accessing the database from
 Comm system components.</p>
@@ -134,19 +135,15 @@ of which may be Channels).</p>
 
 <dl class="py method">
 <dt id="evennia.comms.managers.MsgManager.get_messages_by_sender">
-<code class="sig-name descname">get_messages_by_sender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="n">exclude_channel_messages</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#MsgManager.get_messages_by_sender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.MsgManager.get_messages_by_sender" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_messages_by_sender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#MsgManager.get_messages_by_sender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.MsgManager.get_messages_by_sender" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all messages sent by one entity - this could be either a
 account or an object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sender</strong> (<em>Account</em><em> or </em><em>Object</em>) – The sender of the message.</p></li>
-<li><p><strong>exclude_channel_messages</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only return messages
-not aimed at a channel (that is, private tells for example)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>sender</strong> (<em>Account</em><em> or </em><em>Object</em>) – The sender of the message.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list)</em> – List of matching messages</p>
+<dd class="field-even"><p><em>QuerySet</em> – Matching messages.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#evennia.comms.managers.CommError" title="evennia.comms.managers.CommError"><strong>CommError</strong></a> – For incorrect sender types.</p>
@@ -163,24 +160,10 @@ not aimed at a channel (that is, private tells for example)</p></li>
 <dd class="field-odd"><p><strong>recipient</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Channel</em>) – The recipient of the messages to search for.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list)</em> – Matching messages.</p>
+<dd class="field-even"><p><em>Queryset</em> – Matching messages.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#evennia.comms.managers.CommError" title="evennia.comms.managers.CommError"><strong>CommError</strong></a> – If the <strong>recipient</strong> is not of a valid type.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.managers.MsgManager.get_messages_by_channel">
-<code class="sig-name descname">get_messages_by_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#MsgManager.get_messages_by_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.MsgManager.get_messages_by_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all persistent messages sent to one channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to find messages for.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list)</em> – Persistent Msg objects saved for this channel.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -193,7 +176,7 @@ one of the arguments must be given to do a search.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sender</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – Get messages sent by a particular account or object</p></li>
+<li><p><strong>sender</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Script</em><em>, </em><em>optional</em>) – Get messages sent by a particular sender.</p></li>
 <li><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Channel</em><em>, </em><em>optional</em>) – Get messages
 received by a certain account,object or channel</p></li>
 <li><p><strong>freetext</strong> (<em>str</em>) – Search for a text string in a message.  NOTE:
@@ -205,7 +188,7 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list or Msg)</em> – A list of message matches or a single match if <strong>dbref</strong> was given.</p>
+<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -218,7 +201,7 @@ one of the arguments must be given to do a search.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sender</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – Get messages sent by a particular account or object</p></li>
+<li><p><strong>sender</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Script</em><em>, </em><em>optional</em>) – Get messages sent by a particular sender.</p></li>
 <li><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Channel</em><em>, </em><em>optional</em>) – Get messages
 received by a certain account,object or channel</p></li>
 <li><p><strong>freetext</strong> (<em>str</em>) – Search for a text string in a message.  NOTE:
@@ -230,7 +213,7 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list or Msg)</em> – A list of message matches or a single match if <strong>dbref</strong> was given.</p>
+<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -328,7 +311,7 @@ case sensitive) match.</p></li>
 <p>Wrapper to group the typeclass manager to a consistent name.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -372,7 +355,6 @@ case sensitive) match.</p></li>
   <li><a href="../../1.0-dev/api/evennia.comms.managers.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.comms.managers.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

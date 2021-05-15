@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Command Sets &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="command-sets">
+  <section id="command-sets">
 <h1>Command Sets<a class="headerlink" href="#command-sets" title="Permalink to this headline">¶</a></h1>
 <p>Command Sets are intimately linked with <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> and you should be familiar with
 Commands before reading this page. The two pages were split for ease of reading.</p>
@@ -68,30 +69,30 @@ commands with its own versions because the Character cannot see.</p>
 <p>If you want a quick start into defining your first commands and using them with command sets, you
 can head over to the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding Command Tutorial</span></a> which steps through things
 without the explanations.</p>
-<div class="section" id="defining-command-sets">
+<section id="defining-command-sets">
 <h2>Defining Command Sets<a class="headerlink" href="#defining-command-sets" title="Permalink to this headline">¶</a></h2>
 <p>A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent
 (<code class="docutils literal notranslate"><span class="pre">evennia.CmdSet</span></code>, which is a shortcut to <code class="docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code>). The CmdSet class only
 needs to define one method, called <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation()</span></code>. All other class parameters are optional,
 but are used for more advanced set manipulation and coding (see the [merge rules](Command-
 Sets#merge-rules) section).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/commands/mycmdset.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/commands/mycmdset.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
@@ -112,10 +113,10 @@ Sets#merge-rules) section).</p>
 </td></tr></table></div>
 <p>The CmdSet’s <code class="docutils literal notranslate"><span class="pre">add()</span></code> method can also take another CmdSet as input. In this case all the commands
 from that CmdSet will be appended to this one as if you added them line by line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span>
         <span class="o">...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AdditionalCmdSet</span><span class="p">)</span> <span class="c1"># adds all command from this set</span>
         <span class="o">...</span>
@@ -130,11 +131,11 @@ loaded into memory. You need to make the server aware of the code changes:</p>
 <p>If you created a new, fresh cmdset, this must be added to an object in order to make the commands
 within available. A simple way to temporarily test a cmdset on yourself is use the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command to
 execute a python snippet:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This will stay with you until you <code class="docutils literal notranslate"><span class="pre">&#64;reset</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> the server, or you run</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>In the example above, a specific Cmdset class is removed. Calling <code class="docutils literal notranslate"><span class="pre">delete</span></code> without arguments will
@@ -165,7 +166,7 @@ must take this behavior into account when attempting to overload any default Eve
 your own. Otherwise, you may accidentally “hide” your own command in your command set when adding a
 new one that has a matching alias.</p>
 </div></blockquote>
-<div class="section" id="properties-on-command-sets">
+<section id="properties-on-command-sets">
 <h3>Properties on Command Sets<a class="headerlink" href="#properties-on-command-sets" title="Permalink to this headline">¶</a></h3>
 <p>There are several extra flags that you can set on CmdSets in order to modify how they work. All are
 optional and will be set to defaults otherwise.  Since many of these relate to <em>merging</em> cmdsets,
@@ -249,9 +250,9 @@ priority determines what is used.</p></li>
 </ul>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="command-sets-searched">
+</section>
+</section>
+<section id="command-sets-searched">
 <h2>Command Sets Searched<a class="headerlink" href="#command-sets-searched" title="Permalink to this headline">¶</a></h2>
 <p>When a user issues a command, it is matched against the [merged](./Command-Sets#adding-and-merging-
 command-sets) command sets available to the player at the moment. Which those are may change at any
@@ -283,8 +284,8 @@ by being in the same room. The ability of an object to share its cmdsets is mana
 cmdsets on them can only be accessed by themselves, not by other objects around them. Another
 example might be to lock an object with <code class="docutils literal notranslate"><span class="pre">call:inside()</span></code> to only make their commands available to
 objects inside them, or <code class="docutils literal notranslate"><span class="pre">cmd:holds()</span></code> to make their commands available only if they are held.</p>
-</div>
-<div class="section" id="adding-and-merging-command-sets">
+</section>
+<section id="adding-and-merging-command-sets">
 <h2>Adding and Merging Command Sets<a class="headerlink" href="#adding-and-merging-command-sets" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is an advanced topic. It’s very useful to know about, but you might want to skip it if
 this is your first time learning about commands.</em></p>
@@ -311,7 +312,7 @@ in the dark room, maybe the <code class="docutils literal notranslate"><span cla
 anything! Another example would be to offer special combat commands only when the player is in
 combat. Or when being on a boat. Or when having taken the super power-up. All this can be done on
 the fly by merging command sets.</p>
-<div class="section" id="merge-rules">
+<section id="merge-rules">
 <h3>Merge Rules<a class="headerlink" href="#merge-rules" title="Permalink to this headline">¶</a></h3>
 <p>Basic rule is that command sets are merged in <em>reverse priority order</em>. That is, lower-prio sets are
 merged first and higher prio sets are merged “on top” of them. Think of it like a layered cake with
@@ -392,23 +393,23 @@ sure we merge onto B.  Setting E’s priority to, say, -4 will make sure to merg
 it appropriately.</p>
 </div></blockquote>
 <p>More advanced cmdset example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     
@@ -427,8 +428,8 @@ it appropriately.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand3</span><span class="p">())</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="assorted-notes">
+</section>
+<section id="assorted-notes">
 <h3>Assorted Notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h3>
 <p>It is very important to remember that two commands are compared <em>both</em> by their <code class="docutils literal notranslate"><span class="pre">key</span></code> properties
 <em>and</em> by their <code class="docutils literal notranslate"><span class="pre">aliases</span></code> properties. If either keys or one of their aliases match, the two commands
@@ -442,9 +443,9 @@ exits are merged in), these two commands will be considered <em>identical</em> s
 means only one of them will remain after the merger. Each will also be compared with all other
 commands having any combination of the keys and/or aliases “kick”, “punch” or “fight”.</p>
 <p>… So avoid duplicate aliases, it will only cause confusion.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -511,7 +512,6 @@ commands having any combination of the keys and/or aliases “kick”, “punch�
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Command-Sets.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

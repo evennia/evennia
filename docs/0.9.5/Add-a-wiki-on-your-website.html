@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Add a wiki on your website &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="add-a-wiki-on-your-website">
+  <section id="add-a-wiki-on-your-website">
 <h1>Add a wiki on your website<a class="headerlink" href="#add-a-wiki-on-your-website" title="Permalink to this headline">¶</a></h1>
 <p><strong>Before doing this tutorial you will probably want to read the intro in
 <a class="reference internal" href="Web-Tutorial.html"><span class="doc">Basic Web tutorial</span></a>.</strong>  Reading the three first parts of the
@@ -63,7 +64,7 @@ has passed.)</p>
 wikis, is
 actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
 see a <a class="reference external" href="https://demo.django.wiki">demonstration of Django-wiki here</a>.</p>
-<div class="section" id="basic-installation">
+<section id="basic-installation">
 <h2>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h2>
 <p>You should begin by shutting down the Evennia server if it is running.  We will run migrations and
 alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the
@@ -80,7 +81,7 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 </div>
 </li>
 </ul>
-<div class="section" id="installing-with-pip">
+<section id="installing-with-pip">
 <h3>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h3>
 <p>Install the wiki using pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">wiki</span>
@@ -91,56 +92,56 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 install wiki 0.3 if you haven’t updated to Python 3 yet.</p>
 </div></blockquote>
 <p>It might take some time, the Django-wiki having some dependencies.</p>
-</div>
-<div class="section" id="adding-the-wiki-in-the-settings">
+</section>
+<section id="adding-the-wiki-in-the-settings">
 <h3>Adding the wiki in the settings<a class="headerlink" href="#adding-the-wiki-in-the-settings" title="Permalink to this headline">¶</a></h3>
 <p>You will need to add a few settings to have the wiki app on your website.  Open your
 <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing
 <code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s what you’ll find in my own setting file (add the whole Django-wiki
 section):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Evennia settings file.</span>
 
 <span class="sd">...</span>
@@ -185,26 +186,26 @@ section):</p>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="adding-the-new-urls">
+</section>
+<section id="adding-the-new-urls">
 <h3>Adding the new URLs<a class="headerlink" href="#adding-the-new-urls" title="Permalink to this headline">¶</a></h3>
 <p>Next we need to add two URLs in our <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file.  Open it and compare the following output:
 you will need to add two URLs in <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> and add one import line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span> <span class="c1"># NEW!</span>
 
 <span class="c1"># default evenni        a patterns</span>
@@ -223,8 +224,8 @@ you will need to add two URLs in <code class="docutils literal notranslate"><spa
 </td></tr></table></div>
 <p>You will probably need to copy line 2, 10, and 11.  Be sure to place them correctly, as shown in
 the example above.</p>
-</div>
-<div class="section" id="running-migrations">
+</section>
+<section id="running-migrations">
 <h3>Running migrations<a class="headerlink" href="#running-migrations" title="Permalink to this headline">¶</a></h3>
 <p>It’s time to run the new migrations.  The wiki app adds a few tables in our database.  We’ll need to
 run:</p>
@@ -233,9 +234,9 @@ run:</p>
 </div>
 <p>And that’s it, you can start the server.  If you go to http://localhost:4001/wiki , you should see
 the wiki.  Use your account’s username and password to connect to it.  That’s how simple it is.</p>
-</div>
-</div>
-<div class="section" id="customizing-privileges">
+</section>
+</section>
+<section id="customizing-privileges">
 <h2>Customizing privileges<a class="headerlink" href="#customizing-privileges" title="Permalink to this headline">¶</a></h2>
 <p>A wiki can be a great collaborative tool, but who can see it?  Who can modify it?  Django-wiki comes
 with a privilege system centered around four values per wiki page.  The owner of an article can
@@ -252,37 +253,37 @@ function as argument, said function (or callback) will be called with the articl
 Remember, a Django user, for us, is an account.  So we could check lockstrings on them if needed.
 Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including
 non-logged in users) can read it.  The superuser has some additional privileges.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
 <span class="c1"># ...</span>
 
 <span class="k">def</span> <span class="nf">is_superuser</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
@@ -324,7 +325,7 @@ adapting them to your need.  This is just a demonstration.</p>
 <p>Providing the <code class="docutils literal notranslate"><span class="pre">WIKI_CAN*...</span></code> settings will bypass the original permission system.  The superuser
 could change permissions of an article, but still, only builders would be able to write it.  If you
 need something more custom, you will have to expand on the functions you use.</p>
-<div class="section" id="managing-wiki-pages-from-evennia">
+<section id="managing-wiki-pages-from-evennia">
 <h3>Managing wiki pages from Evennia<a class="headerlink" href="#managing-wiki-pages-from-evennia" title="Permalink to this headline">¶</a></h3>
 <p>Unfortunately, Django wiki doesn’t provide a clear and clean entry point to read and write articles
 from Evennia and it doesn’t seem to be a very high priority.  If you really need to keep Django wiki
@@ -355,9 +356,9 @@ contributing to this new project.</p></li>
 However, these features may be the most important and useful.  Additional ones might not be that
 necessary.  If you’re interested in supporting this little project, you are more than welcome to
 <a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">contribute to it</a>.  Thanks!</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -425,7 +426,6 @@ necessary.  If you’re interested in supporting this little project, you are mo
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Add-a-wiki-on-your-website.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

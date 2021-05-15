@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Mass and weight for objects &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="mass-and-weight-for-objects">
+  <section id="mass-and-weight-for-objects">
 <h1>Mass and weight for objects<a class="headerlink" href="#mass-and-weight-for-objects" title="Permalink to this headline">¶</a></h1>
 <p>An easy addition to add dynamic variety to your world objects is to give them some mass.  Why mass
 and not weight? Weight varies in setting; for example things on the Moon weigh 1/6 as much.  On
@@ -46,18 +47,18 @@ Earth’s surface and in most environments, no relative weight factor is needed.
 determine a character’s burden weight for travel speed…   The total mass of an object can
 contribute to the force of a weapon swing, or a speeding meteor to give it a potential striking
 force.</p>
-<div class="section" id="objects">
+<section id="objects">
 <h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
 <p>Now that we have reasons for keeping track of object mass, let’s look at the default object class
 inside your mygame/typeclasses/objects.py and see how easy it is to total up mass from an object and
 its contents.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># inside your mygame/typeclasses/objects.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># inside your mygame/typeclasses/objects.py</span>
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 <span class="c1"># [...]</span>
@@ -73,8 +74,8 @@ return a total mass value.</p>
 module, see [[Adding-Object-Typeclass-Tutorial]] with its Heavy class object. You could set the
 default for Heavy types to something much larger than 1 gram or whatever unit you want to use.  Any
 non-default mass would be stored on the <code class="docutils literal notranslate"><span class="pre">mass</span></code> [[Attributes]] of the objects.</p>
-</div>
-<div class="section" id="characters-and-rooms">
+</section>
+<section id="characters-and-rooms">
 <h2>Characters and rooms<a class="headerlink" href="#characters-and-rooms" title="Permalink to this headline">¶</a></h2>
 <p>You can add a <code class="docutils literal notranslate"><span class="pre">get_mass</span></code> definition to characters and rooms, also.</p>
 <p>If you were in a one metric-ton elevator with four other friends also wearing armor and carrying
@@ -83,52 +84,52 @@ gold bricks, you might wonder if this elevator’s going to move, and how fast.<
 <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">elevator/mass=1000000</span></code>, we’re <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">me/mass=85000</span></code> and our armor is <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">armor/mass=50000</span></code>.
 We’re each carrying 20 gold bars each <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">gold</span> <span class="pre">bar/mass=12400</span></code> then step into the elevator and see
 the following message in the elevator’s appearance: <code class="docutils literal notranslate"><span class="pre">Elevator</span> <span class="pre">weight</span> <span class="pre">and</span> <span class="pre">contents</span> <span class="pre">should</span> <span class="pre">not</span> <span class="pre">exceed</span> <span class="pre">3</span> <span class="pre">metric</span> <span class="pre">tons.</span></code> Are we safe?  Maybe not if you consider dynamic loading. But at rest:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Elevator object knows when it checks itself:</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Elevator object knows when it checks itself:</span>
 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">3000000</span><span class="p">:</span>
     <span class="k">pass</span>  <span class="c1"># Elevator functions as normal.</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">pass</span>  <span class="c1"># Danger! Alarm sounds, cable snaps, elevator stops...</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="inventory">
+</section>
+<section id="inventory">
 <h2>Inventory<a class="headerlink" href="#inventory" title="Permalink to this headline">¶</a></h2>
 <p>Example of listing mass of items in your inventory:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view inventory</span>
 <span class="sd">    Usage:</span>
@@ -161,8 +162,8 @@ the following message in the elevator’s appearance: <code class="docutils lite
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

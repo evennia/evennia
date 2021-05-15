@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Static In Game Map &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,9 +46,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="static-in-game-map">
+  <section id="static-in-game-map">
 <h1>Static In Game Map<a class="headerlink" href="#static-in-game-map" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
 details how to use the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch code processor</span></a> for advanced building. There is
@@ -86,8 +87,8 @@ Exits: north(#8), east(#9), south(#10), west(#11)
 <p>We will henceforth assume your game folder is name named <code class="docutils literal notranslate"><span class="pre">mygame</span></code> and that you haven’t modified the
 default commands. We will also not be using <a class="reference external" href="TextTags.html#colored-text">Colors</a> for our map since they
 don’t show in the documentation wiki.</p>
-</div>
-<div class="section" id="planning-the-map">
+</section>
+<section id="planning-the-map">
 <h2>Planning the Map<a class="headerlink" href="#planning-the-map" title="Permalink to this headline">¶</a></h2>
 <p>Let’s begin with the fun part! Maps in MUDs come in many different [shapes and
 sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
@@ -117,8 +118,8 @@ pleasing and easy to understood landscape:</p>
 you intend to implement. Here we will display a 5x5 character map of the area surrounding the
 account. This means making sure to account for 2 characters around every visitable location. Good
 planning at this stage can solve many problems before they happen.</p>
-</div>
-<div class="section" id="creating-a-map-object">
+</section>
+<section id="creating-a-map-object">
 <h2>Creating a Map Object<a class="headerlink" href="#creating-a-map-object" title="Permalink to this headline">¶</a></h2>
 <p>In this section we will try to create an actual “map” object that an account can pick up and look
 at.</p>
@@ -143,33 +144,33 @@ you are okay with them running <em>arbitrary Python code</em> on your server.</p
 </div></blockquote>
 <p>While a simple example, the map object it serves as good way to try out <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code>. Go to
 <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code> and create a new file there named <code class="docutils literal notranslate"><span class="pre">batchcode_map.py</span></code>:</p>
-<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
@@ -206,83 +207,83 @@ you are okay with them running <em>arbitrary Python code</em> on your server.</p
 folder automatically so you don’t need to specify it).</p>
 <p>A new map object should have appeared on the ground. You can view the map by using <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">map</span></code>. Let’s
 take it with the <code class="docutils literal notranslate"><span class="pre">get</span> <span class="pre">map</span></code> command. We’ll need it in case we get lost!</p>
-</div>
-<div class="section" id="building-the-map-areas">
+</section>
+<section id="building-the-map-areas">
 <h2>Building the map areas<a class="headerlink" href="#building-the-map-areas" title="Permalink to this headline">¶</a></h2>
 <p>We’ve just used batchcode to create an object useful for our adventures. But the locations on that
 map does not actually exist yet - we’re all mapped up with nowhere to go! Let’s use batchcode to
 build a game area based on our map. We have five areas outlined: a castle, a cottage, a campsite, a
 coastal beach and the crossroads which connects them. Create a new batchcode file for this in
 <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>, named <code class="docutils literal notranslate"><span class="pre">batchcode_world.py</span></code>.</p>
-<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_world.py</span>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_world.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
 <span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
@@ -356,8 +357,8 @@ coastal beach and the crossroads which connects them. Create a new batchcode fil
 <p>Apply this new batch code with <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span> <span class="pre">batchcode_world</span></code>. If there are no errors in the code we
 now have a nice mini-world to explore. Remember that if you get lost you can look at the map we
 created!</p>
-</div>
-<div class="section" id="in-game-minimap">
+</section>
+<section id="in-game-minimap">
 <h2>In-game minimap<a class="headerlink" href="#in-game-minimap" title="Permalink to this headline">¶</a></h2>
 <p>Now we have a landscape and matching map, but what we really want is a mini-map that displays
 whenever we move to a room or use the <code class="docutils literal notranslate"><span class="pre">look</span></code> command.</p>
@@ -371,51 +372,51 @@ batchcode.</p>
 in a format which allows us to do that easily. Luckily, python allows us to treat strings as lists
 of characters allowing us to pick out the characters we need.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mygame/world/map_module.py</span></code></p>
-<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We place our map into a sting here.</span>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We place our map into a sting here.</span>
 <span class="n">world_map</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">≈≈↑↑↑↑↑∩∩</span>
 <span class="s2">≈≈↑╔═╗↑∩∩</span>
@@ -464,17 +465,17 @@ of characters allowing us to pick out the characters we need.</p>
 </td></tr></table></div>
 <p>With our map_module set up, let’s replace our hardcoded map in <code class="docutils literal notranslate"><span class="pre">mygame/world/batchcode_map.py</span></code> with
 a reference to our map module. Make sure to import our map_module!</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
@@ -501,67 +502,67 @@ is a little module called <a class="reference external" href="https://github.com
 creator for you to utilize in your game. We’ll use it by creating a basic table with 1 row and two
 columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile
 again</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame\world\batchcode_world.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame\world\batchcode_world.py</span>
 
 <span class="c1"># Add to imports</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
@@ -631,8 +632,8 @@ start anew. It won’t reset dbref values however, so if you are at #100 it will
 Alternatively you can navigate to <code class="docutils literal notranslate"><span class="pre">mygame/server</span></code> and delete the <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file. Now in  Command
 Prompt use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> to have a completely freshly made database.</p>
 <p>Log in to evennia and run <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span> <span class="pre">batchcode_world</span></code> and you’ll have a little world to explore.</p>
-</div>
-<div class="section" id="conclusions">
+</section>
+<section id="conclusions">
 <h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>You should now have a mapped little world and a basic understanding of batchcode, EvTable and how
 easily new game defining features can be added to Evennia.</p>
@@ -640,8 +641,8 @@ easily new game defining features can be added to Evennia.</p>
 not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
 Tutorial), <a class="reference internal" href="Tutorial-Aggressive-NPCs.html"><span class="doc">fill your world with NPC’s</span></a> or <a class="reference internal" href="Turn-based-Combat-System.html"><span class="doc">implement a combat
 system</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -704,7 +705,6 @@ system</span></a>.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Static-In-Game-Map.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

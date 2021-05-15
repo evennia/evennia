@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Python Classes and objects &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -46,11 +47,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="python-classes-and-objects">
+  <section id="python-classes-and-objects">
 <h1>Python Classes and objects<a class="headerlink" href="#python-classes-and-objects" title="Permalink to this headline">¶</a></h1>
 <p>We have now learned how to run some simple Python code from inside (and outside) your game server.
 We have also taken a look at what our game dir looks and what is where. Now we’ll start to use it.</p>
-<div class="section" id="importing-things">
+<section id="importing-things">
 <h2>Importing things<a class="headerlink" href="#importing-things" title="Permalink to this headline">¶</a></h2>
 <p>No one writes something as big as an online game in one single huge file. Instead one breaks up the
 code into separate files (modules). Each module is dedicated to different purposes. Not only does
@@ -74,12 +75,12 @@ Hello World!
 </div>
 <p>If you followed earlier tutorial lessons, the <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file should look like this (if
 not, make it so):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Remember:</p>
 <ul class="simple">
 <li><p>Indentation matters in Python</p></li>
@@ -88,7 +89,7 @@ not, make it so):</p>
 <li><p>Empty lines are fine</p></li>
 <li><p>Anything on a line after a <cite>#</cite> is a <cite>comment</cite>, ignored by Python</p></li>
 </ul>
-</div>
+</aside>
 <p>The <em>python_path</em> describes the relation between Python resources, both between and inside
 Python <em>modules</em> (that is, files ending with .py). A python-path separates each part of the
 path <code class="docutils literal notranslate"><span class="pre">.</span></code> and always skips the <code class="docutils literal notranslate"><span class="pre">.py</span></code> file endings. Also, Evennia already knows to start looking
@@ -141,8 +142,8 @@ easy to read as possible, and renaming adds another layer of potential confusion
 multi-line interpreter.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> 
 <span class="n">Evennia</span> <span class="n">Interactive</span> <span class="n">Python</span> <span class="n">mode</span>
-<span class="n">Python</span> <span class="mf">3.7</span><span class="o">.</span><span class="mi">1</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span> <span class="mi">22</span> <span class="mi">2018</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span><span class="mi">21</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span>
-<span class="p">[</span><span class="n">GCC</span> <span class="mf">8.2</span><span class="o">.</span><span class="mi">0</span><span class="p">]</span> <span class="n">on</span> <span class="n">Linux</span>
+<span class="n">Python</span> <span class="mf">3.7.1</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span> <span class="mi">22</span> <span class="mi">2018</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span><span class="mi">21</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span>
+<span class="p">[</span><span class="n">GCC</span> <span class="mf">8.2.0</span><span class="p">]</span> <span class="n">on</span> <span class="n">Linux</span>
 <span class="p">[</span><span class="n">py</span> <span class="n">mode</span> <span class="o">-</span> <span class="n">quit</span><span class="p">()</span> <span class="n">to</span> <span class="n">exit</span><span class="p">]</span> 
 </pre></div>
 </div>
@@ -160,21 +161,21 @@ Closing the Python console.
 </div>
 <p>The same goes when writing code in a module - in most Python modules you will see a bunch of
 imports at the top, resources that are then used by all code in that module.</p>
-</div>
-<div class="section" id="on-classes-and-objects">
+</section>
+<section id="on-classes-and-objects">
 <h2>On classes and objects<a class="headerlink" href="#on-classes-and-objects" title="Permalink to this headline">¶</a></h2>
 <p>Now that we know about imports, let look at a real Evennia module and try to understand it.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> in your text editor of choice.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">module docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
@@ -186,12 +187,12 @@ imports at the top, resources that are then used by all code in that module.</p>
     <span class="k">pass</span>
 </pre></div>
 </td></tr></table></div>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Docstrings vs Comments</p>
 <p>A docstring is not the same as a comment (created by <cite>#</cite>). A
 docstring is not ignored by Python but is an integral part of the thing
 it is documenting (the module and the class in this case).</p>
-</div>
+</aside>
 <p>The real file is much longer but we can ignore the multi-line strings (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span> <span class="pre">...</span> <span class="pre">&quot;&quot;&quot;</span></code>). These serve
 as documentation-strings, or <em>docstrings</em> for the module (at the top) and the <code class="docutils literal notranslate"><span class="pre">class</span></code> below.</p>
 <p>Below the module doc string we have the import. In this case we are importing a resource
@@ -203,24 +204,24 @@ well, to pass and don’t do anything.</p>
 <p>We will get back to this module in the <a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">next lesson</span></a>. First we need to do a
 little detour to understand what a ‘class’, an ‘object’ or ‘instance’ is. These are fundamental
 things to understand before you can use Evennia efficiently.</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">OOP</p>
 <p>Classes, objects, instances and inheritance are fundamental to Python. This and some
 other concepts are often clumped together under the term Object-Oriented-Programming (OOP).</p>
-</div>
-<div class="section" id="classes-and-instances">
+</aside>
+<section id="classes-and-instances">
 <h3>Classes and instances<a class="headerlink" href="#classes-and-instances" title="Permalink to this headline">¶</a></h3>
 <p>A ‘class’ can be seen as a ‘template’ for a ‘type’ of object. The class describes the basic functionality
 of everyone of that class. For example, we could have a class <code class="docutils literal notranslate"><span class="pre">Monster</span></code> which has resources for moving itself
 from room to room.</p>
 <p>Open a new file <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Add the following simple class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Monster&quot;</span>
@@ -234,13 +235,13 @@ from room to room.</p>
 at least one argument (almost always written as <code class="docutils literal notranslate"><span class="pre">self</span></code> although you could in principle use
 another name), which is a reference back to itself. So when we print <code class="docutils literal notranslate"><span class="pre">self.key</span></code> we are referring
 back to the <code class="docutils literal notranslate"><span class="pre">key</span></code> on the class.</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Terms</p>
 <ul class="simple">
 <li><p>A <cite>class</cite> is a code template describing a ‘type’ of something</p></li>
 <li><p>An <cite>object</cite> is an <cite>instance</cite> of a <cite>class</cite>. Like using a mold to cast tin soldiers, one class can be <cite>instantiated</cite> into any number of object-instances.</p></li>
 </ul>
-</div>
+</aside>
 <p>A class is just a template. Before it can be used, we must create an <em>instance</em> of the class. If
 <code class="docutils literal notranslate"><span class="pre">Monster</span></code> is a class, then an instance is Fluffy, the individual red dragon. You instantiate
 by <em>calling</em> the class, much like you would a function:</p>
@@ -272,14 +273,14 @@ Monster is moving!
 instance. We can have them move as many times as we want. But no matter how many dragons we
 create, they will all show the same printout since <code class="docutils literal notranslate"><span class="pre">key</span></code> is always fixed as “Monster”.</p>
 <p>Let’s make the class a little more flexible:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
  
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -299,13 +300,13 @@ way:</p>
 </pre></div>
 </div>
 <p>Or you can use a separate terminal and restart from outside the game:</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">On reloading</p>
 <p>Reloading with the python mode gets a little annoying since you need to redo everything
 after every reload. Just keep in mind that during regular development you will not be
 working this way. The in-game python mode is practical for quick fixes and experiments like
 this, but actual code is normally written externally, in python modules.</p>
-</div>
+</aside>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ evennia reload   (or restart)
 </pre></div>
 </div>
@@ -319,13 +320,13 @@ Fluffy is moving!
 </div>
 <p>Now we passed <code class="docutils literal notranslate"><span class="pre">&quot;Fluffy&quot;</span></code> as an argument to the class. This went into <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and set <code class="docutils literal notranslate"><span class="pre">self.key</span></code>, which we
 later used to print with the right name! Again, note that we didn’t include <code class="docutils literal notranslate"><span class="pre">self</span></code> when calling.</p>
-</div>
-<div class="section" id="what-s-so-good-about-objects">
+</section>
+<section id="what-s-so-good-about-objects">
 <h3>What’s so good about objects?<a class="headerlink" href="#what-s-so-good-about-objects" title="Permalink to this headline">¶</a></h3>
 <p>So far all we’ve seen a class do is to behave our first <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function but more complex. We
 could just have made a function:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">def</span> <span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">def</span> <span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>      
 </pre></div>
 </td></tr></table></div>
@@ -350,38 +351,38 @@ objects in turn:</p>
 <li><p>A multi-dimenstional data-point for a complex economic simulation</p></li>
 <li><p>And so much more!</p></li>
 </ul>
-</div>
-<div class="section" id="classes-can-have-children">
+</section>
+<section id="classes-can-have-children">
 <h3>Classes can have children<a class="headerlink" href="#classes-can-have-children" title="Permalink to this headline">¶</a></h3>
 <p>Classes can <em>inherit</em> from each other. A “child” class will inherit everything from its “parent” class. But if
 the child adds something with the same name as its parent, it will <em>override</em> whatever it got from its parent.</p>
 <p>Let’s expand <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> with another class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a base class for Monster.</span>
@@ -413,12 +414,12 @@ the child adds something with the same name as its parent, it will <em>override<
 as exemplified for the new <code class="docutils literal notranslate"><span class="pre">firebreath</span></code> method.</p>
 <p>We created the new class <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> but we also specified that <code class="docutils literal notranslate"><span class="pre">Monster</span></code> is the <em>parent</em> of <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> but adding
 the parent in parenthesis. <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Classname(Parent)</span></code> is the way to do this.</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Multi-inheritance</p>
 <p>It’s possible to add more comma-separated parents to a class. You should usually avoid
 this until you <cite>really</cite> know what you are doing. A single parent will be enough for almost
 every case you’ll need.</p>
-</div>
+</aside>
 <p>Let’s try out our new class. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and the do</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py 
 &gt; from typeclasses.monsters import Dragon 
@@ -435,15 +436,15 @@ available for <code class="docutils literal notranslate"><span class="pre">Drago
 can breathe fire.</p>
 <p>One can also force a class to use resources from the parent even if you are overriding some of it. This is done
 with the <code class="docutils literal notranslate"><span class="pre">super()</span></code> method. Modify your <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> class as follows:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... </span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... </span>
 
 <span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
 
@@ -472,17 +473,17 @@ The world trembles.
 about the trembling world we added in the <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> class.</p>
 <p>Inheritance is very powerful because it allows you to organize and re-use code while only adding the special things
 you want to change. Evennia uses this concept a lot.</p>
-</div>
-</div>
-<div class="section" id="summary">
+</section>
+</section>
+<section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>We have created our first dragons from classes. We have learned a little about how you <em>instantiate</em> a class
 into an <em>object</em>. We have seen some examples of <em>inheritance</em> and we tested to <em>override</em> a method in the parent
 with one in the child class. We also used <code class="docutils literal notranslate"><span class="pre">super()</span></code> to good effect.</p>
 <p>We have used pretty much raw Python so far. In the coming lessons we’ll start to look at the extra bits that Evennia
 provides. But first we need to learn just where to find everything.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Colors &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="colors">
+  <section id="colors">
 <h1>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h1>
 <p><em>Note that the Documentation does not display colour the way it would look on the screen.</em></p>
 <p>Color can be a very useful tool for your game. It can be used to increase readability and make your
@@ -54,7 +55,7 @@ colours as they please, as described <a class="reference internal" href="../Howt
 <p>To see which colours your client support, use the default <code class="docutils literal notranslate"><span class="pre">&#64;color</span></code> command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
 of all the parsed <code class="docutils literal notranslate"><span class="pre">ANSI</span></code>-colour codes in <code class="docutils literal notranslate"><span class="pre">evennia/utils/ansi.py</span></code>.</p>
-<div class="section" id="ansi-colours">
+<section id="ansi-colours">
 <h2>ANSI colours<a class="headerlink" href="#ansi-colours" title="Permalink to this headline">¶</a></h2>
 <p>Evennia supports the <code class="docutils literal notranslate"><span class="pre">ANSI</span></code> standard for text. This is by far the most supported MUD-color standard,
 available in all but the most ancient mud clients. The ANSI colours are <strong>r</strong>ed, <strong>g</strong>reen,
@@ -129,7 +130,7 @@ space.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">|*</span></code> This will invert the current text/background colours. Can be useful to mark things (but see
 below).</p></li>
 </ul>
-<div class="section" id="caveats-of">
+<section id="caveats-of">
 <h3>Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code><a class="headerlink" href="#caveats-of" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag (inverse video) is an old ANSI standard and should usually not be used for more than to
 mark short snippets of text. If combined with other tags it comes with a series of potentially
@@ -165,9 +166,9 @@ actually change the background color instead of the foreground:</p>
 <p>For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-
 Tags) tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
 manually instead.</p>
-</div>
-</div>
-<div class="section" id="xterm256-colours">
+</section>
+</section>
+<section id="xterm256-colours">
 <h2>Xterm256 Colours<a class="headerlink" href="#xterm256-colours" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Xterm256</em> standard is a colour scheme that supports 256 colours for text and/or background.
 While this offers many more possibilities than traditional ANSI colours, be wary that too many text
@@ -205,13 +206,13 @@ into a few blocks of colors, it means Xterm256 is not supported and ANSI are use
 You can use the <code class="docutils literal notranslate"><span class="pre">&#64;options</span></code> command to see if xterm256 is active for you. This depends on if your
 client told Evennia what it supports - if not, and you know what your client supports, you may have
 to activate some features manually.</p>
-</div>
-<div class="section" id="more-reading">
+</section>
+<section id="more-reading">
 <h2>More reading<a class="headerlink" href="#more-reading" title="Permalink to this headline">¶</a></h2>
 <p>There is an <a class="reference internal" href="../Howto/Understanding-Color-Tags.html"><span class="doc">Understanding Color Tags</span></a> tutorial which expands on the
 use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

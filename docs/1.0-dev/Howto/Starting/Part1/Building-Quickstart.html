@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Using the game and building stuff &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -46,7 +47,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-the-game-and-building-stuff">
+  <section id="using-the-game-and-building-stuff">
 <h1>Using the game and building stuff<a class="headerlink" href="#using-the-game-and-building-stuff" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with
 <a class="reference external" href="../../../api/evennia.commands.default.html#modules">around 90 default commands</a>, and while you can override those as you please,
@@ -69,7 +70,7 @@ an object.</p>
 <div><p>Are you used to commands starting with &#64;, like &#64;create? That will work too. Evennia simply ignores
 the preceeding &#64;.</p>
 </div></blockquote>
-<div class="section" id="getting-help">
+<section id="getting-help">
 <h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help</span> 
 </pre></div>
@@ -79,8 +80,8 @@ the preceeding &#64;.</p>
 </pre></div>
 </div>
 <p>to see the in-game help for that command.</p>
-</div>
-<div class="section" id="looking-around">
+</section>
+<section id="looking-around">
 <h2>Looking around<a class="headerlink" href="#looking-around" title="Permalink to this headline">¶</a></h2>
 <p>The most common comman is</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">look</span>
@@ -93,8 +94,8 @@ room or <code class="docutils literal notranslate"><span class="pre">me</span></
 </pre></div>
 </div>
 <p>will give you your own description. <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">here</span></code> is, in this case, the same as plain <code class="docutils literal notranslate"><span class="pre">look</span></code>.</p>
-</div>
-<div class="section" id="stepping-down-from-godhood">
+</section>
+<section id="stepping-down-from-godhood">
 <h2>Stepping Down From Godhood<a class="headerlink" href="#stepping-down-from-godhood" title="Permalink to this headline">¶</a></h2>
 <p>If you just installed Evennia, your very first player account is called user #1, also known as the
 <em>superuser</em> or <em>god user</em>. This user is very powerful, so powerful that it will override many game
@@ -112,8 +113,8 @@ fine for the examples on this page. Use</p>
 </pre></div>
 </div>
 <p>to get superuser status again when you are done.</p>
-</div>
-<div class="section" id="creating-an-object">
+</section>
+<section id="creating-an-object">
 <h2>Creating an Object<a class="headerlink" href="#creating-an-object" title="Permalink to this headline">¶</a></h2>
 <p>Basic objects can be anything – swords, flowers and non-player characters. They are created using
 the <code class="docutils literal notranslate"><span class="pre">create</span></code> command:</p>
@@ -190,8 +191,8 @@ the raw description of your current room (including color codes), so that you ca
 set its description to something else.</p>
 <p>You create new Commands (or modify existing ones) in Python outside the game. We will get to that
 later, in the <a class="reference internal" href="Adding-Commands.html"><span class="doc">Commands tutorial</span></a>.</p>
-</div>
-<div class="section" id="get-a-personality">
+</section>
+<section id="get-a-personality">
 <h2>Get a Personality<a class="headerlink" href="#get-a-personality" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="../../../Components/Scripts.html"><span class="doc">Scripts</span></a> are powerful out-of-character objects useful for many “under the hood” things.
 One of their optional abilities is to do things on a timer. To try out a first script, let’s put one
@@ -222,8 +223,8 @@ output every time it fires.</p>
 </div>
 <p>You create your own scripts in Python, outside the game; the path you give to <code class="docutils literal notranslate"><span class="pre">script</span></code> is literally
 the Python path to your script file. The <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc">Scripts</span></a> page explains more details.</p>
-</div>
-<div class="section" id="pushing-your-buttons">
+</section>
+<section id="pushing-your-buttons">
 <h2>Pushing Your Buttons<a class="headerlink" href="#pushing-your-buttons" title="Permalink to this headline">¶</a></h2>
 <p>If we get back to the box we made, there is only so much fun you can have with it at this point. It’s
 just a dumb generic object. If you renamed it to <code class="docutils literal notranslate"><span class="pre">stone</span></code> and changed its description, noone would be
@@ -251,8 +252,8 @@ inside <a class="reference external" href="../../../api/evennia.contrib.tutorial
 <p class="admonition-title">Warning</p>
 <p>Don’t press the invitingly blinking red button.</p>
 </div>
-</div>
-<div class="section" id="making-yourself-a-house">
+</section>
+<section id="making-yourself-a-house">
 <h2>Making Yourself a House<a class="headerlink" href="#making-yourself-a-house" title="Permalink to this headline">¶</a></h2>
 <p>The main command for shaping the game world is <code class="docutils literal notranslate"><span class="pre">dig</span></code>. For example, if you are standing in Limbo you
 can dig a route to your new house location like this:</p>
@@ -292,8 +293,8 @@ want to link to.</p>
 </pre></div>
 </div>
 <p>(You can also us the #dbref of limbo, which you can find by using <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">here</span></code> when in limbo).</p>
-</div>
-<div class="section" id="reshuffling-the-world">
+</section>
+<section id="reshuffling-the-world">
 <h2>Reshuffling the World<a class="headerlink" href="#reshuffling-the-world" title="Permalink to this headline">¶</a></h2>
 <p>You can find things using the <code class="docutils literal notranslate"><span class="pre">find</span></code> command. Assuming you are back at <code class="docutils literal notranslate"><span class="pre">Limbo</span></code>, let’s teleport the
 <em>large box</em> to our house.</p>
@@ -321,8 +322,8 @@ without actually yourself going to <code class="docutils literal notranslate"><s
 <p>It will ask you for confirmation. Once you give it, the box will be gone.</p>
 <p>You can destroy many objects in one go by giving a comma-separated list of objects (or a range
 of #dbrefs, if they are not in the same location) to the command.</p>
-</div>
-<div class="section" id="adding-a-help-entry">
+</section>
+<section id="adding-a-help-entry">
 <h2>Adding a Help Entry<a class="headerlink" href="#adding-a-help-entry" title="Permalink to this headline">¶</a></h2>
 <p>The Command-help is something you modify in Python code. We’ll get to that when we get to how to
 add Commands. But you can also add regular help entries, for example to explain something about
@@ -331,13 +332,13 @@ the history of your game world:</p>
 </pre></div>
 </div>
 <p>You will now find your new <code class="docutils literal notranslate"><span class="pre">History</span></code> entry in the <code class="docutils literal notranslate"><span class="pre">help</span></code> list and read your help-text with <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">History</span></code>.</p>
-</div>
-<div class="section" id="adding-a-world">
+</section>
+<section id="adding-a-world">
 <h2>Adding a World<a class="headerlink" href="#adding-a-world" title="Permalink to this headline">¶</a></h2>
 <p>After this brief introduction to building and using in-game commands you may be ready to see a more fleshed-out
 example. Evennia comes with a tutorial world for you to explore. We will try that out in the next section.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

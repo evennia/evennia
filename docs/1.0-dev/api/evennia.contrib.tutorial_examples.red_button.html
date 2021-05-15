@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.contrib.tutorial_examples.red_button &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.contrib.tutorial_examples.red_button">
+  <section id="module-evennia.contrib.tutorial_examples.red_button">
 <span id="evennia-contrib-tutorial-examples-red-button"></span><h1>evennia.contrib.tutorial_examples.red_button<a class="headerlink" href="#module-evennia.contrib.tutorial_examples.red_button" title="Permalink to this headline">¶</a></h1>
 <p>This is a more advanced example object. It combines functions from
 script.examples as well as commands.examples to make an interactive
@@ -47,7 +48,7 @@ button typeclass.</p>
 <div><p>create/drop red_button.RedButton</p>
 </div></blockquote>
 <p>Note that you must drop the button before you can see its messages!</p>
-<div class="section" id="technical">
+<section id="technical">
 <h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
 <p>The button’s functionality is controlled by CmdSets that gets added and removed
 depending on the ‘state’ the button is in.</p>
@@ -79,7 +80,7 @@ such as when closing the lid and un-blinding a character.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['push', 'press button', 'press']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['press', 'push', 'press button']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -108,7 +109,7 @@ check if the lid is open or closed.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'push press button press', 'category': 'general', 'key': 'push button', 'tags': '', 'text': '\n    Push the red button (lid closed)\n\n    Usage:\n      push button\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'press push press button', 'category': 'general', 'key': 'push button', 'tags': '', 'text': '\n    Push the red button (lid closed)\n\n    Usage:\n      push button\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -305,7 +306,7 @@ be mutually exclusive.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['push', 'press button', 'press']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['press', 'push', 'press button']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -334,7 +335,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'push press button press', 'category': 'general', 'key': 'push button', 'tags': '', 'text': '\n    Push the red button\n\n    Usage:\n      push button\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'press push press button', 'category': 'general', 'key': 'push button', 'tags': '', 'text': '\n    Push the red button\n\n    Usage:\n      push button\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -432,7 +433,7 @@ be mutually exclusive.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdBlindLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'listen', 'examine', 'get', 'ex', 'feel']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdBlindLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['ex', 'get', 'listen', 'l', 'feel', 'examine']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdBlindLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -458,7 +459,7 @@ be mutually exclusive.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_examples.red_button.CmdBlindLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l listen examine get ex feel', 'category': 'general', 'key': 'look', 'tags': '', 'text': &quot;\n    Looking around in darkness\n\n    Usage:\n      look &lt;obj&gt;\n\n    ... not that there's much to see in the dark.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdBlindLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ex get listen l feel examine', 'category': 'general', 'key': 'look', 'tags': '', 'text': &quot;\n    Looking around in darkness\n\n    Usage:\n      look &lt;obj&gt;\n\n    ... not that there's much to see in the dark.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.red_button.CmdBlindLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -691,8 +692,8 @@ temporarily.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

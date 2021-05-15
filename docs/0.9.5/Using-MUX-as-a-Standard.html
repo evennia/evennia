@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Using MUX as a Standard &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-mux-as-a-standard">
+  <section id="using-mux-as-a-standard">
 <h1>Using MUX as a Standard<a class="headerlink" href="#using-mux-as-a-standard" title="Permalink to this headline">¶</a></h1>
 <p>Evennia allows for any command syntax. If you like the way DikuMUDs, LPMuds or MOOs handle things,
 you could emulate that with Evennia. If you are ambitious you could even design a whole new style,
@@ -60,26 +61,26 @@ deliberately lacks an online softcode language (a policy explained on our <a cla
 page</span></a>). Evennia also does not shy from using its own syntax when deemed appropriate: the
 MUX syntax has grown organically over a long time and is, frankly, rather arcane in places.  All in
 all the default command syntax should at most be referred to as “MUX-like” or “MUX-inspired”.</p>
-<div class="section" id="documentation-policy">
+<section id="documentation-policy">
 <h2>Documentation policy<a class="headerlink" href="#documentation-policy" title="Permalink to this headline">¶</a></h2>
 <p>All the commands in the default command sets should have their doc-strings formatted on a similar
 form:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">      Short header</span>
 <span class="sd">    </span>
 <span class="sd">      Usage:</span>
@@ -102,31 +103,31 @@ form:</p>
 <li><p>Square brackets <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code> surround <em>optional, skippable arguments</em>.</p></li>
 <li><p>Angled brackets <code class="docutils literal notranslate"><span class="pre">&lt;</span> <span class="pre">&gt;</span></code> surround a <em>description</em> of what to write rather than the exact syntax.</p></li>
 <li><p>*Explicit choices are separated by <code class="docutils literal notranslate"><span class="pre">|</span></code>. To avoid this being parsed as a color code, use <code class="docutils literal notranslate"><span class="pre">||</span></code> (this
-will come out as a single <code class="docutils literal notranslate"><span class="pre">|</span></code>) or put spaces around the character (“<code class="docutils literal notranslate"><span class="pre">|</span></code>”) if there’s plenty of
+will come out as a single <code class="docutils literal notranslate"><span class="pre">|</span></code>) or put spaces around the character (”<code class="docutils literal notranslate"><span class="pre">|</span></code>”) if there’s plenty of
 room.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Switches</span></code> and <code class="docutils literal notranslate"><span class="pre">Examples</span></code> blocks are optional based on the Command.</p></li>
 </ul>
 <p>Here is the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command as an example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">      Define a personal alias/nick</span>
 <span class="sd">    </span>
 <span class="sd">      Usage:</span>
@@ -151,15 +152,15 @@ room.</p></li>
 <p>For commands that <em>require arguments</em>, the policy is for it to return a <code class="docutils literal notranslate"><span class="pre">Usage:</span></code> string if the
 command is entered without any arguments. So for such commands, the Command body should contain
 something to the effect of</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>      <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
           <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: nick[/switches] &lt;nickname&gt; = [&lt;string&gt;]&quot;</span><span class="p">)</span>
           <span class="k">return</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -217,7 +218,6 @@ something to the effect of</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Using-MUX-as-a-Standard.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

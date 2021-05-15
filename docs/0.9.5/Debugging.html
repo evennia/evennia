@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Debugging &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="debugging">
+  <section id="debugging">
 <h1>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h1>
 <p>Sometimes, an error is not trivial to resolve. A few simple <code class="docutils literal notranslate"><span class="pre">print</span></code> statements is not enough to find
 the cause of the issue. Running a <em>debugger</em> can then be very helpful and save a lot of time.
@@ -60,13 +61,13 @@ available out-of-the-box.</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/pudb/">PuDB</a> is a third-party debugger that has a slightly more
 ‘graphical’, curses-based user interface than pdb. It is installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pudb</span></code>.</p></li>
 </ul>
-<div class="section" id="debugging-evennia">
+<section id="debugging-evennia">
 <h2>Debugging Evennia<a class="headerlink" href="#debugging-evennia" title="Permalink to this headline">¶</a></h2>
 <p>To run Evennia with the debugger, follow these steps:</p>
 <ol>
 <li><p>Find the point in the code where you want to have more insight. Add the following line at that
 point.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span><span class="n">set_trace</span><span class="p">()</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">set_trace</span><span class="p">;</span><span class="n">set_trace</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 </li>
@@ -77,36 +78,36 @@ terminal.</p></li>
 will start in the terminal from which Evennia was interactively started.</p></li>
 </ol>
 <p>The <code class="docutils literal notranslate"><span class="pre">evennia.set_trace</span></code> function takes the following arguments:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">evennia</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">debugger</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">40</span><span class="p">))</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">evennia</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">debugger</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">40</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">debugger</span></code> is one of <code class="docutils literal notranslate"><span class="pre">pdb</span></code>, <code class="docutils literal notranslate"><span class="pre">pudb</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span></code>. If <code class="docutils literal notranslate"><span class="pre">auto</span></code>, use <code class="docutils literal notranslate"><span class="pre">pudb</span></code> if available, otherwise
 use <code class="docutils literal notranslate"><span class="pre">pdb</span></code>. The <code class="docutils literal notranslate"><span class="pre">term_size</span></code> tuple sets the viewport size for <code class="docutils literal notranslate"><span class="pre">pudb</span></code> only (it’s ignored by <code class="docutils literal notranslate"><span class="pre">pdb</span></code>).</p>
-</div>
-<div class="section" id="a-simple-example-using-pdb">
+</section>
+<section id="a-simple-example-using-pdb">
 <h2>A simple example using pdb<a class="headerlink" href="#a-simple-example-using-pdb" title="Permalink to this headline">¶</a></h2>
 <p>The debugger is useful in different cases, but to begin with, let’s see it working in a command.
 Add the following test command (which has a range of deliberate errors) and also add it to your
 default cmdset. Then restart Evennia in interactive mode with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">istart</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In file commands/command.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In file commands/command.py</span>
 
 
 <span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -137,7 +138,7 @@ in your console, and you will find it here. Below is an example with <code class
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">pdb</span></code> notes where it has stopped execution and, what line is about to be executed (in our case, <code class="docutils literal notranslate"><span class="pre">obj</span> <span class="pre">=</span> <span class="pre">self.search(self.args)</span></code>), and ask what you would like to do.</p>
-<div class="section" id="listing-surrounding-lines-of-code">
+<section id="listing-surrounding-lines-of-code">
 <h3>Listing surrounding lines of code<a class="headerlink" href="#listing-surrounding-lines-of-code" title="Permalink to this headline">¶</a></h3>
 <p>When you have the <code class="docutils literal notranslate"><span class="pre">pdb</span></code> prompt <code class="docutils literal notranslate"><span class="pre">(Pdb)</span></code>, you can type in different commands to explore the code.  The
 first one you should know is <code class="docutils literal notranslate"><span class="pre">list</span></code> (you can type <code class="docutils literal notranslate"><span class="pre">l</span></code> for short):</p>
@@ -161,8 +162,8 @@ yourself in lots of different files, you sometimes need to see what’s around i
 there is a little arrow (<code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>) before the line that is about to be executed.</p>
 <p>This is important: <strong>about to be</strong>, not <strong>has just been</strong>.  You need to tell <code class="docutils literal notranslate"><span class="pre">pdb</span></code> to go on (we’ll
 soon see how).</p>
-</div>
-<div class="section" id="examining-variables">
+</section>
+<section id="examining-variables">
 <h3>Examining variables<a class="headerlink" href="#examining-variables" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">pdb</span></code> allows you to examine variables (or really, to run any Python instruction).  It is very useful
 to know the values of variables at a specific line.  To see a variable, just type its name (as if
@@ -189,8 +190,8 @@ executing, which can help to check that your fix is actually working when you ha
 error.  If you have variable names that will conflict with <code class="docutils literal notranslate"><span class="pre">pdb</span></code> commands (like a <code class="docutils literal notranslate"><span class="pre">list</span></code>
 variable), you can prefix your variable with <code class="docutils literal notranslate"><span class="pre">!</span></code>, to tell <code class="docutils literal notranslate"><span class="pre">pdb</span></code> that what follows is Python code.</p>
 </div></blockquote>
-</div>
-<div class="section" id="executing-the-current-line">
+</section>
+<section id="executing-the-current-line">
 <h3>Executing the current line<a class="headerlink" href="#executing-the-current-line" title="Permalink to this headline">¶</a></h3>
 <p>It’s time we asked <code class="docutils literal notranslate"><span class="pre">pdb</span></code> to execute the current line. To do so, use the <code class="docutils literal notranslate"><span class="pre">next</span></code> command.  You can
 shorten it by just typing <code class="docutils literal notranslate"><span class="pre">n</span></code>:</p>
@@ -204,11 +205,11 @@ shorten it by just typing <code class="docutils literal notranslate"><span class
 <p><code class="docutils literal notranslate"><span class="pre">Pdb</span></code> is complaining that you try to call the <code class="docutils literal notranslate"><span class="pre">search</span></code> method on a command… whereas there’s no
 <code class="docutils literal notranslate"><span class="pre">search</span></code> method on commands.  The character executing the command is in <code class="docutils literal notranslate"><span class="pre">self.caller</span></code>, so we might
 change our line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="letting-the-program-run">
+</section>
+<section id="letting-the-program-run">
 <h3>Letting the program run<a class="headerlink" href="#letting-the-program-run" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">pdb</span></code> is waiting to execute the same instruction… it provoked an error but it’s ready to try
 again, just in case.  We have fixed it in theory, but we need to reload, so we need to enter a
@@ -281,8 +282,8 @@ experimenting!</p>
 <li><p>Run the program line by line,examining variables, checking the logic of instructions.</p></li>
 <li><p>Continue and try again, each step a bit further toward the truth and the working feature.</p></li>
 </ol>
-</div>
-<div class="section" id="stepping-through-a-function">
+</section>
+<section id="stepping-through-a-function">
 <h3>Stepping through a function<a class="headerlink" href="#stepping-through-a-function" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">n</span></code> is useful, but it will avoid stepping inside of functions if it can.  But most of the time, when
 we have an error we don’t understand, it’s because we use functions or methods in a way that wasn’t
@@ -296,9 +297,9 @@ function/method and you can then use <code class="docutils literal notranslate">
 stepping through a function or method isn’t that useful, but when you have an impressive set of
 commands, functions and so on, it might really be handy to examine some feature and make sure they
 operate as planned.</p>
-</div>
-</div>
-<div class="section" id="cheat-sheet-of-pdb-pudb-commands">
+</section>
+</section>
+<section id="cheat-sheet-of-pdb-pudb-commands">
 <h2>Cheat-sheet of pdb/pudb commands<a class="headerlink" href="#cheat-sheet-of-pdb-pudb-commands" title="Permalink to this headline">¶</a></h2>
 <p>PuDB and Pdb share the same commands. The only real difference is how it’s presented. The <code class="docutils literal notranslate"><span class="pre">look</span></code>
 command is not needed much in <code class="docutils literal notranslate"><span class="pre">pudb</span></code> since it displays the code directly in its user interface.</p>
@@ -315,8 +316,8 @@ this directly). |
 <code class="docutils literal notranslate"><span class="pre">&lt;RETURN&gt;</span></code> to repeat it). |</p>
 <p>If you want to learn more about debugging with Pdb, you will find an <a class="reference external" href="https://pymotw.com/3/pdb/">interesting tutorial on that
 topic here</a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -383,7 +384,6 @@ topic here</a>.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Debugging.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

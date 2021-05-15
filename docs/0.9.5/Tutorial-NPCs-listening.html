@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial NPCs listening &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="tutorial-npcs-listening">
+  <section id="tutorial-npcs-listening">
 <h1>Tutorial NPCs listening<a class="headerlink" href="#tutorial-npcs-listening" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial shows the implementation of an NPC object that responds to characters speaking in
 their location. In this example the NPC parrots what is said, but any actions could be triggered
@@ -53,25 +54,25 @@ this way.</p>
 <p>It is assumed that you already know how to create custom room and character typeclasses, please see
 the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
 <p>What we will need is simply a new NPC typeclass that can react when someone speaks.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
 
 <span class="kn">from</span> <span class="nn">characters</span> <span class="kn">import</span> <span class="n">Character</span>
 <span class="k">class</span> <span class="nc">Npc</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
@@ -94,34 +95,34 @@ the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html">
 </td></tr></table></div>
 <p>When someone in the room speaks to this NPC, its <code class="docutils literal notranslate"><span class="pre">msg</span></code> method will be called. We will modify the
 NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method to catch says so the NPC can respond.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
 
 <span class="kn">from</span> <span class="nn">characters</span> <span class="kn">import</span> <span class="n">Character</span>
 <span class="k">class</span> <span class="nc">Npc</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
@@ -183,7 +184,7 @@ folder automatically so this is a little shorter).</p>
 <span class="n">Guild</span> <span class="n">Master</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Anna said: &#39;hi&#39;&quot;</span>
 </pre></div>
 </div>
-<div class="section" id="assorted-notes">
+<section id="assorted-notes">
 <h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
 <p>There are many ways to implement this kind of functionality. An alternative example to overriding
 <code class="docutils literal notranslate"><span class="pre">msg</span></code> would be to modify the <code class="docutils literal notranslate"><span class="pre">at_say</span></code> hook on the <em>Character</em> instead. It could detect that it’s
@@ -191,8 +192,8 @@ sending to an NPC and call the <code class="docutils literal notranslate"><span 
 <p>While the tutorial solution has the advantage of being contained only within the NPC class,
 combining this with using the Character class gives more direct control over how the NPC will react.
 Which way to go depends on the design requirements of your particular game.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -250,7 +251,6 @@ Which way to go depends on the design requirements of your particular game.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Tutorial-NPCs-listening.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

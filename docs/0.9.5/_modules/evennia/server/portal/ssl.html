@@ -59,7 +59,7 @@
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">errstr</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">error</span><span class="p">))</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.telnet</span> <span class="kn">import</span> <span class="n">TelnetProtocol</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
 <span class="n">_GAME_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span>
 
@@ -84,8 +84,10 @@
 <span class="s2">    </span><span class="si">{exestring}</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span>
 
+<span class="n">_TELNET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PROTOCOL_CLASS</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">TelnetProtocol</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">_TELNET_PROTOCOL_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communication is the same as telnet, except data transfer</span>
 <span class="sd">    is done with encryption.</span>
@@ -190,7 +192,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="ssl.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

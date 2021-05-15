@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>RSS &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="rss">
+  <section id="rss">
 <h1>RSS<a class="headerlink" href="#rss" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/RSS">RSS</a> is a format for easily tracking updates on websites. The
 principle is simple - whenever a site is updated, a small text file is updated. An RSS reader can
@@ -48,7 +49,7 @@ example the MUD might use a separate website to host its forums. Through RSS, th
 be notified when new posts are made. Another example is to let everyone know you updated your dev
 blog. Admins might also want to track the latest Evennia updates through our own RSS feed
 <a class="reference external" href="http://code.google.com/feeds/p/evennia/updates/basic">here</a>.</p>
-<div class="section" id="configuring-rss">
+<section id="configuring-rss">
 <h2>Configuring RSS<a class="headerlink" href="#configuring-rss" title="Permalink to this headline">¶</a></h2>
 <p>To use RSS, you first need to install the <a class="reference external" href="http://code.google.com/p/feedparser/">feedparser</a> python
 module.</p>
@@ -60,7 +61,7 @@ module.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@rss2chan</span> <span class="o">&lt;</span><span class="n">evennia_channel</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">rss_url</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<div class="section" id="setting-up-rss-step-by-step">
+<section id="setting-up-rss-step-by-step">
 <h3>Setting up RSS, step by step<a class="headerlink" href="#setting-up-rss-step-by-step" title="Permalink to this headline">¶</a></h3>
 <p>You can connect RSS to any Evennia channel, but for testing, let’s set up a new channel “rss”.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> @ccreate rss = RSS feeds are echoed to this channel!
@@ -80,9 +81,9 @@ switch:</p>
 </div>
 <p>You can connect any number of RSS feeds to a channel this way. You could also connect them to the
 same channels as <a class="reference internal" href="IRC.html"><span class="doc">IRC</span></a> to have the feed echo to external chat channels as well.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

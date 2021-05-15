@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Glossary &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="glossary">
+  <section id="glossary">
 <h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
 <p>This explains common recurring terms used in the Evennia docs. It will be expanded as needed.</p>
 <ul class="simple">
@@ -73,7 +74,7 @@ communications</p></li>
 <li><p><em><a class="reference external" href="Glossary.html#virtualenv">virtualenv</a></em> - a Python program and way to make an isolated Python install</p></li>
 </ul>
 <hr class="docutils" />
-<div class="section" id="account">
+<section id="account">
 <h2><em>account</em><a class="headerlink" href="#account" title="Permalink to this headline">¶</a></h2>
 <p>The term ‘account’ refers to the <a class="reference external" href="Glossary.html#player">player’s</a> unique account on the game. It is
 represented by the <code class="docutils literal notranslate"><span class="pre">Account</span></code> <a class="reference external" href="Glossary.html#typeclass">typeclass</a> and holds things like email, password,
@@ -85,23 +86,23 @@ the game.</p>
 <p>In the default <a class="reference external" href="Sessions.html#multisession-mode">multisession mode</a> of Evennia, you immediately start
 puppeting a Character with the same name as your Account when you log in - mimicking how older
 servers used to work.</p>
-</div>
-<div class="section" id="admin-site">
+</section>
+<section id="admin-site">
 <h2><em>admin-site</em><a class="headerlink" href="#admin-site" title="Permalink to this headline">¶</a></h2>
 <p>This usually refers to <a class="reference external" href="Glossary.html#django">Django’s</a> <em>Admin site</em> or database-administration web page
 (<a class="reference external" href="https://docs.djangoproject.com/en/2.1/ref/contrib/admin/">link to Django docs</a>). The admin site is
 an automatically generated web interface to the database (it can be customized extensively). It’s
 reachable from the <code class="docutils literal notranslate"><span class="pre">admin</span></code> link on the default Evennia website you get with your server.</p>
-</div>
-<div class="section" id="attribute">
+</section>
+<section id="attribute">
 <h2><em>attribute</em><a class="headerlink" href="#attribute" title="Permalink to this headline">¶</a></h2>
 <p>The term <em>Attribute</em> should not be confused with (<a class="reference external" href="Glossary.html#property">properties</a> or
 <a class="reference external" href="Glossary.html#field">fields</a>. The <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> represents arbitrary pieces of data that can be attached
 to any <a class="reference external" href="Glossary.html#typeclass">typeclassed</a> entity in Evennia. Attributes allows storing new persistent
 data on typeclasses without changing their underlying database schemas. <a class="reference internal" href="Attributes.html"><span class="doc">Read more about Attributes
 here</span></a>.</p>
-</div>
-<div class="section" id="channel">
+</section>
+<section id="channel">
 <h2><em>channel</em><a class="headerlink" href="#channel" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Channel</em> refers to an in-game communication channel. It’s an entity that people subscribe to and
 which re-distributes messages between all subscribers. Such subscribers default to being
@@ -109,15 +110,15 @@ which re-distributes messages between all subscribers. Such subscribers default 
 Characters)</a> if one wanted to adopt Channels for things like in-game walkie-
 talkies or phone systems. It is represented by the <code class="docutils literal notranslate"><span class="pre">Channel</span></code> typeclass. <a class="reference external" href="Communications.html#channels">You can read more about the
 comm system here</a>.</p>
-</div>
-<div class="section" id="character">
+</section>
+<section id="character">
 <h2><em>character</em><a class="headerlink" href="#character" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Character</em> is the term we use for the default avatar being <a class="reference external" href="Glossary.html#puppet">puppeted</a> by the
 <a class="reference external" href="Glossary.html#account">account</a> in the game world. It is represented by the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass (which
 is a child of <a class="reference external" href="Glossary.html#object">Object</a>). Many developers use children of this class to represent
 monsters and other NPCs. You can <a class="reference external" href="Objects.html#subclasses-of-object">read more about it here</a>.</p>
-</div>
-<div class="section" id="django">
+</section>
+<section id="django">
 <h2><em>django</em><a class="headerlink" href="#django" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.djangoproject.com/">Django</a> is a professional and very popular Python web framework,
 similar to Rails for the Ruby language. It is one of Evennia’s central library dependencies (the
@@ -148,8 +149,8 @@ HTML where it will insert the values of Python variables on the fly (like showin
 count on the web page). [Here is one of our tutorials on wiring up such a web page](Add-a-simple-
 new-web-page). Django also comes with the <a class="reference external" href="Glossary.html#admin-site">admin site</a>, which automatically
 maps the database into a form accessible from a web browser.</p>
-</div>
-<div class="section" id="core">
+</section>
+<section id="core">
 <h2><em>core</em><a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h2>
 <p>This term is sometimes used to represent the main Evennia library code suite, <em>excluding</em> its
 <a class="reference external" href="Glossary.html#contrib">contrib</a> directory. It can sometimes come up in code reviews, such as</p>
@@ -157,8 +158,8 @@ maps the database into a form accessible from a web browser.</p>
 <div><p>Evennia is game-agnostic but this feature is for a particular game genre. So it does not belong in
 core. Better make it a contrib.</p>
 </div></blockquote>
-</div>
-<div class="section" id="field">
+</section>
+<section id="field">
 <h2><em>field</em><a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h2>
 <p>A <em>field</em> or <em>database field</em> in Evennia refers to a <a class="reference external" href="Glossary.html#property">property</a> on a
 <a class="reference external" href="Glossary.html#typeclass">typeclass</a> directly linked to an underlying database column. Only a few fixed
@@ -166,8 +167,8 @@ properties per typeclass are database fields but they are often tied to the core
 that base typeclass (for example <a class="reference external" href="Glossary.html#object">Objects</a> store its location as a field). In all
 other cases, <a class="reference external" href="Glossary.html#attribute">attributes</a> are used to add new persistent data to the typeclass.
 <a class="reference external" href="Typeclasses.html#about-typeclass-properties">Read more about typeclass properties here</a>.</p>
-</div>
-<div class="section" id="git">
+</section>
+<section id="git">
 <h2><em>git</em><a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://git-scm.com/">Git</a> is a <a class="reference external" href="https://en.wikipedia.org/wiki/Version_control">version control</a>
 tool. It allows us to track the development of the Evennia code by dividing it into units called
@@ -200,8 +201,8 @@ you ‘download’ Evennia. You only need to do this once.</p></li>
 <div><p>Full usage of Git is way beyond the scope of this glossary. See <a class="reference internal" href="Version-Control.html"><span class="doc">Tutorial - version
 control</span></a> for more info and links to the Git documentation.</p>
 </div></blockquote>
-</div>
-<div class="section" id="migrate">
+</section>
+<section id="migrate">
 <h2><em>migrate</em><a class="headerlink" href="#migrate" title="Permalink to this headline">¶</a></h2>
 <p>This term is used for upgrading the database structure (it’s <em>schema</em> )to a new version. Most often
 this is due to Evennia’s <a class="reference external" href="Glossary.html#github">upstream</a> schema changing. When that happens you need to
@@ -217,15 +218,15 @@ command is not available). See also <a class="reference internal" href="Updating
 actions must be taken to upgrade from one version of the schema to the next. When you run the
 command above, those snippets are run in sequence.</p>
 </div></blockquote>
-</div>
-<div class="section" id="multisession-mode">
+</section>
+<section id="multisession-mode">
 <h2><em>multisession mode</em><a class="headerlink" href="#multisession-mode" title="Permalink to this headline">¶</a></h2>
 <p>This term refers to the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting, which has a value of 0 to 3. The mode alters
 how players can connect to the game, such as how many Sessions a player can start with one account
 and how many Characters they can control at the same time. It is <a class="reference external" href="Sessions.html#multisession-mode">described in detail
 here</a>.</p>
-</div>
-<div class="section" id="github">
+</section>
+<section id="github">
 <h2><em>github</em><a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/evennia">Github</a> is where Evennia’s source code and documentation is hosted.
 This online <a class="reference external" href="Glossary.html#repository">repository</a> of code we also sometimes refer to as <em>upstream</em>.</p>
@@ -233,8 +234,8 @@ This online <a class="reference external" href="Glossary.html#repository">reposi
 similarity in name, don’t confuse GitHub the website with <a class="reference external" href="Glossary.html#git">Git</a>, the versioning
 system. Github hosts Git <a class="reference external" href="Glossary.html#repository">repositories</a> online and helps with collaboration and
 infrastructure. Git itself is a separate project.</p>
-</div>
-<div class="section" id="object">
+</section>
+<section id="object">
 <h2><em>object</em><a class="headerlink" href="#object" title="Permalink to this headline">¶</a></h2>
 <p>In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-
 oriented_programming)), an <code class="docutils literal notranslate"><span class="pre">object</span></code> is what we call the instance of a <em>class</em>. But one of Evennia’s
@@ -244,8 +245,8 @@ typeclass.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Object</span></code> is a typeclass that represents all <em>in-game</em> entities, including
 <a class="reference external" href="Glossary.html#character">Characters</a>, rooms, trees, weapons etc. <a class="reference internal" href="Objects.html"><span class="doc">Read more about Objects
 here</span></a>.</p>
-</div>
-<div class="section" id="pip">
+</section>
+<section id="pip">
 <h2><em>pip</em><a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h2>
 <p><em><a class="reference external" href="https://pypi.org/project/pip/">pip</a></em> comes with Python and is the main tool for installing third-
 party Python packages from the web. Once a python package is installed you can do <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">&lt;packagename&gt;</span></code> in your Python code.</p>
@@ -265,22 +266,22 @@ changes available when you import this package into your code. Evennia is instal
 </ul>
 <p>For development, <code class="docutils literal notranslate"><span class="pre">pip</span></code> is usually used together with a <a class="reference external" href="Glossary.html#virtualenv">virtualenv</a> to install
 all packages and dependencies needed for a project in one, isolated location on the hard drive.</p>
-</div>
-<div class="section" id="puppet">
+</section>
+<section id="puppet">
 <h2><em>puppet</em><a class="headerlink" href="#puppet" title="Permalink to this headline">¶</a></h2>
 <p>An <a class="reference external" href="Glossary.html#account">account</a> can take control and “play as” any <a class="reference external" href="Glossary.html#object">Object</a>. When
 doing so, we call this <em>puppeting</em>, (like <a class="reference external" href="https://en.wikipedia.org/wiki/Puppeteer">puppeteering</a>).
 Normally the entity being puppeted is of the <a class="reference external" href="Glossary.html#character">Character</a> subclass but it does
 not have to be.</p>
-</div>
-<div class="section" id="property">
+</section>
+<section id="property">
 <h2><em>property</em><a class="headerlink" href="#property" title="Permalink to this headline">¶</a></h2>
 <p>A <em>property</em> is a general term used for properties on any Python object. The term also sometimes
 refers to the <code class="docutils literal notranslate"><span class="pre">property</span></code> built-in function of Python ([read more here](https://www.python-
 course.eu/python3_properties.php)). Note the distinction between properties,
 <a class="reference external" href="Glossary.html#field">fields</a> and <a class="reference external" href="Glossary.html#attribute">Attributes</a>.</p>
-</div>
-<div class="section" id="repository">
+</section>
+<section id="repository">
 <h2><em>repository</em><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
 <p>A <em>repository</em> is a version control/<a class="reference external" href="Glossary.html#git">git</a> term. It represents a folder containing
 source code plus its versioning history.</p>
@@ -292,8 +293,8 @@ into this folder you probably already know enough Git to know why.</p>
 <a class="reference external" href="Glossary.html#github">GitHub</a> is often referred to as the ‘online repository’ (or the <em>upstream</em>
 repository). If you put your game dir under version control, that of course becomes a repository as
 well.</p>
-</div>
-<div class="section" id="script">
+</section>
+<section id="script">
 <h2><em>script</em><a class="headerlink" href="#script" title="Permalink to this headline">¶</a></h2>
 <p>When we refer to <em>Scripts</em>, we generally refer to the <code class="docutils literal notranslate"><span class="pre">Script</span></code> <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclass</span></a>. Scripts are
 the mavericks of Evennia - they are like <a class="reference external" href="Glossary.html#object">Objects</a> but without any in-game
@@ -301,8 +302,8 @@ existence. They are useful as custom places to store data but also as building b
 game systems. Since the can be initialized with timing capabilities they can also be used for long-
 time persistent time keeping (for fast updates other types of timers may be better though). <a class="reference internal" href="Scripts.html"><span class="doc">Read
 more about Scripts here</span></a></p>
-</div>
-<div class="section" id="session">
+</section>
+<section id="session">
 <h2><em>session</em><a class="headerlink" href="#session" title="Permalink to this headline">¶</a></h2>
 <p>A <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> is a Python object representing a single client connection to the server. A
 given human player could connect to the game from different clients and each would get a Session
@@ -311,8 +312,8 @@ given human player could connect to the game from different clients and each wou
 <p>Sessions are <em>not</em> <a class="reference external" href="Glossary.html#typeclass">typeclassed</a> and has no database persistence. But since they
 always exist (also when not logged in), they share some common functionality with typeclasses that
 can be useful for certain game states.</p>
-</div>
-<div class="section" id="ticker">
+</section>
+<section id="ticker">
 <h2><em>ticker</em><a class="headerlink" href="#ticker" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="TickerHandler.html"><span class="doc">Ticker handler</span></a> runs Evennia’s optional ‘ticker’ system. In other engines, such
 as <a class="reference external" href="https://en.wikipedia.org/wiki/DikuMUD">DIKU</a>, all game events are processed only at specific
@@ -320,8 +321,8 @@ intervals called ‘ticks’. Evennia has no such technical limitation (events a
 needed) but using a fixed tick can still be useful for certain types of game systems, like combat.
 Ticker Handler allows you to emulate any number of tick rates (not just one) and subscribe actions
 to be called when those ticks come around.</p>
-</div>
-<div class="section" id="typeclass">
+</section>
+<section id="typeclass">
 <h2><em>typeclass</em><a class="headerlink" href="#typeclass" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclass</span></a> is an Evennia-specific term. A typeclass allows developers to work with
 database-persistent objects as if they were normal Python objects. It makes use of specific
@@ -337,8 +338,8 @@ instance of a typeclass will add a new row to the database table to which it is 
 <p>The <a class="reference external" href="Glossary.html#core">core</a> typeclasses in the Evennia library are all named <code class="docutils literal notranslate"><span class="pre">DefaultAccount</span></code>,
 <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> etc. When you initialize your [game dir] you automatically get empty children of
 these, called <code class="docutils literal notranslate"><span class="pre">Account</span></code>, <code class="docutils literal notranslate"><span class="pre">Object</span></code> etc that you can start working with.</p>
-</div>
-<div class="section" id="twisted">
+</section>
+<section id="twisted">
 <h2><em>twisted</em><a class="headerlink" href="#twisted" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://twistedmatrix.com/trac/">Twisted</a> is a heavy-duty asynchronous networking engine. It is one
 of Evennia’s two major library dependencies (the other one is <a class="reference external" href="Glossary.html#django">Django</a>). Twisted is
@@ -346,8 +347,8 @@ what “runs” Evennia - it handles Evennia’s event loop. Twisted also has th
 to construct network protocols and communicate with the outside world; such as our MUD-custom
 version of Telnet, Telnet+SSL, SSH, webclient-websockets etc. Twisted also runs our integrated web
 server, serving the Django-based website for your game.</p>
-</div>
-<div class="section" id="virtualenv">
+</section>
+<section id="virtualenv">
 <h2><em>virtualenv</em><a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
 <p>The standard <a class="reference external" href="https://virtualenv.pypa.io/en/stable/">virtualenv</a> program comes with Python. It is
 used to isolate all Python packages needed by a given Python project into one folder (we call that
@@ -397,8 +398,8 @@ console/terminal.</p>
 <p>So, when do I <em>need</em> to activate my virtualenv? If the virtualenv is not active, none of the Python
 packages/programs you installed in it will be available to you. So at a minimum, <em>it needs to be
 activated whenever you want to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command</em> for any reason.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -472,7 +473,6 @@ activated whenever you want to use the <code class="docutils literal notranslate
   <li><a href="../1.0-dev/Glossary.html">1.0-dev (develop branch)</a></li>
   <li><a href="Glossary.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

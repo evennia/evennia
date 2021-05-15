@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial World Introduction &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="tutorial-world-introduction">
+  <section id="tutorial-world-introduction">
 <h1>Tutorial World Introduction<a class="headerlink" href="#tutorial-world-introduction" title="Permalink to this headline">¶</a></h1>
 <p>The <em>Tutorial World</em> is a small and functioning MUD-style game world.  It is intended to be
 deconstructed and used as a way to learn Evennia.  The game consists of a single-player quest and
@@ -69,11 +70,11 @@ has some 20 rooms that you can explore as you seek to discover the whereabouts o
 <li><p>Object spawning</p></li>
 <li><p>Teleporter trap rooms</p></li>
 </ul>
-<div class="section" id="install">
+<section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
 <p>The tutorial world consists of a few modules in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_world/</span></code> containing custom
 <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a> for <a class="reference internal" href="Objects.html"><span class="doc">rooms and objects</span></a> and associated <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>.</p>
-<p>These reusable bits and pieces are then put together into a functioning game area (“world” is maybe
+<p>These reusable bits and pieces are then put together into a functioning game area (”world” is maybe
 too big a word for such a small zone) using a <a class="reference internal" href="Batch-Processors.html"><span class="doc">batch script</span></a> called <code class="docutils literal notranslate"><span class="pre">build.ev</span></code>. To
 install, log into the server as the superuser (user #1) and run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@batchcommand</span> <span class="n">tutorial_world</span><span class="o">.</span><span class="n">build</span>
@@ -87,8 +88,8 @@ system has frozen). After finishing you will end up back in Limbo with a new exi
 </div>
 <p>with the /interactive switch you are able to step through the building process at your own pace to
 see what happens in detail.</p>
-</div>
-<div class="section" id="quelling-and-permissions-in-the-tutorial-world">
+</section>
+<section id="quelling-and-permissions-in-the-tutorial-world">
 <h2>Quelling and permissions in the tutorial-world<a class="headerlink" href="#quelling-and-permissions-in-the-tutorial-world" title="Permalink to this headline">¶</a></h2>
 <p>Non-superusers entering the tutorial will be auto-<code class="docutils literal notranslate"><span class="pre">quelled</span></code> so they play with their Character’s
 permission. As superuser you will not be auto-quelled, but it’s recommended that you still <code class="docutils literal notranslate"><span class="pre">quell</span></code>
@@ -97,8 +98,8 @@ presence of a superuser and will thus not work as normal.</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">unquell</span></code> if you want to get back your main account-level permissions to examine things under
 the hood. When you exit the tutorial (either by winning or using the <code class="docutils literal notranslate"><span class="pre">abort/give</span> <span class="pre">up</span></code> command) you
 will automatically be unquelled.</p>
-</div>
-<div class="section" id="gameplay">
+</section>
+<section id="gameplay">
 <h2>Gameplay<a class="headerlink" href="#gameplay" title="Permalink to this headline">¶</a></h2>
 <p>![the castle off the moor](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/22916c25-6299-4
 53d-a221-446ec839f567/da2pmzu-46d63c6d-9cdc-41dd-87d6-1106db5a5e1a.jpg/v1/fill/w_600,h_849,q_75,strp
@@ -125,8 +126,8 @@ the scenes of the tutorial).</p></li>
 <li><p>You <em>can</em> run from a fight that feels too deadly. Expect to be chased though.</p></li>
 <li><p>Being defeated is a part of the experience …</p></li>
 </ul>
-</div>
-<div class="section" id="uninstall">
+</section>
+<section id="uninstall">
 <h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
 <p>Uninstalling the tutorial world basically means deleting all the rooms and objects it consists of.
 First, move out of the tutorial area.</p>
@@ -143,15 +144,15 @@ Note their dbref numbers, for example 5 and 80. Next we just delete all objects 
 <p>You will see some errors since some objects are auto-deleted and so cannot be found when the delete
 mechanism gets to them. That’s fine.  You should have removed the tutorial completely once the
 command finishes.</p>
-</div>
-<div class="section" id="notes">
+</section>
+<section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
 <p>When reading and learning from the code, keep in mind that <em>Tutorial World</em> was created with a very
 specific goal: to install easily and to not permanently modify the rest of the server. It therefore
 goes to some length to use only temporary solutions and to clean up after
 itself.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -213,7 +214,6 @@ itself.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Tutorial-World-Introduction.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

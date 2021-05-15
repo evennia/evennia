@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Unit Testing &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="unit-testing">
+  <section id="unit-testing">
 <h1>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h1>
 <p><em>Unit testing</em> means testing components of a program in isolation from each other to make sure every
 part works on its own before using it with others. Extensive testing helps avoid new updates causing
@@ -58,7 +59,7 @@ over the Evennia source code (called <em>test suites</em>) and runs them all in 
 tracebacks are reported.</p>
 <p>By default Evennia only tests itself. But you can also add your own tests to your game code and have
 Evennia run those for you.</p>
-<div class="section" id="running-the-evennia-test-suite">
+<section id="running-the-evennia-test-suite">
 <h2>Running the Evennia test suite<a class="headerlink" href="#running-the-evennia-test-suite" title="Permalink to this headline">¶</a></h2>
 <p>To run the full Evennia test suite, go to your game folder and issue the command</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">test</span> <span class="n">evennia</span>
@@ -73,8 +74,8 @@ all tests by specifying a subpackage of the library:</p>
 how many tests were run and how long it took. If something went wrong you will get error messages.
 If you contribute to Evennia, this is a useful sanity check to see you haven’t introduced an
 unexpected bug.</p>
-</div>
-<div class="section" id="running-tests-with-custom-settings-file">
+</section>
+<section id="running-tests-with-custom-settings-file">
 <h2>Running tests with custom settings file<a class="headerlink" href="#running-tests-with-custom-settings-file" title="Permalink to this headline">¶</a></h2>
 <p>If you have implemented your own tests for your game (see below) you can run them from your game dir
 with</p>
@@ -91,8 +92,8 @@ you must use the <code class="docutils literal notranslate"><span class="pre">--
 <p>The <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option of Evennia takes a file name in the <code class="docutils literal notranslate"><span class="pre">mygame/server/conf</span></code> folder. It is
 normally used to swap settings files for testing and development. In combination with <code class="docutils literal notranslate"><span class="pre">test</span></code>, it
 forces Evennia to use this settings file over the default one.</p>
-</div>
-<div class="section" id="writing-new-tests">
+</section>
+<section id="writing-new-tests">
 <h2>Writing new tests<a class="headerlink" href="#writing-new-tests" title="Permalink to this headline">¶</a></h2>
 <p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s
 <em>unittest</em> module.</p>
@@ -113,26 +114,26 @@ can optionally do cleanup after each test.</p>
 <p>To test the results, you use special methods of the <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class.  Many of those start with
 “<code class="docutils literal notranslate"><span class="pre">assert</span></code>”, such as <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> or <code class="docutils literal notranslate"><span class="pre">assertTrue</span></code>.</p>
 <p>Example of a <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">unittest</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">unittest</span>
     
     <span class="c1"># the function we want to test</span>
     <span class="kn">from</span> <span class="nn">mypath</span> <span class="kn">import</span> <span class="n">myfunc</span>
@@ -156,7 +157,7 @@ can optionally do cleanup after each test.</p>
 </td></tr></table></div>
 <p>You might also want to read the <a class="reference external" href="http://docs.python.org/library/unittest.html">documentation for the unittest
 module</a>.</p>
-<div class="section" id="using-the-evenniatest-class">
+<section id="using-the-evenniatest-class">
 <h3>Using the EvenniaTest class<a class="headerlink" href="#using-the-evenniatest-class" title="Permalink to this headline">¶</a></h3>
 <p>Evennia offers a custom TestCase, the <code class="docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code> class. This class
 initiates a range of useful properties on themselves for testing Evennia systems. Examples are
@@ -165,16 +166,16 @@ initiates a range of useful properties on themselves for testing Evennia systems
 when testing Evennia system requiring any of the default Evennia typeclasses as inputs. See the full
 definition of the <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> class in [evennia/utils/test_resources.py](https://github.com/evenni
 a/evennia/blob/master/evennia/utils/test_resources.py).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a test module</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a test module</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
 
@@ -186,8 +187,8 @@ a/evennia/blob/master/evennia/utils/test_resources.py).</p>
         <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="testing-in-game-commands">
+</section>
+<section id="testing-in-game-commands">
 <h3>Testing in-game Commands<a class="headerlink" href="#testing-in-game-commands" title="Permalink to this headline">¶</a></h3>
 <p>In-game Commands are a special case. Tests for the default commands are put in
 <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/tests.py</span></code>. This uses a custom <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code> class that inherits from
@@ -197,17 +198,17 @@ expected values. It uses Characters and Sessions generated on the <code class="d
 class).</p>
 <p>Each command tested should have its own <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class. Inherit this class from the <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code>
 class in the same module to get access to the command-specific utilities mentioned.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
     <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">general</span>
     <span class="k">class</span> <span class="nc">TestSet</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
         <span class="s2">&quot;tests the look command by simple call, using Char2 as a target&quot;</span>
@@ -220,8 +221,8 @@ class in the same module to get access to the command-specific utilities mention
                       <span class="s2">&quot;You see: Obj(#4), Obj2(#5), Char2(#7)&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="unit-testing-contribs-with-custom-models">
+</section>
+<section id="unit-testing-contribs-with-custom-models">
 <h3>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h3>
 <p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that
 uses its <a class="reference internal" href="New-Models.html"><span class="doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
@@ -238,50 +239,50 @@ test runs. here is an example of how to do it.</p>
 answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-
 testing#503435) is currently untested! Please report your findings.</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># a file contrib/mycontrib/tests.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># a file contrib/mycontrib/tests.py</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">import</span> <span class="nn">django</span>
@@ -327,15 +328,15 @@ testing#503435) is currently untested! Please report your findings.</p>
         <span class="c1"># test case here</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="a-note-on-adding-new-tests">
+</section>
+<section id="a-note-on-adding-new-tests">
 <h3>A note on adding new tests<a class="headerlink" href="#a-note-on-adding-new-tests" title="Permalink to this headline">¶</a></h3>
 <p>Having an extensive tests suite is very important for avoiding code degradation as Evennia is
 developed. Only a small fraction of the Evennia codebase is covered by test suites at this point.
 Writing new tests is not hard, it’s more a matter of finding the time to do so. So adding new tests
 is really an area where everyone can contribute, also with only limited Python skills.</p>
-</div>
-<div class="section" id="a-note-on-making-the-test-runner-faster">
+</section>
+<section id="a-note-on-making-the-test-runner-faster">
 <h3>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h3>
 <p>If you have custom models with a large number of migrations, creating the test database can take a
 very long time. If you don’t require migrations to run for your tests, you can disable them with the
@@ -344,10 +345,10 @@ django-test-without-migrations package. To install it, simply:</p>
 </pre></div>
 </div>
 <p>Then add it to your <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> in your <code class="docutils literal notranslate"><span class="pre">server.conf.settings.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="c1"># ...</span>
     <span class="s1">&#39;test_without_migrations&#39;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -357,9 +358,9 @@ django-test-without-migrations package. To install it, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">test</span> <span class="o">--</span><span class="n">settings</span> <span class="n">settings</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">nomigrations</span> <span class="o">.</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="testing-for-game-development-mini-tutorial">
+</section>
+</section>
+<section id="testing-for-game-development-mini-tutorial">
 <h2>Testing for Game development (mini-tutorial)<a class="headerlink" href="#testing-for-game-development-mini-tutorial" title="Permalink to this headline">¶</a></h2>
 <p>Unit testing can be of paramount importance to game developers. When starting with a new game, it is
 recommended to look into unit testing as soon as possible; an already huge game is much harder to
@@ -369,7 +370,7 @@ there to ensure your project behaves the way it should and continue to do so.</p
 <p>If you have never used unit testing (with Python or another language), you might want to check the
 <a class="reference external" href="https://docs.python.org/2/library/unittest.html">official Python documentation about unit testing</a>,
 particularly the first section dedicated to a basic example.</p>
-<div class="section" id="basic-testing-using-evennia">
+<section id="basic-testing-using-evennia">
 <h3>Basic testing using Evennia<a class="headerlink" href="#basic-testing-using-evennia" title="Permalink to this headline">¶</a></h3>
 <p>Evennia’s test runner can be used to launch tests in your game directory (let’s call it ‘mygame’).
 Evennia’s test runner does a few useful things beyond the normal Python unittest module:</p>
@@ -389,23 +390,23 @@ in this section) and execute the test runner:</p>
 database of your choice and look into the ‘commands’ package defined in your game directory
 (<code class="docutils literal notranslate"><span class="pre">mygame/commands</span></code> in this example) to find tests. The test module’s name should begin with ‘test’
 and contain one or more <code class="docutils literal notranslate"><span class="pre">TestCase</span></code>.  A full example can be found below.</p>
-</div>
-<div class="section" id="a-simple-example">
+</section>
+<section id="a-simple-example">
 <h3>A simple example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h3>
 <p>In your game directory, go to <code class="docutils literal notranslate"><span class="pre">commands</span></code> and create a new file <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> inside (it could be named
 anything starting with <code class="docutils literal notranslate"><span class="pre">test</span></code>). We will start by making a test that has nothing to do with Commands,
 just to show how unit testing works:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/tests.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/tests.py</span>
 
     <span class="kn">import</span> <span class="nn">unittest</span>
     
@@ -444,8 +445,8 @@ If we have a lot of tests it may be useful to test only a single set at a time t
 information text telling us we are using our custom settings file (instead of Evennia’s default
 file) and then the test runs. The test passes! Change the “FOO” string to something else in the test
 to see how it looks when it fails.</p>
-</div>
-<div class="section" id="testing-commands">
+</section>
+<section id="testing-commands">
 <h3>Testing commands<a class="headerlink" href="#testing-commands" title="Permalink to this headline">¶</a></h3>
 <p>This section will test the proper execution of the ‘abilities’ command, as described in the <a class="reference internal" href="First-Steps-Coding.html"><span class="doc">First
 Steps Coding</span></a> page.  Follow this tutorial to create the ‘abilities’ command, we
@@ -457,19 +458,19 @@ and use it properly. This class is called ‘CommandTest’ and is defined in th
 need to create a class that inherits from ‘CommandTest’ and add methods.</p>
 <p>We could create a new test file for this but for now we just append to the <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file we
 already have in <code class="docutils literal notranslate"><span class="pre">commands</span></code> from before.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
 
     <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
     
@@ -486,7 +487,7 @@ already have in <code class="docutils literal notranslate"><span class="pre">com
 </td></tr></table></div>
 <ul class="simple">
 <li><p>Line 1-4:  we do some importing.  ‘CommandTest’ is going to be our base class for our test, so we
-need it.  We also import our command (‘CmdAbilities’ in this case).  Finally we import the
+need it.  We also import our command (’CmdAbilities’ in this case).  Finally we import the
 ‘Character’ typeclass.  We need it, since ‘CommandTest’ doesn’t use ‘Character’, but
 ‘DefaultCharacter’, which means the character calling the command won’t have the abilities we have
 written in the ‘Character’ typeclass.</p></li>
@@ -521,8 +522,8 @@ parameter).</p>
 </div>
 <p>Two tests were executed, since we have kept ‘TestString’ from last time.  In case of failure, you
 will get much more information to help you fix the bug.</p>
-</div>
-<div class="section" id="testing-dynamic-output">
+</section>
+<section id="testing-dynamic-output">
 <h3>Testing Dynamic Output<a class="headerlink" href="#testing-dynamic-output" title="Permalink to this headline">¶</a></h3>
 <p>Having read the unit test tutorial on <a class="reference external" href="Unit-Testing.html#testing-commands">Testing commands</a> we can see
 the code expects static unchanging numbers. While very good for learning it is unlikely a project
@@ -533,15 +534,15 @@ I recommend reading the <code class="docutils literal notranslate"><span class="
 tutorial</a>. If you do plan on making a complete Evennia
 project learning regular expressions will save a great deal of time.<br></p>
 <p>Append the code below to your <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file.<br></p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
     
     <span class="k">class</span> <span class="nc">TestDynamicAbilities</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
     
@@ -565,9 +566,9 @@ regex are digits (numbers), the <code class="docutils literal notranslate"><span
 telling <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertRegex">assertRegex</a>
 that in that position of the string we expect 1 or more digits (numbers) to appear in the
 string.<br></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -641,7 +642,6 @@ string.<br></p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Unit-Testing.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

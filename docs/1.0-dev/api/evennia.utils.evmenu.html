@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.utils.evmenu &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.utils.evmenu">
+  <section id="module-evennia.utils.evmenu">
 <span id="evennia-utils-evmenu"></span><h1>evennia.utils.evmenu<a class="headerlink" href="#module-evennia.utils.evmenu" title="Permalink to this headline">¶</a></h1>
 <p>EvMenu</p>
 <p>This implements a full menu system for Evennia.</p>
@@ -185,7 +186,7 @@ available commands while in menu mode.</p>
 reaching a node without any options.</p>
 <p>For a menu demo, import <strong>CmdTestMenu</strong> from this module and add it to
 your default cmdset. Run it with this module, like <strong>testmenu evennia.utils.evmenu</strong>.</p>
-<div class="section" id="menu-generation-from-template-string">
+<section id="menu-generation-from-template-string">
 <h2>Menu generation from template string<a class="headerlink" href="#menu-generation-from-template-string" title="Permalink to this headline">¶</a></h2>
 <p>In evmenu.py is a helper function <strong>parse_menu_template</strong> that parses a
 template-string and outputs a menu-tree dictionary suitable to pass into
@@ -920,7 +921,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'a', 'no', 'n', 'y', 'abort', 'yes']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'yes', 'no', 'abort', 'a', 'y', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -946,7 +947,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command a no n y abort yes', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command yes no abort a y n', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1094,8 +1095,8 @@ Must be on the form <strong>callable(caller, raw_string, **kwargs)</strong>.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

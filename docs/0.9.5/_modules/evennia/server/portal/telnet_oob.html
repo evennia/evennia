@@ -51,20 +51,15 @@
 <span class="sd">instruct the client to play sounds or to update a graphical health</span>
 <span class="sd">bar.</span>
 
-<span class="sd">&gt; Note that in Evennia&#39;s Web client, all send commands are &quot;OOB commands&quot;,</span>
-<span class="sd">(including the &quot;text&quot; one), there is no equivalence to MSDP/GMCP for the</span>
-<span class="sd">webclient since it doesn&#39;t need it.</span>
+<span class="sd">Note that in Evennia&#39;s Web client, all send commands are &quot;OOB</span>
+<span class="sd">commands&quot;, (including the &quot;text&quot; one), there is no equivalence to</span>
+<span class="sd">MSDP/GMCP for the webclient since it doesn&#39;t need it.</span>
 
 <span class="sd">This implements the following telnet OOB communication protocols:</span>
 
-<span class="sd">- MSDP (Mud Server Data Protocol), as per</span>
-<span class="sd">  http://tintin.sourceforge.net/msdp/</span>
+<span class="sd">- MSDP (Mud Server Data Protocol), as per http://tintin.sourceforge.net/msdp/</span>
 <span class="sd">- GMCP (Generic Mud Communication Protocol) as per</span>
 <span class="sd">  http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29</span>
-
-<span class="sd">Following the lead of KaVir&#39;s protocol snippet, we first check if client</span>
-<span class="sd">supports MSDP and if not, we fallback to GMCP with a MSDP header where</span>
-<span class="sd">applicable.</span>
 
 <span class="sd">----</span>
 
@@ -72,23 +67,22 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="n">bchr</span>
 
 <span class="c1"># General Telnet</span>
 <span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span>
 
 <span class="c1"># MSDP-relevant telnet cmd/opt-codes</span>
-<span class="n">MSDP</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">69</span><span class="p">)</span>
-<span class="n">MSDP_VAR</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">MSDP_VAL</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">MSDP_TABLE_OPEN</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">MSDP_TABLE_CLOSE</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">MSDP</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">69</span><span class="p">])</span>
+<span class="n">MSDP_VAR</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">MSDP_VAL</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">MSDP_TABLE_OPEN</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">MSDP_TABLE_CLOSE</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">4</span><span class="p">])</span>
 
-<span class="n">MSDP_ARRAY_OPEN</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">MSDP_ARRAY_CLOSE</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">MSDP_ARRAY_OPEN</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">MSDP_ARRAY_CLOSE</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">6</span><span class="p">])</span>
 
 <span class="c1"># GMCP</span>
-<span class="n">GMCP</span> <span class="o">=</span> <span class="n">bchr</span><span class="p">(</span><span class="mi">201</span><span class="p">)</span>
+<span class="n">GMCP</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">201</span><span class="p">])</span>
 
 
 <span class="c1"># pre-compiled regexes</span>
@@ -115,7 +109,7 @@
 <span class="c1"># MSDP/GMCP communication handler</span>
 
 
-<div class="viewcode-block" id="TelnetOOB"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB">[docs]</a><span class="k">class</span> <span class="nc">TelnetOOB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetOOB"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_oob.html#evennia.server.portal.telnet_oob.TelnetOOB">[docs]</a><span class="k">class</span> <span class="nc">TelnetOOB</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MSDP and GMCP protocols.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -202,16 +196,16 @@
 <span class="sd">            MSDP structures on these forms:</span>
 <span class="sd">            ::</span>
 
-<span class="sd">                [cmdname, [], {}]          -&gt; VAR cmdname VAL &quot;&quot;</span>
-<span class="sd">                [cmdname, [arg], {}]       -&gt; VAR cmdname VAL arg</span>
-<span class="sd">                [cmdname, [args],{}]       -&gt; VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE</span>
-<span class="sd">                [cmdname, [], {kwargs}]    -&gt; VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE</span>
+<span class="sd">                [cmdname, [], {}]           -&gt; VAR cmdname VAL &quot;&quot;</span>
+<span class="sd">                [cmdname, [arg], {}]        -&gt; VAR cmdname VAL arg</span>
+<span class="sd">                [cmdname, [args],{}]        -&gt; VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE</span>
+<span class="sd">                [cmdname, [], {kwargs}]     -&gt; VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE</span>
 <span class="sd">                [cmdname, [args], {kwargs}] -&gt; VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE</span>
 <span class="sd">                                               VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE</span>
 
-<span class="sd">            Further nesting is not supported, so if an array argument consists</span>
-<span class="sd">            of an array (for example), that array will be json-converted to a</span>
-<span class="sd">            string.</span>
+<span class="sd">            Further nesting is not supported, so if an array argument</span>
+<span class="sd">            consists of an array (for example), that array will be</span>
+<span class="sd">            json-converted to a string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">msdp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{msdp_var}{msdp_cmdname}{msdp_val}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -281,11 +275,10 @@
 <span class="sd">                [cmd.name, [arg], {}]       -&gt; Cmd.Name arg</span>
 <span class="sd">                [cmd.name, [args],{}]       -&gt; Cmd.Name [args]</span>
 <span class="sd">                [cmd.name, [], {kwargs}]    -&gt; Cmd.Name {kwargs}</span>
-<span class="sd">                [cmdname, [args, {kwargs}] -&gt; Core.Cmdname [[args],{kwargs}]</span>
+<span class="sd">                [cmdname, [args, {kwargs}]  -&gt; Core.Cmdname [[args],{kwargs}]</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            There are also a few default mappings between evennia outputcmds and</span>
-<span class="sd">            GMCP:</span>
+<span class="sd">            There are also a few default mappings between evennia outputcmds and GMCP:</span>
 <span class="sd">            ::</span>
 
 <span class="sd">                client_options -&gt; Core.Supports.Get</span>
@@ -521,7 +514,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="telnet_oob.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

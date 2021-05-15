@@ -410,22 +410,22 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        senderobj (Object, Account, Script, str or list): The entity (or</span>
-<span class="sd">        entities) sending the Msg. If a `str`, this is the id-string</span>
+<span class="sd">            entities) sending the Msg. If a `str`, this is the id-string</span>
 <span class="sd">            for an external sender type.</span>
 <span class="sd">        message (str): Text with the message. Eventual headers, titles</span>
 <span class="sd">            etc should all be included in this text string. Formatting</span>
 <span class="sd">            will be retained.</span>
-<span class="sd">        receivers (Object, Account or list): An Account/Object to send</span>
-<span class="sd">            to, or a list of them.</span>
+<span class="sd">        receivers (Object, Account, Script, str or list): An Account/Object to send</span>
+<span class="sd">            to, or a list of them. If a string, it&#39;s an identifier for an external</span>
+<span class="sd">            receiver.</span>
 <span class="sd">        locks (str): Lock definition string.</span>
 <span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
 <span class="sd">        header (str): Mime-type or other optional information for the message</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        The Comm system is created very open-ended, so it&#39;s fully possible</span>
-<span class="sd">        to let a message both go to several channels and to several</span>
-<span class="sd">        receivers at the same time, it&#39;s up to the command definitions to</span>
-<span class="sd">        limit this as desired.</span>
+<span class="sd">        The Comm system is created to be very open-ended, so it&#39;s fully</span>
+<span class="sd">        possible to let a message both go several receivers at the same time,</span>
+<span class="sd">        it&#39;s up to the command definitions to limit this as desired.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s1">&#39;channels&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.utils.utils &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.utils.utils">
+  <section id="module-evennia.utils.utils">
 <span id="evennia-utils-utils"></span><h1>evennia.utils.utils<a class="headerlink" href="#module-evennia.utils.utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions that don’t fit neatly under any given category.</p>
 <p>They provide some useful string and conversion methods that might
@@ -684,7 +685,7 @@ shortcut to having to use the full backend name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timedelay</strong> (<em>int</em><em> or </em><em>float</em>) – The delay in seconds</p></li>
+<li><p><strong>timedelay</strong> (<em>int</em><em> or </em><em>float</em>) – The delay in seconds.</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – Will be called as <strong>callback(*args, **kwargs)</strong>
 after <strong>timedelay</strong> seconds.</p></li>
 <li><p><strong>*args</strong> – Will be used as arguments to callback</p></li>
@@ -692,21 +693,15 @@ after <strong>timedelay</strong> seconds.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Should make the delay persistent
-over a reboot or reload. Defaults to False.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True the delay remains after a server restart.
+persistent is False by default.</p></li>
 <li><p><strong>any</strong> (<em>any</em>) – Will be used as keyword arguments to callback.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>deferred or int</em> –</p>
+<dd class="field-odd"><p><p><em>task (TaskHandlerTask)</em> –</p>
 <dl class="simple">
-<dt>If <strong>**persistent**</strong> kwarg is <strong>False</strong>, return deferred</dt><dd><p>that will fire with callback after <strong>timedelay</strong> seconds. Note that
-if <strong>timedelay()</strong> is used in the commandhandler callback chain, the
-callback chain can be defined directly in the command body and
-don’t need to be specified here. Reference twisted.internet.defer.Deferred.
-If persistent kwarg is set, return the task’s ID as an integer. This is
-intended for use with <strong>**evennia.scripts.taskhandler.TASK_HANDLER**</strong>
-<strong>.do_task</strong> and <strong>.remove</strong> methods.</p>
+<dt>An instance of a task.</dt><dd><p>Refer to, evennia.scripts.taskhandler.TaskHandlerTask</p>
 </dd>
 </dl>
 </p>
@@ -724,8 +719,8 @@ Keep in mind that persistent tasks arguments and callback should not
 use memory references.
 If persistent is set to True the delay function will return an int
 which is the task’s id itended for use with TASK_HANDLER’s do_task
-and remove methods.</p>
-<p>All task’s whose time delays have passed will be called on server startup.</p>
+and remove methods.
+All persistent tasks whose time delays have passed will be called on server startup.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1612,7 +1607,7 @@ def _funcname(*args, **kwargs):
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>

@@ -398,12 +398,14 @@
         <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span>
     <span class="n">num_lines_to_append</span> <span class="o">=</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span>
 
-<div class="viewcode-block" id="EvenniaLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotates our log file and appends some number of lines from</span>
 <span class="sd">        the previous log to the start of the new one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lines_to_append</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">append_tail</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_lines_to_append</span>
+                       <span class="k">if</span> <span class="n">num_lines_to_append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                       <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lines_to_append</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">append_tail</span><span class="p">:</span>
             <span class="n">logfile</span><span class="o">.</span><span class="n">LogFile</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span>
@@ -513,6 +515,43 @@
         <span class="n">deferToThread</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">filehandle</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">errback</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="log_file_exists"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_file_exists">[docs]</a><span class="k">def</span> <span class="nf">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine if a log-file already exists.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): The filename (within the log-dir).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: If the log file exists or not.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_LOGDIR</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rotate_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.rotate_log_file">[docs]</a><span class="k">def</span> <span class="nf">rotate_log_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;game.log&quot;</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Force-rotate a log-file, without</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): The log file, located in settings.LOG_DIR.</span>
+<span class="sd">        num_lines_to_append (int, optional): Include N number of</span>
+<span class="sd">            lines from previous file in new one. If `None`, use default.</span>
+<span class="sd">            Set to 0 to include no lines.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">file_handle</span> <span class="o">=</span> <span class="n">_open_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_handle</span><span class="p">:</span>
+            <span class="n">file_handle</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">num_lines_to_append</span><span class="o">=</span><span class="n">num_lines_to_append</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="tail_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.tail_log_file">[docs]</a><span class="k">def</span> <span class="nf">tail_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the tail of the log file.</span>
@@ -609,7 +648,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="logger.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

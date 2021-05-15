@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Overview of the Evennia library &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -46,13 +47,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="overview-of-the-evennia-library">
+  <section id="overview-of-the-evennia-library">
 <h1>Overview of the Evennia library<a class="headerlink" href="#overview-of-the-evennia-library" title="Permalink to this headline">¶</a></h1>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">API</p>
 <p>API stands for <cite>Application Programming Interface</cite>, a description for how to access
 the resources of a program or library.</p>
-</div>
+</aside>
 <p>A good place to start exploring Evennia is the <a class="reference internal" href="../../../Evennia-API.html"><span class="doc">Evenia-API frontpage</span></a>.
 This page sums up the main components of Evennia with a short description of each. Try clicking through
 to a few entries - once you get deep enough you’ll see full descriptions
@@ -63,7 +64,7 @@ what you can download from us. The github repo is also searchable.</p>
 <p>Finally, you can clone the evennia repo to your own computer and read the sources locally. This is necessary
 if you want to help with Evennia’s development itself. See the
 <a class="reference internal" href="../../../Setup/Extended-Installation.html"><span class="doc">extended install instructions</span></a> if you want to do this.</p>
-<div class="section" id="where-is-it">
+<section id="where-is-it">
 <h2>Where is it?<a class="headerlink" href="#where-is-it" title="Permalink to this headline">¶</a></h2>
 <p>If Evennia is installed, you can import from it simply with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
@@ -123,18 +124,18 @@ from here to <code class="docutils literal notranslate"><span class="pre">mygame
 </ul>
 </li>
 </ul>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">__init__.py</p>
 <p>The <cite>__init__.py</cite> file is a special Python filename used to represent a Python ‘package’.
 When you import <cite>evennia</cite> on its own, you import this file. When you do <cite>evennia.foo</cite> Python will
 first look for a property <cite>.foo</cite> in <cite>__init__.py</cite> and then for a module or folder of that name
 in the same location.</p>
-</div>
+</aside>
 <p>While all the actual Evennia code is found in the various folders, the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> represents the entire
 package <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. It contains “shortcuts” to code that is actually located elsewhere. Most of these shortcuts
 are listed if you <a class="reference internal" href="../../../Evennia-API.html"><span class="doc">scroll down a bit</span></a> on the Evennia-API page.</p>
-</div>
-<div class="section" id="an-example-of-exploring-the-library">
+</section>
+<section id="an-example-of-exploring-the-library">
 <h2>An example of exploring the library<a class="headerlink" href="#an-example-of-exploring-the-library" title="Permalink to this headline">¶</a></h2>
 <p>In the previous lesson we took a brief look at <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects</span></code> as an example of a Python module. Let’s
 open it again. Inside is the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class, which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>.
@@ -148,13 +149,13 @@ are actually importing from <code class="docutils literal notranslate"><span cla
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>    
 </pre></div>
 </div>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Relative and absolute imports</p>
 <p>The first full-stop in <cite>from .objects.objects …</cite> means that
 we are importing from the current location. This is called a <cite>relative import</cite>.
 By comparison, <cite>from evennia.objects.objects</cite> is an <cite>absolute import</cite>. In this particular
 case, the two would give the same result.</p>
-</div>
+</aside>
 <blockquote>
 <div><p>You can also look at <a class="reference external" href="Evennia-API.html#typeclasses">the right section of the API frontpage</a> and click through
 to the code that way.</p>
@@ -171,8 +172,8 @@ to look it up in the docs:</p>
 <li><p>You can now read what this does and what methods are on it. If you want to see the full source, click the
 [<a class="reference external" href="../../../_modules/evennia/objects/objects.html#DefaultObject">source</a>] link.</p></li>
 </ol>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

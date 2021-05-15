@@ -56,10 +56,9 @@
 <span class="sd">mccp_compress and calling it from its write methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">zlib</span>
-<span class="kn">from</span> <span class="nn">twisted.python.compat</span> <span class="kn">import</span> <span class="n">_bytesChr</span> <span class="k">as</span> <span class="nb">chr</span>
 
 <span class="c1"># negotiations for v1 and v2 of the protocol</span>
-<span class="n">MCCP</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">86</span><span class="p">)</span>  <span class="c1"># b&quot;\x56&quot;</span>
+<span class="n">MCCP</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">86</span><span class="p">])</span>  <span class="c1"># b&quot;\x56&quot;</span>
 <span class="n">FLUSH</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">Z_SYNC_FLUSH</span>
 
 
@@ -79,7 +78,7 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="Mccp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mccp.html#evennia.server.portal.mccp.Mccp">[docs]</a><span class="k">class</span> <span class="nc">Mccp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mccp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mccp.html#evennia.server.portal.mccp.Mccp">[docs]</a><span class="k">class</span> <span class="nc">Mccp</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MCCP protocol. Add this to a</span>
 <span class="sd">    variable on the telnet protocol to set it up.</span>
@@ -165,7 +164,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="mccp.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

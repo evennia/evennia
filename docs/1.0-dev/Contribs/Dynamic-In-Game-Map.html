@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Dynamic In Game Map &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -46,9 +47,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="dynamic-in-game-map">
+  <section id="dynamic-in-game-map">
 <h1>Dynamic In Game Map<a class="headerlink" href="#dynamic-in-game-map" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>An often desired feature in a MUD is to show an in-game map to help navigation. The <a class="reference internal" href="Static-In-Game-Map.html"><span class="doc">Static in-game
 map</span></a> tutorial solves this by creating a <em>static</em> map, meaning the map is pre-
@@ -56,8 +57,8 @@ drawn once and for all - the rooms are then created to match that map. When walk
 the static map is then cut out and displayed next to the room description.</p>
 <p>In this tutorial we’ll instead do it the other way around; We will dynamically draw the map based on
 the relationships we find between already existing rooms.</p>
-</div>
-<div class="section" id="the-grid-of-rooms">
+</section>
+<section id="the-grid-of-rooms">
 <h2>The Grid of Rooms<a class="headerlink" href="#the-grid-of-rooms" title="Permalink to this headline">¶</a></h2>
 <p>There are at least two requirements needed for this tutorial to work.</p>
 <ol class="simple">
@@ -73,8 +74,8 @@ that you have created two completely stand-alone rooms. So care is needed if you
 “logical” layout. In this tutorial we assume you have such a grid of rooms that we can generate the
 map from.</p></li>
 </ol>
-</div>
-<div class="section" id="concept">
+</section>
+<section id="concept">
 <h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
 <p>Before getting into the code, it is beneficial to understand and conceptualize how this is going to
 work. The idea is analogous to a worm that starts at your current position. It chooses a direction
@@ -97,8 +98,8 @@ Python class (not a typeclass as this doesn’t use any core objects from evenni
 </div>
 <p>Your current location is defined by <code class="docutils literal notranslate"><span class="pre">[&#64;]</span></code> while the <code class="docutils literal notranslate"><span class="pre">[.]</span></code>s are other rooms that the “worm” has seen
 since departing from your location.</p>
-</div>
-<div class="section" id="setting-up-the-map-display">
+</section>
+<section id="setting-up-the-map-display">
 <h2>Setting up the Map Display<a class="headerlink" href="#setting-up-the-map-display" title="Permalink to this headline">¶</a></h2>
 <p>First we must define the components for displaying the map. For the “worm” to know what symbol to
 draw on the map we will have it check an Attribute on the room it visits called <code class="docutils literal notranslate"><span class="pre">sector_type</span></code>. For
@@ -106,13 +107,13 @@ this tutorial we understand two symbols - a normal room and the room with us in 
 fallback symbol for rooms without said Attribute - that way the map will still work even if we
 didn’t prepare the room correctly. Assuming your game folder is named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, we create this code
 in <code class="docutils literal notranslate"><span class="pre">mygame/world/map.py.</span></code></p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
 
 <span class="c1"># the symbol is identified with a key &quot;sector_type&quot; on the </span>
 <span class="c1"># Room. Keys None and &quot;you&quot; must always exist. </span>
@@ -124,17 +125,17 @@ in <code class="docutils literal notranslate"><span class="pre">mygame/world/map
 <p>Since trying to access an unset Attribute returns <code class="docutils literal notranslate"><span class="pre">None</span></code>, this means rooms without the <code class="docutils literal notranslate"><span class="pre">sector_type</span></code>
 Atttribute will show as <code class="docutils literal notranslate"><span class="pre">.</span></code>. Next we start building the custom class <code class="docutils literal notranslate"><span class="pre">Map</span></code>. It will hold all
 methods we need.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
 
 <span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -160,26 +161,26 @@ worm has been and what it has mapped so far.</p></li>
 </ul>
 <p>Before any sort of mapping can actually be done we need to create an empty display area and do some
 sanity checks on it by using the following methods.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py</span>
 
 <span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1"># [... continued]</span>
@@ -203,21 +204,21 @@ sanity checks on it by using the following methods.</p>
 </td></tr></table></div>
 <p>Before we can set our worm on its way, we need to know some of the computer science behind all this
 called ‘Graph Traversing’. In Pseudo code what we are trying to accomplish is this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># pseudo code</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># pseudo code</span>
 
 <span class="k">def</span> <span class="nf">draw_room_on_map</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
@@ -251,8 +252,8 @@ go <code class="docutils literal notranslate"><span class="pre">4</span></code> 
 </div>
 <p>The max_distance can be set dynamically based on the size of the display area. As your width/length
 changes it becomes a simple algebraic linear relationship which is simply <code class="docutils literal notranslate"><span class="pre">max_distance</span> <span class="pre">=</span> <span class="pre">(min(max_width,</span> <span class="pre">max_length)</span> <span class="pre">-1)</span> <span class="pre">/</span> <span class="pre">2</span></code>.</p>
-</div>
-<div class="section" id="building-the-mapper">
+</section>
+<section id="building-the-mapper">
 <h2>Building the Mapper<a class="headerlink" href="#building-the-mapper" title="Permalink to this headline">¶</a></h2>
 <p>Now we can start to fill our Map object with some methods. We are still missing a few methods that
 are very important:</p>
@@ -271,24 +272,24 @@ location in the middle of the grid</p></li>
 </ul>
 <p>Now that we know which methods we need, let’s refine our initial <code class="docutils literal notranslate"><span class="pre">__init__(self)</span></code> to pass some
 conditional statements and set it up to start building the display.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#mygame/world/map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#mygame/world/map.py</span>
 
 <span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -312,25 +313,25 @@ conditional statements and set it up to start building the display.</p>
 our initial location as the first room!</p>
 <p>As mentioned above, the code for the <code class="docutils literal notranslate"><span class="pre">self.draw_room_on_map()</span></code> is not much different than the Pseudo
 code. The method is shown below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py, in the Map class</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/map.py, in the Map class</span>
 
 <span class="k">def</span> <span class="nf">draw_room_on_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
@@ -352,18 +353,18 @@ code. The method is shown below:</p>
 </pre></div>
 </td></tr></table></div>
 <p>The first thing the “worm” does is to draw your current location in <code class="docutils literal notranslate"><span class="pre">self.draw</span></code>. Lets define that…</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#in mygame/word/map.py, in the Map class </span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#in mygame/word/map.py, in the Map class </span>
 
 <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
     <span class="c1"># draw initial ch location on map first!</span>
@@ -378,20 +379,20 @@ code. The method is shown below:</p>
 </pre></div>
 </td></tr></table></div>
 <p>In <code class="docutils literal notranslate"><span class="pre">self.start_loc_on_grid()</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
     <span class="n">lst</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="p">))</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span><span class="mi">1</span>
@@ -411,30 +412,30 @@ code. The method is shown below:</p>
 is the inital start phase it is not). Now we handle the iteration once we have each individual exit
 in the room. The first thing it does is check if the room the Worm is in has been mapped already..
 lets define that…</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">has_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">has_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worm_has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
 </pre></div>
 </td></tr></table></div>
 <p>If <code class="docutils literal notranslate"><span class="pre">has_drawn</span></code> returns <code class="docutils literal notranslate"><span class="pre">False</span></code> that means the worm has found a room that hasn’t been mapped yet. It
 will then ‘move’ there. The self.curX/Y sort of lags behind, so we have to make sure to track the
 position of the worm; we do this in <code class="docutils literal notranslate"><span class="pre">self.update_pos()</span></code> below.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">):</span>
     <span class="c1"># this ensures the coordinates stays up to date </span>
     <span class="c1"># to where the worm is currently at.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> \
@@ -456,13 +457,13 @@ position of the worm; we do this in <code class="docutils literal notranslate"><
 <code class="docutils literal notranslate"><span class="pre">draw_room_on_map()</span></code> and starts the process all over again..</p>
 <p>That is essentially the entire thing. The final method is to bring it all together and make a nice
 presentational string out of it using the <code class="docutils literal notranslate"><span class="pre">self.show_map()</span></code> method.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">map_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">:</span>
         <span class="n">map_string</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
@@ -471,8 +472,8 @@ presentational string out of it using the <code class="docutils literal notransl
     <span class="k">return</span> <span class="n">map_string</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="using-the-map">
+</section>
+<section id="using-the-map">
 <h2>Using the Map<a class="headerlink" href="#using-the-map" title="Permalink to this headline">¶</a></h2>
 <p>In order for the map to get triggered we store it on the Room typeclass. If we put it in
 <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> we will get the map back every time we look at the room.</p>
@@ -480,20 +481,20 @@ presentational string out of it using the <code class="docutils literal notransl
 <div><p><code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> is a default Evennia hook available on all objects; it is called e.g. by the
 <code class="docutils literal notranslate"><span class="pre">look</span></code> command to get the description of something (the room in this case).</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">world.map</span> <span class="kn">import</span> <span class="n">Map</span>
@@ -524,119 +525,119 @@ to actually call it. Remember that to see different symbols for a location you a
 example, to make a room be mapped as <code class="docutils literal notranslate"><span class="pre">[.]</span></code> you would set the room’s <code class="docutils literal notranslate"><span class="pre">sector_type</span></code> to
 <code class="docutils literal notranslate"><span class="pre">&quot;SECT_INSIDE&quot;</span></code>. Try it out with <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">here/sector_type</span> <span class="pre">=</span> <span class="pre">&quot;SECT_INSIDE&quot;</span></code>. If you wanted all new
 rooms to have a given sector symbol, you could change the default in the <code class="docutils literal notranslate"><span class="pre">SYMBOLS´</span> <span class="pre">dictionary</span> <span class="pre">below,</span> <span class="pre">or</span> <span class="pre">you</span> <span class="pre">could</span> <span class="pre">add</span> <span class="pre">the</span> <span class="pre">Attribute</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">Room's</span> </code>at_object_creation` method.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
- 31
- 32
- 33
- 34
- 35
- 36
- 37
- 38
- 39
- 40
- 41
- 42
- 43
- 44
- 45
- 46
- 47
- 48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
- 61
- 62
- 63
- 64
- 65
- 66
- 67
- 68
- 69
- 70
- 71
- 72
- 73
- 74
- 75
- 76
- 77
- 78
- 79
- 80
- 81
- 82
- 83
- 84
- 85
- 86
- 87
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#mygame/world/map.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#mygame/world/map.py</span>
 
 <span class="c1"># These are keys set with the Attribute sector_type on the room.</span>
 <span class="c1"># The keys None and &quot;you&quot; must always exist.</span>
@@ -751,14 +752,14 @@ rooms to have a given sector symbol, you could change the default in the <code c
         <span class="k">return</span> <span class="n">map_string</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="final-comments">
+</section>
+<section id="final-comments">
 <h2>Final Comments<a class="headerlink" href="#final-comments" title="Permalink to this headline">¶</a></h2>
 <p>The Dynamic map could be expanded with further capabilities. For example, it could mark exits or
 allow NE, SE etc directions as well. It could have colors for different terrain types. One could
 also look into up/down directions and figure out how to display that in a good way.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

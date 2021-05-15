@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Async Process &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,19 +46,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="async-process">
+  <section id="async-process">
 <h1>Async Process<a class="headerlink" href="#async-process" title="Permalink to this headline">¶</a></h1>
 <p><em>This is considered an advanced topic.</em></p>
-<div class="section" id="synchronous-versus-asynchronous">
+<section id="synchronous-versus-asynchronous">
 <h2>Synchronous versus Asynchronous<a class="headerlink" href="#synchronous-versus-asynchronous" title="Permalink to this headline">¶</a></h2>
 <p>Most program code operates <em>synchronously</em>. This means that each statement in your code gets
 processed and finishes before the next can begin. This makes for easy-to-understand code. It is also
 a <em>requirement</em> in many cases - a subsequent piece of code often depend on something calculated or
 defined in a previous statement.</p>
 <p>Consider this piece of code in a traditional Python program:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
     <span class="n">long_running_function</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
 </pre></div>
@@ -77,14 +78,14 @@ all commands to occur in strict sequence.</p>
 <p>When delays do become noticeable and you don’t care in which order the command actually completes,
 you can run it <em>asynchronously</em>. This makes use of the <code class="docutils literal notranslate"><span class="pre">run_async()</span></code> function in
 <code class="docutils literal notranslate"><span class="pre">src/utils/utils.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">run_async</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">run_async</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">function</span></code> will be called asynchronously with <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. Example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before call ...&quot;</span><span class="p">)</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span><span class="n">long_running_function</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after call ...&quot;</span><span class="p">)</span>
@@ -94,8 +95,8 @@ you can run it <em>asynchronously</em>. This makes use of the <code class="docut
 <code class="docutils literal notranslate"><span class="pre">long_running_function</span></code> to finish. In fact you will see <code class="docutils literal notranslate"><span class="pre">&quot;before</span> <span class="pre">call</span> <span class="pre">...&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;after</span> <span class="pre">call</span> <span class="pre">...&quot;</span></code>
 printed out right away. The long-running function will run in the background and you (and other
 users) can go on as normal.</p>
-</div>
-<div class="section" id="customizing-asynchronous-operation">
+</section>
+<section id="customizing-asynchronous-operation">
 <h2>Customizing asynchronous operation<a class="headerlink" href="#customizing-asynchronous-operation" title="Permalink to this headline">¶</a></h2>
 <p>A complication with using asynchronous calls is what to do with the result from that call. What if
 <code class="docutils literal notranslate"><span class="pre">long_running_function</span></code> returns a value that you need? It makes no real sense to put any lines of
@@ -107,8 +108,8 @@ line quite pointless for processing any data from the function. Instead one has 
 <li><p><code class="docutils literal notranslate"><span class="pre">at_return(r)</span></code> (the <em>callback</em>) is called when the asynchronous function (<code class="docutils literal notranslate"><span class="pre">long_running_function</span></code>
 above) finishes successfully. The argument <code class="docutils literal notranslate"><span class="pre">r</span></code> will then be the return value of that function (or
 <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_return</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_return</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -120,8 +121,8 @@ This exception is passed to the errback wrapped in a <em>Failure</em> object <co
 errback of your own, Evennia will automatically add one that silently writes errors to the evennia
 log. An example of an errback is found below:</p></li>
 </ul>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="k">def</span> <span class="nf">at_err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>        <span class="k">def</span> <span class="nf">at_err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There was an error:&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
@@ -130,27 +131,27 @@ log. An example of an errback is found below:</p></li>
 errback.</p></li>
 </ul>
 <p>An example of making an asynchronous call from inside a <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> definition:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">CmdAsync</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
@@ -177,20 +178,20 @@ errback.</p></li>
 to be done. <em>Whenever</em> it finishes, the <code class="docutils literal notranslate"><span class="pre">at_return_function</span></code> function will be called and the final
 value will
 pop up for us to see. If not we will see an error message.</p>
-</div>
-<div class="section" id="delay">
+</section>
+<section id="delay">
 <h2>delay<a class="headerlink" href="#delay" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">delay</span></code> function is a much simpler sibling to <code class="docutils literal notranslate"><span class="pre">run_async</span></code>. It is in fact just a way to delay the
 execution of a command until a future time. This is equivalent to something like <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>
 except delay is asynchronous while <code class="docutils literal notranslate"><span class="pre">sleep</span></code> would lock the entire server for the duration of the
 sleep.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span>
 
      <span class="c1"># [...]</span>
      <span class="c1"># e.g. inside a Command, where `self.caller` is available</span>
@@ -206,27 +207,27 @@ the <a class="reference internal" href="Command-Duration.html"><span class="doc"
 </pre></div>
 </div>
 <p>Wait 10 seconds and ‘Test!’ should be echoed back to you.</p>
-</div>
-<div class="section" id="the-interactive-decorator">
+</section>
+<section id="the-interactive-decorator">
 <h2>The &#64;interactive decorator<a class="headerlink" href="#the-interactive-decorator" title="Permalink to this headline">¶</a></h2>
 <p>As of Evennia 0.9, the <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code> [decorator](https://realpython.com/primer-on-python-
 decorators/)
 is available. This makes any function or method possible to ‘pause’ and/or await player input
 in an interactive way.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span>
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -261,16 +262,16 @@ empty <code class="docutils literal notranslate"><span class="pre">return</span>
 with <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code>, you must instead use a special Twisted function
 <code class="docutils literal notranslate"><span class="pre">twisted.internet.defer.returnValue</span></code>. Evennia also makes this function
 conveniently available from <code class="docutils literal notranslate"><span class="pre">evennia.utils</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">returnValue</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">returnValue</span>
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">myfunc</span><span class="p">():</span>
@@ -282,8 +283,8 @@ conveniently available from <code class="docutils literal notranslate"><span cla
         <span class="n">returnValue</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="assorted-notes">
+</section>
+<section id="assorted-notes">
 <h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
 <p>Overall, be careful with choosing when to use asynchronous calls. It is mainly useful for large
 administration operations that have no direct influence on the game world (imports and backup
@@ -294,8 +295,8 @@ hard-to-reproduce bugs).</p>
 inherently an asynchronous server.  Notably you might find that you will <em>not</em> see the first <code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">call</span> <span class="pre">...</span></code> text being printed out right away. Instead all texts could end up being delayed until
 after the long-running process finishes. So all commands will retain their relative order as
 expected, but they may appear with delays or in groups.</p>
-</div>
-<div class="section" id="further-reading">
+</section>
+<section id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <p>Technically, <code class="docutils literal notranslate"><span class="pre">run_async</span></code> is just a very thin and simplified wrapper around a
 <a class="reference external" href="http://twistedmatrix.com/documents/9.0.0/core/howto/defer.html">Twisted Deferred</a> object; the
@@ -303,8 +304,8 @@ wrapper sets
 up a default errback also if none is supplied. If you know what you are doing there is nothing
 stopping you from bypassing the utility function, building a more sophisticated callback chain after
 your own liking.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -367,7 +368,6 @@ your own liking.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Async-Process.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

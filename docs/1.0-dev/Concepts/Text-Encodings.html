@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Text Encodings &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="text-encodings">
+  <section id="text-encodings">
 <h1>Text Encodings<a class="headerlink" href="#text-encodings" title="Permalink to this headline">¶</a></h1>
 <p>Evennia is a text-based game server. This makes it important to understand how
 it actually deals with data in the form of text.</p>
@@ -65,7 +66,7 @@ between the two at the points where we send/receive network data.</p>
 impossible for Evennia to guess which encoding was used - it’s just a bunch of
 bytes! Evennia must know the encoding in order to convert back and from the
 correct unicode representation.</p>
-<div class="section" id="how-to-customize-encodings">
+<section id="how-to-customize-encodings">
 <h2>How to customize encodings<a class="headerlink" href="#how-to-customize-encodings" title="Permalink to this headline">¶</a></h2>
 <p>As long as you stick to the standard ASCII character set (which means the
 normal English characters, basically) you should not have to worry much
@@ -95,8 +96,8 @@ unneccesary overhead. Try to guess the most common encodings you players will
 use and make sure these are tried first. The International <em>UTF-8</em> encoding is
 what Evennia assumes by default (and also what Python/Django use normally). See
 the Wikipedia article <a class="reference external" href="http://en.wikipedia.org/wiki/Text_encodings">here</a> for more help.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

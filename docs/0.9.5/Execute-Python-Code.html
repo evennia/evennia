@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Execute Python Code &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="execute-python-code">
+  <section id="execute-python-code">
 <h1>Execute Python Code<a class="headerlink" href="#execute-python-code" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supplied with the default command set of Evennia allows you to execute Python
 commands directly from inside the game.  An alias to <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> is simply “<code class="docutils literal notranslate"><span class="pre">!</span></code>”. <em>Access to the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>
@@ -55,7 +56,7 @@ code on the server is not something you should entrust to just anybody.</p>
 <span class="o">&lt;&lt;&lt;</span> <span class="mi">3</span>
 </pre></div>
 </div>
-<div class="section" id="available-variables">
+<section id="available-variables">
 <h2>Available variables<a class="headerlink" href="#available-variables" title="Permalink to this headline">¶</a></h2>
 <p>A few local variables are made available when running <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>. These offer entry into the running
 system.</p>
@@ -68,8 +69,8 @@ system.</p>
 <p>For accessing other objects in the same room you need to use <code class="docutils literal notranslate"><span class="pre">self.search(name)</span></code>. For objects in
 other locations, use one of the <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code> methods. See [below](./Execute-Python-Code#finding-
 objects).</p>
-</div>
-<div class="section" id="returning-output">
+</section>
+<section id="returning-output">
 <h2>Returning output<a class="headerlink" href="#returning-output" title="Permalink to this headline">¶</a></h2>
 <p>This is an example where we import and test one of Evennia’s utilities found in
 <code class="docutils literal notranslate"><span class="pre">src/utils/utils.py</span></code>, but also accessible through <code class="docutils literal notranslate"><span class="pre">ev.utils</span></code>:</p>
@@ -99,8 +100,8 @@ displayed as-is.</p>
 </div></blockquote>
 <p>If you were to use Python’s standard <code class="docutils literal notranslate"><span class="pre">print</span></code>, you will see the result in your current <code class="docutils literal notranslate"><span class="pre">stdout</span></code> (your
 terminal by default, otherwise your log file).</p>
-</div>
-<div class="section" id="finding-objects">
+</section>
+<section id="finding-objects">
 <h2>Finding objects<a class="headerlink" href="#finding-objects" title="Permalink to this headline">¶</a></h2>
 <p>A common use for <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> is to explore objects in the database, for debugging and performing specific
 operations that are not covered by a particular command.</p>
@@ -135,8 +136,8 @@ gives you access to the full range of database search methods defined in each ma
 <span class="o">&lt;&lt;&lt;</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">ConfigValue</span><span class="p">:</span> <span class="n">default_home</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">ConfigValue</span><span class="p">:</span><span class="n">site_name</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="testing-code-outside-the-game">
+</section>
+<section id="testing-code-outside-the-game">
 <h2>Testing code outside the game<a class="headerlink" href="#testing-code-outside-the-game" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> has the advantage of operating inside a running server (sharing the same process), where you
 can test things in real time. Much of this <em>can</em> be done from the outside too though.</p>
@@ -163,8 +164,8 @@ Out[3]: [&lt;ObjectDB: Harry&gt;, &lt;ObjectDB: Limbo&gt;, ...]
 </pre></div>
 </div>
 <p>See the page about the <a class="reference internal" href="Evennia-API.html"><span class="doc">Evennia-API</span></a> for more things to explore.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -225,7 +226,6 @@ Out[3]: [&lt;ObjectDB: Harry&gt;, &lt;ObjectDB: Limbo&gt;, ...]
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Execute-Python-Code.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

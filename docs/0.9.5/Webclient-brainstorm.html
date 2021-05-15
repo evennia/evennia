@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Webclient brainstorm &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,13 +46,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="webclient-brainstorm">
+  <section id="webclient-brainstorm">
 <h1>Webclient brainstorm<a class="headerlink" href="#webclient-brainstorm" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="ideas-for-a-future-webclient-gui">
+</section>
+<section id="ideas-for-a-future-webclient-gui">
 <h1>Ideas for a future webclient gui<a class="headerlink" href="#ideas-for-a-future-webclient-gui" title="Permalink to this headline">¶</a></h1>
 <p><em>This is a brainstorming whitepage. Add your own comments in a named section below.</em></p>
-<div class="section" id="from-chat-on-2019-09-02">
+<section id="from-chat-on-2019-09-02">
 <h2>From Chat on 2019/09/02<a class="headerlink" href="#from-chat-on-2019-09-02" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  Griatch (IRC)APP  @friarzen: Could one (with goldenlayout) programmatically provide pane positions
 and sizes?
@@ -248,8 +249,8 @@ For now, good night!
 <hr class="docutils" />
 <p>Relates to the activity happening relating to the <a class="reference external" href="https://github.com/evennia/evennia/issues/614">Webclient extensions task
 #614</a>.</p>
-</div>
-<div class="section" id="griatch-jan-23-2017-post-2">
+</section>
+<section id="griatch-jan-23-2017-post-2">
 <h2>Griatch Jan 23, 2017 post 2<a class="headerlink" href="#griatch-jan-23-2017-post-2" title="Permalink to this headline">¶</a></h2>
 <p>These are my ideas for the functionality of Evennia’s webclient in the (possibly distant) future. It
 assumes the webclient options have been implemented as per
@@ -276,7 +277,7 @@ javascript level.</p>
 tagged data. Just which tags are available is different for each game (and should be reported by the
 server).</p>
 <p>For example, the server could send the return of the “look” command as</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;you see ...&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;pane&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">})</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;you see ...&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;pane&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">})</span>
 </pre></div>
 </td></tr></table></div>
 <p>If one (or more) of the panes is set to receive “look” data, all such will go there. If <em>no</em> pane is
@@ -289,8 +290,8 @@ specific pane (panes?) to limit spam in the log (it might be one reason for havi
 “All” tag, for those wanting to log <em>everything</em>). This could also be set in the dropdown menu or in
 the webclient options window, maybe.</p>
 <p>Comments?</p>
-</div>
-<div class="section" id="titeuf87-jan-23-2017">
+</section>
+<section id="titeuf87-jan-23-2017">
 <h2>titeuf87 Jan 23, 2017<a class="headerlink" href="#titeuf87-jan-23-2017" title="Permalink to this headline">¶</a></h2>
 <p>That way of splitting panes seems easy to manage while still being powerful at the same time.
 It’s certainly a lot more flexible than what I had in mind.</p>
@@ -315,8 +316,8 @@ inventory then that pane won’t be updated, unless more OOB data is added to tr
 <li><p>help/look: those pane should probably also clear their content before displaying new content.</p></li>
 </ul>
 <p>logging: do you mean have a “save to log” item in the pane menu?</p>
-</div>
-<div class="section" id="griatch-jan-23-2017-post-1">
+</section>
+<section id="griatch-jan-23-2017-post-1">
 <h2>Griatch Jan 23, 2017, post 1<a class="headerlink" href="#griatch-jan-23-2017-post-1" title="Permalink to this headline">¶</a></h2>
 <p>It makes sense that different types of panes would have different functionality. I was thinking that
 something like <code class="docutils literal notranslate"><span class="pre">inventory</span></code> would be very specific to a given game. But titeuf87 has a point - maybe
@@ -327,8 +328,8 @@ guess drop/get commands could be wired to do that.</p>
 <p>As for logging - yes I picture a “save to log” thing in the menu. The problem is just where to save
 the log. I think at least for an initial setup, one could maybe set the logging file path in the
 webclient options and just append logs from all the panes marked for logging to that same file.</p>
-</div>
-<div class="section" id="chainsol-3rd-of-october-2017">
+</section>
+<section id="chainsol-3rd-of-october-2017">
 <h2>chainsol 3rd of October, 2017<a class="headerlink" href="#chainsol-3rd-of-october-2017" title="Permalink to this headline">¶</a></h2>
 <p>I’ve been messing a little bit with split.js - I’ve managed to split a split dynamically with a data
 attribute on a button and jQuery. My current thinking on this issue is to use <a class="reference external" href="http://codepb.github.io/jquery-template/">jQuery
@@ -342,8 +343,8 @@ content or replace content - again, perhaps a data attribute.</p>
 <p>We might also want to store “mobile” and “desktop” layouts separately - or just default to a mobile-
 friendly layout at a certain screen size, and turn off the splits.</p>
 <p>Oh, and embedding Bootstrap containers in splits works perfectly - that could help us too.</p>
-</div>
-<div class="section" id="chainsol-9th-of-october-2017">
+</section>
+<section id="chainsol-9th-of-october-2017">
 <h2>chainsol 9th of October, 2017<a class="headerlink" href="#chainsol-9th-of-october-2017" title="Permalink to this headline">¶</a></h2>
 <p>I’ve got a demo of this working at <a class="reference external" href="https://dev.perfectdisorder.net/webclient">my development box</a>,
 if anyone wants to take a look. So far, I’ve got tag handling, dynamic splits, and the ability to
@@ -357,8 +358,8 @@ left split.</p>
 semi-transparent until you hover over it? So far, if you edited the data attributes, you could
 change each split to receive only tagged messages ( data-tag=”all” ), and you could change them to
 overwrite instead of append data ( data-update-append or data-update-overwrite )</p>
-</div>
-<div class="section" id="griatch-oct-13-2017">
+</section>
+<section id="griatch-oct-13-2017">
 <h2>Griatch Oct 13, 2017<a class="headerlink" href="#griatch-oct-13-2017" title="Permalink to this headline">¶</a></h2>
 <p>I would suggest that, assuming the game dev allows the user to modify their GUI in the first place,
 that modification is a “mode”. I picture that 99% of the time a user doesn’t need to modify their
@@ -369,8 +370,8 @@ But you can enter the client settings window and choose <em>Customize GUI mode</
 that). When you do, then separators get handles and the dropdown menu markers appear (permanently)
 in the corner of each pane. This means that if a user <em>wants</em> to easily tweak their window they
 could stay in this mode, but they could also “lock” the gui layout at any time.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -435,7 +436,6 @@ could stay in this mode, but they could also “lock” the gui layout at any ti
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Webclient-brainstorm.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

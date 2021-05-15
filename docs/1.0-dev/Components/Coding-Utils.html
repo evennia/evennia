@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Coding Utils &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,15 +38,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="coding-utils">
+  <section id="coding-utils">
 <h1>Coding Utils<a class="headerlink" href="#coding-utils" title="Permalink to this headline">¶</a></h1>
 <p>Evennia comes with many utilities to help with common coding tasks. Most are accessible directly
 from the flat API, otherwise you can find them in the <code class="docutils literal notranslate"><span class="pre">evennia/utils/</span></code> folder.</p>
-<div class="section" id="searching">
+<section id="searching">
 <h2>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h2>
 <p>A common thing to do is to search for objects. There it’s easiest to use the <code class="docutils literal notranslate"><span class="pre">search</span></code> method defined
 on all objects. This will search for objects in the same location and inside the self object:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The most common time one needs to do this is inside a command body. <code class="docutils literal notranslate"><span class="pre">obj</span> <span class="pre">=</span> <span class="pre">self.caller.search(objname)</span></code> will search inside the caller’s (typically, the character that typed
@@ -55,8 +56,8 @@ also be matched by this search. You will find multiple examples of this function
 command set.</p>
 <p>If you need to search for objects in a code module you can use the functions in
 <code class="docutils literal notranslate"><span class="pre">evennia.utils.search</span></code>. You can access these as shortcuts <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
      <span class="n">obj</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -71,14 +72,14 @@ command set.</p>
 </ul>
 <p>Note that these latter methods will always return a <code class="docutils literal notranslate"><span class="pre">list</span></code> of results, even if the list has one or
 zero entries.</p>
-</div>
-<div class="section" id="create">
+</section>
+<section id="create">
 <h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <p>Apart from the in-game build commands (<code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> etc), you can also build all of Evennia’s game
 entities directly in code (for example when defining new create commands).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>   <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>   <span class="kn">import</span> <span class="nn">evennia</span>
 
    <span class="n">myobj</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_objects</span><span class="p">(</span><span class="s2">&quot;game.gamesrc.objects.myobj.MyObj&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyObj&quot;</span><span class="p">)</span>
 </pre></div>
@@ -93,18 +94,18 @@ entities directly in code (for example when defining new create commands).</p>
 </ul>
 <p>Each of these create-functions have a host of arguments to further customize the created entity. See
 <code class="docutils literal notranslate"><span class="pre">evennia/utils/create.py</span></code> for more information.</p>
-</div>
-<div class="section" id="logging">
+</section>
+<section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
 <p>Normally you can use Python <code class="docutils literal notranslate"><span class="pre">print</span></code> statements to see output to the terminal/log. The <code class="docutils literal notranslate"><span class="pre">print</span></code>
 statement should only be used for debugging though. For producion output, use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> which
 will create proper logs either to terminal or to file.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
      <span class="c1">#</span>
      <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;This is an Error!&quot;</span><span class="p">)</span>
      <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;This is a Warning!&quot;</span><span class="p">)</span>
@@ -115,10 +116,10 @@ will create proper logs either to terminal or to file.</p>
 <p>There is a special log-message type, <code class="docutils literal notranslate"><span class="pre">log_trace()</span></code> that is intended to be called from inside a
 traceback - this can be very useful for relaying the traceback message back to log without having it
 kill the server.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">try</span><span class="p">:</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">try</span><span class="p">:</span>
        <span class="c1"># [some code that may fail...]</span>
      <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;This text will show beneath the traceback itself.&quot;</span><span class="p">)</span>
@@ -128,41 +129,41 @@ kill the server.</p>
 is a heavily optimized asynchronous log mechanism using
 <a class="reference external" href="https://en.wikipedia.org/wiki/Thread_%28computing%29">threads</a> to avoid overhead. You should be
 able to use it for very heavy custom logging without fearing disk-write delays.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;mylog.log&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;mylog.log&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>If not an absolute path is given, the log file will appear in the <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code> directory.
 If the file already exists, it will be appended to. Timestamps on the same format as the normal
 Evennia logs will be automatically added to each entry.  If a filename is not specified, output will
 be written to a file <code class="docutils literal notranslate"><span class="pre">game/logs/game.log</span></code>.</p>
-</div>
-<div class="section" id="time-utilities">
+</section>
+<section id="time-utilities">
 <h2>Time Utilities<a class="headerlink" href="#time-utilities" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="game-time">
+<section id="game-time">
 <h3>Game time<a class="headerlink" href="#game-time" title="Permalink to this headline">¶</a></h3>
 <p>Evennia tracks the current server time. You can access this time via the <code class="docutils literal notranslate"><span class="pre">evennia.gametime</span></code>
 shortcut:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">gametime</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">gametime</span>
 
 <span class="c1"># all the functions below return times in seconds).</span>
 
@@ -191,13 +192,13 @@ setting <code class="docutils literal notranslate"><span class="pre">TIME_GAME_E
 you desire for your game. You can use the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command to view the server time info.</p>
 <p>You can also <em>schedule</em> things to happen at specific in-game times using the
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.gametime#schedule">gametime.schedule</a> function:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
 
 <span class="k">def</span> <span class="nf">church_clock</span><span class="p">:</span>
     <span class="n">limbo</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Limbo&quot;</span><span class="p">)</span>
@@ -206,8 +207,8 @@ you desire for your game. You can use the <code class="docutils literal notransl
 <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">church_clock</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="utils-time-format">
+</section>
+<section id="utils-time-format">
 <h3>utils.time_format()<a class="headerlink" href="#utils-time-format" title="Permalink to this headline">¶</a></h3>
 <p>This function takes a number of seconds as input (e.g. from the <code class="docutils literal notranslate"><span class="pre">gametime</span></code> module above) and
 converts it to a nice text output in days, hours etc. It’s useful when you want to show how old
@@ -218,18 +219,18 @@ something is. It converts to four different styles of output using the <em>style
 <li><p>style 2 - <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">days,</span> <span class="pre">45</span> <span class="pre">minutes</span></code> (full format, ignores seconds)</p></li>
 <li><p>style 3 - <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">days,</span> <span class="pre">45</span> <span class="pre">minutes,</span> <span class="pre">12</span> <span class="pre">seconds</span></code> (full format, with seconds)</p></li>
 </ul>
-</div>
-<div class="section" id="utils-delay">
+</section>
+<section id="utils-delay">
 <h3>utils.delay()<a class="headerlink" href="#utils-delay" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
@@ -256,11 +257,11 @@ tasks, see the <a class="reference internal" href="TickerHandler.html"><span cla
 if you have a trait that should recover a point every 5 seconds you might just need its value when
 it’s needed, but checking the current time and calculating on the fly what value it should have.</p>
 </div></blockquote>
-</div>
-</div>
-<div class="section" id="object-classes">
+</section>
+</section>
+<section id="object-classes">
 <h2>Object Classes<a class="headerlink" href="#object-classes" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="utils-inherits-from">
+<section id="utils-inherits-from">
 <h3>utils.inherits_from()<a class="headerlink" href="#utils-inherits-from" title="Permalink to this headline">¶</a></h3>
 <p>This useful function takes two arguments - an object to check and a parent. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if
 object inherits from parent <em>at any distance</em> (as opposed to Python’s in-built <code class="docutils literal notranslate"><span class="pre">is_instance()</span></code> that
@@ -272,41 +273,41 @@ to check if an object inherits from a given <a class="reference internal" href="
 for example that we have a typeclass <em>Animal</em>. This has a subclass <em>Felines</em> which in turn has a
 subclass <em>HouseCat</em>. Maybe there are a bunch of other animal types too, like horses and dogs. Using
 <code class="docutils literal notranslate"><span class="pre">inherits_from</span></code> will allow you to check for all animals in one go:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
      <span class="k">if</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;typeclasses.objects.animals.Animal&quot;</span><span class="p">):</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The bouncer stops you in the door. He says: &#39;No talking animals allowed.&#39;&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-</div>
-<div class="section" id="text-utilities">
+</section>
+</section>
+<section id="text-utilities">
 <h2>Text utilities<a class="headerlink" href="#text-utilities" title="Permalink to this headline">¶</a></h2>
 <p>In a text game, you are naturally doing a lot of work shuffling text back and forth. Here is a <em>non-
 complete</em> selection of text utilities found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/utils.py</span></code> (shortcut <code class="docutils literal notranslate"><span class="pre">evennia.utils</span></code>).
 If nothing else it can be good to look here before starting to develop a solution of your own.</p>
-<div class="section" id="utils-fill">
+<section id="utils-fill">
 <h3>utils.fill()<a class="headerlink" href="#utils-fill" title="Permalink to this headline">¶</a></h3>
 <p>This flood-fills a text to a given width (shuffles the words to make each line evenly wide). It also
 indents as needed.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">outtxt</span> <span class="o">=</span> <span class="n">fill</span><span class="p">(</span><span class="n">intxt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">outtxt</span> <span class="o">=</span> <span class="n">fill</span><span class="p">(</span><span class="n">intxt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="utils-crop">
+</section>
+<section id="utils-crop">
 <h3>utils.crop()<a class="headerlink" href="#utils-crop" title="Permalink to this headline">¶</a></h3>
 <p>This function will crop a very long line, adding a suffix to show the line actually continues. This
 can be useful in listings when showing multiple lines would mess up things.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">intxt</span> <span class="o">=</span> <span class="s2">&quot;This is a long text that we want to crop.&quot;</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">intxt</span> <span class="o">=</span> <span class="s2">&quot;This is a long text that we want to crop.&quot;</span>
      <span class="n">outtxt</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">intxt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;[...]&quot;</span><span class="p">)</span>
      <span class="c1"># outtxt is now &quot;This is a long text[...]&quot;</span>
 </pre></div>
 </td></tr></table></div>
-</div>
-<div class="section" id="utils-dedent">
+</section>
+<section id="utils-dedent">
 <h3>utils.dedent()<a class="headerlink" href="#utils-dedent" title="Permalink to this headline">¶</a></h3>
 <p>This solves what may at first glance appear to be a trivial problem with text - removing
 indentations. It is used to shift entire paragraphs to the left, without disturbing any further
@@ -315,15 +316,15 @@ formatting they may have. A common case for this is when using Python triple-quo
 <li><p>they will retain whichever indentation they have in the code, and to make easily-readable source
 code one usually don’t want to shift the string to the left edge.</p></li>
 </ul>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#python code is entered at a given indentation</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#python code is entered at a given indentation</span>
           <span class="n">intxt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">          This is an example text that will end</span>
 <span class="s2">          up with a lot of whitespace on the left.</span>
@@ -336,8 +337,8 @@ code one usually don’t want to shift the string to the left edge.</p></li>
 </td></tr></table></div>
 <p>Normally you do the dedent in the display code (this is for example how the help system homogenizes
 help entries).</p>
-</div>
-<div class="section" id="to-str-and-to-bytes">
+</section>
+<section id="to-str-and-to-bytes">
 <h3>to_str() and to_bytes()<a class="headerlink" href="#to-str-and-to-bytes" title="Permalink to this headline">¶</a></h3>
 <p>Evennia supplies two utility functions for converting text to the correct
 encodings. <code class="docutils literal notranslate"><span class="pre">to_str()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_bytes()</span></code>. Unless you are adding a custom protocol and
@@ -346,17 +347,17 @@ need to send byte-data over the wire, <code class="docutils literal notranslate"
 the Evennia ones makes use of the <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> setting and will try very hard to
 never raise a traceback but instead echo errors through logging. See
 <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc">here</span></a> for more info.</p>
-</div>
-<div class="section" id="ansi-coloring-tools">
+</section>
+<section id="ansi-coloring-tools">
 <h3>Ansi Coloring Tools<a class="headerlink" href="#ansi-coloring-tools" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="../api/evennia.utils.ansi.html">evennia.ansi</a></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="display-utilities">
+</section>
+</section>
+<section id="display-utilities">
 <h2>Display utilities<a class="headerlink" href="#display-utilities" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="making-ascii-tables">
+<section id="making-ascii-tables">
 <h3>Making ascii tables<a class="headerlink" href="#making-ascii-tables" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable#evtable">EvTable</a> class (<code class="docutils literal notranslate"><span class="pre">evennia/utils/evtable.py</span></code>) can be used
 to create correctly formatted text tables. There is also
@@ -367,15 +368,15 @@ and evform have lots of options and inputs so see the header of each module for 
 Evennia. PrettyTable is considered deprecated in favor of EvTable since PrettyTable cannot handle
 ANSI colour. PrettyTable can be found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/prettytable/</span></code>.  See its homepage above for
 instructions.</p>
-</div>
-<div class="section" id="menus">
+</section>
+<section id="menus">
 <h3>Menus<a class="headerlink" href="#menus" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evmenu#evmenu">evennia.EvMenu</a></p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

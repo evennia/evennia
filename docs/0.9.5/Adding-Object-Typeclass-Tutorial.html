@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Adding Object Typeclass Tutorial &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="adding-object-typeclass-tutorial">
+  <section id="adding-object-typeclass-tutorial">
 <h1>Adding Object Typeclass Tutorial<a class="headerlink" href="#adding-object-typeclass-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>Evennia comes with a few very basic classes of in-game entities:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DefaultObject</span>
@@ -68,15 +69,15 @@ this tutorial.</p>
 <p>For your own game you will most likely want to expand on these very simple beginnings. It’s normal
 to want your Characters to have various attributes, for example. Maybe Rooms should hold extra
 information or even <em>all</em> Objects in your game should have properties not included in basic Evennia.</p>
-<div class="section" id="change-default-rooms-exits-character-typeclass">
+<section id="change-default-rooms-exits-character-typeclass">
 <h2>Change Default Rooms, Exits, Character Typeclass<a class="headerlink" href="#change-default-rooms-exits-character-typeclass" title="Permalink to this headline">¶</a></h2>
 <p>This is the simplest case.</p>
 <p>The default build commands of a new Evennia game is set up to use the <code class="docutils literal notranslate"><span class="pre">Room</span></code>, <code class="docutils literal notranslate"><span class="pre">Exit</span></code> and <code class="docutils literal notranslate"><span class="pre">Character</span></code>
 classes found in the same-named modules under <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code>. By default these are empty and
 just implements the default parents from the Evennia library (<code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code>etc). Just add the
 changes you want to these classes and run <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to add your new functionality.</p>
-</div>
-<div class="section" id="create-a-new-type-of-object">
+</section>
+<section id="create-a-new-type-of-object">
 <h2>Create a new type of object<a class="headerlink" href="#create-a-new-type-of-object" title="Permalink to this headline">¶</a></h2>
 <p>Say you want to create a new “Heavy” object-type that characters should not have the ability to pick
 up.</p>
@@ -86,20 +87,20 @@ like <code class="docutils literal notranslate"><span class="pre">heavy.py</span
 <li><p>Create a new class inheriting at any distance from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. It could look something like
 this:</p></li>
 </ol>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># end of file mygame/typeclasses/objects.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># end of file mygame/typeclasses/objects.py</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
     
     <span class="k">class</span> <span class="nc">Heavy</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -123,8 +124,8 @@ your class.</p></li>
 </ol>
 <p>Note that the <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a> and <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> which are set in the typeclass could just
 as well have been set using commands in-game, so this is a <em>very</em> simple example.</p>
-</div>
-<div class="section" id="storing-data-on-initialization">
+</section>
+<section id="storing-data-on-initialization">
 <h2>Storing data on initialization<a class="headerlink" href="#storing-data-on-initialization" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is only called once, when the object is first created. This makes it ideal
 for database-bound things like <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>. But sometimes you want to create temporary
@@ -138,9 +139,9 @@ hit the database with the same value over and over. Put those in <code class="do
 <p>You are wise to use <code class="docutils literal notranslate"><span class="pre">ndb</span></code> (non-database Attributes) to store these non-persistent properties, since
 ndb-properties are protected against being cached out in various ways and also allows you to list
 them using various in-game tools:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">mylist</span> <span class="o">=</span> <span class="p">[]</span>
 </pre></div>
@@ -150,8 +151,8 @@ them using various in-game tools:</p>
 the standard <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method of typeclasses due to how the latter may be called in situations
 other than you’d expect. So use <code class="docutils literal notranslate"><span class="pre">at_init</span></code> where you would normally use <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="updating-existing-objects">
+</section>
+<section id="updating-existing-objects">
 <h2>Updating existing objects<a class="headerlink" href="#updating-existing-objects" title="Permalink to this headline">¶</a></h2>
 <p>If you already have some <code class="docutils literal notranslate"><span class="pre">Heavy</span></code> objects created and you add a new <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> in
 <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>, you will find that those existing objects will not have this Attribute. This
@@ -164,8 +165,8 @@ objects you can use <code class="docutils literal notranslate"><span class="pre"
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Heavy</span><span class="p">;</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">Heavy</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -226,7 +227,6 @@ objects you can use <code class="docutils literal notranslate"><span class="pre"
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Adding-Object-Typeclass-Tutorial.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

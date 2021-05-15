@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.server.server &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,13 +37,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.server.server">
+  <section id="module-evennia.server.server">
 <span id="evennia-server-server"></span><h1>evennia.server.server<a class="headerlink" href="#module-evennia.server.server" title="Permalink to this headline">¶</a></h1>
-<p>This module implements the main Evennia server process, the core of
-the game engine.</p>
-<p>This module should be started with the ‘twistd’ executable since it
-sets up all the networking features.  (this is done automatically
-by evennia/server/server_runner.py).</p>
+<p>This module implements the main Evennia server process, the core of the game
+engine.</p>
+<p>This module should be started with the ‘twistd’ executable since it sets up all
+the networking features.  (this is done automatically by
+evennia/server/server_runner.py).</p>
 <dl class="py class">
 <dt id="evennia.server.server.Evennia">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.server.</code><code class="sig-name descname">Evennia</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">application</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/server.html#Evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.server.Evennia" title="Permalink to this definition">¶</a></dt>
@@ -99,19 +100,19 @@ Once finished the last_initial_setup_step is set to -1.</p>
 <dt id="evennia.server.server.Evennia.shutdown">
 <code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'reload'</span></em>, <em class="sig-param"><span class="n">_reactor_stopping</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/server.html#Evennia.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.server.Evennia.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shuts down the server from inside it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> (<em>str</em>) – Sets the server restart mode:</p></li>
-<li><p><strong>'reload'</strong> (<em>-</em>) – server restarts, no “persistent” scripts
+<dl class="simple">
+<dt>mode - sets the server restart mode.</dt><dd><ul class="simple">
+<li><p>‘reload’ - server restarts, no “persistent” scripts
 are stopped, at_reload hooks called.</p></li>
-<li><p><strong>'reset' - server restarts</strong><strong>, </strong><strong>non-persistent scripts stopped</strong><strong>,</strong> (<em>-</em>) – at_shutdown hooks called but sessions will not
+<li><p>‘reset’ - server restarts, non-persistent scripts stopped,
+at_shutdown hooks called but sessions will not
 be disconnected.</p></li>
-<li><p><strong>- like reset</strong><strong>, </strong><strong>but server will not auto-restart.</strong> (<em>-'shutdown'</em>) – </p></li>
-<li><p><strong>_reactor_stopping</strong> – This is set if server is stopped by a kill
-command OR this method was already called
-once - in both cases the reactor is dead/stopping already.</p></li>
+<li><p>‘shutdown’ - like reset, but server will not auto-restart.</p></li>
 </ul>
+</dd>
+<dt>_reactor_stopping - this is set if server is stopped by a kill</dt><dd><p>command OR this method was already called
+once - in both cases the reactor is
+dead/stopping already.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -175,7 +176,7 @@ shutdown or a reset.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -219,7 +220,6 @@ shutdown or a reset.</p>
   <li><a href="../../1.0-dev/api/evennia.server.server.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.server.server.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

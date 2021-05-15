@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>evennia.typeclasses.managers &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-evennia.typeclasses.managers">
+  <section id="module-evennia.typeclasses.managers">
 <span id="evennia-typeclasses-managers"></span><h1>evennia.typeclasses.managers<a class="headerlink" href="#module-evennia.typeclasses.managers" title="Permalink to this headline">¶</a></h1>
 <p>This implements the common managers that are used by the
 abstract models in dbobjects.py (and which are thus shared by
@@ -49,15 +50,13 @@ all Attributes and TypedObjects).</p>
 <dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_attribute">
 <code class="sig-name descname">get_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attrtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return Attribute objects by key, by category, by value, by
-<strong>strvalue</strong>, by object (it is stored on) or with a combination of
-those criteria.</p>
+<dd><p>Return Attribute objects by key, by category, by value, by strvalue, by
+object (it is stored on) or with a combination of those criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The attribute’s key to search for.</p></li>
-<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the attribute(s)
-to search for.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The attribute’s key to search for</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of the attribute(s) to search for.</p></li>
 <li><p><strong>value</strong> (<em>str</em><em>, </em><em>optional</em>) – The attribute value to search for.
 Note that this is not a very efficient operation since it
 will query for a pickled entity. Mutually exclusive to
@@ -68,14 +67,14 @@ mutually exclusive to the <strong>value</strong> keyword and will take
 precedence if given.</p></li>
 <li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – On which object the Attribute to
 search for is.</p></li>
-<li><p><strong>attrtype</strong> (<em>str</em><em>, </em><em>optional</em>) – An attribute-type to search for.
+<li><p><strong>attrype</strong> (<em>str</em><em>, </em><em>optional</em>) – An attribute-type to search for.
 By default this is either <strong>None</strong> (normal Attributes) or
 <strong>“nick”</strong>.</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em>) – Currently unused. Reserved for future use.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Currently unused. Reserved for future use.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>attributes (list)</em> – The matching Attributes.</p>
+<dd class="field-even"><p><em>list</em> – The matching Attributes.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -167,7 +166,7 @@ stored on) or with a combination of those criteria.</p>
 to search for.</p></li>
 <li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – On which object the Tag to
 search for is.</p></li>
-<li><p><strong>tagtype</strong> (<em>str</em><em>, </em><em>optional</em>) – One of None (normal tags),
+<li><p><strong>tagtype</strong> (<em>str</em><em>, </em><em>optional</em>) – One of <strong>None</strong> (normal tags),
 “alias” or “permission”</p></li>
 <li><p><strong>global_search</strong> (<em>bool</em><em>, </em><em>optional</em>) – Include all possible tags,
 not just tags on this object</p></li>
@@ -447,7 +446,7 @@ Mutually exclusive to <strong>include_children</strong>.</p></li>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -491,7 +490,6 @@ Mutually exclusive to <strong>include_children</strong>.</p></li>
   <li><a href="../../1.0-dev/api/evennia.typeclasses.managers.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.typeclasses.managers.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

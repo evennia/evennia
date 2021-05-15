@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>How to connect Evennia to Twitter &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="how-to-connect-evennia-to-twitter">
+  <section id="how-to-connect-evennia-to-twitter">
 <h1>How to connect Evennia to Twitter<a class="headerlink" href="#how-to-connect-evennia-to-twitter" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/twitter">Twitter</a> is an online social networking service that enables
 users to send and read short 280-character messages called “tweets”. Following is a short tutorial
 explaining how to enable users to send tweets from inside Evennia.</p>
-<div class="section" id="configuring-twitter">
+<section id="configuring-twitter">
 <h2>Configuring Twitter<a class="headerlink" href="#configuring-twitter" title="Permalink to this headline">¶</a></h2>
 <p>You must first have a Twitter account. Log in and register an App at the <a class="reference external" href="https://apps.twitter.com/">Twitter Dev
 Site</a>. Make sure you enable access to “write” tweets!</p>
@@ -60,15 +61,15 @@ Site</a>. Make sure you enable access to “write” tweets!</p>
 apps with write access.  If you’re unable to do this, please see <a class="reference external" href="https://dev.twitter.com/notifications/new-apps-registration">this Dev
 post</a> which describes how to get around
 it.</p>
-</div>
-<div class="section" id="install-the-twitter-python-module">
+</section>
+<section id="install-the-twitter-python-module">
 <h2>Install the twitter python module<a class="headerlink" href="#install-the-twitter-python-module" title="Permalink to this headline">¶</a></h2>
 <p>To use Twitter you must install the <a class="reference external" href="https://pypi.python.org/pypi/twitter">Twitter</a> Python module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">twitter</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="a-basic-tweet-command">
+</section>
+<section id="a-basic-tweet-command">
 <h2>A basic tweet command<a class="headerlink" href="#a-basic-tweet-command" title="Permalink to this headline">¶</a></h2>
 <p>Evennia doesn’t have a <code class="docutils literal notranslate"><span class="pre">tweet</span></code> command out of the box so you need to write your own little
 <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> in order to tweet. If you are unsure about how commands work and how to add
@@ -77,50 +78,50 @@ before continuing.</p>
 <p>You can create the command in a separate command module (something like <code class="docutils literal notranslate"><span class="pre">mygame/commands/tweet.py</span></code>)
 or together with your other custom commands, as you prefer.</p>
 <p>This is how it can look:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">twitter</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">twitter</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="c1"># here you insert your unique App tokens</span>
@@ -173,8 +174,8 @@ permission to <code class="docutils literal notranslate"><span class="pre">Playe
 <p>Now add this command to your default command set (e.g in <code class="docutils literal notranslate"><span class="pre">mygame/commands/defalt_cmdsets.py</span></code>”) and
 reload the server. From now on those with access can simply use <code class="docutils literal notranslate"><span class="pre">tweet</span> <span class="pre">&lt;message&gt;</span></code> to see the tweet
 posted from the game’s Twitter account.</p>
-</div>
-<div class="section" id="next-steps">
+</section>
+<section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <p>This shows only a basic tweet setup, other things to do could be:</p>
 <ul class="simple">
@@ -186,8 +187,8 @@ posted from the game’s Twitter account.</p>
 <p>Rather than using an explicit command you can set up a Script to send automatic tweets, for example
 to post updated game stats. See the <a class="reference internal" href="Tutorial-Tweeting-Game-Stats.html"><span class="doc">Tweeting Game Stats tutorial</span></a> for
 help.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -248,7 +249,6 @@ help.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="How-to-connect-Evennia-to-Twitter.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

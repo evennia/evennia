@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Building Permissions &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,11 +38,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="building-permissions">
+  <section id="building-permissions">
 <h1>Building Permissions<a class="headerlink" href="#building-permissions" title="Permalink to this headline">¶</a></h1>
 <p><em>OBS: This gives only a brief introduction to the access system. Locks and permissions are fully
 detailed</em> <a class="reference internal" href="../Components/Locks.html"><span class="doc">here</span></a>.</p>
-<div class="section" id="the-super-user">
+<section id="the-super-user">
 <h2>The super user<a class="headerlink" href="#the-super-user" title="Permalink to this headline">¶</a></h2>
 <p>There are strictly speaking two types of users in Evennia, the <em>super user</em> and everyone else. The
 superuser is the first user you create, object <code class="docutils literal notranslate"><span class="pre">#1</span></code>. This is the all-powerful server-owner account.
@@ -49,8 +50,8 @@ Technically the superuser not only has access to everything, it <em>bypasses</em
 entirely. This makes the superuser impossible to lock out, but makes it unsuitable to actually play-
 test the game’s locks and restrictions with (see <code class="docutils literal notranslate"><span class="pre">&#64;quell</span></code> below). Usually there is no need to have
 but one superuser.</p>
-</div>
-<div class="section" id="assigning-permissions">
+</section>
+<section id="assigning-permissions">
 <h2>Assigning permissions<a class="headerlink" href="#assigning-permissions" title="Permalink to this headline">¶</a></h2>
 <p>Whereas permissions can be used for anything, those put in <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code> will have
 a ranking relative each other as well. We refer to these types of permissions as <em>hierarchical
@@ -90,9 +91,9 @@ any eventual <em>Character</em> that may also be named “Tommy”. This is usua
 Account will then remain an Developer regardless of which Character they are currently controlling.
 To limit permission to a per-Character level you should instead use <em>quelling</em> (see below). Normally
 permissions can be any string, but for these special hierarchical permissions you can also use
-plural (“Developer” and “Developers” both grant the same powers).</p>
-</div>
-<div class="section" id="quelling-your-permissions">
+plural (”Developer” and “Developers” both grant the same powers).</p>
+</section>
+<section id="quelling-your-permissions">
 <h2>Quelling your permissions<a class="headerlink" href="#quelling-your-permissions" title="Permalink to this headline">¶</a></h2>
 <p>When developing it can be useful to check just how things would look had your permission-level been
 lower. For this you can use <em>quelling</em>.  Normally, when you puppet a Character you are using your
@@ -106,8 +107,8 @@ Character’s permission takes precedence instead:</p>
 or builder can thus in principle maintain several test characters, all using different permission
 levels. Note that you cannot escalate your permissions this way; If the Character happens to have a
 <em>higher</em> permission level than the Account, the <em>Account’s</em> (lower) permission will still be used.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

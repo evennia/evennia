@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Evennia for MUSH Users &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,7 +38,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="evennia-for-mush-users">
+  <section id="evennia-for-mush-users">
 <h1>Evennia for MUSH Users<a class="headerlink" href="#evennia-for-mush-users" title="Permalink to this headline">¶</a></h1>
 <p><em>This page is adopted from an article originally posted for the MUSH community <a class="reference external" href="http://musoapbox.net/topic/1150/evennia-for-mushers">here on
 musoapbox.net</a>.</em></p>
@@ -53,7 +54,7 @@ language. We will refer to this online scripting as <em>softcode</em> here.</p>
 <p>Evennia works quite differently from a MUSH both in its overall design and under the hood. The same
 things are achievable, just in a different way. Here are some fundamental differences to keep in
 mind if you are coming from the MUSH world.</p>
-<div class="section" id="developers-vs-players">
+<section id="developers-vs-players">
 <h2>Developers vs Players<a class="headerlink" href="#developers-vs-players" title="Permalink to this headline">¶</a></h2>
 <p>In MUSH, users tend to code and expand all aspects of the game from inside it using softcode. A MUSH
 can thus be said to be managed solely by <em>Players</em> with different levels of access. Evennia on the
@@ -70,8 +71,8 @@ may get access to Python via the <code class="docutils literal notranslate"><spa
 to use. So the <em>Player</em> usually operates by making use of the tools prepared for them by the
 <em>Developer</em> - tools that can be as rigid or flexible as the developer desires.</p></li>
 </ul>
-</div>
-<div class="section" id="collaborating-on-a-game-python-vs-softcode">
+</section>
+<section id="collaborating-on-a-game-python-vs-softcode">
 <h2>Collaborating on a game - Python vs Softcode<a class="headerlink" href="#collaborating-on-a-game-python-vs-softcode" title="Permalink to this headline">¶</a></h2>
 <p>For a <em>Player</em>, collaborating on a game need not be too different between MUSH and Evennia. The
 building and description of the game world can still happen mostly in-game using build commands,
@@ -90,8 +91,8 @@ websites like github (or bitbucket for a free private repo). Source code can be 
 text editors and IDEs with refactoring, syntax highlighting and all other conveniences. In short,
 collaborative development of an Evennia game is done in the same way most professional collaborative
 development is done in the world, meaning all the best tools can be used.</p>
-</div>
-<div class="section" id="parent-vs-typeclass-and-spawn">
+</section>
+<section id="parent-vs-typeclass-and-spawn">
 <h2><code class="docutils literal notranslate"><span class="pre">&#64;parent</span></code> vs <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code><a class="headerlink" href="#parent-vs-typeclass-and-spawn" title="Permalink to this headline">¶</a></h2>
 <p>Inheritance works differently in Python than in softcode. Evennia has no concept of a “master
 object” that other objects inherit from. There is in fact no reason at all to introduce “virtual
@@ -119,11 +120,11 @@ based inheritance of MUSH.</p>
 <p>There are other differences for sure, but that should give some feel for things. Enough with the
 theory. Let’s get down to more practical  matters next. To install, see the
 <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Getting Started instructions</span></a>.</p>
-</div>
-<div class="section" id="a-first-step-making-things-more-familiar">
+</section>
+<section id="a-first-step-making-things-more-familiar">
 <h2>A first step making things more familiar<a class="headerlink" href="#a-first-step-making-things-more-familiar" title="Permalink to this headline">¶</a></h2>
 <p>We will here give two examples of customizing Evennia to be more familiar to a MUSH <em>Player</em>.</p>
-<div class="section" id="activating-a-multi-descer">
+<section id="activating-a-multi-descer">
 <h3>Activating a multi-descer<a class="headerlink" href="#activating-a-multi-descer" title="Permalink to this headline">¶</a></h3>
 <p>By default Evennia’s <code class="docutils literal notranslate"><span class="pre">desc</span></code> command updates your description and that’s it. There is a more feature-
 rich optional “multi-descer” in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/multidesc.py</span></code> though. This alternative allows for
@@ -134,29 +135,29 @@ Open the module in a text editor. We won’t go into Evennia in-game <em>Command
 further here, but suffice to say Evennia allows you to change which commands (or versions of
 commands) are available to the player from moment to moment depending on circumstance.</p>
 <p>Add two new lines to the module as seen below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># the file mygame/commands/default_cmdsets.py</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># the file mygame/commands/default_cmdsets.py</span>
 <span class="c1"># [...] </span>
 
 <span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">multidescer</span>   <span class="c1"># &lt;- added now</span>
@@ -194,12 +195,12 @@ add it to the <code class="docutils literal notranslate"><span class="pre">Chara
 start. So we need to reload Evennia with <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> - no one will be disconnected by doing this. If
 all went well you should now be able to use <code class="docutils literal notranslate"><span class="pre">desc</span></code> (or <code class="docutils literal notranslate"><span class="pre">+desc</span></code>) and find that you have more
 possibilities:</p>
-<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6</pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; help +desc                  # get help on the command
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; help +desc                  # get help on the command
 &gt; +desc eyes = His eyes are blue. 
 &gt; +desc basic = A big guy.
 &gt; +desc/set basic + + eyes    # we add an extra space between
@@ -212,12 +213,12 @@ where the error occurred. Find where the error is by locating the line number re
 <code class="docutils literal notranslate"><span class="pre">default_cmdsets.py</span></code> file (it’s the only one you’ve changed so far). Most likely you mis-spelled
 something or missed the indentation. Fix it and either <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> again or run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> as
 needed.</p>
-</div>
-<div class="section" id="customizing-the-multidescer-syntax">
+</section>
+<section id="customizing-the-multidescer-syntax">
 <h3>Customizing the multidescer syntax<a class="headerlink" href="#customizing-the-multidescer-syntax" title="Permalink to this headline">¶</a></h3>
 <p>As seen above the multidescer uses syntax like this  (where <code class="docutils literal notranslate"><span class="pre">|/</span></code> are Evennia’s tags for line breaks)
 :</p>
-<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; +desc/set basic + |/|/ + cape + footwear + |/|/ + attitude 
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; +desc/set basic + |/|/ + cape + footwear + |/|/ + attitude 
 </pre></div>
 </td></tr></table></div>
 <p>This use of <code class="docutils literal notranslate"><span class="pre">+</span> </code> was prescribed by the <em>Developer</em> that coded this <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command. What if the
@@ -226,7 +227,7 @@ necessarily. While Evennia does not allow the player to build their own multi-de
 line, it does allow for <em>re-mapping</em> the command syntax to one they prefer. This is done using the
 <code class="docutils literal notranslate"><span class="pre">nick</span></code> command.</p>
 <p>Here’s a nick that changes how to input the command above:</p>
-<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; nick setdesc $1 $2 $3 $4 = +desc/set $1 + |/|/ + $2 + $3 + |/|/ + $4
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; nick setdesc $1 $2 $3 $4 = +desc/set $1 + |/|/ + $2 + $3 + |/|/ + $4
 </pre></div>
 </td></tr></table></div>
 <p>The string on the left will be matched against your input and if matching, it will be replaced with
@@ -234,14 +235,14 @@ the string on the right. The <code class="docutils literal notranslate"><span cl
 the replacement. The nick allows <a class="reference external" href="http://www.linfo.org/wildcard.html">shell-like wildcards</a>, so you
 can use <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">?</span></code>, <code class="docutils literal notranslate"><span class="pre">[...]</span></code>, <code class="docutils literal notranslate"><span class="pre">[!...]</span></code> etc to match parts of the input.</p>
 <p>The same description as before can now be set as</p>
-<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; setdesc basic cape footwear attitude 
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; setdesc basic cape footwear attitude 
 </pre></div>
 </td></tr></table></div>
 <p>With the <code class="docutils literal notranslate"><span class="pre">nick</span></code> functionality players can mitigate a lot of syntax dislikes even without the
 developer changing the underlying Python code.</p>
-</div>
-</div>
-<div class="section" id="next-steps">
+</section>
+</section>
+<section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <p>If you are a <em>Developer</em> and are interested in making a more MUSH-like Evennia game, a good start is
 to look into the Evennia <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Tutorial for a first MUSH-like game</span></a>.
@@ -258,8 +259,8 @@ to try out. If you feel you want a more visual overview you can also look at
 <p>… And of course, if you need further help you can always drop into the <a class="reference external" href="http://webchat.freenode.net/?channels=evennia&amp;uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">Evennia
 chatroom</a>
 or post a question in our <a class="reference external" href="https://groups.google.com/forum/#%21forum/evennia">forum/mailing list</a>!</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

@@ -50,8 +50,13 @@
 
 <span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">botocore.exceptions</span> <span class="kn">import</span> <span class="n">ClientError</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.awsstorage</span> <span class="kn">import</span> <span class="n">aws_s3_cdn</span> <span class="k">as</span> <span class="n">s3boto3</span>
+<span class="n">_SKIP</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">botocore.exceptions</span> <span class="kn">import</span> <span class="n">ClientError</span>
+    <span class="kn">from</span> <span class="nn">evennia.contrib.awsstorage</span> <span class="kn">import</span> <span class="n">aws_s3_cdn</span> <span class="k">as</span> <span class="n">s3boto3</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_SKIP</span> <span class="o">=</span> <span class="kc">True</span>
+
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">django.utils.six.moves.urllib</span> <span class="kn">import</span> <span class="n">parse</span> <span class="k">as</span> <span class="n">urlparse</span>
@@ -65,13 +70,15 @@
     <span class="kn">import</span> <span class="nn">mock</span>
 
 
-<div class="viewcode-block" id="S3Boto3TestCase"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3TestCase">[docs]</a><span class="k">class</span> <span class="nc">S3Boto3TestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3TestCase"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3TestCase">[docs]</a><span class="nd">@skipIf</span><span class="p">(</span><span class="n">_SKIP</span><span class="p">,</span> <span class="s2">&quot;botocore not installed&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">S3Boto3TestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="S3Boto3TestCase.setUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3TestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">s3boto3</span><span class="o">.</span><span class="n">S3Boto3Storage</span><span class="p">(</span><span class="n">access_key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">secret_key</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="S3Boto3StorageTests"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3StorageTests">[docs]</a><span class="k">class</span> <span class="nc">S3Boto3StorageTests</span><span class="p">(</span><span class="n">S3Boto3TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageTests"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3StorageTests">[docs]</a><span class="nd">@skipIf</span><span class="p">(</span><span class="n">_SKIP</span><span class="p">,</span> <span class="s2">&quot;botocore not installed&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">S3Boto3StorageTests</span><span class="p">(</span><span class="n">S3Boto3TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="S3Boto3StorageTests.test_clean_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.tests.html#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the base case of _clean_name</span>

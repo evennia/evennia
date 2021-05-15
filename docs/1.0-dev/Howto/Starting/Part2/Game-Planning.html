@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>On Planning a Game &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -47,7 +48,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="on-planning-a-game">
+  <section id="on-planning-a-game">
 <h1>On Planning a Game<a class="headerlink" href="#on-planning-a-game" title="Permalink to this headline">¶</a></h1>
 <p>Last lesson we asked ourselves some questions about our motivation. In this one we’ll present
 some more technical questions to consider. In the next lesson we’ll answer them for the sake of
@@ -68,7 +69,7 @@ later than to code in isolation until you burn out, lose interest or your hard d
 <li><p>If the suggestions here seems boring or a chore to you, do it your way instead. Everyone’s different.</p></li>
 <li><p>Keep having <em>fun</em>. You must keep your motivation up, whichever way works for <em>you</em>.</p></li>
 </ul>
-<div class="section" id="the-steps">
+<section id="the-steps">
 <h2>The steps<a class="headerlink" href="#the-steps" title="Permalink to this headline">¶</a></h2>
 <p>Here are the rough steps towards your goal.</p>
 <ol class="simple">
@@ -78,8 +79,8 @@ later than to code in isolation until you burn out, lose interest or your hard d
 <li><p>Release</p></li>
 <li><p>Celebrate</p></li>
 </ol>
-</div>
-<div class="section" id="planning">
+</section>
+<section id="planning">
 <h2>Planning<a class="headerlink" href="#planning" title="Permalink to this headline">¶</a></h2>
 <p>You need to have at least a rough idea about what you want to create. Some like a lot of planning, others
 do it more seat-of-the-pants style. Regardless, while <em>some</em> planning is always good to do, it’s common
@@ -91,23 +92,23 @@ unfortunately, they are not enough to make your game. You need to figure out how
 Evennia.</p>
 <p>Below are some questions to get you going. In the next lesson we will try to answer them for our particular
 tutorial game. There are of course many more questions you could be asking yourself.</p>
-<div class="section" id="administration">
+<section id="administration">
 <h3>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Should your game rules be enforced by coded systems or by human game masters?</p></li>
 <li><p>What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</p></li>
 <li><p>Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</p></li>
 </ul>
-</div>
-<div class="section" id="building">
+</section>
+<section id="building">
 <h3>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>How will the world be built? Traditionally (from in-game with build-commands) or externally (by batchcmds/code
 or directly with custom code)?</p></li>
 <li><p>Can only privileged Builders create things or should regular players also have limited build-capability?</p></li>
 </ul>
-</div>
-<div class="section" id="systems">
+</section>
+<section id="systems">
 <h3>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Do you base your game off an existing RPG system or make up your own?</p></li>
@@ -118,8 +119,8 @@ or directly with custom code)?</p></li>
 <li><p>Do you have concepts like reputation and influence?</p></li>
 <li><p>Will your characters be known by their name or only by their physical appearance?</p></li>
 </ul>
-</div>
-<div class="section" id="rooms">
+</section>
+<section id="rooms">
 <h3>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Is a simple room description enough or should the description be able to change (such as with time, by
@@ -129,8 +130,8 @@ dramatic weather, fire or magical effects? If so, how would this affect things i
 these things something admins/game masters should handle manually?</p></li>
 <li><p>Can objects be hidden in the room? Can a person hide in the room? How does the room display this?</p></li>
 </ul>
-</div>
-<div class="section" id="objects-items">
+</section>
+<section id="objects-items">
 <h3>Objects / items<a class="headerlink" href="#objects-items" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>How numerous are your objects? Do you want large loot-lists or are objects just role playing props
@@ -145,8 +146,8 @@ created on demand?</p></li>
 <li><p>Are NPCs and mobs different entities? How do they differ?</p></li>
 <li><p>Should there be NPCs giving quests? If so, how do you track Quest status?</p></li>
 </ul>
-</div>
-<div class="section" id="characters">
+</section>
+<section id="characters">
 <h3>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Can players have more than one Character active at a time or are they allowed to multi-play?</p></li>
@@ -163,19 +164,19 @@ enemies? Solving quests? By roleplaying?</p></li>
 can easily become overwhelming and it’s tempting to want <em>all</em> functionality right out of the door.
 Try to identify the basic things that “make” your game and focus <em>only</em> on them for your first
 release. Make a list. Keep future expansions in mind but limit yourself.</p>
-</div>
-</div>
-<div class="section" id="coding-and-tech-demo">
+</section>
+</section>
+<section id="coding-and-tech-demo">
 <h2>Coding and Tech demo<a class="headerlink" href="#coding-and-tech-demo" title="Permalink to this headline">¶</a></h2>
 <p>This is the actual work of creating the “game” part of your game. As you code and test systems you should
 build a little “tech demo” along the way.</p>
-<div class="sidebar">
+<aside class="sidebar">
 <p class="sidebar-title">Tech demo</p>
 <p>With “tech demo” we mean a small example of your code in-action: A room with a mob,
 a way to jump into and test character-creation etc. The tech demo need not be pretty, it’s
 there to test functionality. It’s not the beginning of your game world (unless you find that
 to be more fun).</p>
-</div>
+</aside>
 <p>Try to avoid going wild with building a huge game world before you have a tech-demo showing off all parts
 you expect to have in the first version of your game. Otherwise you run the risk of having to redo it all
 again.</p>
@@ -195,8 +196,8 @@ these days if you don’t want the world to learn your secrets. Not only version
 make it easy for your team to collaborate, it also means
 your work is backed up at all times. The page on <a class="reference internal" href="../../../Coding/Version-Control.html"><span class="doc">Version Control</span></a>
 will help you to setting up a sane developer environment with proper version control.</p>
-</div>
-<div class="section" id="world-building">
+</section>
+<section id="world-building">
 <h2>World Building<a class="headerlink" href="#world-building" title="Permalink to this headline">¶</a></h2>
 <p>Up until this point we’ve only had a few tech-demo objects in the database. This step is the act of
 populating the database with a larger, thematic world. Too many would-be developers jump to this
@@ -216,8 +217,8 @@ be tested and roughly balanced. You can always add new areas later.</p>
 have made at this point. If Builders and coders are different people you also
 get a chance to hear if some things are hard to understand or non-intuitive.  Make sure to respond
 to this feedback.</p>
-</div>
-<div class="section" id="alpha-release">
+</section>
+<section id="alpha-release">
 <h2>Alpha Release<a class="headerlink" href="#alpha-release" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned, don’t hold onto your world more than necessary. <em>Get it out there</em> with a huge <em>Alpha</em>
 flag and let people try it!</p>
@@ -230,25 +231,25 @@ game visible online.</p>
 <p>If you hadn’t already, make sure to put up your game on the
 <a class="reference external" href="http://games.evennia.com/">Evennia game index</a> so people know it’s in the works (actually, even
 pre-alpha games are allowed in the index so don’t be shy)!</p>
-</div>
-<div class="section" id="beta-release-perpetual-beta">
+</section>
+<section id="beta-release-perpetual-beta">
 <h2>Beta Release/Perpetual Beta<a class="headerlink" href="#beta-release-perpetual-beta" title="Permalink to this headline">¶</a></h2>
 <p>Once things stabilize in Alpha you can move to <em>Beta</em> and let more people in. Many MUDs are in
 <a class="reference external" href="http://en.wikipedia.org/wiki/Perpetual_beta">perpetual beta</a>, meaning they are never considered
 “finished”, but just repeat the cycle of Planning, Coding, Testing and Building over and over as new
 features get implemented or Players come with suggestions. As the game designer it is now up to you
 to gradually perfect your vision.</p>
-</div>
-<div class="section" id="congratulate-yourself">
+</section>
+<section id="congratulate-yourself">
 <h2>Congratulate yourself!<a class="headerlink" href="#congratulate-yourself" title="Permalink to this headline">¶</a></h2>
 <p>You are worthy of a celebration since at this point you have joined the small, exclusive crowd who
 have made their dream game a reality!</p>
-</div>
-<div class="section" id="planning-our-tutorial-game">
+</section>
+<section id="planning-our-tutorial-game">
 <h2>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h2>
 <p>In the next lesson we’ll make use of these general points and try to plan out our tutorial game.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

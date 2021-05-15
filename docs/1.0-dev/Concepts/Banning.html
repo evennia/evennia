@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Banning &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -37,18 +38,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="banning">
+  <section id="banning">
 <h1>Banning<a class="headerlink" href="#banning" title="Permalink to this headline">¶</a></h1>
 <p>Whether due to abuse, blatant breaking of your rules, or some other reason, you will eventually find
 no other recourse but to kick out a particularly troublesome player. The default command set has
 admin tools to handle this, primarily <code class="docutils literal notranslate"><span class="pre">ban</span></code>, <code class="docutils literal notranslate"><span class="pre">unban</span></code>, and <code class="docutils literal notranslate"><span class="pre">boot</span></code>.</p>
-<div class="section" id="creating-a-ban">
+<section id="creating-a-ban">
 <h2>Creating a ban<a class="headerlink" href="#creating-a-ban" title="Permalink to this headline">¶</a></h2>
 <p>Say we have a troublesome player “YouSuck” - this is a person that refuses common courtesy - an
 abusive
 and spammy account that is clearly created by some bored internet hooligan only to cause grief. You
 have tried to be nice. Now you just want this troll gone.</p>
-<div class="section" id="name-ban">
+<section id="name-ban">
 <h3>Name ban<a class="headerlink" href="#name-ban" title="Permalink to this headline">¶</a></h3>
 <p>The easiest recourse is to block the account YouSuck from ever connecting again.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="n">YouSuck</span>
@@ -68,8 +69,8 @@ outright:</p>
 </div>
 <p>Generally, banning the name is the easier and safer way to stop the use of an account – if you
 change your mind you can always remove the block later whereas a deletion is permanent.</p>
-</div>
-<div class="section" id="ip-ban">
+</section>
+<section id="ip-ban">
 <h3>IP ban<a class="headerlink" href="#ip-ban" title="Permalink to this headline">¶</a></h3>
 <p>Just because you block YouSuck’s name might not mean the trolling human behind that account gives
 up. They can just create a new account YouSuckMore and be back at it. One way to make things harder
@@ -77,12 +78,12 @@ for them is to tell the server to not allow connections from their particular IP
 <p>First, when the offending account is online, check which IP address they use. This you can do with
 the <code class="docutils literal notranslate"><span class="pre">who</span></code> command, which will show you something like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Account</span> <span class="n">Name</span>     <span class="n">On</span> <span class="k">for</span>     <span class="n">Idle</span>     <span class="n">Room</span>     <span class="n">Cmds</span>     <span class="n">Host</span>          
- <span class="n">YouSuckMore</span>      <span class="mi">01</span><span class="p">:</span><span class="mi">12</span>      <span class="mi">2</span><span class="n">m</span>       <span class="mi">22</span>       <span class="mi">212</span>      <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span> 
+ <span class="n">YouSuckMore</span>      <span class="mi">01</span><span class="p">:</span><span class="mi">12</span>      <span class="mi">2</span><span class="n">m</span>       <span class="mi">22</span>       <span class="mi">212</span>      <span class="mf">237.333.0.223</span> 
 </pre></div>
 </div>
 <p>The “Host” bit is the IP address from which the account is connecting. Use this to define the ban
 instead of the name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333.0.223</span>
 </pre></div>
 </div>
 <p>This will stop YouSuckMore connecting from their computer. Note however that IP address might change
@@ -91,16 +92,16 @@ changing computers. You can make a more general ban by putting asterisks <code c
 groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from
 237.333.0.223, 237.333.0.225, and 237.333.0.256 (only changes in their subnet), it might be an idea
 to put down a ban like this to include any number in that subnet:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333.0</span><span class="o">.*</span>
 </pre></div>
 </div>
 <p>You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly
 locked regardless of where they connect from.</p>
 <p>Be careful with too general IP bans however (more asterisks above). If you are unlucky you could be
 blocking out innocent players who just happen to connect from the same subnet as the offender.</p>
-</div>
-</div>
-<div class="section" id="booting">
+</section>
+</section>
+<section id="booting">
 <h2>Booting<a class="headerlink" href="#booting" title="Permalink to this headline">¶</a></h2>
 <p>YouSuck is not really noticing all this banning yet though - and won’t until having logged out and
 trying to log back in again. Let’s help the troll along.</p>
@@ -112,25 +113,25 @@ kicked out).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">boot</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">Go</span> <span class="n">troll</span> <span class="n">somewhere</span> <span class="k">else</span><span class="o">.</span>
 </pre></div>
 </div>
-<div class="section" id="lifting-a-ban">
+<section id="lifting-a-ban">
 <h3>Lifting a ban<a class="headerlink" href="#lifting-a-ban" title="Permalink to this headline">¶</a></h3>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">unban</span></code> (or <code class="docutils literal notranslate"><span class="pre">ban</span></code>) command without any arguments and you will see a list of all currently
 active bans:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Active</span> <span class="n">bans</span>
 <span class="nb">id</span>   <span class="n">name</span><span class="o">/</span><span class="n">ip</span>       <span class="n">date</span>                      <span class="n">reason</span> 
 <span class="mi">1</span>    <span class="n">yousuck</span>       <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">22</span> <span class="mi">2020</span>   <span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">Troll</span><span class="o">.</span>
-<span class="mi">2</span>    <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>   <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">03</span> <span class="mi">2020</span>   <span class="n">YouSuck</span><span class="s1">&#39;s IP.</span>
+<span class="mi">2</span>    <span class="mf">237.333.0</span><span class="o">.*</span>   <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">03</span> <span class="mi">2020</span>   <span class="n">YouSuck</span><span class="s1">&#39;s IP.</span>
 </pre></div>
 </div>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">id</span></code> from this list to find out which ban to lift.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">unban</span> <span class="mi">2</span>
   
-<span class="n">Cleared</span> <span class="n">ban</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
+<span class="n">Cleared</span> <span class="n">ban</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">237.333.0</span><span class="o">.*</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="summary-of-abuse-handling-tools">
+</section>
+</section>
+<section id="summary-of-abuse-handling-tools">
 <h2>Summary of abuse-handling tools<a class="headerlink" href="#summary-of-abuse-handling-tools" title="Permalink to this headline">¶</a></h2>
 <p>Below are other useful commands for dealing with annoying players.</p>
 <ul class="simple">
@@ -177,8 +178,8 @@ cached</p></li>
 <li><p><strong>py</strong> – Executes raw Python code, allows for direct inspection of the database and account
 objects on the fly. For advanced users.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

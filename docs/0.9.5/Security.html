@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Security &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,7 +37,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="security">
+  <section id="security">
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
 <p>Hackers these days aren’t discriminating, and their backgrounds range from bored teenagers to
 international intelligence agencies. Their scripts and bots endlessly crawl the web, looking for
@@ -51,7 +52,7 @@ blacklisted by ISPs. It can be a difficult legal or political battle to undo thi
 fact.</p>
 <p>As a developer about to expose a web application to the threat landscape of the modern internet,
 here are a few tips to consider to increase the security of your Evennia install.</p>
-<div class="section" id="know-your-logs">
+<section id="know-your-logs">
 <h2>Know your logs<a class="headerlink" href="#know-your-logs" title="Permalink to this headline">¶</a></h2>
 <p>In case of emergency, check your logs! By default they are located in the <code class="docutils literal notranslate"><span class="pre">server/logs/</span></code> folder.
 Here are some of the more important ones and why you should care:</p>
@@ -68,8 +69,8 @@ objects, and more. If your game fails to start or crashes and you can’t tell w
 place you should look for answers. Security-related events are prefixed with an <code class="docutils literal notranslate"><span class="pre">[SS]</span></code> so when
 there’s a problem you might want to pay special attention to those.</p></li>
 </ul>
-</div>
-<div class="section" id="disable-development-debugging-options">
+</section>
+<section id="disable-development-debugging-options">
 <h2>Disable development/debugging options<a class="headerlink" href="#disable-development-debugging-options" title="Permalink to this headline">¶</a></h2>
 <p>There are a few Evennia/Django options that are set when you first create your game to make it more
 obvious to you where problems arise. These options should be disabled before you push your game into
@@ -85,9 +86,9 @@ abuse to compromise your environment.</p>
 </div>
 <p>as-is.
 # Note the leading period– it is not a typo!
-ALLOWED_HOSTS = [‘.example.com’]</p>
-</div>
-<div class="section" id="handle-user-uploaded-images-with-care">
+ALLOWED_HOSTS = [’.example.com’]</p>
+</section>
+<section id="handle-user-uploaded-images-with-care">
 <h2>Handle user-uploaded images with care<a class="headerlink" href="#handle-user-uploaded-images-with-care" title="Permalink to this headline">¶</a></h2>
 <p>If you decide to allow users to upload their own images to be served from your site, special care
 must be taken. Django will read the file headers to confirm it’s an image (as opposed to a document
@@ -108,8 +109,8 @@ resources in bulk).</p></li>
 bothered with additional infrastructure, then simply reprocess user images upon receipt using an
 image library. Convert them to a different format, for example. <em>Destroy the originals!</em></p></li>
 </ul>
-</div>
-<div class="section" id="disable-the-web-interface">
+</section>
+<section id="disable-the-web-interface">
 <h2>Disable the web interface<a class="headerlink" href="#disable-the-web-interface" title="Permalink to this headline">¶</a></h2>
 <p>The web interface allows visitors to see an informational page as well as log into a browser-based
 telnet client with which to access Evennia. It also provides authentication endpoints against which
@@ -124,8 +125,8 @@ either/both to minimize your attack surface.</p>
 <span class="n">WEBSERVER_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="change-your-ssh-port">
+</section>
+<section id="change-your-ssh-port">
 <h2>Change your ssh port<a class="headerlink" href="#change-your-ssh-port" title="Permalink to this headline">¶</a></h2>
 <p>Automated attacks will often target port 22 seeing as how it’s the standard port for SSH traffic.
 Also,
@@ -143,8 +144,8 @@ allows through.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">ssh</span> <span class="n">restart</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="set-up-a-firewall">
+</section>
+<section id="set-up-a-firewall">
 <h2>Set up a firewall<a class="headerlink" href="#set-up-a-firewall" title="Permalink to this headline">¶</a></h2>
 <p>Ubuntu users can make use of the simple ufw utility. Anybody else can use iptables.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install ufw (if not already)</span>
@@ -170,8 +171,8 @@ firewall.</p>
 </div>
 <p>Now the only ports open will be your administrative ssh port (whichever you chose), and Evennia on
 4000-4001.</p>
-</div>
-<div class="section" id="use-an-external-webserver">
+</section>
+<section id="use-an-external-webserver">
 <h2>Use an external webserver<a class="headerlink" href="#use-an-external-webserver" title="Permalink to this headline">¶</a></h2>
 <p>Though not officially supported, there are some benefits to <a class="reference internal" href="Apache-Config.html"><span class="doc">deploying a webserver</span></a>
 to handle/proxy traffic to your Evennia instance.</p>
@@ -189,8 +190,8 @@ nuisances and crowds before they even get in the door.</p>
 automated solutions for installing and configuring TLS (via <a class="reference external" href="https://en.wikipedia.org/wiki/Let%27s_Encrypt">Certbot/Let’s
 Encrypt</a>) to secure your website against hotspot and
 ISP snooping.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -248,7 +249,6 @@ ISP snooping.</p>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Security.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>
