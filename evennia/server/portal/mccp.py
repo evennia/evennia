@@ -15,10 +15,9 @@ This protocol is implemented by the telnet protocol importing
 mccp_compress and calling it from its write methods.
 """
 import zlib
-from twisted.python.compat import _bytesChr as chr
 
 # negotiations for v1 and v2 of the protocol
-MCCP = chr(86)  # b"\x56"
+MCCP = bytes([86])  # b"\x56"
 FLUSH = zlib.Z_SYNC_FLUSH
 
 
@@ -38,7 +37,7 @@ def mccp_compress(protocol, data):
     return data
 
 
-class Mccp(object):
+class Mccp:
     """
     Implements the MCCP protocol. Add this to a
     variable on the telnet protocol to set it up.
