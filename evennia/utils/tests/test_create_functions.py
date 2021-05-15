@@ -139,10 +139,15 @@ class TestCreateMessage(EvenniaTest):
     """
 
     def test_create_msg__simple(self):
+        # from evennia import set_trace;set_trace()
         msg = create.create_message(self.char1, self.msgtext, header="TestHeader")
+        msg.senders = "ExternalSender"
+        msg.receivers = self.char2
+        msg.receivers = "ExternalReceiver"
         self.assertEqual(msg.message, self.msgtext)
         self.assertEqual(msg.header, "TestHeader")
-        self.assertEqual(msg.senders, [self.char1])
+        self.assertEqual(msg.senders, [self.char1, "ExternalSender"])
+        self.assertEqual(msg.receivers, [self.char2, "ExternalReceiver"])
 
     def test_create_msg__custom(self):
         locks = "foo:false();bar:true()"
@@ -151,11 +156,11 @@ class TestCreateMessage(EvenniaTest):
             self.char1,
             self.msgtext,
             header="TestHeader",
-            receivers=[self.char1, self.char2],
+            receivers=[self.char1, self.char2, "ExternalReceiver"],
             locks=locks,
             tags=tags,
         )
-        self.assertEqual(set(msg.receivers), set([self.char1, self.char2]))
+        self.assertEqual(set(msg.receivers), set([self.char1, self.char2, "ExternalReceiver"]))
         self.assertTrue(all(lock in msg.locks.all() for lock in locks.split(";")))
         self.assertEqual(msg.tags.all(), tags)
 

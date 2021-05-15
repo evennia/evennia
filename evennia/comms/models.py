@@ -196,18 +196,20 @@ class Msg(SharedMemoryModel):
             list(self.db_sender_accounts.all())
             + list(self.db_sender_objects.all())
             + list(self.db_sender_scripts.all())
-            + [self.db_sender_external]
+            + ([self.db_sender_external] if self.db_sender_external else [])
         )
 
     @senders.setter
     def senders(self, senders):
         "Setter. Allows for self.sender = value"
+
+        if isinstance(senders, str):
+            self.db_sender_external = senders
+            self.save(update_fields=["db_sender_external"])
+            return
+
         for sender in make_iter(senders):
             if not sender:
-                continue
-            if isinstance(sender, str):
-                self.db_sender_external = sender
-                self.save(update_fields=["db_sender_external"])
                 continue
             if not hasattr(sender, "__dbclass__"):
                 raise ValueError("This is a not a typeclassed object!")
@@ -267,7 +269,7 @@ class Msg(SharedMemoryModel):
             list(self.db_receivers_accounts.all())
             + list(self.db_receivers_objects.all())
             + list(self.db_receivers_scripts.all())
-            + [self.db_receiver_external]
+            + ([self.db_receiver_external] if self.db_receiver_external else [])
         )
 
     @receivers.setter
