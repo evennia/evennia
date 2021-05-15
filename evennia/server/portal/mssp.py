@@ -12,17 +12,16 @@ active players and so on.
 """
 from django.conf import settings
 from evennia.utils import utils
-from twisted.python.compat import _bytesChr as bchr
 
-MSSP = bchr(70)  # b"\x46"
-MSSP_VAR = bchr(1)  # b"\x01"
-MSSP_VAL = bchr(2)  # b"\x02"
+MSSP = bytes([70])  # b"\x46"
+MSSP_VAR = bytes([1])  # b"\x01"
+MSSP_VAL = bytes([2])  # b"\x02"
 
 # try to get the customized mssp info, if it exists.
 MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
 
 
-class Mssp(object):
+class Mssp:
     """
     Implements the MSSP protocol. Add this to a variable on the telnet
     protocol to set it up.

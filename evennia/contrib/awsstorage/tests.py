@@ -8,8 +8,13 @@ from django.utils.timezone import is_aware, utc
 
 import datetime, gzip, pickle, threading
 
-from botocore.exceptions import ClientError
-from evennia.contrib.awsstorage import aws_s3_cdn as s3boto3
+_SKIP = False
+try:
+    from botocore.exceptions import ClientError
+    from evennia.contrib.awsstorage import aws_s3_cdn as s3boto3
+except ImportError:
+    _SKIP = True
+
 
 try:
     from django.utils.six.moves.urllib import parse as urlparse
@@ -23,12 +28,14 @@ except ImportError:  # Python 3.2 and below
     import mock
 
 
+@skipIf(_SKIP, "botocore not installed")
 class S3Boto3TestCase(TestCase):
     def setUp(self):
         self.storage = s3boto3.S3Boto3Storage(access_key="foo", secret_key="bar")
         self.storage._connections.connection = mock.MagicMock()
 
 
+@skipIf(_SKIP, "botocore not installed")
 class S3Boto3StorageTests(S3Boto3TestCase):
     def test_clean_name(self):
         """

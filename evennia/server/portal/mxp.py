@@ -14,12 +14,11 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 
 """
 import re
-from twisted.python.compat import _bytesChr as bchr
 
 LINKS_SUB = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 
 # MXP Telnet option
-MXP = bchr(91)  # b"\x5b"
+MXP = bytes([91])  # b"\x5b"
 
 MXP_TEMPSECURE = "\x1B[4z"
 MXP_SEND = MXP_TEMPSECURE + '<SEND HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</SEND>"
@@ -42,7 +41,7 @@ def mxp_parse(text):
     return text
 
 
-class Mxp(object):
+class Mxp:
     """
     Implements the MXP protocol.
 

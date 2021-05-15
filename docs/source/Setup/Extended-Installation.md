@@ -25,9 +25,9 @@ more detailed instructions for your platform.
 1. Install Python, GIT and python-virtualenv. Start a Console/Terminal.
 2. `cd` to some place you want to do your development (like a folder
    `/home/anna/muddev/` on Linux or a folder in your personal user directory on Windows).
-3. `git clone https://github.com/evennia/evennia.git`
-4. `virtualenv evenv`
-5. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows) 
+3. `git clone https://github.com/evennia/evennia.git`  (a new folder `evennia` is created)
+4. `python -m venv evenv`  (a new folder `evenv` is created)
+5. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows)
 6. `pip install -e evennia`
 7. `evennia --init mygame`
 8. `cd mygame`
@@ -48,7 +48,7 @@ everything in the following sections.
 - Windows (Vista, Win7, Win8, Win10)
 - Mac OSX (>=10.5 recommended)
 
-- [Python](http://www.python.org) (v3.7, 3.8 are tested)
+- [Python](http://www.python.org) (v3.7, 3.8 and 3.9 are tested)
   - [virtualenv](http://pypi.python.org/pypi/virtualenv) for making isolated
     Python environments. Installed with `pip install virtualenv`.
 
@@ -104,7 +104,7 @@ contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
 virtualenv is and why it's useful, see the [Glossary entry on
-virtualenv](Glossary#virtualenv). 
+virtualenv](Glossary#virtualenv).
 
 Run `python -V` to see which version of Python your system defaults to.
 
@@ -112,7 +112,7 @@ Run `python -V` to see which version of Python your system defaults to.
 # If your Linux defaults to Python3.7+:
 virtualenv evenv
 
-# If your Linux defaults to Python2 or an older version 
+# If your Linux defaults to Python2 or an older version
 # of Python3, you must instead point to Python3.7+ explicitly:
 virtualenv -p /usr/bin/python3.7 evenv
 ```
@@ -120,7 +120,7 @@ virtualenv -p /usr/bin/python3.7 evenv
 A new folder `evenv` will appear (we could have called it anything). This
 folder will hold a self-contained setup of Python packages without interfering
 with default Python packages on your system (or the Linux distro lagging behind
-on Python package versions). It will also always use the right version of Python. 
+on Python package versions). It will also always use the right version of Python.
 Activate the virtualenv:
 
 ```
@@ -128,7 +128,7 @@ source evenv/bin/activate
 ```
 
 The text `(evenv)` should appear next to your prompt to show that the virtual
-environment is active. 
+environment is active.
 
 > Remember that you need to activate the virtualenv like this *every time* you
 > start a new terminal to get access to the Python packages (notably the
@@ -196,7 +196,7 @@ here](http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Ma
 * If you run into issues with installing `Twisted` later you may need to
 install gcc and the Python headers.
 
-After this point you should not need `sudo` or any higher privileges to install anything. 
+After this point you should not need `sudo` or any higher privileges to install anything.
 
 Now create a folder where you want to do all your Evennia development:
 
@@ -215,9 +215,9 @@ A new folder `evennia` will appear containing the Evennia library. This only
 contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
-virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary#virtualenv). 
+virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary#virtualenv).
 
-Run `python -V` to check which Python your system defaults to. 
+Run `python -V` to check which Python your system defaults to.
 
 
 ```
@@ -237,7 +237,7 @@ source evenv/bin/activate
 ```
 
 The text `(evenv)` should appear next to your prompt to show the virtual
-environment is active. 
+environment is active.
 
 > Remember that you need to activate the virtualenv like this *every time* you
 > start a new terminal to get access to the Python packages (notably the
@@ -292,10 +292,10 @@ created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
 ## Windows Install
 
-If you run into any issues during the installation, please check out 
-[Windows Troubleshooting](./Getting-Started#windows-troubleshooting). 
+If you run into any issues during the installation, please check out
+[Windows Troubleshooting](./Getting-Started#windows-troubleshooting).
 
-> If you are running Windows10, consider using the Windows Subsystem for Linux 
+> If you are running Windows10, consider using the Windows Subsystem for Linux
 > ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead.
 > You should then follow the Linux install instructions above.
 
@@ -320,7 +320,7 @@ environment", you should select the second option "Use Git from the Windows
 Command Prompt", which gives you more freedom as to where you can use the
 program.
 * Finally you must install the [Microsoft Visual C++ compiler for
-Python](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the linked installer and 
+Python](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the linked installer and
 install the C++ tools. Keep all the defaults. Allow the install of the "Win10 SDK", even if you are
 on Win7 (not tested on older Windows versions). If you later have issues with installing Evennia due
 to a failure to build the "Twisted wheels", this is where you are missing things.
@@ -348,7 +348,7 @@ A new folder `evennia` will appear containing the Evennia library. This only
 contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
-virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary#virtualenv). 
+virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary#virtualenv).
 
 In your console, try `python -V` to see which version of Python your system
 defaults to.
@@ -380,7 +380,7 @@ evenv\scripts\activate.bat
 
 ```
 The text `(evenv)` should appear next to your prompt to show the virtual
-environment is active. 
+environment is active.
 
 > Remember that you need to activate the virtualenv like this *every time* you
 > start a new console window if you want to get access to the Python packages
@@ -433,16 +433,16 @@ created. Check out [where to go next](./Getting-Started#where-to-go-next).
 ## Non-interactive setup
 
 When you first run `evennia start` after having created the database, you will be asked
-to interactively insert the superuser username, email and password. If you need to do 
+to interactively insert the superuser username, email and password. If you need to do
 this in an automated faction (such as in an automated build flow), you can supply those
 values as environment variables, `EVENNIA_SUPERUSER_USERNAME`, `EVENNIA_SUPERUSER_EMAIL` and
-`EVENNIA_SUPERUSER_PASSWORD`. The email can be left out and will then be set to be the 
-empty string. 
+`EVENNIA_SUPERUSER_PASSWORD`. The email can be left out and will then be set to be the
+empty string.
 
 Use this to start Evennia (the envvars will be ignored on subsequent starts):
 
 ```
-EVENNIA_SUPERUSER_USERNAME=Foo EVENNIA_SUPERUSER_PASSWORD=MygreatPwd evennia start 
+EVENNIA_SUPERUSER_USERNAME=Foo EVENNIA_SUPERUSER_PASSWORD=MygreatPwd evennia start
 
 ```
 
@@ -460,8 +460,8 @@ tutorial is built. Once done, the `tutorial` exit will have appeared out of Limb
 
 Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do
 `@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
-Reload) the Evennia server. You may also want to familiarize yourself with some 
-[commonly used terms in our Glossary](../Glossary). After that, why not experiment with 
+Reload) the Evennia server. You may also want to familiarize yourself with some
+[commonly used terms in our Glossary](../Glossary). After that, why not experiment with
 [creating some new items and build some new rooms](../Howto/Starting/Part1/Building-Quickstart) out from Limbo.
 
 From here on, you could move on to do one of our [introductory tutorials](../Howto/Howto-Overview) or simply dive
@@ -496,7 +496,7 @@ you can run `evennia -l`, or (in the future) start the server with `evennia star
 ### Linux Troubleshooting
 
 - If you get an error when installing Evennia (especially with lines mentioning
-  failing to include `Python.h`) then try `sudo apt-get install python3-setuptools python3-dev`. 
+  failing to include `Python.h`) then try `sudo apt-get install python3-setuptools python3-dev`.
   Once installed, run `pip install -e evennia` again.
 - Under some not-updated Linux distributions you may run into errors with a
   too-old `setuptools` or missing `functools`. If so, update your environment

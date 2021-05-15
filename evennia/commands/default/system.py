@@ -932,7 +932,8 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
          |wIrc|n #evennia on irc.freenode.net:6667
-         |wForum|n http://www.evennia.com/discussions
+         |wDiscord|n https://discord.gg/SVCkd4cY3q
+         |wForum|n https://github.com/evennia/evennia/discussions
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 

@@ -26,23 +26,22 @@ This implements the following telnet OOB communication protocols:
 import re
 import json
 from evennia.utils.utils import is_iter
-from twisted.python.compat import _bytesChr as bchr
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
 
 # MSDP-relevant telnet cmd/opt-codes
-MSDP = bchr(69)
-MSDP_VAR = bchr(1)
-MSDP_VAL = bchr(2)
-MSDP_TABLE_OPEN = bchr(3)
-MSDP_TABLE_CLOSE = bchr(4)
+MSDP = bytes([69])
+MSDP_VAR = bytes([1])
+MSDP_VAL = bytes([2])
+MSDP_TABLE_OPEN = bytes([3])
+MSDP_TABLE_CLOSE = bytes([4])
 
-MSDP_ARRAY_OPEN = bchr(5)
-MSDP_ARRAY_CLOSE = bchr(6)
+MSDP_ARRAY_OPEN = bytes([5])
+MSDP_ARRAY_CLOSE = bytes([6])
 
 # GMCP
-GMCP = bchr(201)
+GMCP = bytes([201])
 
 
 # pre-compiled regexes
@@ -69,7 +68,7 @@ EVENNIA_TO_GMCP = {
 # MSDP/GMCP communication handler
 
 
-class TelnetOOB(object):
+class TelnetOOB:
     """
     Implements the MSDP and GMCP protocols.
     """
