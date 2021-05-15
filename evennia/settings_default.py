@@ -278,7 +278,8 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
     (("players", "playerdb"), ("accounts", "accountdb")),
     (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount")),
 ]
-
+# Default type of autofield (required by Django)
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ######################################################################
 # Evennia pluggable modules
