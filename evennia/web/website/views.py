@@ -26,7 +26,7 @@ from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import class_from_module
 from evennia.utils.logger import tail_log_file
-from evennia.web.website import forms as website_forms
+from . import forms
 
 from django.utils.text import slugify
 
@@ -165,7 +165,7 @@ class EvenniaIndexView(TemplateView):
         return context
 
 
-class TypeclassMixin(object):
+class TypeclassMixin:
     """
     This is a "mixin", a modifier of sorts.
 
@@ -523,7 +523,7 @@ class AccountMixin(TypeclassMixin):
     # -- Django constructs --
     model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS,
                               fallback=settings.FALLBACK_ACCOUNT_TYPECLASS)
-    form_class = website_forms.AccountForm
+    form_class = forms.AccountForm
 
 
 class AccountCreateView(AccountMixin, EvenniaCreateView):
@@ -589,7 +589,7 @@ class CharacterMixin(TypeclassMixin):
     # -- Django constructs --
     model = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
                               fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
-    form_class = website_forms.CharacterForm
+    form_class = forms.CharacterForm
     success_url = reverse_lazy("character-manage")
 
     def get_queryset(self):
@@ -713,7 +713,7 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     """
 
     # -- Django constructs --
-    form_class = website_forms.CharacterUpdateForm
+    form_class = forms.CharacterUpdateForm
     template_name = "website/character_form.html"
 
 

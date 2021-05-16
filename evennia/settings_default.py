@@ -282,6 +282,22 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ######################################################################
+# Evennia webclient options
+######################################################################
+
+# default webclient options (without user changing it)
+WEBCLIENT_OPTIONS = {
+    # Gags prompts in output window and puts them on the input bar
+    "gagprompt": True,  
+    # Shows help files in a new popup window instead of in-pane
+    "helppopup": False, 
+    # Shows notifications of new messages as popup windows
+    "notification_popup": False,  
+    # Plays a sound for notifications of new messages
+    "notification_sound": False
+}
+
+######################################################################
 # Evennia pluggable modules
 ######################################################################
 # Plugin modules extend Evennia in various ways. In the cases with no
@@ -816,9 +832,6 @@ MANAGERS = ADMINS
 # This is a public point of contact for players or the public to contact
 # a staff member or administrator of the site. It is publicly posted.
 STAFF_CONTACT_EMAIL = None
-# Absolute path to the directory that holds file uploads from web apps.
-# Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
 # If using Sites/Pages from the web admin, this value must be set to the
 # database-id of the Site (domain) we want to use with this game's Pages.
 SITE_ID = 1
@@ -854,16 +867,17 @@ LOGOUT_URL = reverse_lazy("logout")
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = "/media/"
+# Absolute path to the directory that holds file uploads from web apps.
+MEDIA_ROOT = os.path.join(GAME_DIR, "server", ".media")
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
-# to use a trailing slash. Django1.4+ will look for admin files under
-# STATIC_URL/admin.
+# to use a trailing slash. Admin-related files are searched under STATIC_URL/admin.
 STATIC_URL = "/static/"
-
-STATIC_ROOT = os.path.join(GAME_DIR, "web", "static")
-
+# Absolute path to directory where the static data will be gathered into to be
+# served by webserver.
+STATIC_ROOT = os.path.join(GAME_DIR, "server", ".static")
 # Location of static data to overload the defaults from
 # evennia/web/webclient and evennia/web/website's static/ dirs.
-STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static_overrides")]
+STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static")]
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
 STATICFILES_IGNORE_PATTERNS = ["README.md"]
@@ -871,44 +885,17 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
-# The default options used by the webclient
-WEBCLIENT_OPTIONS = {
-    "gagprompt": True,  # Gags prompt from the output window and keep them
-    # together with the input bar
-    "helppopup": False,  # Shows help files in a new popup window
-    "notification_popup": False,  # Shows notifications of new messages as
-    # popup windows
-    "notification_sound": False  # Plays a sound for notifications of new
-    # messages
-}
-
-# Django cache settings
-# https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-    'throttle': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'TIMEOUT': 60 * 5,
-        'OPTIONS': {
-            'MAX_ENTRIES': 2000
-        }
-    }
-}
-
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides"),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),
+            os.path.join(GAME_DIR, "web", "templates"),
+            os.path.join(GAME_DIR, "web", "templates", WEBSITE_TEMPLATE),
+            os.path.join(GAME_DIR, "web", "templates", WEBCLIENT_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "templates"),
+            os.path.join(EVENNIA_DIR, "web", "templates", WEBSITE_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "templates", WEBCLIENT_TEMPLATE),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -927,7 +914,20 @@ TEMPLATES = [
         },
     }
 ]
-
+# Django cache settings
+# https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'throttle': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 60 * 5,
+        'OPTIONS': {
+            'MAX_ENTRIES': 2000
+        }
+    }
+}
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
@@ -969,8 +969,7 @@ INSTALLED_APPS = [
     "evennia.comms",
     "evennia.help",
     "evennia.scripts",
-    "evennia.web.website",
-    "evennia.web.webclient",
+    "evennia.web"
 ]
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
