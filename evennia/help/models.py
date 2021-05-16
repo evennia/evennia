@@ -108,6 +108,8 @@ class HelpEntry(SharedMemoryModel):
     # HelpEntry main class methods
     #
     #
+    def __str__(self):
+        return str(self.key)
 
     def __repr__(self):
         return f"<HelpEntry {self.key}>"
