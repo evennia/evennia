@@ -28,7 +28,7 @@ class EvenniaForm(forms.Form):
 
         """
         # Call parent function
-        cleaned = super(EvenniaForm, self).clean()
+        cleaned = super().clean()
 
         # Escape all values provided by user
         cleaned = {k: escape(v) for k, v in cleaned.items()}

@@ -99,6 +99,11 @@ class FileHelpEntry:
             "text": self.entrytext,
         }
 
+    def __str__(self):
+        return self.key
+
+    def __repr__(self):
+        return f"<FileHelpEntry {self.key}>"
 
 
 class FileHelpStorageHandler:

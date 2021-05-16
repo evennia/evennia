@@ -16,7 +16,7 @@
         <h1 class="card-title">{{ view.page_title }} ({{ object|title }})</h1>
         <hr />
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'help' %}">Compendium</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'help' %}">Help Index</a></li>
           <li class="breadcrumb-item"><a href="{% url 'help' %}#{{ object.db_help_category }}">{{ object.db_help_category|title }}</a></li>
           <li class="breadcrumb-item active" aria-current="page">{{ object.db_key|title }}</li>
         </ol>
