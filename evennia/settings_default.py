@@ -288,11 +288,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # default webclient options (without user changing it)
 WEBCLIENT_OPTIONS = {
     # Gags prompts in output window and puts them on the input bar
-    "gagprompt": True,  
+    "gagprompt": True,
     # Shows help files in a new popup window instead of in-pane
-    "helppopup": False, 
+    "helppopup": False,
     # Shows notifications of new messages as popup windows
-    "notification_popup": False,  
+    "notification_popup": False,
     # Plays a sound for notifications of new messages
     "notification_sound": False
 }

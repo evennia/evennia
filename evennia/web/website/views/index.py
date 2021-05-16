@@ -22,7 +22,7 @@ def _gamestats():
     fpage_account_limit = 4
 
     # A QuerySet of the most recently connected accounts.
-    recent_users = AccountDB.objects.get_recently_connected_accounts()[:fpage_account_limit]
+    recent_users = AccountDB.objects.get_recently_connected_accounts()
     nplyrs_conn_recent = len(recent_users) or "none"
     nplyrs = AccountDB.objects.num_total_accounts() or "none"
     nplyrs_reg_recent = len(AccountDB.objects.get_recently_created_accounts()) or "none"
@@ -44,7 +44,7 @@ def _gamestats():
 
     pagevars = {
         "page_title": "Front Page",
-        "accounts_connected_recent": recent_users,
+        "accounts_connected_recent": recent_users[:fpage_account_limit],
         "num_accounts_connected": nsess or "no one",
         "num_accounts_registered": nplyrs or "no",
         "num_accounts_connected_recent": nplyrs_conn_recent or "no",

@@ -1,14 +1,25 @@
-#
-# This file defines global variables that will always be
-# available in a view context without having to repeatedly
-# include it. For this to work, this file is included in
-# the settings file, in the TEMPLATE_CONTEXT_PROCESSORS
-# tuple.
-#
+"""
+This file defines global variables that will always be available in a view
+context without having to repeatedly include it. 
+
+For this to work, this file is included in the settings file, in the
+TEMPLATE_CONTEXT_PROCESSORS tuple.
+
+"""
+
 
 import os
 from django.conf import settings
 from evennia.utils.utils import get_evennia_version
+
+# Setup lists of the most relevant apps so
+# the adminsite becomes more readable.
+
+ACCOUNT_RELATED = ["Accounts"]
+GAME_ENTITIES = ["Objects", "Scripts", "Comms", "Help"]
+GAME_SETUP = ["Permissions", "Config"]
+CONNECTIONS = ["Irc"]
+WEBSITE = ["Flatpages", "News", "Sites"]
 
 # Determine the site name and server version
 def set_game_name_and_slogan():
@@ -18,6 +29,7 @@ def set_game_name_and_slogan():
 
     Notes:
         This function is used for unit testing the values of the globals.
+
     """
     global GAME_NAME, GAME_SLOGAN, SERVER_VERSION
     try:
@@ -31,18 +43,6 @@ def set_game_name_and_slogan():
         GAME_SLOGAN = SERVER_VERSION
 
 
-set_game_name_and_slogan()
-
-# Setup lists of the most relevant apps so
-# the adminsite becomes more readable.
-
-ACCOUNT_RELATED = ["Accounts"]
-GAME_ENTITIES = ["Objects", "Scripts", "Comms", "Help"]
-GAME_SETUP = ["Permissions", "Config"]
-CONNECTIONS = ["Irc"]
-WEBSITE = ["Flatpages", "News", "Sites"]
-
-
 def set_webclient_settings():
     """
     As with set_game_name_and_slogan above, this sets global variables pertaining
@@ -50,6 +50,7 @@ def set_webclient_settings():
 
     Notes:
         Used for unit testing.
+
     """
     global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
     WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
@@ -64,13 +65,15 @@ def set_webclient_settings():
     WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
 
 
+set_game_name_and_slogan()
 set_webclient_settings()
 
 # The main context processor function
 def general_context(request):
     """
-    Returns common Evennia-related context stuff, which
-    is automatically added to context of all views.
+    Returns common Evennia-related context stuff, which is automatically added
+    to context of all views.
+
     """
     account = None
     if request.user.is_authenticated:

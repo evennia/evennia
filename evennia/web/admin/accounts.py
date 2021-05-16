@@ -213,12 +213,12 @@ class AccountAttributeInline(AttributeInline):
     related_field = "accountdb"
 
 
+@admin.register(AccountDB)
 class AccountDBAdmin(BaseUserAdmin):
     """
     This is the main creation screen for Users/accounts
 
     """
-
     list_display = ("username", "email", "is_staff", "is_superuser")
     form = AccountDBChangeForm
     add_form = AccountDBCreationForm
@@ -362,4 +362,4 @@ class AccountDBAdmin(BaseUserAdmin):
         return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
 
 
-admin.site.register(AccountDB, AccountDBAdmin)
+# admin.site.register(AccountDB, AccountDBAdmin)
