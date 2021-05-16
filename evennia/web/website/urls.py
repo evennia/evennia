@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.conf.urls import url, include
 from django import views as django_views
 from .views import (index, errors, accounts, help as helpviews, channels,
-                    characters, admin as adminviews)
+                    characters)
 
 urlpatterns = [
     # website front page
@@ -52,26 +52,8 @@ urlpatterns = [
     url(r"^characters/delete/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$",
         characters.CharacterDeleteView.as_view(),
         name="character-delete"),
-
-    # Django original admin page. Make this URL is always available, whether
-    # we've chosen to use Evennia's custom admin or not.
-
-    url(r"django_admin/", adminviews.admin_wrapper, name="django_admin"),
-
-    # Admin docs
-    url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
 ]
 
-if settings.EVENNIA_ADMIN:
-    urlpatterns += [
-        # Our override for the admin.
-        url("^admin/$", adminviews.evennia_admin, name="evennia_admin"),
-        # Makes sure that other admin pages get loaded.
-        url(r"^admin/", admin.site.urls),
-    ]
-else:
-    # Just include the normal Django admin.
-    urlpatterns += [url(r"^admin/", admin.site.urls)]
 
 # This sets up the server if the user want to run the Django
 # test server (this should normally not be needed).

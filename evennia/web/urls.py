@@ -30,6 +30,8 @@ urlpatterns = [
     path("", include("evennia.web.website.urls")),
     # webclient
     path("webclient/", include("evennia.web.webclient.urls")),
+    # admin
+    path("admin", include("evennia.web.admin.urls")),
     # favicon
     path("favicon.ico", RedirectView.as_view(url="/media/images/favicon.ico", permanent=False)),
 ]
