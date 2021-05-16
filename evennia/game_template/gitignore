@@ -29,8 +29,8 @@ __pycache__
 # For group efforts, comment out some or all of these.
 server/conf/secret_settings.py
 server/logs/*.log.*
-web/static/*
-web/media/*
+server/.static/*
+server/.media/*
 
 # Installer logs
 pip-log.txt

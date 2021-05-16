@@ -4,7 +4,7 @@ checks for.
 
 These all print to the terminal.
 """
-
+import os
 
 def check_errors(settings):
     """
@@ -122,6 +122,22 @@ def check_errors(settings):
             "settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are "
             "unused and should be removed. The ChannelHandler is no more; "
             "channels are now handled by aliasing the default 'channel' command.")
+
+    template_overrides_dir = os.path.join(settings.GAME_DIR, "web", "template_overrides")
+    static_overrides_dir = os.path.join(settings.GAME_DIR, "web", "static_overrides")
+    if os.path.exists(template_overrides_dir):
+        raise DeprecationWarning(
+            f"The template_overrides directory ({template_overrides_dir}) has changed name.\n"
+            " - Rename your existing `template_overrides` folder to `templates` instead."
+        )
+    if os.path.exists(static_overrides_dir):
+        raise DeprecationWarning(
+            f"The static_overrides directory ({static_overrides_dir}) has changed name.\n"
+            " 1. Delete any existing `web/static` folder and all its contents (this "
+            "was auto-generated)\n"
+            " 2. Rename your existing `static_overrides` folder to `static` instead."
+        )
+
 
 def check_warnings(settings):
     """
