@@ -5,10 +5,12 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from evennia.typeclasses.admin import AttributeInline, TagInline
-from evennia.objects.models import ObjectDB
 from django.contrib.admin.utils import flatten_fieldsets
 from django.utils.translation import gettext as _
+
+from evennia.objects.models import ObjectDB
+from .attributes import AttributeInline
+from .tags import TagInline
 
 
 class ObjectAttributeInline(AttributeInline):
@@ -86,7 +88,8 @@ class ObjectEditForm(ObjectCreateForm):
     )
 
 
-class ObjectDBAdmin(admin.ModelAdmin):
+@admin.register(ObjectDB)
+class ObjectAdmin(admin.ModelAdmin):
     """
     Describes the admin page for Objects.
 
@@ -143,7 +146,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
 
         Args:
             request (Request): Incoming request.
-            obj (ObjectDB, optional): Database object.
+            obj (Object, optional): Database object.
         """
         if not obj:
             return self.add_fieldsets
@@ -192,6 +195,3 @@ class ObjectDBAdmin(admin.ModelAdmin):
         from django.urls import reverse
 
         return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.id]))
-
-
-admin.site.register(ObjectDB, ObjectDBAdmin)

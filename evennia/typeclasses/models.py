@@ -341,7 +341,7 @@ class TypedObject(SharedMemoryModel):
     def nattributes(self):
         return AttributeHandler(self, InMemoryAttributeBackend)
 
-    class Meta(object):
+    class Meta:
         """
         Django setup info.
         """
