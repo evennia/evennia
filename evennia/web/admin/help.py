@@ -4,7 +4,8 @@ This defines how to edit help entries in Admin.
 from django import forms
 from django.contrib import admin
 from evennia.help.models import HelpEntry
-from evennia.typeclasses.admin import TagInline
+
+from .tags import TagInline
 
 
 class HelpTagInline(TagInline):

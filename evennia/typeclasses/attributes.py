@@ -161,6 +161,7 @@ class InMemoryAttribute(IAttribute):
 class Attribute(IAttribute, SharedMemoryModel):
     """
     This attribute is stored via Django. Most Attributes will be using this class.
+
     """
 
     #
@@ -219,7 +220,7 @@ class Attribute(IAttribute, SharedMemoryModel):
 
     class Meta(object):
         "Define Django meta options"
-        verbose_name = "Evennia Attribute"
+        verbose_name = "Attribute"
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using

@@ -3,11 +3,11 @@
 # in the web admin interface.
 #
 from django.conf import settings
-
-from evennia.typeclasses.admin import AttributeInline, TagInline
+from django.contrib import admin
 
 from evennia.scripts.models import ScriptDB
-from django.contrib import admin
+from .attributes import AttributeInline
+from .tags import TagInline
 
 
 class ScriptTagInline(TagInline):
@@ -30,7 +30,8 @@ class ScriptAttributeInline(AttributeInline):
     related_field = "scriptdb"
 
 
-class ScriptDBAdmin(admin.ModelAdmin):
+@admin.register(ScriptDB)
+class ScriptAdmin(admin.ModelAdmin):
     """
     Displaying the main Script page.
 
@@ -86,6 +87,3 @@ class ScriptDBAdmin(admin.ModelAdmin):
             # adding a new object
             # have to call init with typeclass passed to it
             obj.set_class_from_typeclass(typeclass_path=obj.db_typeclass_path)
-
-
-admin.site.register(ScriptDB, ScriptDBAdmin)

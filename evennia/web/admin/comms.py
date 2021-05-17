@@ -5,8 +5,10 @@ This defines how Comm models are displayed in the web admin interface.
 
 from django.contrib import admin
 from evennia.comms.models import ChannelDB
-from evennia.typeclasses.admin import AttributeInline, TagInline
 from django.conf import settings
+
+from .attributes import AttributeInline
+from .tags import TagInline
 
 
 class ChannelAttributeInline(AttributeInline):
@@ -63,7 +65,7 @@ class ChannelAdmin(admin.ModelAdmin):
     """
 
     inlines = [ChannelTagInline, ChannelAttributeInline]
-    list_display = ("id", "db_key", "db_lock_storage", "subscriptions")
+    list_display = ("id", "db_key", "no_of_subscribers", "db_lock_storage")
     list_display_links = ("id", "db_key")
     ordering = ["db_key"]
     search_fields = ["id", "db_key", "db_tags__db_key"]
@@ -94,6 +96,16 @@ class ChannelAdmin(admin.ModelAdmin):
 
         """
         return ", ".join([str(sub) for sub in obj.subscriptions.all()])
+
+    def no_of_subscribers(self, obj):
+        """
+        Get number of subs for a a channel .
+
+        Args:
+            obj (Channel): The channel to get subs from.
+
+        """
+        return sum(1 for sub in obj.subscriptions.all())
 
     def save_model(self, request, obj, form, change):
         """

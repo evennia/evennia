@@ -53,7 +53,7 @@ class Tag(models.Model):
         "key", max_length=255, null=True, help_text="tag identifier", db_index=True
     )
     db_category = models.CharField(
-        "category", max_length=64, null=True, help_text="tag category", db_index=True
+        "category", max_length=64, null=True, blank=True, help_text="tag category", db_index=True
     )
     db_data = models.TextField(
         "data",

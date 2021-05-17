@@ -378,7 +378,7 @@ class ObjectDB(TypedObject):
                 )
                 [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
-    class Meta(object):
+    class Meta:
         """Define Django meta options"""
 
         verbose_name = "Object"

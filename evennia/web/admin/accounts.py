@@ -19,14 +19,15 @@ from django.urls import path, reverse
 from django.contrib.auth import update_session_auth_hash
 
 from evennia.accounts.models import AccountDB
-from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.utils import create
+from .attributes import AttributeInline
+from .tags import TagInline
 
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 
 # handle the custom User editor
-class AccountDBChangeForm(UserChangeForm):
+class AccountChangeForm(UserChangeForm):
     """
     Modify the accountdb class.
 
@@ -61,7 +62,7 @@ class AccountDBChangeForm(UserChangeForm):
         return self.cleaned_data["username"]
 
 
-class AccountDBCreationForm(UserCreationForm):
+class AccountCreationForm(UserCreationForm):
     """
     Create a new AccountDB instance.
     """
@@ -214,14 +215,14 @@ class AccountAttributeInline(AttributeInline):
 
 
 @admin.register(AccountDB)
-class AccountDBAdmin(BaseUserAdmin):
+class AccountAdmin(BaseUserAdmin):
     """
     This is the main creation screen for Users/accounts
 
     """
     list_display = ("username", "email", "is_staff", "is_superuser")
-    form = AccountDBChangeForm
-    add_form = AccountDBCreationForm
+    form = AccountChangeForm
+    add_form = AccountCreationForm
     inlines = [AccountTagInline, AccountAttributeInline]
     fieldsets = (
         (None, {"fields": ("username", "password", "email")}),
@@ -360,6 +361,3 @@ class AccountDBAdmin(BaseUserAdmin):
         from django.urls import reverse
 
         return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
-
-
-# admin.site.register(AccountDB, AccountDBAdmin)
