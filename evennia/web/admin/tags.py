@@ -16,6 +16,47 @@ from evennia.utils.dbserialize import from_pickle, _SaverSet
 
 class TagForm(forms.ModelForm):
     """
+    Form to display fields in the stand-alone Tag display.
+
+    """
+
+    db_key = forms.CharField(
+        label="Key/Name", required=True, help_text="The main key identifier"
+    )
+    db_category = forms.CharField(
+        label="Category",
+        help_text="Used for grouping tags. Unset (default) gives a category of None",
+        required=False,
+    )
+    db_tagtype = forms.ChoiceField(
+        label="Type",
+        choices=[(None, "-"), ("alias", "alias"), ("permission", "permission")],
+        help_text="Tags are used for different things. Unset for regular tags.",
+        required=False
+    )
+    db_model = forms.ChoiceField(
+        label="Model" ,
+        required=False,
+        help_text = "Each Tag can only 'attach' to one type of entity.",
+        choices=([("objectdb", "objectdb"), ("accountdb", "accountdb"),
+                  ("scriptdb", "scriptdb"), ("channeldb", "channeldb"),
+                  ("helpentry", "helpentry"), ("msg", "msg")])
+    )
+    db_data = forms.CharField(
+        label="Data",
+        help_text="Usually unused. Intended for info about the tag itself",
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        required=False,
+    )
+
+    class Meta:
+        fields = ("tag_key", "tag_category", "tag_data", "tag_type")
+
+
+class InlineTagForm(forms.ModelForm):
+    """
+    Form for displaying tags inline together with other entities.
+
     This form overrides the base behavior of the ModelForm that would be used for a
     Tag-through-model.  Since the through-models only have access to the foreignkeys of the Tag and
     the Object that they're attached to, we need to spoof the behavior of it being a form that would
@@ -32,13 +73,15 @@ class TagForm(forms.ModelForm):
         help_text="Used for grouping tags. Unset (default) gives a category of None",
         required=False,
     )
-    tag_type = forms.CharField(
+    tag_type = forms.ChoiceField(
         label="Type",
-        help_text='Internal use. Either unset, "alias" or "permission"',
-        required=False,
+        choices=[(None, "-"), ("alias", "alias"), ("permission", "permission")],
+        help_text="Tags are used for different things. Unset for regular tags.",
+        required=False
     )
     tag_data = forms.CharField(
         label="Data",
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="Usually unused. Intended for eventual info about the tag itself",
         required=False,
     )
@@ -99,6 +142,8 @@ class TagFormSet(forms.BaseInlineFormSet):
     Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the
     type of tag.
     """
+    verbose_name = "Tag"
+    verbose_name_plural = "Tags"
 
     def save(self, commit=True):
         def get_handler(finished_object):
@@ -137,7 +182,8 @@ class TagInline(admin.TabularInline):
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     verbose_name = "Tag"
-    form = TagForm
+    verbose_name_plural = "Tags"
+    form = InlineTagForm
     formset = TagFormSet
     related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
     # raw_id_fields = ('tag',)
@@ -164,9 +210,25 @@ class TagInline(admin.TabularInline):
 class TagAdmin(admin.ModelAdmin):
     """
     A django Admin wrapper for Tags.
+
     """
 
     search_fields = ("db_key", "db_category", "db_tagtype")
     list_display = ("db_key", "db_category", "db_tagtype", "db_model", "db_data")
     fields = ("db_key", "db_category", "db_tagtype", "db_model", "db_data")
     list_filter = ("db_tagtype", "db_category", "db_model")
+    form = TagForm
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    ("db_key", "db_category"),
+                    ("db_tagtype", "db_model"),
+                    "db_data"
+                )
+            },
+        ),
+    )
+

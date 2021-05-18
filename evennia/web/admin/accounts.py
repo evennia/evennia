@@ -22,6 +22,7 @@ from evennia.accounts.models import AccountDB
 from evennia.utils import create
 from .attributes import AttributeInline
 from .tags import TagInline
+from . import utils as adminutils
 
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
@@ -47,6 +48,31 @@ class AccountChangeForm(UserChangeForm):
             "and @/./+/-/_ characters."
         },
         help_text="30 characters or fewer. Letters, spaces, digits and " "@/./+/-/_ only.",
+    )
+
+    db_typeclass_path = forms.ChoiceField(
+        label="Typeclass",
+        help_text="This is the Python-path to the class implementing the actual account functionality. "
+        "You usually don't need to change this from the default.<BR>"
+        "If your custom class is not found here, it may not be imported as part of Evennia's startup.",
+        choices=adminutils.get_and_load_typeclasses(parent=AccountDB),
+    )
+
+    db_lock_storage = forms.CharField(
+        label="Locks",
+        required=False,
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="Locks limit access to the entity. Written on form `type:lockdef;type:lockdef..."
+        "<BR>(Permissions (used with the perm() lockfunc) are Tags with the 'permission' type)",
+    )
+
+    db_cmdset_storage = forms.CharField(
+        label="CommandSet",
+        initial=settings.CMDSET_ACCOUNT,
+        widget=forms.TextInput(attrs={"size": "78"}),
+        required=False,
+        help_text="Python path to account cmdset class (set via "
+        "settings.CMDSET_ACCOUNT by default)",
     )
 
     def clean_username(self):
@@ -99,7 +125,7 @@ class AccountForm(forms.ModelForm):
 
     """
 
-    class Meta(object):
+    class Meta:
         model = AccountDB
         fields = "__all__"
         app_label = "accounts"
@@ -120,27 +146,21 @@ class AccountForm(forms.ModelForm):
         "@/./+/-/_ only.",
     )
 
-    db_typeclass_path = forms.CharField(
+    db_typeclass_path = forms.ChoiceField(
         label="Typeclass",
-        initial=settings.BASE_ACCOUNT_TYPECLASS,
-        widget=forms.TextInput(attrs={"size": "78"}),
-        help_text="Required. Defines what 'type' of entity this is. This "
-        "variable holds a Python path to a module with a valid "
-        "Evennia Typeclass. Defaults to "
-        "settings.BASE_ACCOUNT_TYPECLASS.",
+        initial={settings.BASE_ACCOUNT_TYPECLASS: settings.BASE_ACCOUNT_TYPECLASS},
+        help_text="This is the Python-path to the class implementing the actual "
+        "account functionality. You usually don't need to change this from"
+        "the default.<BR>If your custom class is not found here, it may not be "
+        "imported as part of Evennia's startup.",
+        choices=adminutils.get_and_load_typeclasses(parent=AccountDB),
     )
 
-    db_permissions = forms.CharField(
-        label="Permissions",
-        initial=settings.PERMISSION_ACCOUNT_DEFAULT,
+    db_lock_storage = forms.CharField(
+        label="Locks",
         required=False,
-        widget=forms.TextInput(attrs={"size": "78"}),
-        help_text="In-game permissions. A comma-separated list of text "
-        "strings checked by certain locks. They are often used for "
-        "hierarchies, such as letting an Account have permission "
-        "'Admin', 'Builder' etc. An Account permission can be "
-        "overloaded by the permissions of a controlled Character. "
-        "Normal accounts use 'Accounts' by default.",
+        help_text="Locks limit access to the entity. Written on form `type:lockdef;type:lockdef..."
+        "<BR>(Permissions (used with the perm() lockfunc) are Tags with the 'permission' type)",
     )
 
     db_lock_storage = forms.CharField(
@@ -220,48 +240,45 @@ class AccountAdmin(BaseUserAdmin):
     This is the main creation screen for Users/accounts
 
     """
+
     list_display = ("username", "email", "is_staff", "is_superuser")
     form = AccountChangeForm
     add_form = AccountCreationForm
     inlines = [AccountTagInline, AccountAttributeInline]
+    readonly_fields = ["db_date_created", "serialized_string"]
     fieldsets = (
-        (None, {"fields": ("username", "password", "email")}),
         (
-            "Website profile",
+            None,
             {
-                "fields": ("first_name", "last_name"),
-                "description": "<i>These are not used " "in the default system.</i>",
+                "fields": (
+                    ("username", "db_typeclass_path"),
+                    "password",
+                    "email",
+                    "db_date_created",
+                    "db_lock_storage",
+                    "db_cmdset_storage",
+                    "serialized_string",
+                )
             },
         ),
         (
-            "Website dates",
+            "Admin/Website properties",
             {
-                "fields": ("last_login", "date_joined"),
-                "description": "<i>Relevant only to the website.</i>",
-            },
-        ),
-        (
-            "Website Permissions",
-            {
-                "fields": ("is_active", "is_staff", "is_superuser", "user_permissions", "groups"),
-                "description": "<i>These are permissions/permission groups for "
-                "accessing the admin site. They are unrelated to "
-                "in-game access rights.</i>",
-            },
-        ),
-        (
-            "Game Options",
-            {
-                "fields": ("db_typeclass_path", "db_cmdset_storage", "db_lock_storage"),
-                "description": "<i>These are attributes that are more relevant " "to gameplay.</i>",
+                "fields": (
+                    ("first_name", "last_name"),
+                    "last_login",
+                    "date_joined",
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "user_permissions",
+                    "groups",
+                ),
+                "description": "<i>Used by the website/Django admin. "
+                "Except for `superuser status`, the permissions are not used in-game.</i>",
             },
         ),
     )
-    # ('Game Options', {'fields': (
-    #     'db_typeclass_path', 'db_cmdset_storage',
-    #     'db_permissions', 'db_lock_storage'),
-    #     'description': '<i>These are attributes that are '
-    #                    'more relevant to gameplay.</i>'}))
 
     add_fieldsets = (
         (
@@ -273,6 +290,31 @@ class AccountAdmin(BaseUserAdmin):
             },
         ),
     )
+
+    def serialized_string(self, obj):
+        """
+        Get the serialized version of the object.
+
+        """
+        from evennia.utils import dbserialize
+
+        return str(dbserialize.pack_dbobj(obj))
+
+    serialized_string.help_text = (
+        "Copy & paste this string into an Attribute's `value` field to store it there. "
+        "Note that you cannot (easily) add multiple accounts this way - better do that "
+        "in code."
+    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Overrides help texts.
+
+        """
+        help_texts = kwargs.get("help_texts", {})
+        help_texts["serialized_string"] = self.serialized_string.help_text
+        kwargs["help_texts"] = help_texts
+        return super().get_form(request, obj, **kwargs)
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=""):

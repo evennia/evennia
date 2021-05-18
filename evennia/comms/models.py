@@ -78,7 +78,7 @@ class Msg(SharedMemoryModel):
         "accounts.AccountDB",
         related_name="sender_account_set",
         blank=True,
-        verbose_name="sender(account)",
+        verbose_name="Senders (Accounts)",
         db_index=True,
     )
 
@@ -86,14 +86,14 @@ class Msg(SharedMemoryModel):
         "objects.ObjectDB",
         related_name="sender_object_set",
         blank=True,
-        verbose_name="sender(object)",
+        verbose_name="Senders (Objects)",
         db_index=True,
     )
     db_sender_scripts = models.ManyToManyField(
         "scripts.ScriptDB",
         related_name="sender_script_set",
         blank=True,
-        verbose_name="sender(script)",
+        verbose_name="Senders (Scripts)",
         db_index=True,
     )
     db_sender_external = models.CharField(
@@ -102,14 +102,15 @@ class Msg(SharedMemoryModel):
         null=True,
         blank=True,
         db_index=True,
-        help_text="identifier for external sender, for example a sender over an "
-        "IRC connection (i.e. someone who doesn't have an exixtence in-game).",
+        help_text="Identifier for single external sender, for use with senders "
+                  "not represented by a regular database model."
     )
 
     db_receivers_accounts = models.ManyToManyField(
         "accounts.AccountDB",
         related_name="receiver_account_set",
         blank=True,
+        verbose_name="Receivers (Accounts)",
         help_text="account receivers",
     )
 
@@ -117,12 +118,14 @@ class Msg(SharedMemoryModel):
         "objects.ObjectDB",
         related_name="receiver_object_set",
         blank=True,
+        verbose_name="Receivers (Objects)",
         help_text="object receivers",
     )
     db_receivers_scripts = models.ManyToManyField(
         "scripts.ScriptDB",
         related_name="receiver_script_set",
         blank=True,
+        verbose_name="Receivers (Scripts)",
         help_text="script_receivers",
     )
 
@@ -132,8 +135,8 @@ class Msg(SharedMemoryModel):
         null=True,
         blank=True,
         db_index=True,
-        help_text="identifier for single external receiver, for use with "
-        "receivers without a database existence."
+        help_text="Identifier for single external receiver, for use with recievers "
+                  "not represented by a regular database model."
     )
 
     # header could be used for meta-info about the message if your system needs

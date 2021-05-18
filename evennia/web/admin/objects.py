@@ -11,6 +11,7 @@ from django.utils.translation import gettext as _
 from evennia.objects.models import ObjectDB
 from .attributes import AttributeInline
 from .tags import TagInline
+from . import utils as adminutils
 
 
 class ObjectAttributeInline(AttributeInline):
@@ -49,15 +50,15 @@ class ObjectCreateForm(forms.ModelForm):
         help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. "
         "If creating a Character, check so the name is unique among characters!",
     )
-    db_typeclass_path = forms.CharField(
+    db_typeclass_path = forms.ChoiceField(
         label="Typeclass",
-        initial=settings.BASE_OBJECT_TYPECLASS,
-        widget=forms.TextInput(attrs={"size": "78"}),
-        help_text="This defines what 'type' of entity this is. This variable holds a "
-        "Python path to a module with a valid Evennia Typeclass. If you are "
-        "creating a Character you should use the typeclass defined by "
-        "settings.BASE_CHARACTER_TYPECLASS or one derived from that.",
-    )
+        initial={settings.BASE_OBJECT_TYPECLASS: settings.BASE_OBJECT_TYPECLASS},
+        help_text="This is the Python-path to the class implementing the actual functionality. "
+        f"<BR>If you are creating a Character you usually need <B>{settings.BASE_CHARACTER_TYPECLASS}</B> "
+        "or a subclass of that. <BR>If your custom class is not found in the list, it may not be imported "
+        "as part of Evennia's startup.",
+        choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))
+
     db_cmdset_storage = forms.CharField(
         label="CmdSet",
         initial="",
@@ -66,6 +67,7 @@ class ObjectCreateForm(forms.ModelForm):
         help_text="Most non-character objects don't need a cmdset"
         " and can leave this field blank.",
     )
+
     raw_id_fields = ("db_destination", "db_location", "db_home")
 
 
@@ -75,17 +77,23 @@ class ObjectEditForm(ObjectCreateForm):
 
     """
 
-    class Meta(object):
+    class Meta:
+        model = ObjectDB
         fields = "__all__"
 
-    db_lock_storage = forms.CharField(
-        label="Locks",
+    db_lock_storage = forms.CharField( label="Locks",
         required=False,
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="In-game lock definition string. If not given, defaults will be used. "
         "This string should be on the form "
         "<i>type:lockfunction(args);type2:lockfunction2(args);...",
     )
+
+    db_typeclass_path = forms.ChoiceField(
+        label="Typeclass",
+        help_text="This is the Python-path to the class implementing the actual object functionality. "
+        "<BR>If your custom class is not found here, it may not be imported as part of Evennia's startup.",
+        choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))
 
 
 @admin.register(ObjectDB)
@@ -101,6 +109,7 @@ class ObjectAdmin(admin.ModelAdmin):
     ordering = ["db_account", "db_typeclass_path", "id"]
     search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key"]
     raw_id_fields = ("db_destination", "db_location", "db_home")
+    readonly_fields = ("serialized_string", )
 
     save_as = True
     save_on_top = True
@@ -116,10 +125,10 @@ class ObjectAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("db_key", "db_typeclass_path"),
-                    ("db_lock_storage",),
-                    ("db_location", "db_home"),
-                    "db_destination",
+                    ("db_location", "db_home", "db_destination"),
                     "db_cmdset_storage",
+                    "db_lock_storage",
+                    "serialized_string"
                 )
             },
         ),
@@ -139,6 +148,19 @@ class ObjectAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+    def serialized_string(self, obj):
+        """
+        Get the serialized version of the object.
+
+        """
+        from evennia.utils import dbserialize
+        return str(dbserialize.pack_dbobj(obj))
+
+    serialized_string.help_text = (
+        "Copy & paste this string into an Attribute's `value` field to store it there. "
+        "Note that you cannot (easily) add multiple objects this way - better do that "
+        "in code.")
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -161,12 +183,16 @@ class ObjectAdmin(admin.ModelAdmin):
             obj (Object, optional): Database object.
 
         """
+        help_texts = kwargs.get("help_texts", {})
+        help_texts["serialized_string"] = self.serialized_string.help_text
+        kwargs["help_texts"] = help_texts
+
         defaults = {}
         if obj is None:
             defaults.update(
                 {"form": self.add_form, "fields": flatten_fieldsets(self.add_fieldsets)}
             )
-            defaults.update(kwargs)
+        defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
