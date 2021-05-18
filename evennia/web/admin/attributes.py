@@ -27,17 +27,28 @@ class AttributeForm(forms.ModelForm):
     """
 
     attr_key = forms.CharField(
-        label="Attribute Name", required=False, initial="Enter Attribute Name Here"
+        label="Attribute Name", required=False, initial="Enter Attribute Name Here",
+        help_text="The main identifier of the Attribute. For Nicks, this is the pattern-matching string."
     )
     attr_category = forms.CharField(
-        label="Category", help_text="type of attribute, for sorting", required=False, max_length=128
+        label="Category",
+        help_text="Categorization. Unset (default) gives a category of `None`, which is "
+                  "is what is searched with e.g. `obj.db.attrname`. For 'nick'-type attributes, this is usually "
+                  "'inputline' or 'channel'.",
+        required=False, max_length=128
     )
-    attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
-    attr_type = forms.CharField(
+    attr_value = PickledFormField(
+        label="Value",
+        help_text="Value to pickle/save. Db-objects are serialized as a list "
+        "containing `__packed_dbobj__` (they can't easily be added from here). Nicks "
+        "store their pattern-replacement here.",
+        required=False
+    )
+    attr_type = forms.ChoiceField(
         label="Type",
-        help_text='Internal use. Either unset (normal Attribute) or "nick"',
-        required=False,
-        max_length=16,
+        choices=[(None, "-"), ("nick", "nick")],
+        help_text="Unset for regular Attributes, 'nick' for Nick-replacement usage.",
+        required=False
     )
     attr_lockstring = forms.CharField(
         label="Locks",
@@ -172,6 +183,7 @@ class AttributeInline(admin.TabularInline):
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     verbose_name = "Attribute"
+    verbose_name_plural = "Attributes"
     form = AttributeForm
     formset = AttributeFormSet
     related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing

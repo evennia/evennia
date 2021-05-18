@@ -850,8 +850,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
+
 # Where to find locales (no need to change this, most likely)
 LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
+# How to display time stamps in e.g. the admin
+SHORT_DATETIME_FORMAT = 'Y-m-d H:i:s.u'
+DATETIME_FORMAT = 'Y-m-d H:i:s'  # ISO 8601 but without T and timezone
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False

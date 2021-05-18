@@ -27,9 +27,10 @@ class HelpEntryForm(forms.ModelForm):
         label="Locks",
         initial="view:all()",
         required=False,
-        widget=forms.TextInput(attrs={"size": "40"}),
-    )
-
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="Set lock to view:all() unless you want it to only show to certain users."
+        "<BR>Use the `edit:` limit if wanting to limit who can edit from in-game. By default it's only "
+        "limited to who can use the `sethelp` command (Builders).")
 
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
@@ -48,7 +49,6 @@ class HelpEntryAdmin(admin.ModelAdmin):
             None,
             {
                 "fields": (("db_key", "db_help_category"), "db_entrytext", "db_lock_storage"),
-                "description": "Sets a Help entry. Set lock to <i>view:all()</I> unless you want to restrict it.",
             },
         ),
     )

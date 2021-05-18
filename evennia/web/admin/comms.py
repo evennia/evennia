@@ -3,13 +3,117 @@ This defines how Comm models are displayed in the web admin interface.
 
 """
 
+from django import forms
 from django.contrib import admin
-from evennia.comms.models import ChannelDB
+from evennia.comms.models import ChannelDB, Msg
 from django.conf import settings
 
 from .attributes import AttributeInline
 from .tags import TagInline
 
+
+class MsgTagInline(TagInline):
+    """
+    Inline display for Msg-tags.
+
+    """
+    model = Msg.db_tags.through
+    related_field = "msg"
+
+class MsgForm(forms.ModelForm):
+    """
+    Custom Msg form.
+
+    """
+
+    class Meta:
+        models = Msg
+        fields = "__all__"
+
+    db_header = forms.CharField(
+        label="Header",
+        required=False,
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="Optional header for the message; it could be a title or "
+                  "metadata depending on msg-use."
+    )
+
+    db_lock_storage = forms.CharField(
+        label="Locks",
+        required=False,
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="In-game lock definition string. If not given, defaults will be used. "
+        "This string should be on the form "
+        "<i>type:lockfunction(args);type2:lockfunction2(args);...",
+    )
+
+
+
+@admin.register(Msg)
+class MsgAdmin(admin.ModelAdmin):
+    """
+    Defines display for Msg objects
+
+    """
+
+    list_display = (
+        "id",
+        "db_date_created",
+        "sender",
+        "receiver",
+        "start_of_message"
+    )
+    list_display_links = ("id", "db_date_created", "start_of_message")
+    inlines = [MsgTagInline]
+    form = MsgForm
+    ordering = ["db_date_created", ]
+    # readonly_fields = ['db_message', 'db_sender', 'db_receivers', 'db_channels']
+    search_fields = ["id", "^db_date_created", "^db_message"]
+    readonly_fields = ["db_date_created"]
+    save_as = True
+    save_on_top = True
+    list_select_related = True
+    raw_id_fields = (
+        "db_date_created", "db_sender_accounts",
+         "db_sender_objects", "db_sender_scripts",
+         "db_receivers_accounts", "db_receivers_objects",
+         "db_receivers_scripts", "db_hide_from_accounts",
+         "db_hide_from_objects")
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    ("db_sender_accounts", "db_sender_objects", "db_sender_scripts", "db_sender_external"),
+                    ("db_receivers_accounts", "db_receivers_objects", "db_receivers_scripts", "db_receiver_external"),
+                    ("db_hide_from_accounts", "db_hide_from_objects"),
+                    "db_header",
+                    "db_message"
+                )
+            },
+        ),
+    )
+
+    def sender(self, obj):
+        senders = [o for o in obj.senders if o]
+        if senders:
+            return senders[0]
+    sender.help_text = "If multiple, only the first is shown."
+
+    def receiver(self, obj):
+        receivers = [o for o in obj.receivers if o]
+        if receivers:
+            return receivers[0]
+    receiver.help_text = "If multiple, only the first is shown."
+
+    def start_of_message(self, obj):
+        crop_length = 50
+        if obj.db_message:
+            msg = obj.db_message
+            if len(msg) > (crop_length - 5):
+                msg = msg[:50] + "[...]"
+            return msg
 
 class ChannelAttributeInline(AttributeInline):
     """
@@ -31,33 +135,26 @@ class ChannelTagInline(TagInline):
     related_field = "channeldb"
 
 
-class MsgAdmin(admin.ModelAdmin):
+class ChannelForm(forms.ModelForm):
     """
-    Defines display for Msg objects
+    Form for accessing channels.
 
     """
+    class Meta:
+        model = ChannelDB
+        fields = "__all__"
 
-    list_display = (
-        "id",
-        "db_date_created",
-        "db_sender",
-        "db_receivers",
-        "db_channels",
-        "db_message",
-        "db_lock_storage",
+    db_lock_storage = forms.CharField(
+        label="Locks",
+        required=False,
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="In-game lock definition string. If not given, defaults will be used. "
+        "This string should be on the form "
+        "<i>type:lockfunction(args);type2:lockfunction2(args);...",
     )
-    list_display_links = ("id",)
-    ordering = ["db_date_created", "db_sender", "db_receivers", "db_channels"]
-    # readonly_fields = ['db_message', 'db_sender', 'db_receivers', 'db_channels']
-    search_fields = ["id", "^db_date_created", "^db_message"]
-    save_as = True
-    save_on_top = True
-    list_select_related = True
 
 
-# admin.site.register(Msg, MsgAdmin)
-
-
+@admin.register(ChannelDB)
 class ChannelAdmin(admin.ModelAdmin):
     """
     Defines display for Channel objects
@@ -65,6 +162,7 @@ class ChannelAdmin(admin.ModelAdmin):
     """
 
     inlines = [ChannelTagInline, ChannelAttributeInline]
+    form = ChannelForm
     list_display = ("id", "db_key", "no_of_subscribers", "db_lock_storage")
     list_display_links = ("id", "db_key")
     ordering = ["db_key"]
@@ -130,6 +228,3 @@ class ChannelAdmin(admin.ModelAdmin):
         from django.urls import reverse
 
         return HttpResponseRedirect(reverse("admin:comms_channeldb_change", args=[obj.id]))
-
-
-admin.site.register(ChannelDB, ChannelAdmin)
