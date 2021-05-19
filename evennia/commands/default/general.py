@@ -382,7 +382,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             table = self.styled_table(border="header")
             for item in items:
                 table.add_row(f"|C{item.name}|n",
-                              "{}|n".format(utils.crop(raw_ansi(item.db.desc), width=50) or ""))
+                              "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""))
             string = f"|wYou are carrying:\n{table}"
         self.caller.msg(string)
 

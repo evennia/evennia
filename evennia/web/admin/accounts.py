@@ -6,7 +6,9 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.translation import gettext as _
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.admin.utils import unquote
 from django.template.response import TemplateResponse
@@ -18,6 +20,7 @@ from django.utils.html import escape
 from django.urls import path, reverse
 from django.contrib.auth import update_session_auth_hash
 
+from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import create
 from .attributes import AttributeInline
@@ -240,11 +243,12 @@ class AccountAdmin(BaseUserAdmin):
     This is the main creation screen for Users/accounts
 
     """
+    from .objects import ObjectInline
 
     list_display = ("username", "email", "is_staff", "is_superuser")
     form = AccountChangeForm
     add_form = AccountCreationForm
-    inlines = [AccountTagInline, AccountAttributeInline]
+    inlines = [AccountTagInline, AccountAttributeInline, ObjectInline]
     readonly_fields = ["db_date_created", "serialized_string"]
     fieldsets = (
         (
