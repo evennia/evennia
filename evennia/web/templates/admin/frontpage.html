@@ -9,8 +9,8 @@
       <div class="card-body">
         <h1 class="card-title">Admin</h1>
         <p class="card-text">
-          The Evennia admin page allows for modifying database entities using a
-          graphical interface.
+          The Evennia admin allows for modifying database entities using a
+          graphical interface. This bypasses in-game locks and permissions.
         </p>
         <hr />
 
@@ -37,17 +37,26 @@
 
         <p class="card-text">
           <h4><a href="{% url "admin:comms_channeldb_changelist" %}">Channels</a></h4>
-          Channels are used to redirect and organize player communications.
+          Channels are used to redirect and organize player in-game communications.
         </p>
 
         <p class="card-text">
           <h4><a href="{% url "admin:help_helpentry_changelist" %}">Help Topics</a></h4>
-          Extend the automatic command-help with custom help topics.
+          Add help database help-entries here. Note that command-auto-help and
+          file-based help entries (added via FILEHELP_MODULES) are not visible
+          here.
+        </p>
+
+        <p class="card-text">
+          <h4><a href="{% url "admin:typeclasses_tag_changelist" %}">Tags</a></h4>
+          Tags are used to group, organize and quickly find other types of
+          objects. A given tag is 'shared' between any number of entities
+          making them very efficient.
         </p>
 
         <hr />
 
-        <h3>Extra website pages</h3>
+        <h3>Website-only</h3>
 
         <p class="card-text">
         <h4><a href="{% url "admin:sites_site_changelist" %}">Sites (domains)</a></h4>
@@ -65,13 +74,20 @@
           code. Select the domain specified by <strong>SITE_ID</strong> above.
         </p>
 
+        <p class="card-text">
+        <h4><a href="{% url "admin:auth_group_changelist" %}">Groups</a></h4>
+          These are permission groups used only by the admin. You usually don't
+          need to modify these.
+        </p>
+
         <hr />
 
         <p class="card-text">
-          If you are an advanced user who needs access to the raw Django Admin,
-          it is available <a href="{% url "django_admin" %}">here</a>.  You can
-          make this the default by changing <code>EVENNIA_ADMIN</code> to
-          <code>False</code> in <code>settings.py</code> and reload.
+          When you click on any link above you'll end up in the full
+          django-based admin panel. You can also get to it  <a href="{% url
+          "django_admin" %}">here</a>.  You can make this the default by
+          changing <code>EVENNIA_ADMIN</code> to <code>False</code> in
+        <code>settings.py</code> and reload.
         </p>
       </div>
     </div>
