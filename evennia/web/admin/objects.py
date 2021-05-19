@@ -6,9 +6,11 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.utils import flatten_fieldsets
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.utils.translation import gettext as _
 
 from evennia.objects.models import ObjectDB
+from evennia.accounts.models import AccountDB
 from .attributes import AttributeInline
 from .tags import TagInline
 from . import utils as adminutils
@@ -59,6 +61,14 @@ class ObjectCreateForm(forms.ModelForm):
         "as part of Evennia's startup.",
         choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))
 
+    db_lock_storage = forms.CharField( label="Locks",
+        required=False,
+        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
+        help_text="In-game lock definition string. If not given, defaults will be used. "
+        "This string should be on the form "
+        "<i>type:lockfunction(args);type2:lockfunction2(args);...",
+    )
+
     db_cmdset_storage = forms.CharField(
         label="CmdSet",
         initial="",
@@ -66,6 +76,15 @@ class ObjectCreateForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"size": "78"}),
         help_text="Most non-character objects don't need a cmdset"
         " and can leave this field blank.",
+    )
+
+    db_account = forms.ModelChoiceField(
+        AccountDB.objects.all(),
+        label="Controlling Account",
+        required=False,
+        widget=ForeignKeyRawIdWidget(
+            ObjectDB._meta.get_field('db_account').remote_field, admin.site),
+        help_text="Only needed for characters in MULTISESSION_MODE=1 or 2."
     )
 
     raw_id_fields = ("db_destination", "db_location", "db_home")
@@ -81,19 +100,32 @@ class ObjectEditForm(ObjectCreateForm):
         model = ObjectDB
         fields = "__all__"
 
-    db_lock_storage = forms.CharField( label="Locks",
-        required=False,
-        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
-        help_text="In-game lock definition string. If not given, defaults will be used. "
-        "This string should be on the form "
-        "<i>type:lockfunction(args);type2:lockfunction2(args);...",
+
+class ObjectInline(admin.StackedInline):
+    """
+    Inline creation of Object.
+
+    """
+    model = ObjectDB
+    # template = "admin/accounts/stacked.html"
+    form = ObjectCreateForm
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    ("db_key", "db_typeclass_path"),
+                    ("db_location", "db_home", "db_destination", "db_account"),
+                     "db_cmdset_storage",
+                     "db_lock_storage",
+                )
+            },
+        ),
     )
 
-    db_typeclass_path = forms.ChoiceField(
-        label="Typeclass",
-        help_text="This is the Python-path to the class implementing the actual object functionality. "
-        "<BR>If your custom class is not found here, it may not be imported as part of Evennia's startup.",
-        choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))
+    extra = 1
+    max_num = 1
+    raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
 
 
 @admin.register(ObjectDB)
@@ -108,7 +140,7 @@ class ObjectAdmin(admin.ModelAdmin):
     list_display_links = ("id", "db_key")
     ordering = ["db_account", "db_typeclass_path", "id"]
     search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key"]
-    raw_id_fields = ("db_destination", "db_location", "db_home")
+    raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
     readonly_fields = ("serialized_string", )
 
     save_as = True
@@ -125,7 +157,7 @@ class ObjectAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("db_key", "db_typeclass_path"),
-                    ("db_location", "db_home", "db_destination"),
+                    ("db_location", "db_home", "db_destination", "db_account"),
                     "db_cmdset_storage",
                     "db_lock_storage",
                     "serialized_string"
@@ -141,8 +173,7 @@ class ObjectAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("db_key", "db_typeclass_path"),
-                    ("db_location", "db_home"),
-                    "db_destination",
+                    ("db_location", "db_home", "db_destination", "db_account"),
                     "db_cmdset_storage",
                 )
             },
@@ -206,15 +237,17 @@ class ObjectAdmin(admin.ModelAdmin):
             change (bool): If this is a change or a new object.
 
         """
-        obj.save()
         if not change:
             # adding a new object
             # have to call init with typeclass passed to it
             obj.set_class_from_typeclass(typeclass_path=obj.db_typeclass_path)
+            obj.save()
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
-        obj.at_init()
+        else:
+            obj.save()
+            obj.at_init()
 
     def response_add(self, request, obj, post_url_continue=None):
         from django.http import HttpResponseRedirect
