@@ -129,10 +129,9 @@ class ObjectCreateForm(forms.ModelForm):
         account_cmdset = settings.CMDSET_ACCOUNT
         self.fields["db_cmdset_storage"].help_text = (
             "Path to Command-set path. Most non-character objects don't need a cmdset"
-            " and can leave this field blank. Some common cmdset-paths<BR> are "
-            f"<strong>{char_cmdset}</strong> and <strong>{account_cmdset}</strong>"
+            " and can leave this field blank. Default cmdset-path<BR> for Characters "
+            f"is <strong>{char_cmdset}</strong> ."
         )
-
 
 
 class ObjectEditForm(ObjectCreateForm):
@@ -164,10 +163,10 @@ class ObjectAdmin(admin.ModelAdmin):
     """
 
     inlines = [ObjectTagInline, ObjectAttributeInline]
-    list_display = ("id", "db_key", "db_account", "db_typeclass_path")
+    list_display = ("id", "db_key", "db_typeclass_path", "db_location", "db_destination", "db_account", "db_date_created")
     list_display_links = ("id", "db_key")
-    ordering = ["db_account", "db_typeclass_path", "id"]
-    search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key"]
+    ordering = ["-db_date_created", "-id"]
+    search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key", "^db_location__db_key"]
     raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
     readonly_fields = ("serialized_string", "link_button")
 
@@ -305,7 +304,7 @@ class ObjectAdmin(admin.ModelAdmin):
                               f"Added 'puppet:pid({account.id})' lock to {obj}.")
         else:
             self.message_user(request, "Account must be connected for this action "
-                              "(set Puppeting Account and save this page first).", 
+                              "(set Puppeting Account and save this page first).",
                               level=messages.ERROR)
 
         # stay on the same page

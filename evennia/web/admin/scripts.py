@@ -90,10 +90,11 @@ class ScriptAdmin(admin.ModelAdmin):
         "db_interval",
         "db_repeats",
         "db_persistent",
+        "db_date_created",
     )
     list_display_links = ("id", "db_key")
-    ordering = ["db_obj", "db_typeclass_path"]
-    search_fields = ["^db_key", "db_typeclass_path"]
+    ordering = ["-db_date_created", "-id"]
+    search_fields = ["=id", "^db_key", "db_typeclass_path"]
     readonly_fields = ["serialized_string"]
     form = ScriptForm
     save_as = True
