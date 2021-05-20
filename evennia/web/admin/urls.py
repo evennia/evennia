@@ -18,8 +18,6 @@ urlpatterns = [
     url(r"/doc/", include("django.contrib.admindocs.urls")),
 ]
 
-admin.site.site_header = "Evennia web admin"
-
 if settings.EVENNIA_ADMIN:
 
     urlpatterns += [

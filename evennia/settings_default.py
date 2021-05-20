@@ -956,7 +956,6 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.admin",
     "django.contrib.admindocs",
     "django.contrib.flatpages",
     "django.contrib.sites",
@@ -973,7 +972,8 @@ INSTALLED_APPS = [
     "evennia.comms",
     "evennia.help",
     "evennia.scripts",
-    "evennia.web"
+    "evennia.web",
+    "evennia.web.utils.adminsite.EvenniaAdminApp",  # replaces django.contrib.admin
 ]
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.

@@ -146,6 +146,7 @@ class ObjectAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
+    view_on_site = False
     list_filter = ("db_typeclass_path",)
 
     # editing fields setup

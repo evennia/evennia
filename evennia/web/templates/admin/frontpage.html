@@ -18,8 +18,9 @@
 
         <p class="card-text">
           <h4><a href="{% url "admin:accounts_accountdb_changelist" %}">Accounts</a></h4>
-          Accounts can have several characters under them. A user's login and
-          password information can be changed here.
+          Accounts represent an out-of-character player and stores
+          configurations and password. An account can control/puppet one or
+          more in-game Objects (usually Characters).
         </p>
 
         <p class="card-text">
@@ -37,14 +38,24 @@
 
         <p class="card-text">
           <h4><a href="{% url "admin:comms_channeldb_changelist" %}">Channels</a></h4>
-          Channels are used to redirect and organize player in-game communications.
+          Channels are used for mass communication, chat-room style. The
+          channel object holds subscriptions, options and access. The
+          communications themselves are logged to disk.
+        </p>
+
+        <p class="card-text">
+          <h4><a href="{% url "admin:comms_msg_changelist" %}">Msgs</a></h4>
+          Messages represent a piece of database-base saved communication
+          between sender(s) and receiver(s). By default they are used by
+          page/tell but can be used as building blocks for custom in-game
+          communication systems.
         </p>
 
         <p class="card-text">
           <h4><a href="{% url "admin:help_helpentry_changelist" %}">Help Topics</a></h4>
-          Add help database help-entries here. Note that command-auto-help and
-          file-based help entries (added via FILEHELP_MODULES) are not visible
-          here.
+          Database-based Help entries like these can also be added from
+          in-game. Note that command-auto-help and file-based help entries
+          (added via FILEHELP_MODULES) cannot be modified or viewed from here.
         </p>
 
         <p class="card-text">
@@ -56,11 +67,12 @@
 
         <p class="card-text">
           <h4><a href="{% url "admin:server_serverconfig_changelist" %}">ServerConfig</a></h4>
-          These are constants saved by the running server. While maybe interesting for
-          debugging, you should usually not modify these manually unless you
-          <i>really</i> know what you are doing. For example, the
-          <i>BASE_*_TYPECLASS</i> fields are stored in order to auto-update
-          when their setting changes; they must <i>not</i> be changed manually here.
+          ServerConfigs store variables set by the running server. While possibly
+          interesting for debugging, you should usually not modify these
+          manually unless you <i>really</i> know what you are doing. For
+          example, the <i>BASE_*_TYPECLASS</i> fields are stored in order to
+          auto-update when their setting changes; they must <i>not</i> be
+          changed manually here.
         </p>
 
         <hr />
@@ -78,9 +90,9 @@
         </p>
 
         <p class="card-text">
-        <h4><a href="{% url "admin:flatpages_flatpage_changelist" %}">Pages</a></h4>
+        <h4><a href="{% url "admin:flatpages_flatpage_changelist" %}">Flat Pages</a></h4>
           Create, edit and publish new web pages without needing to know how to
-          code. Select the domain specified by <strong>SITE_ID</strong> above.
+          code. Make sure to assign to a domain created above.
         </p>
 
         <p class="card-text">

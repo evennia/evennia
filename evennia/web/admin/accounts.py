@@ -248,6 +248,7 @@ class AccountAdmin(BaseUserAdmin):
     add_form = AccountCreationForm
     inlines = [AccountTagInline, AccountAttributeInline]
     readonly_fields = ["db_date_created", "serialized_string"]
+    view_on_site = False
     fieldsets = (
         (
             None,
