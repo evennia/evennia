@@ -219,9 +219,8 @@ class ObjectAdmin(admin.ModelAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there. "
-        "Note that you cannot (easily) add multiple objects this way - better do that "
-        "in code.")
+        "Copy & paste this string into an Attribute's `value` field to store it there."
+    )
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -272,7 +271,7 @@ class ObjectAdmin(admin.ModelAdmin):
             '<a class="button" href="{}">Link to Account</a>&nbsp;',
             reverse("admin:object-account-link", args=[obj.pk])
         )
-    link_button.short_description = "Create puppet links for MULTISESSION_MODE 0/1"
+    link_button.short_description = "Create attrs/locks for puppeting"
     link_button.allow_tags = True
 
     def link_object_to_account(self, request, object_id):
@@ -305,8 +304,9 @@ class ObjectAdmin(admin.ModelAdmin):
                               f"Added {obj} to Account.db._playable_characters list, "
                               f"Added 'puppet:pid({account.id})' lock to {obj}.")
         else:
-            self.message_user(request, "Account must be connected to set up puppet links "
-                              "(set Puppeting Account and save this page first).", level=messages.ERROR)
+            self.message_user(request, "Account must be connected for this action "
+                              "(set Puppeting Account and save this page first).", 
+                              level=messages.ERROR)
 
         # stay on the same page
         return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.pk]))

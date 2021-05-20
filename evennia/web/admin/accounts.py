@@ -280,7 +280,7 @@ class AccountAdmin(BaseUserAdmin):
     form = AccountChangeForm
     add_form = AccountCreationForm
     inlines = [AccountTagInline, AccountAttributeInline, ObjectPuppetInline]
-    readonly_fields = ["db_date_created", "serialized_string", "link_button"]
+    readonly_fields = ["db_date_created", "serialized_string"]
     view_on_site = False
     fieldsets = (
         (
@@ -337,9 +337,7 @@ class AccountAdmin(BaseUserAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there. "
-        "Note that you cannot (easily) add multiple accounts this way - better do that "
-        "in code."
+        "Copy & paste this string into an Attribute's `value` field to store it there."
     )
 
     def get_form(self, request, obj=None, **kwargs):

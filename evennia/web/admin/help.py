@@ -49,10 +49,14 @@ class HelpEntryAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": (("db_key", "db_help_category"), "db_entrytext", "db_lock_storage"),
+                "fields": (
+                    ("db_key", "db_help_category"),
+                    "db_entrytext",
+                    "db_lock_storage",
+                    # "db_date_created",
+                ),
             },
         ),
     )
-
 
 admin.site.register(HelpEntry, HelpEntryAdmin)
