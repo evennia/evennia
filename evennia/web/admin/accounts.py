@@ -243,12 +243,10 @@ class AccountAdmin(BaseUserAdmin):
     This is the main creation screen for Users/accounts
 
     """
-    from .objects import ObjectInline
-
     list_display = ("username", "email", "is_staff", "is_superuser")
     form = AccountChangeForm
     add_form = AccountCreationForm
-    inlines = [AccountTagInline, AccountAttributeInline, ObjectInline]
+    inlines = [AccountTagInline, AccountAttributeInline]
     readonly_fields = ["db_date_created", "serialized_string"]
     fieldsets = (
         (
