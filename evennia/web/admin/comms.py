@@ -56,19 +56,22 @@ class MsgAdmin(admin.ModelAdmin):
 
     """
 
+    inlines = [MsgTagInline]
+    form = MsgForm
     list_display = (
         "id",
         "db_date_created",
         "sender",
         "receiver",
-        "start_of_message"
+        "start_of_message",
     )
     list_display_links = ("id", "db_date_created", "start_of_message")
-    inlines = [MsgTagInline]
-    form = MsgForm
-    ordering = ["db_date_created", ]
-    # readonly_fields = ['db_message', 'db_sender', 'db_receivers', 'db_channels']
-    search_fields = ["id", "^db_date_created", "^db_message"]
+    ordering = ["-db_date_created", "-id"]
+    search_fields = ["=id", "^db_date_created", "^db_message",
+                     "^db_sender_accounts__db_key", "^db_sender_objects__db_key",
+                     "^db_sender_scripts__db_key", "^db_sender_external",
+                     "^db_receivers_accounts__db_key", "^db_receivers_objects__db_key",
+                     "^db_receivers_scripts__db_key", "^db_receiver_external"]
     readonly_fields = ["db_date_created", "serialized_string"]
     save_as = True
     save_on_top = True
@@ -189,9 +192,10 @@ class ChannelAdmin(admin.ModelAdmin):
 
     inlines = [ChannelTagInline, ChannelAttributeInline]
     form = ChannelForm
-    list_display = ("id", "db_key", "no_of_subscribers", "db_lock_storage")
+    list_display = ("id", "db_key", "no_of_subscribers", "db_lock_storage", "db_typeclass_path",
+                    "db_date_created")
     list_display_links = ("id", "db_key")
-    ordering = ["db_key"]
+    ordering = ["-db_date_created", "-id", "-db_key"]
     search_fields = ["id", "db_key", "db_tags__db_key"]
     readonly_fields = ["serialized_string"]
     save_as = True

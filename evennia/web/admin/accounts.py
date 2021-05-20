@@ -74,8 +74,6 @@ class AccountChangeForm(UserChangeForm):
         initial=settings.CMDSET_ACCOUNT,
         widget=forms.TextInput(attrs={"size": "78"}),
         required=False,
-        help_text="Python path to account cmdset class (set via "
-        "settings.CMDSET_ACCOUNT by default)",
     )
 
     def clean_username(self):
@@ -89,6 +87,21 @@ class AccountChangeForm(UserChangeForm):
         elif AccountDB.objects.filter(username__iexact=username):
             raise forms.ValidationError("An account with that name " "already exists.")
         return self.cleaned_data["username"]
+
+    def __init__(self, *args, **kwargs):
+        """
+        Tweak some fields dynamically.
+
+        """
+        super().__init__(*args, **kwargs)
+
+        # better help text for cmdset_storage
+        account_cmdset = settings.CMDSET_ACCOUNT
+        self.fields["db_cmdset_storage"].help_text = (
+            "Path to Command-set path. Most non-character objects don't need a cmdset"
+            " and can leave this field blank. Default cmdset-path<BR> for Accounts "
+            f"is <strong>{account_cmdset}</strong> ."
+        )
 
 
 class AccountCreationForm(UserCreationForm):
@@ -122,101 +135,6 @@ class AccountCreationForm(UserCreationForm):
         return username
 
 
-class AccountForm(forms.ModelForm):
-    """
-    Defines how to display Accounts
-
-    """
-
-    class Meta:
-        model = AccountDB
-        fields = "__all__"
-        app_label = "accounts"
-
-    db_key = forms.RegexField(
-        label="Username",
-        initial="AccountDummy",
-        max_length=30,
-        regex=r"^[\w. @+-]+$",
-        required=False,
-        widget=forms.TextInput(attrs={"size": "30"}),
-        error_messages={
-            "invalid": "This value may contain only letters, spaces, numbers"
-            " and @/./+/-/_ characters."
-        },
-        help_text="This should be the same as the connected Account's key "
-        "name. 30 characters or fewer. Letters, spaces, digits and "
-        "@/./+/-/_ only.",
-    )
-
-    db_typeclass_path = forms.ChoiceField(
-        label="Typeclass",
-        initial={settings.BASE_ACCOUNT_TYPECLASS: settings.BASE_ACCOUNT_TYPECLASS},
-        help_text="This is the Python-path to the class implementing the actual "
-        "account functionality. You usually don't need to change this from"
-        "the default.<BR>If your custom class is not found here, it may not be "
-        "imported as part of Evennia's startup.",
-        choices=adminutils.get_and_load_typeclasses(parent=AccountDB),
-    )
-
-    db_lock_storage = forms.CharField(
-        label="Locks",
-        required=False,
-        help_text="Locks limit access to the entity. Written on form `type:lockdef;type:lockdef..."
-        "<BR>(Permissions (used with the perm() lockfunc) are Tags with the 'permission' type)",
-    )
-
-    db_lock_storage = forms.CharField(
-        label="Locks",
-        widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
-        required=False,
-        help_text="In-game lock definition string. If not given, defaults "
-        "will be used. This string should be on the form "
-        "<i>type:lockfunction(args);type2:lockfunction2(args);...",
-    )
-    db_cmdset_storage = forms.CharField(
-        label="cmdset",
-        initial=settings.CMDSET_ACCOUNT,
-        widget=forms.TextInput(attrs={"size": "78"}),
-        required=False,
-        help_text="python path to account cmdset class (set in "
-        "settings.CMDSET_ACCOUNT by default)",
-    )
-
-
-class AccountInline(admin.StackedInline):
-    """
-    Inline creation of Account
-
-    """
-
-    model = AccountDB
-    template = "admin/accounts/stacked.html"
-    form = AccountForm
-    fieldsets = (
-        (
-            "In-game Permissions and Locks",
-            {
-                "fields": ("db_lock_storage",),
-                # {'fields': ('db_permissions', 'db_lock_storage'),
-                "description": "<i>These are permissions/locks for in-game use. "
-                "They are unrelated to website access rights.</i>",
-            },
-        ),
-        (
-            "In-game Account data",
-            {
-                "fields": ("db_typeclass_path", "db_cmdset_storage"),
-                "description": "<i>These fields define in-game-specific properties "
-                "for the Account object in-game.</i>",
-            },
-        ),
-    )
-
-    extra = 1
-    max_num = 1
-
-
 class AccountTagInline(TagInline):
     """
     Inline Account Tags.
@@ -243,6 +161,7 @@ class ObjectPuppetInline(admin.StackedInline):
     """
     from .objects import ObjectCreateForm
 
+    verbose_name = "Puppeted Object"
     model = ObjectDB
     view_on_site = False
     show_change_link = True
@@ -269,6 +188,13 @@ class ObjectPuppetInline(admin.StackedInline):
                        "db_location", "db_home", "db_account",
                        "db_cmdset_storage", "db_lock_storage")
 
+    # disable adding/deleting this inline - read-only!
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(AccountDB)
 class AccountAdmin(BaseUserAdmin):
@@ -276,9 +202,13 @@ class AccountAdmin(BaseUserAdmin):
     This is the main creation screen for Users/accounts
 
     """
-    list_display = ("username", "email", "is_staff", "is_superuser")
+    list_display = ("id", "username", "is_staff", "is_superuser", "db_typeclass_path", "db_date_created")
+    list_display_links = ("id", "username")
     form = AccountChangeForm
     add_form = AccountCreationForm
+    search_fields = ["=id", "^username", "db_typeclass_path"]
+    ordering = ["-db_date_created", "id"]
+    list_filter = ["is_superuser", "is_staff", "db_typeclass_path"]
     inlines = [AccountTagInline, AccountAttributeInline, ObjectPuppetInline]
     readonly_fields = ["db_date_created", "serialized_string"]
     view_on_site = False

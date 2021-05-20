@@ -35,10 +35,11 @@ class HelpEntryForm(forms.ModelForm):
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
     inlines = [HelpTagInline]
-    list_display = ("id", "db_key", "db_help_category", "db_lock_storage")
+    list_display = ("id", "db_key", "db_help_category", "db_lock_storage", "db_date_created")
     list_display_links = ("id", "db_key")
     search_fields = ["^db_key", "db_entrytext"]
     ordering = ["db_help_category", "db_key"]
+    list_filter = ["db_help_category"]
     save_as = True
     save_on_top = True
     list_select_related = True
