@@ -69,14 +69,14 @@ class MsgAdmin(admin.ModelAdmin):
     ordering = ["db_date_created", ]
     # readonly_fields = ['db_message', 'db_sender', 'db_receivers', 'db_channels']
     search_fields = ["id", "^db_date_created", "^db_message"]
-    readonly_fields = ["db_date_created"]
+    readonly_fields = ["db_date_created", "serialized_string"]
     save_as = True
     save_on_top = True
     list_select_related = True
     view_on_site = False
 
     raw_id_fields = (
-        "db_date_created", "db_sender_accounts",
+        "db_sender_accounts",
          "db_sender_objects", "db_sender_scripts",
          "db_receivers_accounts", "db_receivers_objects",
          "db_receivers_scripts", "db_hide_from_accounts",
@@ -91,7 +91,7 @@ class MsgAdmin(admin.ModelAdmin):
                     ("db_receivers_accounts", "db_receivers_objects", "db_receivers_scripts", "db_receiver_external"),
                     ("db_hide_from_accounts", "db_hide_from_objects"),
                     "db_header",
-                    "db_message"
+                    "db_message", "serialized_string"
                 )
             },
         ),
@@ -116,6 +116,30 @@ class MsgAdmin(admin.ModelAdmin):
             if len(msg) > (crop_length - 5):
                 msg = msg[:50] + "[...]"
             return msg
+
+    def serialized_string(self, obj):
+        """
+        Get the serialized version of the object.
+
+        """
+        from evennia.utils import dbserialize
+        return str(dbserialize.pack_dbobj(obj))
+
+    serialized_string.help_text = (
+        "Copy & paste this string into an Attribute's `value` field to store it there."
+    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Overrides help texts.
+
+        """
+        help_texts = kwargs.get("help_texts", {})
+        help_texts["serialized_string"] = self.serialized_string.help_text
+        kwargs["help_texts"] = help_texts
+        return super().get_form(request, obj, **kwargs)
+
+
 
 class ChannelAttributeInline(AttributeInline):
     """
@@ -169,6 +193,7 @@ class ChannelAdmin(admin.ModelAdmin):
     list_display_links = ("id", "db_key")
     ordering = ["db_key"]
     search_fields = ["id", "db_key", "db_tags__db_key"]
+    readonly_fields = ["serialized_string"]
     save_as = True
     save_on_top = True
     list_select_related = True
@@ -182,6 +207,7 @@ class ChannelAdmin(admin.ModelAdmin):
                     "db_lock_storage",
                     "db_account_subscriptions",
                     "db_object_subscriptions",
+                    "serialized_string"
                 )
             },
         ),
@@ -206,6 +232,28 @@ class ChannelAdmin(admin.ModelAdmin):
 
         """
         return sum(1 for sub in obj.subscriptions.all())
+
+    def serialized_string(self, obj):
+        """
+        Get the serialized version of the object.
+
+        """
+        from evennia.utils import dbserialize
+        return str(dbserialize.pack_dbobj(obj))
+
+    serialized_string.help_text = (
+        "Copy & paste this string into an Attribute's `value` field to store it there."
+    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Overrides help texts.
+
+        """
+        help_texts = kwargs.get("help_texts", {})
+        help_texts["serialized_string"] = self.serialized_string.help_text
+        kwargs["help_texts"] = help_texts
+        return super().get_form(request, obj, **kwargs)
 
     def save_model(self, request, obj, form, change):
         """

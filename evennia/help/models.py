@@ -9,6 +9,7 @@ forms of help that do not concern commands, like information about the
 game world, policy info, rules and similar.
 
 """
+from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
@@ -76,9 +77,8 @@ class HelpEntry(SharedMemoryModel):
         help_text="tags on this object. Tags are simple string markers to "
         "identify, group and alias objects.",
     )
-    # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
-    # TODO: remove this when not needed anymore.
-    db_staff_only = models.BooleanField(default=False)
+    # Creation date. This is not changed once the object is created.
+    db_date_created = models.DateTimeField("creation date", editable=False, auto_now=True)
 
     # Database manager
     objects = HelpEntryManager()

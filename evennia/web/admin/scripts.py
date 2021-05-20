@@ -127,9 +127,8 @@ class ScriptAdmin(admin.ModelAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there. "
-        "Note that you cannot (easily) add multiple scripts this way - better do that "
-        "in code.")
+        "Copy & paste this string into an Attribute's `value` field to store it there."
+    )
 
 
     def get_form(self, request, obj=None, **kwargs):

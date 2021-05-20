@@ -22,7 +22,7 @@ if settings.EVENNIA_ADMIN:
 
     urlpatterns += [
         # Our override for the admin.
-        url("^/$", frontpage.evennia_admin, name="evennia_admin"),
+        url("^$", frontpage.evennia_admin, name="evennia_admin"),
         # Makes sure that other admin pages get loaded.
         url(r"^/", admin.site.urls),
     ]

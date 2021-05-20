@@ -27,7 +27,7 @@ class AttributeForm(forms.ModelForm):
     """
 
     attr_key = forms.CharField(
-        label="Attribute Name", required=False, initial="Enter Attribute Name Here",
+        label="Attribute Name", required=False,
         help_text="The main identifier of the Attribute. For Nicks, this is the pattern-matching string."
     )
     attr_category = forms.CharField(
