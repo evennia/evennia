@@ -73,6 +73,8 @@ class MsgAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
+    view_on_site = False
+
     raw_id_fields = (
         "db_date_created", "db_sender_accounts",
          "db_sender_objects", "db_sender_scripts",
