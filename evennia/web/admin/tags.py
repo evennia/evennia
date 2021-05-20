@@ -218,6 +218,7 @@ class TagAdmin(admin.ModelAdmin):
     fields = ("db_key", "db_category", "db_tagtype", "db_model", "db_data")
     list_filter = ("db_tagtype", "db_category", "db_model")
     form = TagForm
+    view_on_site = False
 
     fieldsets = (
         (
