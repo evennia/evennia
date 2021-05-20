@@ -2,11 +2,16 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
-from django import forms
 from django.conf import settings
-from django.contrib import admin
+from django import forms
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.conf.urls import url
+from django.contrib import admin, messages
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from evennia.objects.models import ObjectDB
@@ -68,26 +73,66 @@ class ObjectCreateForm(forms.ModelForm):
         "This string should be on the form "
         "<i>type:lockfunction(args);type2:lockfunction2(args);...",
     )
-
     db_cmdset_storage = forms.CharField(
         label="CmdSet",
         initial="",
         required=False,
         widget=forms.TextInput(attrs={"size": "78"}),
-        help_text="Most non-character objects don't need a cmdset"
-        " and can leave this field blank.",
     )
-
-    db_account = forms.ModelChoiceField(
-        AccountDB.objects.all(),
-        label="Controlling Account",
+    db_location = forms.ModelChoiceField(
+        ObjectDB.objects.all(),
+        label="Location",
         required=False,
         widget=ForeignKeyRawIdWidget(
-            ObjectDB._meta.get_field('db_account').remote_field, admin.site),
-        help_text="Only needed for characters in MULTISESSION_MODE=1 or 2."
+            ObjectDB._meta.get_field('db_location').remote_field, admin.site),
+        help_text="The (current) in-game location.<BR>"
+                  "Usually a Room but can be<BR>"
+                  "empty for un-puppeted Characters."
     )
+    db_home = forms.ModelChoiceField(
+        ObjectDB.objects.all(),
+        label="Home",
+        required=False,
+        widget=ForeignKeyRawIdWidget(
+            ObjectDB._meta.get_field('db_location').remote_field, admin.site),
+        help_text="Fallback in-game location.<BR>"
+                  "All objects should usually have<BR>"
+                  "a home location."
+        )
+    db_destination = forms.ModelChoiceField(
+        ObjectDB.objects.all(),
+        label="Destination",
+        required=False,
+        widget=ForeignKeyRawIdWidget(
+            ObjectDB._meta.get_field('db_destination').remote_field, admin.site),
+        help_text="Only used by Exits."
+        )
 
-    raw_id_fields = ("db_destination", "db_location", "db_home")
+    def __init__(self, *args, **kwargs):
+        """
+        Tweak some fields dynamically.
+
+        """
+        super().__init__(*args, **kwargs)
+
+        # set default home
+        home_id = str(settings.DEFAULT_HOME)
+        home_id = home_id[1:] if home_id.startswith("#") else home_id
+        default_home = ObjectDB.objects.filter(id=home_id)
+        if default_home:
+            default_home = default_home[0]
+        self.fields["db_home"].initial = default_home
+        self.fields["db_location"].initial = default_home
+
+        # better help text for cmdset_storage
+        char_cmdset = settings.CMDSET_CHARACTER
+        account_cmdset = settings.CMDSET_ACCOUNT
+        self.fields["db_cmdset_storage"].help_text = (
+            "Path to Command-set path. Most non-character objects don't need a cmdset"
+            " and can leave this field blank. Some common cmdset-paths<BR> are "
+            f"<strong>{char_cmdset}</strong> and <strong>{account_cmdset}</strong>"
+        )
+
 
 
 class ObjectEditForm(ObjectCreateForm):
@@ -100,32 +145,15 @@ class ObjectEditForm(ObjectCreateForm):
         model = ObjectDB
         fields = "__all__"
 
-
-class ObjectInline(admin.StackedInline):
-    """
-    Inline creation of Object.
-
-    """
-    model = ObjectDB
-    # template = "admin/accounts/stacked.html"
-    form = ObjectCreateForm
-    fieldsets = (
-        (
-            None,
-            {
-                "fields": (
-                    ("db_key", "db_typeclass_path"),
-                    ("db_location", "db_home", "db_destination", "db_account"),
-                     "db_cmdset_storage",
-                     "db_lock_storage",
-                )
-            },
-        ),
+    db_account = forms.ModelChoiceField(
+        AccountDB.objects.all(),
+        label="Puppeting Account",
+        required=False,
+        widget=ForeignKeyRawIdWidget(
+            ObjectDB._meta.get_field('db_account').remote_field, admin.site),
+        help_text="An Account puppeting this Object (if any).<BR>Note that when a user logs "
+                  "off/unpuppets, this<BR>field will be empty again. This is normal."
     )
-
-    extra = 1
-    max_num = 1
-    raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
 
 
 @admin.register(ObjectDB)
@@ -141,7 +169,7 @@ class ObjectAdmin(admin.ModelAdmin):
     ordering = ["db_account", "db_typeclass_path", "id"]
     search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key"]
     raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
-    readonly_fields = ("serialized_string", )
+    readonly_fields = ("serialized_string", "link_button")
 
     save_as = True
     save_on_top = True
@@ -158,7 +186,8 @@ class ObjectAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("db_key", "db_typeclass_path"),
-                    ("db_location", "db_home", "db_destination", "db_account"),
+                    ("db_location", "db_home", "db_destination"),
+                    ("db_account", "link_button"),
                     "db_cmdset_storage",
                     "db_lock_storage",
                     "serialized_string"
@@ -174,7 +203,7 @@ class ObjectAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     ("db_key", "db_typeclass_path"),
-                    ("db_location", "db_home", "db_destination", "db_account"),
+                    ("db_location", "db_home", "db_destination"),
                     "db_cmdset_storage",
                 )
             },
@@ -226,6 +255,63 @@ class ObjectAdmin(admin.ModelAdmin):
             )
         defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            url(
+                r"^account-object-link/(?P<object_id>.+)/$",
+                self.admin_site.admin_view(self.link_object_to_account),
+                name="object-account-link"
+            )
+        ]
+        return custom_urls + urls
+
+    def link_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Link to Account</a>&nbsp;',
+            reverse("admin:object-account-link", args=[obj.pk])
+        )
+    link_button.short_description = "Create puppet links for MULTISESSION_MODE 0/1"
+    link_button.allow_tags = True
+
+    def link_object_to_account(self, request, object_id):
+        """
+        Link object and account when pressing the button.
+
+        This will:
+
+        - Set account.db._last_puppet to this object
+        - Add object to account.db._playable_characters
+        - Change object locks to allow puppeting by account
+
+        """
+        obj = self.get_object(request, object_id)
+        account = obj.db_account
+
+        if account:
+            account.db._last_puppet = obj
+            if not account.db._playable_characters:
+                account.db._playable_characters = []
+            if obj not in account.db._playable_characters:
+                account.db._playable_characters.append(obj)
+            if not obj.access(account, "puppet"):
+                lock = obj.locks.get("puppet")
+                lock += f" or pid({account.id})"
+                obj.locks.add(lock)
+            self.message_user(request,
+                              "Did the following (where possible): "
+                              f"Set Account.db._last_puppet = {obj}, "
+                              f"Added {obj} to Account.db._playable_characters list, "
+                              f"Added 'puppet:pid({account.id})' lock to {obj}.")
+        else:
+            self.message_user(request, "Account must be connected to set up puppet links "
+                              "(set Puppeting Account and save this page first).", level=messages.ERROR)
+
+        # stay on the same page
+        return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.pk]))
+
+
 
     def save_model(self, request, obj, form, change):
         """

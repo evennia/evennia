@@ -6,7 +6,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget, FilteredSelectMultiple
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext as _
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
@@ -236,6 +236,39 @@ class AccountAttributeInline(AttributeInline):
     model = AccountDB.db_attributes.through
     related_field = "accountdb"
 
+class ObjectPuppetInline(admin.StackedInline):
+    """
+    Inline creation of puppet-Object in Account.
+
+    """
+    from .objects import ObjectCreateForm
+
+    model = ObjectDB
+    view_on_site = False
+    show_change_link = True
+    # template = "admin/accounts/stacked.html"
+    form = ObjectCreateForm
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    ("db_key", "db_typeclass_path"),
+                    ("db_location", "db_home", "db_destination"),
+                     "db_cmdset_storage",
+                     "db_lock_storage",
+                ),
+                "description": "Object currently puppeted by the account (note that this "
+                               "will go away if account logs out or unpuppets)",
+            },
+        ),
+    )
+
+    extra = 0
+    readonly_fields = ("db_key", "db_typeclass_path", "db_destination",
+                       "db_location", "db_home", "db_account",
+                       "db_cmdset_storage", "db_lock_storage")
+
 
 @admin.register(AccountDB)
 class AccountAdmin(BaseUserAdmin):
@@ -246,8 +279,8 @@ class AccountAdmin(BaseUserAdmin):
     list_display = ("username", "email", "is_staff", "is_superuser")
     form = AccountChangeForm
     add_form = AccountCreationForm
-    inlines = [AccountTagInline, AccountAttributeInline]
-    readonly_fields = ["db_date_created", "serialized_string"]
+    inlines = [AccountTagInline, AccountAttributeInline, ObjectPuppetInline]
+    readonly_fields = ["db_date_created", "serialized_string", "link_button"]
     view_on_site = False
     fieldsets = (
         (
