@@ -274,13 +274,14 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
             text = _RE_SCREENREADER_REGEX.sub("", text)
         cmd = "prompt" if prompt else "text"
-        if raw:
-            if client_raw:
-                args[0] = text
-            else:
-                args[0] = html.escape(text)  # escape html!
-        else:
-            args[0] = parse_html(text, strip_ansi=nocolor)
+        args[0] = text
+#        if raw:
+#            if client_raw:
+#                args[0] = text
+#            else:
+#                args[0] = html.escape(text)  # escape html!
+#        else:
+#            args[0] = parse_html(text, strip_ansi=nocolor)
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))

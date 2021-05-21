@@ -740,12 +740,14 @@ let goldenlayout = (function () {
     //
     //
     var onText = function (args, kwargs) {
-        // are any panes set to receive this text message?
-        var divs = routeMessage(args, kwargs);
+        // convert this incoming text message to HTML using the global parser
+        let txt = window.text2html.parseMsg( args[0] );
 
-        var msgHandled = false;
-        divs.forEach( function (div) {
-            let txt = args[0];
+        // are any panes set to receive this text message?
+        let paneDivs = routeMessage(args, kwargs);
+
+        let msgHandled = false;
+        paneDivs.forEach( function (div) {
             // yes, so add this text message to the target div
             addMessageToPaneDiv( div, txt );
             msgHandled = true;

@@ -73,6 +73,10 @@ JQuery available.
 
     <!-- Load gui library -->
     {% block guilib_import %}
+<!--
+        <script src={% static "webclient/js/plugins/dolphin.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
+-->
+        <script src={% static "webclient/js/text2html.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
         <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
         <script src={% static "webclient/js/plugins/goldenlayout_default_config.js" %} type="text/javascript"></script>
         <script src={% static "webclient/js/plugins/clienthelp.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
