@@ -79,6 +79,15 @@ class ObjectCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={"size": "78"}),
     )
+
+    # This is not working well because it will not properly allow an empty choice, and will
+    # also not work well for comma-separated storage without more work. Notably, it's also
+    # a bit hard to visualize.
+    # db_cmdset_storage = forms.MultipleChoiceField(
+    #     label="CmdSet",
+    #     required=False,
+    #     choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))
+
     db_location = forms.ModelChoiceField(
         ObjectDB.objects.all(),
         label="Location",
