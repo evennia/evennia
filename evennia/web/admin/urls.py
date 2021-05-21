@@ -13,9 +13,9 @@ from . import frontpage
 urlpatterns = [
     # Django original admin page. Make this URL is always available, whether
     # we've chosen to use Evennia's custom admin or not.
-    url(r"/django/", frontpage.admin_wrapper, name="django_admin"),
+    url(r"django/", frontpage.admin_wrapper, name="django_admin"),
     # Admin docs
-    url(r"/doc/", include("django.contrib.admindocs.urls")),
+    url(r"doc/", include("django.contrib.admindocs.urls")),
 ]
 
 if settings.EVENNIA_ADMIN:
@@ -24,7 +24,7 @@ if settings.EVENNIA_ADMIN:
         # Our override for the admin.
         url("^$", frontpage.evennia_admin, name="evennia_admin"),
         # Makes sure that other admin pages get loaded.
-        url(r"^/", admin.site.urls),
+        url(r"^", admin.site.urls),
     ]
 else:
     # Just include the normal Django admin.
