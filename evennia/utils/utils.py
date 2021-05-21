@@ -2338,16 +2338,16 @@ def get_all_typeclasses(parent=None):
     List available typeclasses from all available modules.
 
     Args:
-        parent (str, optional): If given, only return typeclasses inheriting (at any distance)
-            from this parent.
+        parent (str, optional): If given, only return typeclasses inheriting
+            (at any distance) from this parent.
 
     Returns:
         dict: On the form `{"typeclass.path": typeclass, ...}`
 
     Notes:
-        This will dynamically retrieve all abstract django models inheriting at any distance
-        from the TypedObject base (aka a Typeclass) so it will work fine with any custom
-        classes being added.
+        This will dynamically retrieve all abstract django models inheriting at
+        any distance from the TypedObject base (aka a Typeclass) so it will
+        work fine with any custom classes being added.
 
     """
     from evennia.typeclasses.models import TypedObject
@@ -2364,6 +2364,34 @@ def get_all_typeclasses(parent=None):
             if inherits_from(typeclass, parent)
         }
     return typeclasses
+
+
+def get_all_cmdsets(parent=None):
+    """
+    List available cmdsets from all available modules.
+
+    Args:
+        parent (str, optional): If given, only return cmdsets inheriting (at
+            any distance) from this parent.
+
+    Returns:
+        dict: On the form {"cmdset.path": cmdset, ...}
+
+    Notes:
+        This will dynamically retrieve all abstract django models inheriting at
+        any distance from the CmdSet base so it will work fine with any custom
+        classes being added.
+
+    """
+    from evennia.commands.cmdset import CmdSet
+
+    base_cmdset = class_from_module(parent) if parent else CmdSet
+
+    cmdsets = {
+        "{}.{}".format(subclass.__module__, subclass.__name__): subclass
+        for subclass in base_cmdset.__subclasses__()
+    }
+    return cmdsets
 
 
 def interactive(func):
