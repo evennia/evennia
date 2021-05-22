@@ -693,6 +693,29 @@ def check_lockstring(
         access_type=access_type,
     )
 
+def check_perm(
+    obj, permission, no_superuser_bypass=False):
+    """
+    Shortcut for checking if an object has the given `permission`.  If the
+    permission is in `settings.PERMISSION_HIERARCHY`, the check passes
+    if the object has this permission or higher.
+
+    This is equivalent to calling the perm() lockfunc, but without needing
+    an accessed object.
+
+    Args:
+        obj (Object, Account): The object to check access. If this has a linked
+            Account, the account is checked instead (same rules as per perm()).
+        permission (str): The permission string to check.
+        no_superuser_bypass (bool, optional): If unset, the superuser
+            will always pass this check.
+
+    """
+    from evennia.locks.lockfuncs import perm
+    if not no_superuser_bypass and obj.is_superuser:
+        return True
+    return perm(obj, None, permission)
+
 
 def validate_lockstring(lockstring):
     """

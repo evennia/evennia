@@ -7,6 +7,7 @@ actions that it detects for a viewset. For example, below we create a DefaultRou
 We then register ObjectDBViewSet, a viewset for CRUD operations for ObjectDB
 instances, to the 'objects' base endpoint. That will generate a number of URLs
 like the following:
+
 list objects:    action: GET, url: /objects/, view name: object-list
 create object:   action: POST, url: /objects/, view name: object-list
 retrieve object: action: GET, url: /objects/<:pk>, view name: object-detail
