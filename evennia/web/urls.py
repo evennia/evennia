@@ -16,8 +16,6 @@ This is the starting point when a user enters an URL.
 
 """
 
-
-from django.conf.urls import url
 from django.conf import settings
 from django.urls import path, include
 from django.views.generic import RedirectView
@@ -38,4 +36,4 @@ urlpatterns = [
 
 if settings.REST_API_ENABLED:
     # Rest API
-    urlpatterns += [url(r"^api/", include("evennia.web.api.urls", namespace="api"))]
+    urlpatterns += [path("api/", include("evennia.web.api.urls", namespace="api"))]
