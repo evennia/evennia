@@ -1,13 +1,20 @@
-from rest_framework import permissions
+"""
+Sets up an api-access permission check using the in-game permission hierarchy.
 
+"""
+
+
+from rest_framework import permissions
 from django.conf import settings
+from evennia.locks.lockhandler import check_perm
 
 
 class EvenniaPermission(permissions.BasePermission):
     """
-    A Django Rest Framework permission class that allows us to use
-    Evennia's permission structure. Based on the action in a given
-    view, we'll check a corresponding Evennia access/lock check.
+    A Django Rest Framework permission class that allows us to use Evennia's
+    permission structure. Based on the action in a given view, we'll check a
+    corresponding Evennia access/lock check.
+
     """
 
     # subclass this to change these permissions
@@ -40,9 +47,9 @@ class EvenniaPermission(permissions.BasePermission):
             return True
         # these actions don't support object-level permissions, so use the above definitions
         if view.action == "list":
-            return request.user.has_permistring(self.MINIMUM_LIST_PERMISSION)
+            return check_perm(request.user, self.MINIMUM_LIST_PERMISSION)
         if view.action == "create":
-            return request.user.has_permistring(self.MINIMUM_CREATE_PERMISSION)
+            return check_perm(request.user, self.MINIMUM_CREATE_PERMISSION)
         return True  # this means we'll check object-level permissions
 
     @staticmethod

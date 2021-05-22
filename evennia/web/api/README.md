@@ -1,6 +1,7 @@
 # Evennia API
 
 ## Synopsis
+
 An API, or [Application Programming Interface][wiki-api], is a way of establishing rules
 through which external services can use your program. In web development, it's
 often that case that the 'frontend' of a web app is written in HTML and Javascript
