@@ -15,8 +15,6 @@ def _gamestats():
     """
     Generate a the gamestat context for the main index page
     """
-
-
     # Some misc. configurable stuff.
     # TODO: Move this to either SQL or settings.py based configuration.
     fpage_account_limit = 4
