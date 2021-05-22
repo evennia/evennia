@@ -7,4 +7,6 @@ from . import views
 
 app_name = "webclient"
 
-urlpatterns = [path("", views.webclient, name="index")]
+urlpatterns = [
+    path("", views.webclient, name="index")
+]
