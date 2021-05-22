@@ -1,17 +1,16 @@
 """
-This structures the website.
+This redirects to website sub-pages.
 
 """
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from django import views as django_views
-from .views import (index, errors, accounts, help as helpviews, channels,
-                    characters)
+from .views import (
+    index, errors, accounts, help as helpviews, channels, characters)
+
 
 urlpatterns = [
     # website front page
-    #url(r"^$", index.EvenniaIndexView.as_view(), name="index"),
     path("", index.EvenniaIndexView.as_view(), name="index"),
 
     # errors
@@ -23,18 +22,12 @@ urlpatterns = [
 
     # Help Topics
     path("help/", helpviews.HelpListView.as_view(), name="help"),
-    # url(r"^help/(?P<category>[\w\d\-]+)/(?P<topic>[\w\d\-]+)/$",
-    #     helpviews.HelpDetailView.as_view(),
-    #     name="help-entry-detail"),
     path(r"help/<str:category>/<str:topic>/",
          helpviews.HelpDetailView.as_view(),
          name="help-entry-detail"),
 
     # Channels
     path("channels/", channels.ChannelListView.as_view(), name="channels"),
-    # url(r"^channels/(?P<slug>[\w\d\-]+)/$",
-    #     channels.ChannelDetailView.as_view(),
-    #     name="channel-detail"),
     path("channels/<str:slug>/",
          channels.ChannelDetailView.as_view(),
          name="channel-detail"),
@@ -65,6 +58,7 @@ urlpatterns = [
 # This sets up the server if the user want to run the Django test server (this
 # is not recommended and is usually unnecessary).
 if settings.SERVE_MEDIA:
+    from django import views as django_views
     urlpatterns.extend(
         [
             path("media/<str:path>",
