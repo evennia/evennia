@@ -26,7 +26,7 @@ import sys
 SERVERNAME = "Evennia"
 # Short one-sentence blurb describing your game. Shown under the title
 # on the website and could be used in online listings of your game etc.
-GAME_SLOGAN = "Python MU* creation system"
+GAME_SLOGAN = "The Python MUD/MU* creation system"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
 LOCKDOWN_MODE = False

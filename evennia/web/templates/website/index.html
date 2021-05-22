@@ -8,42 +8,37 @@
 {% block content %}
 <div class="row">
   <div class="col">
-    <div class="card">
+    <div class="card text-center">
       <div class="card-body">
-        <h1 class="card-title">Welcome!</h1>
+
+        <h1 class="card-title">Welcome to Evennia!</h1>
 
         <hr />
 
         <p class="lead">
-          Welcome to your new installation of <a href="https://evennia.com">Evennia</a>, your friendly
-          neighborhood next-generation MUD development system and server.
+            The Python MUD/MU* creation system.
         </p>
         <p>
-          You are looking at Evennia's web
-          presence, which can be expanded to a full-fledged site as needed.<br />
-          Through the <a href="{% url 'admin:index' %}">admin interface</a> you can view and edit the
-          database without logging into the game.
+          You are looking at the start of your game's website, generated out of
+          the box by Evennia. It has several example pages and can be expanded
+          into a full-fledged home for your game.
         </p>
           {% if webclient_enabled %}
         <p>
-          You can also connect to the game directly from your browser using our
-          <a href="{% url 'webclient:index' %}">online client</a>!<br>
+          <a href="{% url 'webclient:index' %}" class="playbutton">Play in the browser!</a>
         </p>
           {% endif %}
         <p>
           For more info, take your time to
-          peruse our extensive online <a href="https://evennia.com/docs/latest">documentation</a>.
+          peruse Evennia's extensive online <a href="https://evennia.com/docs/latest">manual</a>.
         </p>
         <p>
-          Should you have any questions, concerns, bug reports, or
-          if you want to help out, don't hesitate to join the Evennia community
-          to make your voice heard! Drop a mail to the <a
-          href="https://github.com/evennia/evennia/discussions">mailing
-        list</a> or to come say hi in the <a
-        href="http://webchat.freenode.net/?channels=evennia">developer chatroom</a>.
+          If you have any questions, don't hesitate to join the Evennia community! Drop a message in the <a href="https://github.com/evennia/evennia/discussions">Evennia forums</a>
+          or come say hi in the support/chat channels (<a href="http://webchat.freenode.net/?channels=evennia">IRC</a>
+          or <a href="https://discord.gg/NecFePw">Discord</a>).
         </p>
         <p>
-          If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>.
+          If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a> on GitHub.
         </p>
       </div>
     </div>
@@ -99,16 +94,16 @@
 
 <div class="row">
   <div class="col">
-    <div class="card">
+    <div class="card text-center">
       <h4 class="card-header text-center">Evennia</h4>
 
       <div class="card-body">
-        <p><a href="https://evennia.com">Evennia</a> is an open-source MUD server built in
-        <a href="http://python.org">Python</a>, on top of the
+        <p><a href="https://evennia.com">Evennia</a> is an open-source MUD/MU*-creation framework built in
+        <a href="http://python.org">Python</a>, using
         <a href="http://twistedmatrix.com">Twisted</a> and
-        <a href="http://djangoproject.com">Django</a> frameworks. This
-        combination of technologies allows for the quick and easy creation
-        of the game of your dreams - as simple or as complex as you like.</p>
+        <a href="http://djangoproject.com">Django</a>.<br>
+        Create the text-based multiplayer-game of your dreams - as
+        simple or as complex as you like.</p>
       </div>
     </div>
   </div>

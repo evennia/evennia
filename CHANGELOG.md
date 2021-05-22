@@ -56,6 +56,7 @@ Up requirements to Django 3.2+
 - New Channel-System using the `channel` command and nicks. Removed the `ChannelHandler` and the
   concept of a dynamically created `ChannelCmdSet`.
 - Add `Msg.db_receiver_external` field to allowe external, string-id message-receivers.
+- Renamed `app.css` to `website.css` for consistency. Removed old prosimii-css files.
 
 ### Evennia 0.9.5 (2019-2020)
 

@@ -1,9 +1,10 @@
-# Game Website
+# Game website
 
 When Evennia starts it will also start a [Webserver](./Webserver) as part of the
 [Server](./Portal-And-Server) process. This uses [Django](https://docs.djangoproject.com) 
 to present a simple but functional default game website.  With the default setup,
-open your browser to `localhost:4001` or `127.0.0.1:4001` to see it.
+open your browser to [localhost:4001](http://localhost:4001) or [127.0.0.1:4001](http://127.0.0.1:4001) 
+to see it.
 
 The website allows existing players to log in using an account-name and
 password they previously used to register with the game. If a user logs in with
@@ -16,22 +17,27 @@ resources. It also shows some statistics about how many players are currently
 connected.
 
 In the top menu you can find
-- Home - Get back to front page.
-- Document - A link to the latest stable Evennia documentation.
-- Characters - This is a demo of connecting in-game characters to the website.
+- _Home_ - Get back to front page.
+- _Documentation_ - A link to the latest stable Evennia documentation.
+- _Characters_ - This is a demo of connecting in-game characters to the website.
   It will display a list of all entities of the
   _typeclasses.characters.Character` typeclass and allow you to view their
   description with an optional image. The list is only available to logged-in
   users.
-- Channels - This is a demo of connecting in-game chats to the website. It will
+- _Channels_ - This is a demo of connecting in-game chats to the website. It will
   show a list of all channels available to you and allow you to view the latest
   discussions. Most channels require logging in, but the `Public` channel can
   also be viewed by non-loggedin users.
-- Help - This ties the in-game [Help system](./Help-System) to the website. All
+- _Help_ - This ties the in-game [Help system](./Help-System) to the website. All
   database-based help entries that are publicly available or accessible to your
   account can be read. This is a good way to present a body of help for people
   to read outside of the game.
-- Play Online - This opens the [Webclient](./Webclient) in the browser.
+- _Play Online_ - This opens the [Webclient](./Webclient) in the browser.
+- _Admin_ The [Web admin](Web admin) will only show if you are logged in.
+- _Log in/out_ - Allows you to authenticate using the same credentials you use
+  in the game.
+- _Register_ - Allows you to register a new account. This is the same as 
+  creating a new account upon first logging into the game).
 
 ## Modifying the default Website
 
@@ -263,7 +269,7 @@ your copy. Just remember to reload.
 ### Using Flat Pages
 
 The absolutely simplest way to add a new web page is to use the `Flat Pages`
-app available in the [Web Admin](Web-Admin). The page will appear with the same
+app available in the [Web Admin](./Web-Admin). The page will appear with the same
 styling as the rest of the site.
 
 For the `Flat pages` module to work you must first set up a _Site_ (or

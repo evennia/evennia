@@ -17,7 +17,7 @@ environment. It leverages the Django web framework and provides:
   game. Users logged into the website will be auto-logged into the game if they
   do so with the webclient since they share the same login credentials (there
   is no way to safely do auto-login with telnet clients).
-- The [Web Admin](Web-Admin) is based on the Django web admin and allows you to
+- The [Web Admin](./Web-Admin) is based on the Django web admin and allows you to
   edit the game database in a graphical interface.
 - The [Webclient](./Webclient) page is served by the webserver, but the actual
   game communication (sending/receiving data) is done by the javascript client
