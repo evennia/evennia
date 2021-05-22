@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
@@ -50,6 +50,7 @@
 - [Components/Typeclasses](Components/Typeclasses)
 - [Components/Webclient](Components/Webclient)
 - [Components/Webserver](Components/Webserver)
+- [Components/Website](Components/Website)
 - [Concepts/Async Process](Concepts/Async-Process)
 - [Concepts/Banning](Concepts/Banning)
 - [Concepts/Bootstrap & Evennia](Concepts/Bootstrap-&-Evennia)

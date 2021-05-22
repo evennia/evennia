@@ -3,6 +3,7 @@
 # in the web admin interface.
 #
 from django import forms
+from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
@@ -75,6 +76,16 @@ class AccountChangeForm(UserChangeForm):
         widget=forms.TextInput(attrs={"size": "78"}),
         required=False,
     )
+
+    # is_superuser = forms.BooleanField(
+    #     label = "Superuser status",
+    #     required=False,
+    #     help_text="Superusers bypass all in-game locks and has all "
+    #               "permissions without explicitly assigning them. Usually "
+    #               "only one superuser (user #1) is needed, new superusers "
+    #               "can be created by setting the `is_superuser` flag in code "
+    #               "or by the `evennia createsuperuser` CLI command."
+    # )
 
     def clean_username(self):
         """
@@ -209,8 +220,8 @@ class AccountAdmin(BaseUserAdmin):
     search_fields = ["=id", "^username", "db_typeclass_path"]
     ordering = ["-db_date_created", "id"]
     list_filter = ["is_superuser", "is_staff", "db_typeclass_path"]
-    inlines = [AccountTagInline, AccountAttributeInline, ObjectPuppetInline]
-    readonly_fields = ["db_date_created", "serialized_string"]
+    inlines = [AccountTagInline, AccountAttributeInline]
+    readonly_fields = ["db_date_created", "serialized_string", "puppeted_objects"]
     view_on_site = False
     fieldsets = (
         (
@@ -223,6 +234,7 @@ class AccountAdmin(BaseUserAdmin):
                     "db_date_created",
                     "db_lock_storage",
                     "db_cmdset_storage",
+                    "puppeted_objects",
                     "serialized_string",
                 )
             },
@@ -265,9 +277,29 @@ class AccountAdmin(BaseUserAdmin):
         from evennia.utils import dbserialize
 
         return str(dbserialize.pack_dbobj(obj))
-
     serialized_string.help_text = (
         "Copy & paste this string into an Attribute's `value` field to store it there."
+    )
+
+    def puppeted_objects(self, obj):
+        """
+        Get any currently puppeted objects (read only list)
+
+        """
+        return mark_safe(
+            ", ".join(
+                '<a href="{url}">{name}</a>'.format(
+                    url=reverse("admin:objects_objectdb_change", args=[obj.id]),
+                    name=obj.db_key)
+                for obj in ObjectDB.objects.filter(db_account=obj)
+            )
+        )
+
+    puppeted_objects.help_text = (
+        "Objects currently puppeted by this Account. "
+        "Link new ones from the `Objects` admin page.<BR>"
+        "Note that these will disappear when a user unpuppets or goes offline - "
+        "this is normal."
     )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -277,7 +309,9 @@ class AccountAdmin(BaseUserAdmin):
         """
         help_texts = kwargs.get("help_texts", {})
         help_texts["serialized_string"] = self.serialized_string.help_text
+        help_texts["puppeted_objects"] = self.puppeted_objects.help_text
         kwargs["help_texts"] = help_texts
+
         return super().get_form(request, obj, **kwargs)
 
     @sensitive_post_parameters_m
