@@ -48,6 +48,7 @@
 - [Components/Tags](Components/Tags)
 - [Components/TickerHandler](Components/TickerHandler)
 - [Components/Typeclasses](Components/Typeclasses)
+- [Components/Web Admin](Components/Web-Admin)
 - [Components/Webclient](Components/Webclient)
 - [Components/Webserver](Components/Webserver)
 - [Components/Website](Components/Website)

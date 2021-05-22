@@ -77,15 +77,15 @@ class AccountChangeForm(UserChangeForm):
         required=False,
     )
 
-    # is_superuser = forms.BooleanField(
-    #     label = "Superuser status",
-    #     required=False,
-    #     help_text="Superusers bypass all in-game locks and has all "
-    #               "permissions without explicitly assigning them. Usually "
-    #               "only one superuser (user #1) is needed, new superusers "
-    #               "can be created by setting the `is_superuser` flag in code "
-    #               "or by the `evennia createsuperuser` CLI command."
-    # )
+    is_superuser = forms.BooleanField(
+        label = "Superuser status",
+        required=False,
+        help_text="Superusers bypass all in-game locks and has all "
+                  "permissions without explicitly assigning them. Usually "
+                  "only one superuser (user #1) is needed and only a superuser "
+                  "can create another superuser.<BR>"
+                  "Only Superusers can change the user/group permissions below."
+    )
 
     def clean_username(self):
         """
@@ -312,7 +312,17 @@ class AccountAdmin(BaseUserAdmin):
         help_texts["puppeted_objects"] = self.puppeted_objects.help_text
         kwargs["help_texts"] = help_texts
 
-        return super().get_form(request, obj, **kwargs)
+        # security disabling for non-superusers
+        form = super().get_form(request, obj, **kwargs)
+        disabled_fields = set()
+        if not request.user.is_superuser:
+            disabled_fields |= {
+                'is_superuser', 'user_permissions', 'user_groups'
+            }
+        for field_name in disabled_fields:
+            if field_name in form.base_fields:
+                form.base_fields[field_name].disabled = True
+        return form
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=""):
