@@ -1,7 +1,8 @@
 """
-Views are the functions that are called by different url endpoints.
-The Django Rest Framework provides collections called 'ViewSets', which
-can generate a number of views for the common CRUD operations.
+Views are the functions that are called by different url endpoints. The Django
+Rest Framework provides collections called 'ViewSets', which can generate a
+number of views for the common CRUD operations.
+
 """
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -24,10 +25,19 @@ from evennia.web.api.filters import ObjectDBFilterSet, AccountDBFilterSet, Scrip
 from evennia.web.api.permissions import EvenniaPermission
 
 
-class TypeclassViewSetMixin(object):
+class TypeclassViewSetMixin:
     """
     This mixin adds some shared functionality to each viewset of a typeclass. They all use the same
     permission classes and filter backend. You can override any of these in your own viewsets.
+
+    The `set_atribute` action is  an example of a custom action added to a
+    viewset. Based on the name of the method, it will create a default url_name
+    (used for reversing) and url_path.  The 'pk' argument is automatically
+    passed to this action because it has a url path of the format <object
+    type>/:pk/set-attribute. The get_object method is automatically set in the
+    expected viewset classes that will inherit this, using the pk that's passed
+    along to retrieve the object.
+
     """
 
     # permission classes determine who is authorized to call the view
@@ -39,15 +49,9 @@ class TypeclassViewSetMixin(object):
     @action(detail=True, methods=["put", "post"])
     def set_attribute(self, request, pk=None):
         """
-        This is an example of a custom action added to a viewset. Based on the name of the
-        method, it will create a default url_name (used for reversing) and url_path.
-        The 'pk' argument is automatically passed to this action because it has a url path
-        of the format <object type>/:pk/set-attribute. The get_object method is automatically
-        set in the expected viewset classes that will inherit this, using the pk that's
-        passed along to retrieve the object.
+        This action will set an attribute if the db_value is defined, or remove
+        it if no db_value is provided.
 
-        This action will set an attribute if the db_value is defined, or remove it
-        if no db_value is provided.
         """
         attr = AttributeSerializer(data=request.data)
         obj = self.get_object()
@@ -73,11 +77,14 @@ class TypeclassViewSetMixin(object):
 
 class ObjectDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     """
-    An example of a basic viewset for all ObjectDB instances. It declares the
-    serializer to use for both retrieving and changing/creating/deleting
-    instances. Serializers are similar to django forms, used for the
-    transmitting of data (typically json).
+    The Object is the parent for all in-game entities that have a location
+    (rooms, exits, characters etc).
+
     """
+    # An example of a basic viewset for all ObjectDB instances. It declares the
+    # serializer to use for both retrieving and changing/creating/deleting
+    # instances. Serializers are similar to django forms, used for the
+    # transmitting of data (typically json).
 
     serializer_class = ObjectDBSerializer
     queryset = ObjectDB.objects.all()
@@ -86,8 +93,8 @@ class ObjectDBViewSet(TypeclassViewSetMixin, ModelViewSet):
 
 class CharacterViewSet(ObjectDBViewSet):
     """
-    This overrides the queryset to only retrieve Character objects
-    based on your DefaultCharacter typeclass path.
+    Characters are a type of Object commonly used as player avatars in-game.
+
     """
 
     queryset = DefaultCharacter.objects.typeclass_search(
@@ -96,19 +103,29 @@ class CharacterViewSet(ObjectDBViewSet):
 
 
 class RoomViewSet(ObjectDBViewSet):
-    """Viewset for Room objects"""
+    """
+    Rooms indicate discrete locations in-game.
+
+    """
 
     queryset = DefaultRoom.objects.typeclass_search(DefaultRoom.path, include_children=True)
 
 
 class ExitViewSet(ObjectDBViewSet):
-    """Viewset for Exit objects"""
+    """
+    Exits are objects with a destination and allows for traversing from one
+    location to another.
+
+    """
 
     queryset = DefaultExit.objects.typeclass_search(DefaultExit.path, include_children=True)
 
 
 class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
-    """Viewset for Account objects"""
+    """
+    Accounts represent the players connected to the game
+
+    """
 
     serializer_class = AccountSerializer
     queryset = AccountDB.objects.all()
@@ -116,7 +133,11 @@ class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
 
 
 class ScriptDBViewSet(TypeclassViewSetMixin, ModelViewSet):
-    """Viewset for Script objects"""
+    """
+    Scripts are meta-objects for storing system data, running timers etc. They
+    have no in-game existence.
+
+    """
 
     serializer_class = ScriptDBSerializer
     queryset = ScriptDB.objects.all()

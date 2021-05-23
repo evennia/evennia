@@ -6,6 +6,7 @@ django >= 3.2, < 3.3
 twisted >= 20.3.0, < 22.0.0
 pytz
 djangorestframework >= 3.10.3, < 3.12
+pyyaml
 django-filter == 2.4
 django-sekizai == 2.0
 inflect >= 5.2.0

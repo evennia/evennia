@@ -880,7 +880,7 @@ STATIC_URL = "/static/"
 # served by webserver.
 STATIC_ROOT = os.path.join(GAME_DIR, "server", ".static")
 # Location of static data to overload the defaults from
-# evennia/web/webclient and evennia/web/website's static/ dirs.
+# evennia/web/static.
 STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static")]
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
