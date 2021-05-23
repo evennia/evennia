@@ -30,20 +30,21 @@ folder and edit it to add/remove links to the menu.
             <li><a class="nav-link" href="{% url 'channels' %}">Channels</a></li>
             <li><a class="nav-link" href="{% url 'help' %}">Help</a></li>
             <!-- end game views -->
-            
+
             {% if webclient_enabled %}
             <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
             {% endif %}
-            
+
             {% if user.is_staff %}
             <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
+            <li><a class="nav-link" href="/api">API</a></li>
             {% endif %}
             {% endblock %}
         </ul>
         <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
             {% block navbar_right %}
             {% endblock %}
-            
+
             {% block navbar_user %}
             {% if account %}
             <li class="nav-item dropdown">
@@ -60,7 +61,7 @@ folder and edit it to add/remove links to the menu.
                 <div class="dropdown-divider"></div>
                 {% for character in account.characters|slice:"10" %}
                   <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
-                {% empty %} 
+                {% empty %}
                   <a class="dropdown-item" href="#">No characters found!</a>
                 {% endfor %}
                 <div class="dropdown-divider"></div>

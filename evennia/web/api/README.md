@@ -53,6 +53,7 @@ permissions. Individual objects will check lockstrings to determine if the
 user has permission to perform retrieve/update/delete actions upon them.
 To start with, you can view a synopsis of endpoints by making a GET request
 to the `yourgame/api/` endpoint by using the excellent [requests library][requests]:
+
 ```pythonstub
 >>> import requests
 >>> r = requests.get("https://www.mygame.com/api", auth=("user", "pw"))
@@ -66,6 +67,7 @@ to the `yourgame/api/` endpoint by using the excellent [requests library][reques
 ```
 
 To view an object, you might make a request like this:
+
 ```pythonstub
 >>> import requests
 >>> response = requests.get("https://www.mygame.com/api/objects/57",
@@ -77,6 +79,7 @@ The above example makes a GET request to the /objects/ endpoint to retrieve the
 object with an ID of 57, retrieving basic data for it.
 
 For listing a number of objects, you might do this:
+
 ```pythonstub
 >>> response = requests.get("https://www.mygame.com/api/objects",
                             auth=("Myusername", "password123"))
@@ -87,11 +90,16 @@ For listing a number of objects, you might do this:
 "previous": null,
 "results" : [{"db_key": "A rusty longsword", "id": 57, "db_location": 213, ...}]}
 ```
-In the above example, it now displays the objects inside the "results" array, while it has a "count" value
-for the number of total objects, and "next" and "previous" links for the next and previous page, if any.
-This is called [pagination][pagination], and the link displays "limit" and "offset" as query parameters that
-can be added to the url to control the output. Other query parameters can be defined as [filters][filters] which
-allow you to further narrow the results. For example, to only get accounts with developer permissions:
+
+In the above example, it now displays the objects inside the "results" array,
+while it has a "count" value for the number of total objects, and "next" and
+"previous" links for the next and previous page, if any.  This is called
+[pagination][pagination], and the link displays "limit" and "offset" as query
+parameters that can be added to the url to control the output. Other query
+parameters can be defined as [filters][filters] which allow you to further
+narrow the results. For example, to only get accounts with developer
+permissions:
+
 ```pythonstub
 >>> response = requests.get("https://www.mygame.com/api/accounts/?permission=developer",
                             auth=("user", "pw"))
@@ -104,6 +112,7 @@ allow you to further narrow the results. For example, to only get accounts with 
 
 Now suppose that you want
 to use the API to create an object:
+
 ```pythonstub
 >>> data = {"db_key": "A shiny sword"}
 >>> response = requests.post("https://www.mygame.com/api/objects",
@@ -111,16 +120,19 @@ to use the API to create an object:
 >>> response.json()
 {"db_key": "A shiny sword", "id": 214, "db_location": None, ...}
 ```
+
 In the above example, you make a POST request to the /objects/ endpoint with
 the name of the object you wish to create passed along as data. Now suppose you
 decided you didn't like the name, and wanted to change it for the newly created
 object:
+
 ```pythonstub
 >>> data = {"db_key": "An even SHINIER sword", "db_location": 50}
 >>> response = requests.put("https://www.mygame.com/api/objects/214",
                              data=data, auth=("Alsoauser", "Badpassword"))
 >>> response.json()
 {"db_key": "An even SHINIER sword", "id": 214, "db_location": 50, ...}             
+
 ``` 
 By making a PUT request to the endpoint that includes the object ID, it becomes
 a request to update the object with the specified data you pass along.

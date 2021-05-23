@@ -204,7 +204,59 @@ pages look the same without rewriting the same thing over and over)
 
 There's a lot more information to be found in the [Django template language documentation](https://docs.djangoproject.com/en/3.2/ref/templates/language/).
 
-#### Change front page functionality
+### Change webpage colors and styling
+
+You can tweak the [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) of the entire 
+website. If you investigate the `evennia/web/templates/website/base.html` file you'll see that we 
+use the [Bootstrap
+4](https://getbootstrap.com/docs/4.6/getting-started/introduction/) toolkit.
+
+Much structural HTML functionality is actually coming from bootstrap, so you
+will often be able to just add bootstrap CSS classes to elements in the HTML
+file to get various effects like text-centering or similar.
+
+The website's custom CSS is found in
+`evennia/web/static/website/css/website.css` but we also look for a (currently
+empty) `custom.css` in the same location. You can override either, but it may
+be easier to revert your changes if you only add things to `custom.css`.
+
+Copy the CSS file you want to modify to the corresponding location in `mygame/web`. 
+Modify it and reload the server to see your changes. 
+
+You can also apply static files without reloading, but running this in the
+terminal:
+
+    evennia collectstatic --no-input
+
+(this is run automatically when reloading the server).
+
+> Note that before you see new CSS files applied you may need to refresh your
+> browser without cache (Ctrl-F5 in Firefox, for example).
+
+As an example, add/copy `custom.css` to `mygame/web/static/website/css/` and 
+add the following: 
+
+
+```css
+
+.navbar {
+  background-color: #7a3d54;
+}
+
+.footer {
+  background-color: #7a3d54;
+}
+
+```
+
+Reload and your website now has a red theme!
+
+> Hint: Learn to use your web browser's [Developer tools](https://torquemag.io/2020/06/browser-developer-tools-tutorial/).
+> These allow you to tweak CSS 'live' to find a look you like and copy it into
+> the .css file only when you want to make the changes permanent.
+
+
+### Change front page functionality
 
 The logic is all in the view. To find where the index-page view is found, we
 look in `evennia/web/website/urls.py`. Here we find the following line:
