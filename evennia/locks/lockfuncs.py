@@ -168,7 +168,6 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
         permission = args[0].lower()
         perms_object = accessing_obj.permissions.all()
     except (AttributeError, IndexError) as err:
-        print("accessing_obj err:", err)
         return False
 
     gtmode = kwargs.pop("_greater_than", False)

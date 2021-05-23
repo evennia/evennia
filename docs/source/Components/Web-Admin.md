@@ -86,7 +86,7 @@ Only Superusers can change the `Superuser status` flag, and grant new
 permissions to accounts. The superuser is the only permission level that is
 also relevant in-game. `User Permissions` and `Groups` found on the `Account`
 admin page _only_ affects the admin - they have no connection to the in-game
-[Permissions](Permissions) (Player, Builder, Admin etc).
+[Permissions](./Permissions) (Player, Builder, Admin etc).
 
 For a staffer with `Staff status` to be able to actually do anything, the
 superuser must grant at least some permissions for them on their Account. This

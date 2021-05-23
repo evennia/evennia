@@ -36,8 +36,10 @@ folder and edit it to add/remove links to the menu.
             {% endif %}
 
             {% if user.is_staff %}
-            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
-            <li><a class="nav-link" href="/api">API</a></li>
+              <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
+              {% if rest_api_enabled %}
+                <li><a class="nav-link" href="/api">API</a></li>
+              {% endif %}
             {% endif %}
             {% endblock %}
         </ul>

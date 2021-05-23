@@ -9,13 +9,12 @@ class TestGeneralContext(TestCase):
 
     @patch("evennia.web.utils.general_context.GAME_NAME", "test_name")
     @patch("evennia.web.utils.general_context.GAME_SLOGAN", "test_game_slogan")
-    @patch(
-        "evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
-        "websocket_client_enabled_testvalue",
-    )
+    @patch("evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
+           "websocket_client_enabled_testvalue")
     @patch("evennia.web.utils.general_context.WEBCLIENT_ENABLED", "webclient_enabled_testvalue")
     @patch("evennia.web.utils.general_context.WEBSOCKET_PORT", "websocket_client_port_testvalue")
     @patch("evennia.web.utils.general_context.WEBSOCKET_URL", "websocket_client_url_testvalue")
+    @patch("evennia.web.utils.general_context.REST_API_ENABLED", True)
     def test_general_context(self):
         request = RequestFactory().get("/")
         request.user = AnonymousUser()
@@ -39,6 +38,7 @@ class TestGeneralContext(TestCase):
                 "websocket_enabled": "websocket_client_enabled_testvalue",
                 "websocket_port": "websocket_client_port_testvalue",
                 "websocket_url": "websocket_client_url_testvalue",
+                "rest_api_enabled": True,
             },
         )
 
@@ -48,6 +48,7 @@ class TestGeneralContext(TestCase):
     def test_set_game_name_and_slogan(self, mock_get_version, mock_settings):
         mock_get_version.return_value = "version 1"
         # test default/fallback values
+        mock_settings.REST_API_ENABLED = False
         general_context.set_game_name_and_slogan()
         self.assertEqual(general_context.GAME_NAME, "Evennia")
         self.assertEqual(general_context.GAME_SLOGAN, "version 1")

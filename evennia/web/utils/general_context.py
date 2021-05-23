@@ -1,9 +1,9 @@
 """
 This file defines global variables that will always be available in a view
-context without having to repeatedly include it. 
+context without having to repeatedly include it.
 
 For this to work, this file is included in the settings file, in the
-TEMPLATE_CONTEXT_PROCESSORS tuple.
+TEMPLATES["OPTIONS"]["context_processors"] list.
 
 """
 
@@ -20,6 +20,7 @@ GAME_ENTITIES = ["Objects", "Scripts", "Comms", "Help"]
 GAME_SETUP = ["Permissions", "Config"]
 CONNECTIONS = ["Irc"]
 WEBSITE = ["Flatpages", "News", "Sites"]
+REST_API_ENABLED = False
 
 # Determine the site name and server version
 def set_game_name_and_slogan():
@@ -31,7 +32,7 @@ def set_game_name_and_slogan():
         This function is used for unit testing the values of the globals.
 
     """
-    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION
+    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION, REST_API_ENABLED
     try:
         GAME_NAME = settings.SERVERNAME.strip()
     except AttributeError:
@@ -42,6 +43,7 @@ def set_game_name_and_slogan():
     except AttributeError:
         GAME_SLOGAN = SERVER_VERSION
 
+    REST_API_ENABLED = settings.REST_API_ENABLED
 
 def set_webclient_settings():
     """
@@ -98,4 +100,5 @@ def general_context(request):
         "websocket_enabled": WEBSOCKET_CLIENT_ENABLED,
         "websocket_port": WEBSOCKET_PORT,
         "websocket_url": WEBSOCKET_URL,
+        "rest_api_enabled": REST_API_ENABLED,
     }
