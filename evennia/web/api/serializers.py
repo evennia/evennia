@@ -7,6 +7,7 @@ those decisions in the hands of clients, and are more focused on converting
 data from the server to JSON (serialization) for a response, and validating
 and converting JSON data sent from clients to our enpoints into python objects,
 often django model instances, that we can use (deserialization).
+
 """
 
 from rest_framework import serializers
@@ -16,9 +17,14 @@ from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.models import ScriptDB
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
+from evennia.help.models import HelpEntry
 
 
 class AttributeSerializer(serializers.ModelSerializer):
+    """
+    Serialize Attribute views.
+
+    """
     value_display = serializers.SerializerMethodField(source="value")
     db_value = serializers.CharField(write_only=True, required=False)
 
@@ -35,6 +41,7 @@ class AttributeSerializer(serializers.ModelSerializer):
 
         Returns:
             The Attribute's value in string format
+
         """
         if obj.db_strvalue:
             return obj.db_strvalue
@@ -53,13 +60,17 @@ class SimpleObjectDBSerializer(serializers.ModelSerializer):
         fields = ["id", "db_key"]
 
 
-class TypeclassSerializerMixin(object):
-    """Mixin that contains types shared by typeclasses. A note about tags, aliases, and permissions. You
-    might note that the methods and fields are defined here, but they're included explicitly in each child
-    class. What gives? It's a DRF error: serializer method fields which are inherited do not resolve correctly
-    in child classes, and as of this current version (3.11) you must have them in the child classes explicitly
-    to avoid field errors. Similarly, the child classes must contain the attribute serializer explicitly to
-    not have them render PK-related fields.
+class TypeclassSerializerMixin:
+    """
+    Mixin that contains types shared by typeclasses. A note about tags,
+    aliases, and permissions. You might note that the methods and fields are
+    defined here, but they're included explicitly in each child class. What
+    gives? It's a DRF error: serializer method fields which are inherited do
+    not resolve correctly in child classes, and as of this current version
+    (3.11) you must have them in the child classes explicitly to avoid field
+    errors. Similarly, the child classes must contain the attribute serializer
+    explicitly to not have them render PK-related fields.
+
     """
 
     shared_fields = [
@@ -135,7 +146,24 @@ class TypeclassSerializerMixin(object):
         return AttributeSerializer(obj.nicks.all(), many=True).data
 
 
+class TypeclassListSerializerMixin:
+    """
+    Shortened serializer for list views.
+
+    """
+    shared_fields = [
+        "id",
+        "db_key",
+        "db_typeclass_path",
+    ]
+
+
 class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    """
+    Serializing Objects.
+
+    """
+
     attributes = serializers.SerializerMethodField()
     nicks = serializers.SerializerMethodField()
     contents = serializers.SerializerMethodField()
@@ -182,8 +210,25 @@ class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
         return SimpleObjectDBSerializer(non_exits, many=True).data
 
 
+class ObjectListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
+    """
+    Shortened representation for listings.]
+
+    """
+    class Meta:
+        model = DefaultObject
+        fields = [
+            "db_location",
+            "db_home",
+        ] + TypeclassListSerializerMixin.shared_fields
+        read_only_fields = ["id"]
+
+
 class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
-    """This uses the DefaultAccount object to have access to the sessions property"""
+    """
+    This uses the DefaultAccount object to have access to the sessions property
+
+    """
 
     attributes = serializers.SerializerMethodField()
     nicks = serializers.SerializerMethodField()
@@ -211,7 +256,23 @@ class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
+class AccountListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
+    """
+    A shortened form for listing.
+
+    """
+    class Meta:
+        model = DefaultAccount
+        fields = ["username"] + [
+            fi for fi in TypeclassListSerializerMixin.shared_fields if fi != "db_key"]
+        read_only_fields = ["id"]
+
+
 class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    """
+    Serializing Account.
+
+    """
     attributes = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     aliases = serializers.SerializerMethodField()
@@ -227,3 +288,47 @@ class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
             "db_repeats",
         ] + TypeclassSerializerMixin.shared_fields
         read_only_fields = ["id"]
+
+
+class ScriptListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
+    """
+    Shortened form for listing.
+
+    """
+    class Meta:
+        model = ScriptDB
+        fields = [
+            "db_interval",
+            "db_persistent",
+            "db_start_delay",
+            "db_is_active",
+            "db_repeats",
+        ] + TypeclassListSerializerMixin.shared_fields
+        read_only_fields = ["id"]
+
+
+class HelpSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    """
+    Serializers Help entries (not a typeclass).
+
+    """
+    tags = serializers.SerializerMethodField()
+    aliases = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HelpEntry
+        fields = [
+            "id", "db_key", "db_help_category", "db_entrytext", "db_date_created",
+            "tags", "aliases"
+        ]
+
+class HelpListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
+    """
+    Shortened form for listings.
+
+    """
+    class Meta:
+        model = HelpEntry
+        fields = [
+            "id", "db_key", "db_help_category", "db_date_created",
+        ]

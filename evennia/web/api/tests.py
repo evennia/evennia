@@ -1,4 +1,7 @@
-"""Tests for the REST API"""
+"""
+Tests for the REST API.
+
+"""
 from evennia.utils.test_resources import EvenniaTest
 from evennia.web.api import serializers
 from rest_framework.test import APIClient
