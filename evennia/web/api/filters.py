@@ -5,6 +5,7 @@ that is retrieved in GET requests. By default, Django Rest Framework uses the
 documentation specifically regarding DRF integration.
 
 https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
+
 """
 from typing import Union
 from django.db.models import Q
@@ -25,6 +26,7 @@ def get_tag_query(tag_type: Union[str, None], key: str) -> Q:
 
     Returns:
         A Q object that for searching by this tag type and name
+
     """
     return Q(db_tags__db_tagtype=tag_type) & Q(db_tags__db_key__iexact=key)
 
@@ -32,6 +34,7 @@ def get_tag_query(tag_type: Union[str, None], key: str) -> Q:
 class TagTypeFilter(CharFilter):
     """
     This class lets you create different filters for tags of a specified db_tagtype.
+
     """
 
     tag_type = None
@@ -60,11 +63,14 @@ SHARED_FIELDS = ["db_key", "db_typeclass_path", "db_tags__db_key", "db_tags__db_
 
 
 class BaseTypeclassFilterSet(FilterSet):
-    """A parent class with filters for aliases and permissions"""
+    """
+    A parent class with filters for aliases and permissions
 
+    """
+
+    name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
     alias = AliasFilter(lookup_expr="iexact")
     permission = PermissionFilter(lookup_expr="iexact")
-    name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
 
     @staticmethod
     def filter_name(queryset, name, value):
@@ -84,7 +90,10 @@ class BaseTypeclassFilterSet(FilterSet):
 
 
 class ObjectDBFilterSet(BaseTypeclassFilterSet):
-    """This adds filters for ObjectDB instances - characters, rooms, exits, etc"""
+    """
+    This adds filters for ObjectDB instances - characters, rooms, exits, etc
+
+    """
 
     class Meta:
         model = ObjectDB
@@ -103,7 +112,9 @@ class AccountDBFilterSet(BaseTypeclassFilterSet):
 
     class Meta:
         model = AccountDB
-        fields = SHARED_FIELDS + ["username", "db_is_connected", "db_is_bot"]
+        fields = [fi for fi in (SHARED_FIELDS + ["username", "db_is_connected", "db_is_bot"])
+                  if fi != 'db_key']
+
 
 
 class ScriptDBFilterSet(BaseTypeclassFilterSet):
@@ -121,3 +132,16 @@ class ScriptDBFilterSet(BaseTypeclassFilterSet):
             "db_persistent",
             "db_interval",
         ]
+
+
+class HelpFilterSet(FilterSet):
+
+    """
+    Filter for help entries
+
+    """
+    name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
+    category = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_category")
+    alias = AliasFilter(lookup_expr="iexact")
+
+

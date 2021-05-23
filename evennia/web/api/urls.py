@@ -22,25 +22,19 @@ from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
 from evennia.web.api.root import APIRootRouter
-from evennia.web.api.views import (
-    ObjectDBViewSet,
-    AccountDBViewSet,
-    CharacterViewSet,
-    ExitViewSet,
-    RoomViewSet,
-    ScriptDBViewSet,
-)
+from evennia.web.api import views
 
 app_name = "api"
 
 router = APIRootRouter()
 router.trailing_slash = "/?"
-router.register(r"accounts", AccountDBViewSet, basename="account")
-router.register(r"objects", ObjectDBViewSet, basename="object")
-router.register(r"characters", CharacterViewSet, basename="character")
-router.register(r"exits", ExitViewSet, basename="exit")
-router.register(r"rooms", RoomViewSet, basename="room")
-router.register(r"scripts", ScriptDBViewSet, basename="script")
+router.register(r"accounts", views.AccountDBViewSet, basename="account")
+router.register(r"objects", views.ObjectDBViewSet, basename="object")
+router.register(r"characters", views.CharacterViewSet, basename="character")
+router.register(r"exits", views.ExitViewSet, basename="exit")
+router.register(r"rooms", views.RoomViewSet, basename="room")
+router.register(r"scripts", views.ScriptDBViewSet, basename="script")
+router.register(r"helpentries", views.HelpViewSet, basename="script")
 
 urlpatterns = router.urls
 

@@ -15,17 +15,29 @@ from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultRoom
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
-from evennia.web.api.serializers import (
-    ObjectDBSerializer,
-    AccountSerializer,
-    ScriptDBSerializer,
-    AttributeSerializer,
-)
-from evennia.web.api.filters import ObjectDBFilterSet, AccountDBFilterSet, ScriptDBFilterSet
+from evennia.help.models import HelpEntry
+from evennia.web.api import serializers
+from evennia.web.api import filters
 from evennia.web.api.permissions import EvenniaPermission
 
 
-class TypeclassViewSetMixin:
+class GeneralViewSetMixin:
+    """
+    Mixin for both typeclass- and non-typeclass entities.
+
+    """
+    def get_serializer_class(self):
+        """
+        Allow different serializers for certain actions.
+
+        """
+        if self.action == 'list':
+            if hasattr(self, "list_serializer_class"):
+                return self.list_serializer_class
+        return self.serializer_class
+
+
+class TypeclassViewSetMixin(GeneralViewSetMixin):
     """
     This mixin adds some shared functionality to each viewset of a typeclass. They all use the same
     permission classes and filter backend. You can override any of these in your own viewsets.
@@ -53,7 +65,7 @@ class TypeclassViewSetMixin:
         it if no db_value is provided.
 
         """
-        attr = AttributeSerializer(data=request.data)
+        attr = serializers.AttributeSerializer(data=request.data)
         obj = self.get_object()
         if attr.is_valid(raise_exception=True):
             key = attr.validated_data["db_key"]
@@ -69,7 +81,7 @@ class TypeclassViewSetMixin:
             else:
                 handler.remove(key=key, category=category)
             return Response(
-                AttributeSerializer(obj.db_attributes.all(), many=True).data,
+                serializers.AttributeSerializer(obj.db_attributes.all(), many=True).data,
                 status=status.HTTP_200_OK,
             )
         return Response(attr.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -86,9 +98,10 @@ class ObjectDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     # instances. Serializers are similar to django forms, used for the
     # transmitting of data (typically json).
 
-    serializer_class = ObjectDBSerializer
+    serializer_class = serializers.ObjectDBSerializer
     queryset = ObjectDB.objects.all()
-    filterset_class = ObjectDBFilterSet
+    filterset_class = filters.ObjectDBFilterSet
+    list_serializer_class = serializers.ObjectListSerializer
 
 
 class CharacterViewSet(ObjectDBViewSet):
@@ -96,10 +109,10 @@ class CharacterViewSet(ObjectDBViewSet):
     Characters are a type of Object commonly used as player avatars in-game.
 
     """
-
     queryset = DefaultCharacter.objects.typeclass_search(
         DefaultCharacter.path, include_children=True
     )
+    list_serializer_class = serializers.ObjectListSerializer
 
 
 class RoomViewSet(ObjectDBViewSet):
@@ -109,6 +122,7 @@ class RoomViewSet(ObjectDBViewSet):
     """
 
     queryset = DefaultRoom.objects.typeclass_search(DefaultRoom.path, include_children=True)
+    list_serializer_class = serializers.ObjectListSerializer
 
 
 class ExitViewSet(ObjectDBViewSet):
@@ -119,6 +133,7 @@ class ExitViewSet(ObjectDBViewSet):
     """
 
     queryset = DefaultExit.objects.typeclass_search(DefaultExit.path, include_children=True)
+    list_serializer_class = serializers.ObjectListSerializer
 
 
 class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
@@ -127,9 +142,10 @@ class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
 
     """
 
-    serializer_class = AccountSerializer
+    serializer_class = serializers.AccountSerializer
     queryset = AccountDB.objects.all()
-    filterset_class = AccountDBFilterSet
+    filterset_class = filters.AccountDBFilterSet
+    list_serializer_class = serializers.AccountListSerializer
 
 
 class ScriptDBViewSet(TypeclassViewSetMixin, ModelViewSet):
@@ -139,6 +155,19 @@ class ScriptDBViewSet(TypeclassViewSetMixin, ModelViewSet):
 
     """
 
-    serializer_class = ScriptDBSerializer
+    serializer_class = serializers.ScriptDBSerializer
     queryset = ScriptDB.objects.all()
-    filterset_class = ScriptDBFilterSet
+    filterset_class = filters.ScriptDBFilterSet
+    list_serializer_class = serializers.ScriptListSerializer
+
+
+class HelpViewSet(GeneralViewSetMixin, ModelViewSet):
+    """
+    Database-stored help entries.
+    Note that command auto-help and file-based help entries are not accessible this way.
+
+    """
+    serializer_class = serializers.HelpSerializer
+    queryset = HelpEntry.objects.all()
+    filterset_class = filters.HelpFilterSet
+    list_serializer_class = serializers.HelpListSerializer
