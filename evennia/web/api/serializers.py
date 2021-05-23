@@ -321,6 +321,7 @@ class HelpSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
             "id", "db_key", "db_help_category", "db_entrytext", "db_date_created",
             "tags", "aliases"
         ]
+        read_only_fields = ["id"]
 
 class HelpListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
     """
@@ -332,3 +333,4 @@ class HelpListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializ
         fields = [
             "id", "db_key", "db_help_category", "db_date_created",
         ]
+        read_only_fields = ["id"]

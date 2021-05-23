@@ -22,6 +22,8 @@ environment. It leverages the Django web framework and provides:
 - The [Webclient](./Webclient) page is served by the webserver, but the actual
   game communication (sending/receiving data) is done by the javascript client
   on the page opening a websocket connection directly to Evennia's Portal.
+- The [Evennia REST-API](./Web-API) allows for accessing the database from outside the game
+  (only if `REST_API_ENABLED=True).
 
 
 ## Basic Webserver data flow

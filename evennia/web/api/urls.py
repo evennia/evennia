@@ -34,7 +34,7 @@ router.register(r"characters", views.CharacterViewSet, basename="character")
 router.register(r"exits", views.ExitViewSet, basename="exit")
 router.register(r"rooms", views.RoomViewSet, basename="room")
 router.register(r"scripts", views.ScriptDBViewSet, basename="script")
-router.register(r"helpentries", views.HelpViewSet, basename="script")
+router.register(r"helpentries", views.HelpViewSet, basename="helpentry")
 
 urlpatterns = router.urls
 

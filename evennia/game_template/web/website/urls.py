@@ -6,8 +6,7 @@ so it can reroute to all website pages.
 
 """
 
-
-from django.conf.urls import path
+from django.urls import path
 from evennia.web.website.urls import urlpatterns as evennia_website_urlpatterns
 
 # add patterns here

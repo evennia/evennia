@@ -1,5 +1,8 @@
 # Evennia API
 
+This folder contains the code implementing the REST-API of Evennia, based on
+Django Rest Framework.
+
 ## Synopsis
 
 An API, or [Application Programming Interface][wiki-api], is a way of establishing rules
@@ -18,7 +21,7 @@ can convert into python objects for you, a process called deserialization.
 When returning a response, it can also convert python objects into JSON
 strings to send back to a client, which is called serialization. Because it's
 such a common task to want to handle [CRUD][crud] operations for the django models that you use to represent database
-objects (such as your Character typeclass, Room typeclass, etc), DRF makes 
+objects (such as your Character typeclass, Room typeclass, etc), DRF makes
 this process very easy by letting you define [Serializers][serializers]
 that largely automate the process of serializing your in-game objects into
 JSON representations for sending them to a client, or for turning a JSON string
@@ -54,7 +57,7 @@ user has permission to perform retrieve/update/delete actions upon them.
 To start with, you can view a synopsis of endpoints by making a GET request
 to the `yourgame/api/` endpoint by using the excellent [requests library][requests]:
 
-```pythonstub
+```python
 >>> import requests
 >>> r = requests.get("https://www.mygame.com/api", auth=("user", "pw"))
 >>> r.json()
@@ -131,16 +134,16 @@ object:
 >>> response = requests.put("https://www.mygame.com/api/objects/214",
                              data=data, auth=("Alsoauser", "Badpassword"))
 >>> response.json()
-{"db_key": "An even SHINIER sword", "id": 214, "db_location": 50, ...}             
+{"db_key": "An even SHINIER sword", "id": 214, "db_location": 50, ...}
 
-``` 
+```
 By making a PUT request to the endpoint that includes the object ID, it becomes
 a request to update the object with the specified data you pass along.
 
 In most cases, you won't be making API requests to the backend with python,
 but with Javascript from your frontend application.
-There are many Javascript libraries which are meant to make this process 
-easier for requests from the frontend, such as [AXIOS][axios], or using 
+There are many Javascript libraries which are meant to make this process
+easier for requests from the frontend, such as [AXIOS][axios], or using
 the native [Fetch][fetch].
 
 [wiki-api]: https://en.wikipedia.org/wiki/Application_programming_interface

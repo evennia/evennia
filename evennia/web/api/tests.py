@@ -39,7 +39,7 @@ class TestEvenniaRESTApi(EvenniaTest):
     def get_view_details(self, action):
         """Helper function for generating list of named tuples"""
         View = namedtuple(
-            "View", ["view_name", "obj", "list", "serializer", "create_data", "retrieve_data"]
+            "View", ["view_name", "obj", "list", "serializer", "list_serializer", "create_data", "retrieve_data"]
         )
         views = [
             View(
@@ -47,6 +47,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.obj1,
                 [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2, self.char2],
                 serializers.ObjectDBSerializer,
+                serializers.ObjectListSerializer,
                 {"db_key": "object-create-test-name"},
                 serializers.ObjectDBSerializer(self.obj1).data,
             ),
@@ -55,6 +56,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.char1,
                 [self.char1, self.char2],
                 serializers.ObjectDBSerializer,
+                serializers.ObjectListSerializer,
                 {"db_key": "character-create-test-name"},
                 serializers.ObjectDBSerializer(self.char1).data,
             ),
@@ -63,6 +65,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.exit,
                 [self.exit],
                 serializers.ObjectDBSerializer,
+                serializers.ObjectListSerializer,
                 {"db_key": "exit-create-test-name"},
                 serializers.ObjectDBSerializer(self.exit).data,
             ),
@@ -71,6 +74,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.room1,
                 [self.room1, self.room2],
                 serializers.ObjectDBSerializer,
+                serializers.ObjectListSerializer,
                 {"db_key": "room-create-test-name"},
                 serializers.ObjectDBSerializer(self.room1).data,
             ),
@@ -79,6 +83,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.script,
                 [self.script],
                 serializers.ScriptDBSerializer,
+                serializers.ScriptListSerializer,
                 {"db_key": "script-create-test-name"},
                 serializers.ScriptDBSerializer(self.script).data,
             ),
@@ -87,6 +92,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 self.account2,
                 [self.account, self.account2],
                 serializers.AccountSerializer,
+                serializers.AccountListSerializer,
                 {"username": "account-create-test-name"},
                 serializers.AccountSerializer(self.account2).data,
             ),
@@ -135,7 +141,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 response = self.client.get(view_url)
                 self.assertEqual(response.status_code, 200)
                 self.assertCountEqual(
-                    response.data["results"], [view.serializer(obj).data for obj in view.list]
+                    response.data["results"], [view.list_serializer(obj).data for obj in view.list]
                 )
 
     def test_create(self):
