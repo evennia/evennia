@@ -32,7 +32,6 @@ DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
 
-
 @dataclass
 class HelpCategory:
     """

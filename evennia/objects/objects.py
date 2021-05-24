@@ -8,33 +8,23 @@ This is the v1.0 develop version (for ref in doc building).
 
 """
 import time
-import inflect
 from collections import defaultdict
 
+import inflect
 from django.conf import settings
+from django.utils.translation import gettext as _
 
-from evennia.typeclasses.models import TypeclassBase
-from evennia.typeclasses.attributes import NickHandler, ModelAttributeBackend
+from evennia.commands import cmdset
+from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
-from evennia.commands import cmdset, command
-from evennia.commands.cmdsethandler import CmdSetHandler
-from evennia.utils import funcparser
-from evennia.utils import create
-from evennia.utils import search
-from evennia.utils import logger
-from evennia.utils import ansi
-from evennia.utils.utils import (
-    class_from_module,
-    variable_from_module,
-    lazy_property,
-    make_iter,
-    is_iter,
-    list_to_string,
-    to_str,
-)
-from django.utils.translation import gettext as _
+from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
+from evennia.typeclasses.models import TypeclassBase
+from evennia.utils import ansi, create, funcparser, logger, search
+from evennia.utils.utils import (class_from_module, is_iter, lazy_property,
+                                 list_to_string, make_iter, to_str,
+                                 variable_from_module)
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -49,16 +39,18 @@ _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
 _MSG_CONTENTS_PARSER = funcparser.FuncParser(
-    {"you": funcparser.funcparser_callable_you,
-     "You": funcparser.funcparser_callable_You,
-     "conj": funcparser.funcparser_callable_conjugate
-    })
+    {
+        "you": funcparser.funcparser_callable_you,
+        "You": funcparser.funcparser_callable_You,
+        "conj": funcparser.funcparser_callable_conjugate
+    }
+)
 
 
-class ObjectSessionHandler(object):
+class ObjectSessionHandler:
     """
-    Handles the get/setting of the sessid
-    comma-separated integer field
+    Handles the get/setting of the sessid comma-separated integer field
+
     """
 
     def __init__(self, obj):
@@ -116,7 +108,7 @@ class ObjectSessionHandler(object):
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
-            self._recache()
+
             return self.get(sessid=sessid)
         return sessions
 
@@ -1105,8 +1097,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_object_post_copy(self, new_obj, **kwargs):
         """
-        Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not covered by
-        .copy(), this can be used to deal with it.
+        Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not
+        covered by .copy(), this can be used to deal with it.
 
         Args:
             new_obj (Object): The new Copy of this object.
@@ -1964,7 +1956,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 a say. This is sent by the whisper command by default.
                 Other verbal commands could use this hook in similar
                 ways.
-            receivers (Object or iterable): If set, this is the target or targets for the say/whisper.
+            receivers (Object or iterable): If set, this is the target or targets for the
+                say/whisper.
 
         Returns:
             message (str): The (possibly modified) text to be spoken.
@@ -1995,8 +1988,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             msg_self (bool or str, optional): If boolean True, echo `message` to self. If a string,
                 return that message. If False or unset, don't echo to self.
             msg_location (str, optional): The message to echo to self's location.
-            receivers (Object or iterable, optional): An eventual receiver or receivers of the message
-                (by default only used by whispers).
+            receivers (Object or iterable, optional): An eventual receiver or receivers of the
+                message (by default only used by whispers).
             msg_receivers(str): Specific message to pass to the receiver(s). This will parsed
                 with the {receiver} placeholder replaced with the given receiver.
         Keyword Args:
@@ -2030,7 +2023,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # whisper mode
             msg_type = "whisper"
             msg_self = (
-                '{self} whisper to {all_receivers}, "|n{speech}|n"' if msg_self is True else msg_self
+                '{self} whisper to {all_receivers}, "|n{speech}|n"'
+                if msg_self is True else msg_self
             )
             msg_receivers = msg_receivers or '{object} whispers: "|n{speech}|n"'
             msg_location = None
@@ -2198,7 +2192,8 @@ class DefaultCharacter(DefaultObject):
 
             # Add locks
             if not locks and account:
-                # Allow only the character itself and the creator account to puppet this character (and Developers).
+                # Allow only the character itself and the creator account to puppet this character
+                # (and Developers).
                 locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": account.id})
             elif not locks and not account:
                 locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": -1})
@@ -2218,9 +2213,10 @@ class DefaultCharacter(DefaultObject):
     @classmethod
     def normalize_name(cls, name):
         """
-        Normalize the character name prior to creating. Note that this should be refactored
-        to support i18n for non-latin scripts, but as we (currently) have no bug reports requesting better
-        support of non-latin character sets, requiring character names to be latinified is an acceptable option.
+        Normalize the character name prior to creating. Note that this should be refactored to
+        support i18n for non-latin scripts, but as we (currently) have no bug reports requesting
+        better support of non-latin character sets, requiring character names to be latinified is an
+        acceptable option.
 
         Args:
             name (str) : The name of the character
@@ -2513,7 +2509,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
                 overriding the call (unused by default).
 
         Returns:
-            A string with identifying information to disambiguate the command, conventionally with a preceding space.
+            A string with identifying information to disambiguate the command, conventionally with a
+            preceding space.
+
         """
         if self.obj.destination:
             return " (exit to %s)" % self.obj.destination.get_display_name(caller)
