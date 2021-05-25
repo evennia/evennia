@@ -8,9 +8,10 @@ Config values should usually be set through the
 manager's conf() method.
 
 """
-import pickle
-
 from django.db import models
+from django.urls import reverse
+from django.contrib.contenttypes.models import ContentType
+
 from evennia.utils.idmapper.models import WeakSharedMemoryModel
 from evennia.utils import logger, utils
 from evennia.utils.dbserialize import to_pickle, from_pickle
@@ -110,7 +111,7 @@ class ServerConfig(WeakSharedMemoryModel):
 
     value = property(__value_get, __value_set, __value_del)
 
-    class Meta(object):
+    class Meta:
         "Define Django meta options"
         verbose_name = "Server Config value"
         verbose_name_plural = "Server Config values"
@@ -118,9 +119,8 @@ class ServerConfig(WeakSharedMemoryModel):
     #
     # ServerConfig other methods
     #
-
     def __repr__(self):
-        return "<{} {}>".format(self.__class__.__name__, self.key, self.value)
+        return "<{} {}>".format(self.__class__.__name__, self.key)
 
     def store(self, key, value):
         """

@@ -12,3 +12,4 @@ from .scripts import ScriptAdmin
 from .comms import ChannelAdmin, MsgAdmin
 from .help import HelpEntryAdmin
 from .tags import TagAdmin
+from .server import ServerConfigAdmin
