@@ -16,7 +16,7 @@ class HelpTagInline(TagInline):
 class HelpEntryForm(forms.ModelForm):
     "Defines how to display the help entry"
 
-    class Meta(object):
+    class Meta:
         model = HelpEntry
         fields = "__all__"
 
@@ -29,9 +29,11 @@ class HelpEntryForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="Set lock to view:all() unless you want it to only show to certain users."
-        "<BR>Use the `edit:` limit if wanting to limit who can edit from in-game. By default it's only "
-        "limited to who can use the `sethelp` command (Builders).")
+        "<BR>Use the `edit:` limit if wanting to limit who can edit from in-game. By default it's "
+        "only limited to who can use the `sethelp` command (Builders).")
 
+
+@admin.register(HelpEntry)
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
     inlines = [HelpTagInline]
@@ -59,5 +61,3 @@ class HelpEntryAdmin(admin.ModelAdmin):
             },
         ),
     )
-
-admin.site.register(HelpEntry, HelpEntryAdmin)

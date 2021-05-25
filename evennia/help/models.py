@@ -98,7 +98,7 @@ class HelpEntry(SharedMemoryModel):
     def aliases(self):
         return AliasHandler(self)
 
-    class Meta(object):
+    class Meta:
         "Define Django meta options"
         verbose_name = "Help Entry"
         verbose_name_plural = "Help Entries"

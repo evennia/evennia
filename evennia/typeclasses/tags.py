@@ -75,7 +75,7 @@ class Tag(models.Model):
         db_index=True,
     )
 
-    class Meta(object):
+    class Meta:
         "Define Django meta options"
         verbose_name = "Tag"
         unique_together = (("db_key", "db_category", "db_tagtype", "db_model"),)
