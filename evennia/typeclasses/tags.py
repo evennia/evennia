@@ -125,7 +125,10 @@ class TagHandler(object):
         self._cache_complete = False
 
     def _query_all(self):
-        "Get all tags for this objects"
+        """
+        Get all tags for this object.
+
+        """
         query = {
             "%s__id" % self._model: self._objid,
             "tag__db_model": self._model,
@@ -137,7 +140,10 @@ class TagHandler(object):
         ]
 
     def _fullcache(self):
-        "Cache all tags of this object"
+        """
+        Cache all tags of this object.
+
+        """
         if not _TYPECLASS_AGGRESSIVE_CACHE:
             return
         tags = self._query_all()
@@ -277,6 +283,7 @@ class TagHandler(object):
     def reset_cache(self):
         """
         Reset the cache from the outside.
+
         """
         self._cache_complete = False
         self._cache = {}
@@ -483,8 +490,9 @@ class TagHandler(object):
         Batch-add tags from a list of tuples.
 
         Args:
-            *args (tuple or str): Each argument should be a `tagstr` keys or tuple `(keystr, category)` or
-                `(keystr, category, data)`. It's possible to mix input types.
+            *args (tuple or str): Each argument should be a `tagstr` keys or tuple
+                `(keystr, category)` or `(keystr, category, data)`. It's possible to mix input
+                types.
 
         Notes:
             This will generate a mimimal number of self.add calls,

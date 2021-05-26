@@ -27,11 +27,13 @@ class MonitorHandler(object):
     """
     This is a resource singleton that allows for registering
     callbacks for when a field or Attribute is updated (saved).
+
     """
 
     def __init__(self):
         """
         Initialize the handler.
+
         """
         self.savekey = "_monitorhandler_save"
         self.monitors = defaultdict(lambda: defaultdict(dict))

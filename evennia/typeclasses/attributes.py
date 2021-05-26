@@ -10,7 +10,6 @@ which is a non-db version of Attributes.
 """
 import re
 import fnmatch
-import weakref
 
 from collections import defaultdict
 
@@ -117,6 +116,7 @@ class IAttribute:
 class InMemoryAttribute(IAttribute):
     """
     This Attribute is used purely for NAttributes/NAttributeHandler. It has no database backend.
+
     """
 
     # Primary Key has no meaning for an InMemoryAttribute. This merely serves to satisfy other code.
@@ -126,11 +126,12 @@ class InMemoryAttribute(IAttribute):
         Create an Attribute that exists only in Memory.
 
         Args:
-            pk (int): This is a fake 'primary key' / id-field. It doesn't actually have to be unique, but is fed an
-                incrementing number from the InMemoryBackend by default. This is needed only so Attributes can be
-                sorted. Some parts of the API also see the lack of a .pk field as a sign that the Attribute was
-                deleted.
+            pk (int): This is a fake 'primary key' / id-field. It doesn't actually have to be
+                unique, but is fed an incrementing number from the InMemoryBackend by default. This
+                is needed only so Attributes can be sorted. Some parts of the API also see the lack
+                of a .pk field as a sign that the Attribute was deleted.
             **kwargs: Other keyword arguments are used to construct the actual Attribute.
+
         """
         self.id = pk
         self.pk = pk
@@ -245,8 +246,8 @@ class Attribute(IAttribute, SharedMemoryModel):
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
     # value property (wraps db_value)
-    # @property
-    def __value_get(self):
+    @property
+    def value(self):
         """
         Getter. Allows for `value = self.value`.
         We cannot cache here since it makes certain cases (such
@@ -255,8 +256,8 @@ class Attribute(IAttribute, SharedMemoryModel):
         """
         return from_pickle(self.db_value, db_obj=self)
 
-    # @value.setter
-    def __value_set(self, new_value):
+    @value.setter
+    def value(self, new_value):
         """
         Setter. Allows for self.value = value. We cannot cache here,
         see self.__value_get.
@@ -264,13 +265,10 @@ class Attribute(IAttribute, SharedMemoryModel):
         self.db_value = to_pickle(new_value)
         self.save(update_fields=["db_value"])
 
-    # @value.deleter
-    def __value_del(self):
+    @value.deleter
+    def value(self):
         """Deleter. Allows for del attr.value. This removes the entire attribute."""
         self.delete()
-
-    value = property(__value_get, __value_set, __value_del)
-
 
 #
 # Handlers making use of the Attribute model
@@ -348,7 +346,7 @@ class IAttributeBackend:
 
     def _get_cache_key(self, key, category):
         """
-
+        Fetch cache key.
 
         Args:
             key (str): The key of the Attribute being searched for.
@@ -529,7 +527,8 @@ class IAttributeBackend:
 
     def create_attribute(self, key, category, lockstring, value, strvalue=False, cache=True):
         """
-        Creates Attribute (using the class specified for the backend), (optionally) caches it, and returns it.
+        Creates Attribute (using the class specified for the backend), (optionally) caches it, and
+        returns it.
 
         This MUST actively save the Attribute to whatever database backend is used, AND
         call self.set_cache(key, category, new_attrobj)
@@ -714,7 +713,8 @@ class IAttributeBackend:
                 ]
             )
         else:
-            # have to cast the results to a list or we'll get a RuntimeError for removing from the dict we're iterating
+            # have to cast the results to a list or we'll get a RuntimeError for removing from the
+            # dict we're iterating
             self.do_batch_delete(list(attrs))
         self.reset_cache()
 
@@ -735,10 +735,10 @@ class IAttributeBackend:
 
 class InMemoryAttributeBackend(IAttributeBackend):
     """
-    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and normally lost
-    on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes it manages, but these are
-    of little importance beyond sorting and satisfying the caching logic to know an Attribute hasn't been
-    deleted out from under the cache's nose.
+    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and
+    normally lost on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes
+    it manages, but these are of little importance beyond sorting and satisfying the caching logic
+    to know an Attribute hasn't been deleted out from under the cache's nose.
 
     """
 
@@ -810,7 +810,8 @@ class InMemoryAttributeBackend(IAttributeBackend):
 
     def do_delete_attribute(self, attr):
         """
-        Removes the Attribute from local storage. Once it's out of the cache, garbage collection will handle the rest.
+        Removes the Attribute from local storage. Once it's out of the cache, garbage collection
+        will handle the rest.
 
         Args:
             attr (IAttribute): The attribute to delete.
@@ -929,8 +930,9 @@ class AttributeHandler:
         Setup the AttributeHandler.
 
         Args:
-            obj (TypedObject): An Account, Object, Channel, ServerSession (not technically a typed object), etc.
-            backend_class (IAttributeBackend class): The class of the backend to use.
+            obj (TypedObject): An Account, Object, Channel, ServerSession (not technically a typed
+                object), etc.  backend_class (IAttributeBackend class): The class of the backend to
+                use.
         """
         self.obj = obj
         self.backend = backend_class(self, self._attrtype)
@@ -1263,6 +1265,7 @@ class DbHolder:
     all = property(get_all)
 
 
+#
 # Nick templating
 #
 
@@ -1282,7 +1285,7 @@ This happens in two steps:
 
 This will be converted to the following regex:
 
-\@desc (?P<1>\w+) (?P<2>\w+) $(?P<3>\w+)
+    \@desc (?P<1>\w+) (?P<2>\w+) $(?P<3>\w+)
 
 Supported template markers (through fnmatch)
    *       matches anything (non-greedy)     -> .*?
@@ -1345,7 +1348,7 @@ def initialize_nick_templates(pattern, replacement, pattern_is_regex=False):
         # groups.  we need to split out any | - separated parts so we can
         # attach the line-break/ending extras all regexes require.
         pattern_regex_string = r"|".join(
-            or_part +  r"(?:[\n\r]*?)\Z"
+            or_part + r"(?:[\n\r]*?)\Z"
             for or_part in _RE_OR.split(pattern))
 
     else:

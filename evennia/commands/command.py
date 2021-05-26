@@ -572,6 +572,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             border_left_char=border_left_char,
             border_right_char=border_right_char,
             border_top_char=border_top_char,
+            border_bottom_char=border_bottom_char,
             **kwargs,
         )
         return table

@@ -43,6 +43,7 @@ from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import make_iter, inherits_from, justify, dedent
+from django.utils.translation import gettext as _
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -231,7 +232,7 @@ class EvMore(object):
         self._justify_kwargs = justify_kwargs
         self.exit_on_lastpage = exit_on_lastpage
         self.exit_cmd = exit_cmd
-        self._exit_msg = "Exited |wmore|n pager."
+        self._exit_msg = _("Exited |wmore|n pager.")
         self._kwargs = kwargs
 
         self._data = None
@@ -354,8 +355,9 @@ class EvMore(object):
         """
         Paginate by slice. This is done with an eye on memory efficiency (usually for
         querysets); to avoid fetching all objects at the same time.
+
         """
-        return self._data[pageno * self.height : pageno * self.height + self.height]
+        return self._data[pageno * self.height: pageno * self.height + self.height]
 
     def paginator_django(self, pageno):
         """
@@ -433,7 +435,7 @@ class EvMore(object):
             lines = text.split("\n")
 
         self._data = [
-            _LBR.join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
+            _LBR.join(lines[i: i + self.height]) for i in range(0, len(lines), self.height)
         ]
         self._npages = len(self._data)
 
@@ -451,13 +453,15 @@ class EvMore(object):
         Notes:
             If overridden, this method must perform the following  actions:
 
-            - read and re-store `self._data` (the incoming data set) if needed for pagination to work.
+            - read and re-store `self._data` (the incoming data set) if needed for pagination to
+                work.
             - set `self._npages` to the total number of pages. Default is 1.
             - set `self._paginator` to a callable that will take a page number 1...N and return
               the data to display on that page (not any decorations or next/prev buttons). If only
               wanting to change the paginator, override `self.paginator` instead.
-            - set `self._page_formatter` to a callable that will receive the page from `self._paginator`
-              and format it with one element per line. Default is `str`. Or override `self.page_formatter`
+            - set `self._page_formatter` to a callable that will receive the page from
+                `self._paginator` and format it with one element per line. Default is `str`. Or
+                override `self.page_formatter`
               directly instead.
 
             By default, helper methods are called that perform these actions

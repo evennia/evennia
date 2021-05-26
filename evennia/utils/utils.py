@@ -9,7 +9,6 @@ be of use when designing your own game.
 import os
 import gc
 import sys
-import copy
 import types
 import math
 import re
@@ -35,6 +34,7 @@ from django.utils.translation import gettext as _
 from django.apps import apps
 from django.core.validators import validate_email as django_validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
@@ -204,7 +204,7 @@ def dedent(text, baseline_index=None, indent=None):
         baseline = lines[baseline_index]
         spaceremove = len(baseline) - len(baseline.lstrip(" "))
         return "\n".join(
-            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :] for line in lines
+            line[min(spaceremove, len(line) - len(line.lstrip(" "))):] for line in lines
         )
 
 
@@ -343,7 +343,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     cols = []
     istart = 0
     for irows in nrows:
-        cols.append(onecol[istart : istart + irows])
+        cols.append(onecol[istart: istart + irows])
         istart = istart + irows
     for col in cols:
         if len(col) < height:
@@ -1029,8 +1029,6 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-
-
 def delay(timedelay, callback, *args, **kwargs):
     """
     Delay the calling of a callback (function).
@@ -1238,8 +1236,8 @@ def check_evennia_dependencies():
         except ImportError:
             errstring += (
                 "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
-                "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
-                "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+                "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', "
+                "\n others can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
             )
             not_error = False
     errstring = errstring.strip()
@@ -1911,7 +1909,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
 
             wl = wls[ie]
             lrow = len(row)
-            debug = row.replace(" ", ".")
+            # debug = row.replace(" ", ".")
 
             if lrow + wl > width:
                 # this slot extends outside grid, move to next line
@@ -1968,8 +1966,6 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
     else:
         # full multi-line grid
         return _weighted_rows(elements)
-
-
 
 
 def get_evennia_pids():
@@ -2323,7 +2319,7 @@ def get_game_dir_path():
 
     """
     # current working directory, assumed to be somewhere inside gamedir.
-    for _ in range(10):
+    for inum in range(10):
         gpath = os.getcwd()
         if "server" in os.listdir(gpath):
             if os.path.isfile(os.path.join("server", "conf", "settings.py")):

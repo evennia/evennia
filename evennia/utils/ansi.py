@@ -20,8 +20,8 @@ Supported standards:
 
 ## Markup
 
-ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color). Capital
-letters indicate the 'dark' variant.
+ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color).
+Capital letters indicate the 'dark' variant.
 
 - `|r` fg bright red
 - `|R` fg dark red
@@ -337,8 +337,9 @@ class ANSIParser(object):
                 colval = 16 + (red * 36) + (green * 6) + blue
 
             return "\033[%s8;5;%sm" % (3 + int(background), colval)
-            # replaced since some clients (like Potato) does not accept codes with leading zeroes, see issue #1024.
-            # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
+            # replaced since some clients (like Potato) does not accept codes with leading zeroes,
+            # see issue #1024.
+            # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)  # noqa
 
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
@@ -729,7 +730,8 @@ class ANSIString(str, metaclass=ANSIMeta):
 
     """
 
-    # A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec
+    # A compiled Regex for the format mini-language:
+    # https://docs.python.org/3/library/string.html#formatspec
     re_format = re.compile(
         r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
         r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
@@ -802,12 +804,14 @@ class ANSIString(str, metaclass=ANSIMeta):
         Current features supported: fill, align, width.
 
         Args:
-            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as
-                "0<30" which would mean "left justify to 30, filling with zeros". The full specification can be found
-                at https://docs.python.org/3/library/string.html#formatspec
+            format_spec (str): The format specification passed by f-string or str.format(). This is
+            a string such as "0<30" which would mean "left justify to 30, filling with zeros".
+            The full specification can be found at
+            https://docs.python.org/3/library/string.html#formatspec
 
         Returns:
             ansi_str (str): The formatted ANSIString's .raw() form, for display.
+
         """
         # This calls the compiled regex stored on ANSIString's class to analyze the format spec.
         # It returns a dictionary.
@@ -1067,7 +1071,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         current_index = 0
         result = tuple()
         for section in parent_result:
-            result += (self[current_index : current_index + len(section)],)
+            result += (self[current_index: current_index + len(section)],)
             current_index += len(section)
         return result
 
@@ -1187,7 +1191,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             start = next + bylen
             maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
-        res.append(self[start : len(self)])
+        res.append(self[start: len(self)])
         if drop_spaces:
             return [part for part in res if part != ""]
         return res
@@ -1230,7 +1234,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next + bylen : end])
+            res.append(self[next + bylen: end])
             end = next
             maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
@@ -1284,7 +1288,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(lstripped + raw[ir1 : ir2 + 1] + rstripped)
+        return ANSIString(lstripped + raw[ir1: ir2 + 1] + rstripped)
 
     def lstrip(self, chars=None):
         """
@@ -1403,7 +1407,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             start = None
         end = char._char_indexes[0]
         prefix = char._raw_string[start:end]
-        postfix = char._raw_string[end + 1 :]
+        postfix = char._raw_string[end + 1:]
         line = char._clean_string * amount
         code_indexes = [i for i in range(0, len(prefix))]
         length = len(prefix) + len(line)

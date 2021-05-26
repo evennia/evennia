@@ -16,7 +16,6 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 import os
 import time
-import glob
 from datetime import datetime
 from traceback import format_exc
 from twisted.python import log, logfile
@@ -47,6 +46,7 @@ def timeformat(when=None):
 
     Returns:
         timestring (str): A formatted string of the given time.
+
     """
     when = when if when else time.time()
 
@@ -126,6 +126,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
             server.log.2020_01_29
             server.log.2020_01_29__1
             server.log.2020_01_29__2
+
         """
         suffix = ""
         copy_suffix = 0
@@ -146,7 +147,10 @@ class WeeklyLogFile(logfile.DailyLogFile):
         return suffix
 
     def write(self, data):
-        "Write data to log file"
+        """
+        Write data to log file
+
+        """
         logfile.BaseLogFile.write(self, data)
         self.lastDate = max(self.lastDate, self.toDate())
         self.size += len(data)
@@ -155,6 +159,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
 class PortalLogObserver(log.FileLogObserver):
     """
     Reformat logging
+
     """
 
     timeFormat = None
@@ -289,6 +294,7 @@ def log_info(infomsg):
     Prints any generic debugging/informative info that should appear in the log.
 
     infomsg: (string) The message to be logged.
+
     """
     try:
         infomsg = str(infomsg)
@@ -307,6 +313,7 @@ def log_dep(depmsg):
 
     Args:
         depmsg (str): The deprecation message to log.
+
     """
     try:
         depmsg = str(depmsg)
@@ -325,6 +332,7 @@ def log_sec(secmsg):
 
     Args:
         secmsg (str): The security message to log.
+
     """
     try:
         secmsg = str(secmsg)
@@ -346,6 +354,7 @@ class EvenniaLogFile(logfile.LogFile):
     the LogFile's rotate method in order to append some of the last
     lines of the previous log to the start of the new log, in order
     to preserve a continuous chat history for channel log files.
+
     """
 
     # we delay import of settings to keep logger module as free
@@ -361,6 +370,7 @@ class EvenniaLogFile(logfile.LogFile):
         """
         Rotates our log file and appends some number of lines from
         the previous log to the start of the new one.
+
         """
         append_tail = (num_lines_to_append
                        if num_lines_to_append is not None
@@ -377,9 +387,11 @@ class EvenniaLogFile(logfile.LogFile):
         """
         Convenience method for accessing our _file attribute's seek method,
         which is used in tail_log_function.
+
         Args:
             *args: Same args as file.seek
             **kwargs: Same kwargs as file.seek
+
         """
         return self._file.seek(*args, **kwargs)
 
@@ -387,12 +399,14 @@ class EvenniaLogFile(logfile.LogFile):
         """
         Convenience method for accessing our _file attribute's readlines method,
         which is used in tail_log_function.
+
         Args:
             *args: same args as file.readlines
             **kwargs: same kwargs as file.readlines
 
         Returns:
             lines (list): lines from our _file attribute.
+
         """
         return [line.decode("utf-8") for line in self._file.readlines(*args, **kwargs)]
 
@@ -550,7 +564,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines - offset : -offset if offset else None]
+        lines_found = lines_found[-nlines - offset: -offset if offset else None]
         if callback:
             callback(lines_found)
             return None

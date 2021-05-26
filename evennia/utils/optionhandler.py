@@ -1,5 +1,6 @@
 from evennia.utils.utils import string_partial_matching
 from evennia.utils.containers import OPTION_CLASSES
+from django.utils.translation import gettext as _
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -134,7 +135,7 @@ class OptionHandler:
         """
         if key not in self.options_dict:
             if raise_error:
-                raise KeyError("Option not found!")
+                raise KeyError(_("Option not found!"))
             return default
         # get the options or load/recache it
         op_found = self.options.get(key) or self._load_option(key)
@@ -155,12 +156,14 @@ class OptionHandler:
 
         """
         if not key:
-            raise ValueError("Option field blank!")
+            raise ValueError(_("Option field blank!"))
         match = string_partial_matching(list(self.options_dict.keys()), key, ret_index=False)
         if not match:
-            raise ValueError("Option not found!")
+            raise ValueError(_("Option not found!"))
         if len(match) > 1:
-            raise ValueError(f"Multiple matches: {', '.join(match)}. Please be more specific.")
+            raise ValueError(_("Multiple matches:")
+                             + f"{', '.join(match)}. "
+                             + _("Please be more specific."))
         match = match[0]
         op = self.get(match, return_obj=True)
         op.set(value, **kwargs)

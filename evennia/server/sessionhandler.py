@@ -18,7 +18,6 @@ from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (
-    variable_from_module, class_from_module,
     is_iter,
     make_iter,
     delay,
@@ -29,6 +28,7 @@ from evennia.server.portal import amp
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 from codecs import decode as codecs_decode
+from django.utils.translation import gettext as _
 
 _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
 
@@ -39,7 +39,7 @@ _ServerConfig = None
 _ScriptDB = None
 _OOB_HANDLER = None
 
-_ERR_BAD_UTF8 = "Your client sent an incorrect UTF-8 sequence."
+_ERR_BAD_UTF8 = _("Your client sent an incorrect UTF-8 sequence.")
 
 
 class DummySession(object):
@@ -47,9 +47,6 @@ class DummySession(object):
 
 
 DUMMYSESSION = DummySession()
-
-# i18n
-from django.utils.translation import gettext as _
 
 _SERVERNAME = settings.SERVERNAME
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -59,7 +56,6 @@ _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 _MODEL_MAP = None
 _FUNCPARSER = None
-
 
 
 # input handlers
@@ -103,24 +99,36 @@ class SessionHandler(dict):
     """
 
     def __getitem__(self, key):
-        "Clean out None-sessions automatically."
+        """
+        Clean out None-sessions automatically.
+
+        """
         if None in self:
             del self[None]
         return super().__getitem__(key)
 
     def get(self, key, default=None):
-        "Clean out None-sessions automatically."
+        """
+        Clean out None-sessions automatically.
+
+        """
         if None in self:
             del self[None]
         return super().get(key, default)
 
     def __setitem__(self, key, value):
-        "Don't assign None sessions"
+        """
+        Don't assign None sessions"
+
+        """
         if key is not None:
             super().__setitem__(key, value)
 
     def __contains__(self, key):
-        "None-keys are not accepted."
+        """
+        None-keys are not accepted.
+
+        """
         return False if key is None else super().__contains__(key)
 
     def get_sessions(self, include_unloggedin=False):
@@ -158,9 +166,8 @@ class SessionHandler(dict):
 
         Args:
             session (Session): The relevant session instance.
-            kwargs (dict) Each keyword represents a send-instruction, with the keyword itself being the name
-                of the instruction (like "text"). Suitable values for each
-                keyword are:
+            kwargs (dict) Each keyword represents a send-instruction, with the keyword itself being
+                the name of the instruction (like "text"). Suitable values for each keyword are:
                 - arg                ->  [[arg], {}]
                 - [args]             ->  [[args], {}]
                 - {kwargs}           ->  [[], {kwargs}]
@@ -177,7 +184,8 @@ class SessionHandler(dict):
         global _FUNCPARSER
         if not _FUNCPARSER:
             from evennia.utils.funcparser import FuncParser
-            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES, raise_errors=True)
+            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES,
+                                     raise_errors=True)
 
         options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
@@ -199,7 +207,10 @@ class SessionHandler(dict):
             return data
 
         def _validate(data):
-            "Helper function to convert data to AMP-safe (picketable) values"
+            """
+            Helper function to convert data to AMP-safe (picketable) values"
+
+            """
             if isinstance(data, dict):
                 newdict = {}
                 for key, part in data.items():
@@ -210,7 +221,8 @@ class SessionHandler(dict):
             elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
-                if _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED and not raw and isinstance(self, ServerSessionHandler):
+                if (_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
+                        and not raw and isinstance(self, ServerSessionHandler)):
                     # only apply funcparser on the outgoing path (sessionhandler->)
                     # data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
                     data = _FUNCPARSER.parse(data, strip=strip_inlinefunc, session=session)
@@ -261,14 +273,11 @@ class SessionHandler(dict):
 
 class ServerSessionHandler(SessionHandler):
     """
-    This object holds the stack of sessions active in the game at
-    any time.
+    This object holds the stack of sessions active in the game at any time.
 
-    A session register with the handler in two steps, first by
-    registering itself with the connect() method. This indicates an
-    non-authenticated session. Whenever the session is authenticated
-    the session together with the related account is sent to the login()
-    method.
+    A session register with the handler in two steps, first by registering itself with the connect()
+    method. This indicates an non-authenticated session. Whenever the session is authenticated the
+    session together with the related account is sent to the login() method.
 
     """
 
@@ -468,9 +477,8 @@ class ServerSessionHandler(SessionHandler):
 
     def login(self, session, account, force=False, testmode=False):
         """
-        Log in the previously unloggedin session and the account we by
-        now should know is connected to it. After this point we assume
-        the session to be logged in one way or another.
+        Log in the previously unloggedin session and the account we by now should know is connected
+        to it. After this point we assume the session to be logged in one way or another.
 
         Args:
             session (Session): The Session to authenticate.
@@ -627,7 +635,8 @@ class ServerSessionHandler(SessionHandler):
         # mean connecting from the same host would not catch duplicates
         sid = id(curr_session)
         doublet_sessions = [
-            sess for sess in self.values() if sess.logged_in and sess.uid == uid and id(sess) != sid
+            sess for sess in self.values()
+            if sess.logged_in and sess.uid == uid and id(sess) != sid
         ]
 
         for session in doublet_sessions:
@@ -737,8 +746,8 @@ class ServerSessionHandler(SessionHandler):
             puppet (Object): Object puppeted
 
         Returns.
-            sessions (Session or list): Can be more than one of Object is controlled by
-                more than one Session (MULTISESSION_MODE > 1).
+            sessions (Session or list): Can be more than one of Object is controlled by more than
+                one Session (MULTISESSION_MODE > 1).
 
         """
         sessions = puppet.sessid.get()

@@ -415,7 +415,8 @@ class CmdEvMenuNode(Command):
                     )  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menu has been correctly identified since it
-        # can be either Account, Object or Session (in the latter case this info will be superfluous).
+        # can be either Account, Object or Session (in the latter case this info will be
+        # superfluous).
         caller.ndb._evmenu._session = self.session
         # we have a menu, use it.
         menu.parse_input(self.raw_string)
@@ -619,7 +620,8 @@ class EvMenu:
         ).intersection(set(kwargs.keys()))
         if reserved_clash:
             raise RuntimeError(
-                f"One or more of the EvMenu `**kwargs` ({list(reserved_clash)}) is reserved by EvMenu for internal use."
+                f"One or more of the EvMenu `**kwargs` ({list(reserved_clash)}) "
+                "is reserved by EvMenu for internal use."
             )
         for key, val in kwargs.items():
             setattr(self, key, val)
@@ -1262,7 +1264,7 @@ class EvMenu:
             table.extend([" " for i in range(nrows - nlastcol)])
 
         # build the actual table grid
-        table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
+        table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
 
         # adjust the width of each column
         for icol in range(len(table)):
@@ -1349,6 +1351,7 @@ def list_node(option_generator, select=None, pagesize=10):
         def _select_parser(caller, raw_string, **kwargs):
             """
             Parse the select action
+
             """
             available_choices = kwargs.get("available_choices", [])
 
@@ -1356,7 +1359,7 @@ def list_node(option_generator, select=None, pagesize=10):
                 index = int(raw_string.strip()) - 1
                 selection = available_choices[index]
             except Exception:
-                caller.msg("|rInvalid choice.|n")
+                caller.msg(_("|rInvalid choice.|n"))
             else:
                 if callable(select):
                     try:
@@ -1388,7 +1391,7 @@ def list_node(option_generator, select=None, pagesize=10):
             if option_list:
                 nall_options = len(option_list)
                 pages = [
-                    option_list[ind : ind + pagesize] for ind in range(0, nall_options, pagesize)
+                    option_list[ind: ind + pagesize] for ind in range(0, nall_options, pagesize)
                 ]
                 npages = len(pages)
 
@@ -1413,7 +1416,7 @@ def list_node(option_generator, select=None, pagesize=10):
                 # allows us to call ourselves over and over, using different kwargs.
                 options.append(
                     {
-                        "key": ("|Wcurrent|n", "c"),
+                        "key": (_("|Wcurrent|n"), "c"),
                         "desc": "|W({}/{})|n".format(page_index + 1, npages),
                         "goto": (lambda caller: None, {"optionpage_index": page_index}),
                     }
@@ -1421,14 +1424,14 @@ def list_node(option_generator, select=None, pagesize=10):
                 if page_index > 0:
                     options.append(
                         {
-                            "key": ("|wp|Wrevious page|n", "p"),
+                            "key": (_("|wp|Wrevious page|n"), "p"),
                             "goto": (lambda caller: None, {"optionpage_index": page_index - 1}),
                         }
                     )
                 if page_index < npages - 1:
                     options.append(
                         {
-                            "key": ("|wn|Wext page|n", "n"),
+                            "key": (_("|wn|Wext page|n"), "n"),
                             "goto": (lambda caller: None, {"optionpage_index": page_index + 1}),
                         }
                     )
@@ -1662,7 +1665,7 @@ class CmdYesNoQuestion(Command):
                     inp = raw
 
             if inp in ('a', 'abort') and yes_no_question.allow_abort:
-                caller.msg("Aborted.")
+                caller.msg(_("Aborted."))
                 self._clean(caller)
                 return
 
@@ -1672,7 +1675,6 @@ class CmdYesNoQuestion(Command):
             kwargs = yes_no_question.kwargs
             kwargs['caller_session'] = self.session
 
-            ok = False
             if inp in ('yes', 'y'):
                 yes_no_question.yes_callable(caller, *args, **kwargs)
             elif inp in ('no', 'n'):
@@ -1684,9 +1686,9 @@ class CmdYesNoQuestion(Command):
 
             # cleanup
             self._clean(caller)
-        except Exception as err:
+        except Exception:
             # make sure to clean up cmdset if something goes wrong
-            caller.msg("|rError in ask_yes_no. Choice not confirmed (report to admin)|n")
+            caller.msg(_("|rError in ask_yes_no. Choice not confirmed (report to admin)|n"))
             logger.log_trace("Error in ask_yes_no")
             self._clean(caller)
             raise
@@ -1938,7 +1940,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         """
         Validate goto-callable kwarg is on correct form.
         """
-        if not "=" in kwarg:
+        if "=" not in kwarg:
             raise RuntimeError(
                 f"EvMenu template error: goto-callable '{goto}' has a "
                 f"non-kwarg argument ({kwarg}). All callables in the "
@@ -1955,6 +1957,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
     def _parse_options(nodename, optiontxt, goto_callables):
         """
         Parse option section into option dict.
+
         """
         options = []
         optiontxt = optiontxt[0].strip() if optiontxt else ""
@@ -2032,6 +2035,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
     def _parse(caller, menu_template, goto_callables):
         """
         Parse the menu string format into a node tree.
+
         """
         nodetree = {}
         splits = _RE_NODE.split(menu_template)

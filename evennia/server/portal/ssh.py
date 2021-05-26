@@ -61,24 +61,25 @@ CTRL_D = "\x04"
 CTRL_BACKSLASH = "\x1c"
 CTRL_L = "\x0c"
 
-_NO_AUTOGEN = """
+_NO_AUTOGEN = f"""
 Evennia could not generate SSH private- and public keys ({{err}})
 Using conch default keys instead.
 
 If this error persists, create the keys manually (using the tools for your OS)
 and put them here:
-    {}
-    {}
-""".format(
-    _PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE
-)
+    {_PRIVATE_KEY_FILE}
+    {_PUBLIC_KEY_FILE}
+"""
 
 _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 # not used atm
 class SSHServerFactory(protocol.ServerFactory):
-    "This is only to name this better in logs"
+    """
+    This is only to name this better in logs
+
+    """
     noisy = False
 
     def logPrefix(self):

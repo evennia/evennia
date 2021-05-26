@@ -61,8 +61,7 @@ except OperationalError:
     from evennia.scripts.models import ScriptDB
     from evennia.comms.models import Msg, ChannelDB
     from evennia.help.models import HelpEntry
-    from evennia.typeclasses.tags import Tag
-
+    from evennia.typeclasses.tags import Tag  # noqa
 
 # -------------------------------------------------------------------
 # Search manager-wrappers
@@ -243,7 +242,7 @@ def search_script_attribute(
 def search_channel_attribute(
     key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
 ):
-    return Channel.objects.get_by_attribute(
+    return ChannelDB.objects.get_by_attribute(
         key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 

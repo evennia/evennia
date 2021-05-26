@@ -1,5 +1,6 @@
 """
-Sessionhandler for portal sessions
+Sessionhandler for portal sessions.
+
 """
 
 
@@ -11,6 +12,7 @@ from evennia.server.sessionhandler import SessionHandler
 from evennia.server.portal.amp import PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import class_from_module
+from django.utils.translation import gettext as _
 
 # module import
 _MOD_IMPORT = None
@@ -34,6 +36,8 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # -------------------------------------------------------------
 # Portal-SessionHandler class
 # -------------------------------------------------------------
+
+DOS_PROTECTION_MSG = _("{servername} DoS protection is active. You are queued to connect in {num} seconds ...")
 
 
 class PortalSessionHandler(SessionHandler):
@@ -111,16 +115,12 @@ class PortalSessionHandler(SessionHandler):
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(
-                    text=[
-                        [
-                            "%s DoS protection is active. You are queued to connect in %g seconds ..."
-                            % (
-                                settings.SERVERNAME,
-                                len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS,
-                            )
-                        ],
+                    text=(
+                        (DOS_PROTECTION_MSG.format(
+                         servername=settings.SERVERNAME,
+                         num=len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS),),
                         {},
-                    ]
+                    )
                 )
         now = time.time()
         if (
@@ -220,6 +220,7 @@ class PortalSessionHandler(SessionHandler):
     def disconnect_all(self):
         """
         Disconnect all sessions, informing the Server.
+
         """
 
         def _callback(result, sessionhandler):
@@ -478,5 +479,4 @@ class PortalSessionHandler(SessionHandler):
 
 
 _PORTAL_SESSION_HANDLER_CLASS = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
-
 PORTAL_SESSIONS = _PORTAL_SESSION_HANDLER_CLASS()

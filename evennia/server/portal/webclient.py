@@ -44,6 +44,7 @@ _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
     """
     Implements the server-side of the Websocket connection.
+
     """
 
     # nonce value, used to prevent the webclient from erasing the
@@ -155,7 +156,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        ret = self.sendClose(CLOSE_NORMAL, reason)
+        self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """

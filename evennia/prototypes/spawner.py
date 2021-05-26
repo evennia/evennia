@@ -40,8 +40,8 @@ Possible keywords are:
         supported are 'edit' and 'use'.
     prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype
         in listings
-    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or
-        a list of parents, for multiple left-to-right inheritance.
+    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent
+        prototype, or a list of parents, for multiple left-to-right inheritance.
     prototype: Deprecated. Same meaning as 'parent'.
 
     typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use
@@ -138,6 +138,7 @@ import hashlib
 import time
 
 from django.conf import settings
+from django.utils.translation import gettext as _
 
 import evennia
 from evennia.objects.models import ObjectDB
@@ -355,8 +356,8 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
             This is most useful for displaying.
         implicit_keep (bool, optional): If set, the resulting diff will assume KEEP unless the new
             prototype explicitly change them. That is, if a key exists in `prototype1` and
-            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is particularly
-            useful for auto-generated prototypes when updating objects.
+            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is
+            particularly useful for auto-generated prototypes when updating objects.
 
     Returns:
         diff (dict): A structure detailing how to convert prototype1 to prototype2. All
@@ -469,8 +470,8 @@ def flatten_diff(diff):
                 out.extend(_get_all_nested_diff_instructions(val))
         else:
             raise RuntimeError(
-                "Diff contains non-dicts that are not on the "
-                "form (old, new, inst): {}".format(diffpart)
+                _("Diff contains non-dicts that are not on the "
+                  "form (old, new, inst): {diffpart}").format(diffpart)
             )
         return out
 
@@ -693,11 +694,13 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
                     elif key == "permissions":
                         if directive == "REPLACE":
                             obj.permissions.clear()
-                        obj.permissions.batch_add(*(init_spawn_value(perm, str, caller=caller) for perm in val))
+                        obj.permissions.batch_add(*(init_spawn_value(perm, str, caller=caller)
+                                                    for perm in val))
                     elif key == "aliases":
                         if directive == "REPLACE":
                             obj.aliases.clear()
-                        obj.aliases.batch_add(*(init_spawn_value(alias, str, caller=caller) for alias in val))
+                        obj.aliases.batch_add(*(init_spawn_value(alias, str, caller=caller)
+                                                for alias in val))
                     elif key == "tags":
                         if directive == "REPLACE":
                             obj.tags.clear()
@@ -923,7 +926,8 @@ def spawn(*prototypes, caller=None, **kwargs):
             create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, caller=caller)
         else:
             try:
-                create_kwargs["db_home"] = init_spawn_value(settings.DEFAULT_HOME, value_to_obj, caller=caller)
+                create_kwargs["db_home"] = init_spawn_value(
+                    settings.DEFAULT_HOME, value_to_obj, caller=caller)
             except ObjectDB.DoesNotExist:
                 # settings.DEFAULT_HOME not existing is common for unittests
                 pass
@@ -945,7 +949,8 @@ def spawn(*prototypes, caller=None, **kwargs):
         val = prot.pop("tags", [])
         tags = []
         for (tag, category, *data) in val:
-            tags.append((init_spawn_value(tag, str, caller=caller), category, data[0] if data else None))
+            tags.append((init_spawn_value(tag, str, caller=caller), category, data[0]
+                         if data else None))
 
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:

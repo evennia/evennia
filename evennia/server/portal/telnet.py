@@ -59,7 +59,10 @@ _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 class TelnetServerFactory(protocol.ServerFactory):
-    "This is only to name this better in logs"
+    """
+    This exists only to name this better in logs.
+
+    """
     noisy = False
 
     def logPrefix(self):
@@ -71,6 +74,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -81,6 +85,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         """
         Unused by default, but a good place to put debug printouts
         of incoming data.
+
         """
         # print(f"telnet dataReceived: {data}")
         try:
@@ -145,11 +150,15 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         Client refuses do(linemode). This is common for MUD-specific
         clients, but we must ask for the sake of raw telnet. We ignore
         this error.
+
         """
         pass
 
     def _send_nop_keepalive(self):
-        """Send NOP keepalive unless flag is set"""
+        """
+        Send NOP keepalive unless flag is set
+
+        """
         if self.protocol_flags.get("NOPKEEPALIVE"):
             self._write(IAC + NOP)
 
@@ -158,7 +167,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         Allow to toggle the NOP keepalive for those sad clients that
         can't even handle a NOP instruction. This is turned off by the
         protocol_flag NOPKEEPALIVE (settable e.g. by the default
-        `@option` command).
+        `option` command).
+
         """
         if self.nop_keep_alive and self.nop_keep_alive.running:
             self.nop_keep_alive.stop()
@@ -172,6 +182,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         When all have reported, a sync with the server is performed.
         The system will force-call this sync after a small time to handle
         clients that don't reply to handshakes at all.
+
         """
         if timeout:
             if self.handshakes > 0:
@@ -186,6 +197,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
     def at_login(self):
         """
         Called when this session gets authenticated by the server.
+
         """
         pass
 
@@ -321,7 +333,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             self.data_in(text=dat + b"\n")
 
     def _write(self, data):
-        """hook overloading the one used in plain telnet"""
+        """
+        Hook overloading the one used in plain telnet
+
+        """
         data = data.replace(b"\n", b"\r\n").replace(b"\r\r\n", b"\r\n")
         super()._write(mccp_compress(self, data))
 
@@ -347,7 +362,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
 
     def disconnect(self, reason=""):
         """
-        generic hook for the engine to call in order to
+        Generic hook for the engine to call in order to
         disconnect this protocol.
 
         Args:
@@ -376,6 +391,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
 
         Keyword Args:
             kwargs (any): Options to the protocol
+
         """
         self.sessionhandler.data_out(self, **kwargs)
 
@@ -442,7 +458,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
-            if not self.protocol_flags.get("NOPROMPTGOAHEAD", 
+            if not self.protocol_flags.get("NOPROMPTGOAHEAD",
                                            self.protocol_flags.get("NOGOAHEAD", True)):
                 prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
@@ -488,6 +504,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
     def send_default(self, cmdname, *args, **kwargs):
         """
         Send other oob data
+
         """
         if not cmdname == "options":
             self.oob.data_out(cmdname, *args, **kwargs)

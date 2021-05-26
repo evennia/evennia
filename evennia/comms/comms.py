@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from evennia.typeclasses.models import TypeclassBase
-from evennia.comms.models import TempMsg, ChannelDB
+from evennia.comms.models import ChannelDB
 from evennia.comms.managers import ChannelManager
 from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
@@ -48,7 +48,6 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     # default nick-alias replacements (default using the 'channel' command)
     channel_msg_nick_pattern = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
     channel_msg_nick_replacement = "channel {channelname} = $1"
-
 
     def at_first_save(self):
         """
@@ -706,7 +705,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         try:
             return reverse("%s-create" % slugify(cls._meta.verbose_name))
-        except:
+        except Exception:
             return "#"
 
     def web_get_detail_url(self):
@@ -721,8 +720,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         a named view of 'channel-detail' would be referenced by this method.
 
         ex.
-        url(r'channels/(?P<slug>[\w\d\-]+)/$',
-            ChannelDetailView.as_view(), name='channel-detail')
+        ::
+
+            url(r'channels/(?P<slug>[\w\d\-]+)/$',
+                ChannelDetailView.as_view(), name='channel-detail')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -740,7 +741,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_update_url(self):
@@ -755,8 +756,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         a named view of 'channel-update' would be referenced by this method.
 
         ex.
-        url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
-            ChannelUpdateView.as_view(), name='channel-update')
+        ::
+
+            url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+                ChannelUpdateView.as_view(), name='channel-update')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -774,7 +777,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-update" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_delete_url(self):
@@ -807,7 +810,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-delete" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     # Used by Django Sites/Admin

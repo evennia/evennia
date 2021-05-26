@@ -284,7 +284,7 @@ class BatchCommandProcessor(object):
             try:
                 path = match.group(1)
                 return "\n#\n".join(self.parse_file(path))
-            except IOError as err:
+            except IOError:
                 raise IOError("#INSERT {} failed.".format(path))
 
         text = _RE_INSERT.sub(replace_insert, text)

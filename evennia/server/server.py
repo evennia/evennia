@@ -174,6 +174,7 @@ class Evennia:
     The main Evennia server handler. This object sets up the database and
     tracks and interlinks all the twisted network services that make up
     evennia.
+
     """
 
     def __init__(self, application):
@@ -243,6 +244,7 @@ class Evennia:
         This allows for changing default cmdset locations and default
         typeclasses in the settings file and have them auto-update all
         already existing objects.
+
         """
         global INFO_DICT
 
@@ -471,7 +473,10 @@ class Evennia:
         ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
 
     def get_info_dict(self):
-        "Return the server info, for display."
+        """
+        Return the server info, for display.
+
+        """
         return INFO_DICT
 
     # server start/stop hooks
@@ -480,6 +485,7 @@ class Evennia:
         """
         This is called every time the server starts up, regardless of
         how it was shut down.
+
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
@@ -488,6 +494,7 @@ class Evennia:
         """
         This is called just before a server is shut down, regardless
         of it is fore a reload, reset or shutdown.
+
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
@@ -495,6 +502,7 @@ class Evennia:
     def at_server_reload_start(self):
         """
         This is called only when server starts back up after a reload.
+
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_start()
@@ -505,7 +513,7 @@ class Evennia:
         after reconnecting.
 
         Args:
-            mode (str): One of reload, reset or shutdown.
+            mode (str): One of 'reload', 'reset' or 'shutdown'.
 
         """
 
@@ -555,6 +563,7 @@ class Evennia:
     def at_server_reload_stop(self):
         """
         This is called only time the server stops before a reload.
+
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
@@ -563,6 +572,7 @@ class Evennia:
         """
         This is called only when the server starts "cold", i.e. after a
         shutdown or a reset.
+
         """
         # We need to do this just in case the server was killed in a way where
         # the normal cleanup operations did not have time to run.
@@ -590,6 +600,7 @@ class Evennia:
     def at_server_cold_stop(self):
         """
         This is called only when the server goes down due to a shutdown or reset.
+
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_stop()

@@ -1,7 +1,6 @@
 """
 Custom manager for HelpEntry objects.
 """
-from django.db import models
 from evennia.utils import logger, utils
 from evennia.typeclasses.managers import TypedObjectManager
 
@@ -131,7 +130,7 @@ class HelpEntryManager(TypedObjectManager):
         for topic in topics:
             topic.help_category = default_category
             topic.save()
-        string = _("Help database moved to category {default_category}").format(
+        string = "Help database moved to category {default_category}".format(
             default_category=default_category
         )
         logger.log_info(string)

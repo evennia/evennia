@@ -29,7 +29,7 @@ except ImportError:
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import SafeString
-from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
+from evennia.utils.utils import uses_database, is_iter, to_bytes
 from evennia.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")

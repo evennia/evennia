@@ -2,9 +2,10 @@ from django.core.cache import caches
 from collections import deque
 from evennia.utils import logger
 import time
+from django.utils.translation import gettext as _
 
 
-class Throttle(object):
+class Throttle:
     """
     Keeps a running count of failed actions per IP address.
 
@@ -17,7 +18,7 @@ class Throttle(object):
     caches for automatic key eviction and persistence configurability.
     """
 
-    error_msg = "Too many failed attempts; you must wait a few minutes before trying again."
+    error_msg = _("Too many failed attempts; you must wait a few minutes before trying again.")
 
     def __init__(self, **kwargs):
         """
@@ -34,7 +35,7 @@ class Throttle(object):
         """
         try:
             self.storage = caches['throttle']
-        except Exception as e:
+        except Exception:
             logger.log_trace("Throttle: Errors encountered; using default cache.")
             self.storage = caches['default']
 
@@ -123,7 +124,10 @@ class Throttle(object):
 
         # If this makes it engage, log a single activation event
         if not previously_throttled and currently_throttled:
-            logger.log_sec(f"Throttle Activated: {failmsg} (IP: {ip}, {self.limit} hits in {self.timeout} seconds.)")
+            logger.log_sec(
+                f"Throttle Activated: {failmsg} (IP: {ip}, "
+                f"{self.limit} hits in {self.timeout} seconds.)"
+            )
 
         self.record_ip(ip)
 
@@ -136,14 +140,15 @@ class Throttle(object):
 
         """
         exists = self.get(ip)
-        if not exists: return False
+        if not exists:
+            return False
 
         cache_key = self.get_cache_key(ip)
         self.storage.delete(cache_key)
         self.unrecord_ip(ip)
 
         # Return True if NOT exists
-        return ~bool(self.get(ip))
+        return not bool(self.get(ip))
 
     def record_ip(self, ip, *args, **kwargs):
         """

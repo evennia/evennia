@@ -22,18 +22,20 @@ def text(entry, option_key="Text", **kwargs):
     try:
         return str(entry)
     except Exception as err:
-        raise ValueError(f"Input could not be converted to text ({err})")
+        raise ValueError(_("Input could not be converted to text ({err})").format(err=err))
 
 
 def color(entry, option_key="Color", **kwargs):
     """
     The color should be just a color character, so 'r' if red color is desired.
+
     """
     if not entry:
-        raise ValueError(f"Nothing entered for a {option_key}!")
+        raise ValueError(_("Nothing entered for a {option_key}!").format(option_key=option_key))
     test_str = strip_ansi(f"|{entry}|n")
     if test_str:
-        raise ValueError(f"'{entry}' is not a valid {option_key}.")
+        raise ValueError(_("'{entry}' is not a valid {option_key}.").format(
+            entry=entry, option_key=option_key))
     return entry
 
 
@@ -83,13 +85,17 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
         entry = f"{split_time[0]} {split_time[1]} {split_time[2]} {split_time[3]}"
     else:
         raise ValueError(
-            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%M')}"
+            _("{option_key} must be entered in a 24-hour format such as: {timeformat}").format(
+                option_key=option_key,
+                timeformat=now.strftime('%b %d %H:%M'))
         )
     try:
         local = _dt.datetime.strptime(entry, "%b %d %H:%M %Y")
     except ValueError:
         raise ValueError(
-            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%M')}"
+            _("{option_key} must be entered in a 24-hour format such as: {timeformat}").format(
+                option_key=option_key,
+                timeformat=now.strftime('%b %d %H:%M'))
         )
     local_tz = from_tz.localize(local)
     return local_tz.astimezone(utc)
@@ -100,8 +106,9 @@ def duration(entry, option_key="Duration", **kwargs):
     Take a string and derive a datetime timedelta from it.
 
     Args:
-        entry (string): This is a string from user-input. The intended format is, for example: "5d 2w 90s" for
-                            'five days, two weeks, and ninety seconds.' Invalid sections are ignored.
+        entry (string): This is a string from user-input. The intended format is, for example:
+            "5d 2w 90s" for 'five days, two weeks, and ninety seconds.' Invalid sections are
+            ignored.
         option_key (str): Name to display this query as.
 
     Returns:
@@ -129,7 +136,10 @@ def duration(entry, option_key="Duration", **kwargs):
         elif _re.match(r"^[\d]+y$", interval):
             days += int(interval.rstrip("y")) * 365
         else:
-            raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
+            raise ValueError(
+                _("Could not convert section '{interval}' to a {option_key}.").format(
+                    interval=interval, option_key=option_key)
+            )
 
     return _dt.timedelta(days, seconds, 0, 0, minutes, hours, weeks)
 
@@ -137,45 +147,56 @@ def duration(entry, option_key="Duration", **kwargs):
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
     time = datetime(entry, option_key, from_tz=from_tz)
     if time < _dt.datetime.utcnow().replace(tzinfo=_dt.timezone.utc):
-        raise ValueError(f"That {option_key} is in the past! Must give a Future datetime!")
+        raise ValueError(_("That {option_key} is in the past! Must give a Future datetime!").format(
+            option_key=option_key))
     return time
 
 
 def signed_integer(entry, option_key="Signed Integer", **kwargs):
     if not entry:
-        raise ValueError(f"Must enter a whole number for {option_key}!")
+        raise ValueError(_("Must enter a whole number for {option_key}!").format(
+            option_key=option_key))
     try:
         num = int(entry)
     except ValueError:
-        raise ValueError(f"Could not convert '{entry}' to a whole number for {option_key}!")
+        raise ValueError(_("Could not convert '{entry}' to a whole "
+                           "number for {option_key}!").format(
+            entry=entry, option_key=option_key))
     return num
 
 
 def positive_integer(entry, option_key="Positive Integer", **kwargs):
     num = signed_integer(entry, option_key)
     if not num >= 1:
-        raise ValueError(f"Must enter a whole number greater than 0 for {option_key}!")
+        raise ValueError(_("Must enter a whole number greater than 0 for {option_key}!").format(
+            option_key=option_key))
     return num
 
 
 def unsigned_integer(entry, option_key="Unsigned Integer", **kwargs):
     num = signed_integer(entry, option_key)
     if not num >= 0:
-        raise ValueError(f"{option_key} must be a whole number greater than or equal to 0!")
+        raise ValueError(_("{option_key} must be a whole number greater than "
+                           "or equal to 0!").format(
+            option_key=option_key))
     return num
 
 
 def boolean(entry, option_key="True/False", **kwargs):
     """
     Simplest check in computer logic, right? This will take user input to flick the switch on or off
+
     Args:
         entry (str): A value such as True, On, Enabled, Disabled, False, 0, or 1.
         option_key (str): What kind of Boolean we are setting. What Option is this for?
 
     Returns:
         Boolean
+
     """
-    error = f"Must enter 0 (false) or 1 (true) for {option_key}. Also accepts True, False, On, Off, Yes, No, Enabled, and Disabled"
+    error = (_("Must enter a true/false input for {option_key}. Accepts {alternatives}.").format(
+             option_key=option_key,
+             alternatives="0/1, True/False, On/Off, Yes/No, Enabled/Disabled"))
     if not isinstance(entry, str):
         raise ValueError(error)
     entry = entry.upper()
@@ -196,39 +217,42 @@ def timezone(entry, option_key="Timezone", **kwargs):
 
     Returns:
         A PYTZ timezone.
+
     """
     if not entry:
-        raise ValueError(f"No {option_key} entered!")
+        raise ValueError(_("No {option_key} entered!").format(option_key=option_key))
     found = _partial(list(_TZ_DICT.keys()), entry, ret_index=False)
     if len(found) > 1:
         raise ValueError(
-            f"That matched: {', '.join(str(t) for t in found)}. Please be more specific!"
-        )
+            _("That matched: {matches}. Please be more specific!").format(
+                matches=', '.join(str(t) for t in found)))
     if found:
         return _TZ_DICT[found[0]]
-    raise ValueError(f"Could not find timezone '{entry}' for {option_key}!")
+    raise ValueError(_("Could not find timezone '{entry}' for {option_key}!").format(
+        entry=entry, option_key=option_key))
 
 
 def email(entry, option_key="Email Address", **kwargs):
     if not entry:
-        raise ValueError("Email address field empty!")
+        raise ValueError(_("Email address field empty!"))
     valid = validate_email_address(entry)
     if not valid:
-        raise ValueError(f"That isn't a valid {option_key}!")
+        raise ValueError(_("That isn't a valid {option_key}!").format(option_key=option_key))
     return entry
 
 
 def lock(entry, option_key="locks", access_options=None, **kwargs):
     entry = entry.strip()
     if not entry:
-        raise ValueError(f"No {option_key} entered to set!")
+        raise ValueError(_("No {option_key} entered to set!").format(option_key=option_key))
     for locksetting in entry.split(";"):
         access_type, lockfunc = locksetting.split(":", 1)
         if not access_type:
-            raise ValueError("Must enter an access type!")
+            raise ValueError(_("Must enter an access type!"))
         if access_options:
             if access_type not in access_options:
-                raise ValueError(f"Access type must be one of: {', '.join(access_options)}")
+                raise ValueError(_("Access type must be one of: {alternatives}").format(
+                    alternatives=', '.join(access_options)))
         if not lockfunc:
-            raise ValueError("Lock func not entered.")
+            raise ValueError(_("Lock func not entered."))
     return entry

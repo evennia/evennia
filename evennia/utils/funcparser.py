@@ -43,11 +43,9 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 ---
 
 """
-import re
 import dataclasses
 import inspect
 import random
-from functools import partial
 from django.conf import settings
 from evennia.utils import logger
 from evennia.utils.utils import (
@@ -233,8 +231,6 @@ class FuncParser:
                 raise ParsingError(f"Unknown parsed function '{str(parsedfunc)}' "
                                    f"(available: {available})")
             return str(parsedfunc)
-
-        nargs = len(args)
 
         # build kwargs in the proper priority order
         kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs,
@@ -606,7 +602,7 @@ def funcparser_callable_eval(*args, **kwargs):
         - `$py(3 + 4) -> 7`
 
     """
-    args, kwargs = safe_convert_to_types(("py", {}) , *args, **kwargs)
+    args, kwargs = safe_convert_to_types(("py", {}), *args, **kwargs)
     return args[0] if args else ''
 
 
@@ -694,7 +690,7 @@ def funcparser_callable_round(*args, **kwargs):
     """
     if not args:
         return ''
-    args, _ = safe_convert_to_types(((float, int), {}) *args, **kwargs)
+    args, _ = safe_convert_to_types(((float, int), {}), *args, **kwargs)
 
     num, *significant = args
     significant = significant[0] if significant else 0
@@ -1032,7 +1028,8 @@ def funcparser_callable_search_list(*args, caller=None, access="control", **kwar
                                       return_list=True, **kwargs)
 
 
-def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs):
+def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, capitalize=False,
+                            **kwargs):
     """
     Usage: $you() or $you(key)
 
@@ -1081,10 +1078,12 @@ def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, cap
     capitalize = bool(capitalize)
     if caller == receiver:
         return "You" if capitalize else "you"
-    return caller.get_display_name(looker=receiver) if hasattr(caller, "get_display_name") else str(caller)
+    return (caller.get_display_name(looker=receiver)
+            if hasattr(caller, "get_display_name") else str(caller))
 
 
-def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs):
+def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capitalize=True,
+                            **kwargs):
     """
     Usage: $You() - capitalizes the 'you' output.
 

@@ -7,10 +7,10 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 import hashlib
 import time
-from ast import literal_eval
 from django.conf import settings
-from django.db.models import Q, Subquery
+from django.db.models import Q
 from django.core.paginator import Paginator
+from django.utils.translation import gettext as _
 from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import Attribute
@@ -22,10 +22,6 @@ from evennia.utils.utils import (
     make_iter,
     is_iter,
     dbid_to_obj,
-    callables_from_module,
-    get_all_typeclasses,
-    to_str,
-    dbref,
     justify,
     class_from_module,
 )
@@ -83,7 +79,6 @@ class ValidationError(RuntimeError):
 def homogenize_prototype(prototype, custom_keys=None):
     """
     Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.
-
 
     Args:
         prototype (dict): Prototype.
@@ -211,6 +206,7 @@ def load_module_prototypes():
 class DbPrototype(DefaultScript):
     """
     This stores a single prototype, in an Attribute `prototype`.
+
     """
 
     def at_script_creation(self):
@@ -262,7 +258,7 @@ def save_prototype(prototype):
 
     prototype_key = in_prototype.get("prototype_key")
     if not prototype_key:
-        raise ValidationError("Prototype requires a prototype_key")
+        raise ValidationError(_("Prototype requires a prototype_key"))
 
     prototype_key = str(prototype_key).lower()
 
@@ -270,7 +266,8 @@ def save_prototype(prototype):
     if prototype_key in _MODULE_PROTOTYPES:
         mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
         raise PermissionError(
-            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
+            _("{protkey} is a read-only prototype " "(defined as code in {module}).").format(
+                protkey=prototype_key, module=mod)
         )
 
     # make sure meta properties are included with defaults
@@ -337,20 +334,21 @@ def delete_prototype(prototype_key, caller=None):
     if prototype_key in _MODULE_PROTOTYPES:
         mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key.lower(), "N/A")
         raise PermissionError(
-            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
+            _("{protkey} is a read-only prototype " "(defined as code in {module}).").format(
+                protkey=prototype_key, module=mod)
         )
 
     stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
 
     if not stored_prototype:
-        raise PermissionError("Prototype {} was not found.".format(prototype_key))
+        raise PermissionError(_("Prototype {} was not found.").format(prototype_key))
 
     stored_prototype = stored_prototype[0]
     if caller:
         if not stored_prototype.access(caller, "edit"):
             raise PermissionError(
-                "{} needs explicit 'edit' permissions to "
-                "delete prototype {}.".format(caller, prototype_key)
+                _("{} needs explicit 'edit' permissions to "
+                  "delete prototype {}.").format(caller, prototype_key)
             )
     stored_prototype.delete()
     return True
@@ -449,7 +447,11 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         nmodules = len(module_prototypes)
         ndbprots = db_matches.count()
         if nmodules + ndbprots != 1:
-            raise KeyError(f"Found {nmodules + ndbprots} matching prototypes {module_prototypes}.")
+            raise KeyError(_(
+                "Found {num} matching prototypes {module_prototypes}.").format(
+                    num=nmodules + ndbprots,
+                    module_prototypes=module_prototypes)
+            )
 
     if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
@@ -479,10 +481,14 @@ class PrototypeEvMore(EvMore):
     Listing 1000+ prototypes can be very slow. So we customize EvMore to
     display an EvTable per paginated page rather than to try creating an
     EvTable for the entire dataset and then paginate it.
+
     """
 
     def __init__(self, caller, *args, session=None, **kwargs):
-        """Store some extra properties on the EvMore class"""
+        """
+        Store some extra properties on the EvMore class
+
+        """
         self.show_non_use = kwargs.pop("show_non_use", False)
         self.show_non_edit = kwargs.pop("show_non_edit", False)
         super().__init__(caller, *args, session=session, **kwargs)
@@ -493,6 +499,7 @@ class PrototypeEvMore(EvMore):
         and we must handle these separately since they cannot be paginated in the same
         way. We will build the prototypes so that the db-prototypes come first (they
         are likely the most volatile), followed by the mod-prototypes.
+
         """
         dbprot_query, modprot_list = inp
         # set the number of entries per page to half the reported height of the screen
@@ -514,6 +521,7 @@ class PrototypeEvMore(EvMore):
         """
         The listing is separated in db/mod prototypes, so we need to figure out which
         one to pick based on the page number. Also, pageno starts from 0.
+
         """
         dbprot_pages, modprot_list = self._data
 
@@ -522,15 +530,16 @@ class PrototypeEvMore(EvMore):
         else:
             # get the correct slice, adjusted for the db-prototypes
             pageno = max(0, pageno - self._npages_db)
-            return modprot_list[pageno * self.height : pageno * self.height + self.height]
+            return modprot_list[pageno * self.height: pageno * self.height + self.height]
 
     def page_formatter(self, page):
-        """Input is a queryset page from django.Paginator"""
+        """
+        Input is a queryset page from django.Paginator
+
+        """
         caller = self._caller
 
         # get use-permissions of readonly attributes (edit is always False)
-        display_tuples = []
-
         table = EvTable(
             "|wKey|n",
             "|wSpawn/Edit|n",
@@ -599,7 +608,7 @@ def list_prototypes(
     dbprot_query, modprot_list = search_prototype(key, tags, return_iterators=True)
 
     if not dbprot_query and not modprot_list:
-        caller.msg("No prototypes found.", session=session)
+        caller.msg(_("No prototypes found."), session=session)
         return None
 
     # get specific prototype (one value or exception)
@@ -650,7 +659,7 @@ def validate_prototype(
     protkey = protkey and protkey.lower() or prototype.get("prototype_key", None)
 
     if strict and not bool(protkey):
-        _flags["errors"].append("Prototype lacks a `prototype_key`.")
+        _flags["errors"].append(_("Prototype lacks a `prototype_key`."))
         protkey = "[UNSET]"
 
     typeclass = prototype.get("typeclass")
@@ -659,12 +668,13 @@ def validate_prototype(
     if strict and not (typeclass or prototype_parent):
         if is_prototype_base:
             _flags["errors"].append(
-                "Prototype {} requires `typeclass` " "or 'prototype_parent'.".format(protkey)
+                _("Prototype {protkey} requires `typeclass` " "or 'prototype_parent'.").format(
+                    protkey=protkey)
             )
         else:
             _flags["warnings"].append(
-                "Prototype {} can only be used as a mixin since it lacks "
-                "a typeclass or a prototype_parent.".format(protkey)
+                _("Prototype {protkey} can only be used as a mixin since it lacks "
+                  "a typeclass or a prototype_parent.").format(protkey=protkey)
             )
 
     if strict and typeclass:
@@ -672,9 +682,9 @@ def validate_prototype(
             class_from_module(typeclass)
         except ImportError as err:
             _flags["errors"].append(
-                "{}: Prototype {} is based on typeclass {}, which could not be imported!".format(
-                    err, protkey, typeclass
-                )
+                _("{err}: Prototype {protkey} is based on typeclass {typeclass}, "
+                  "which could not be imported!").format(
+                      err=err, protkey=protkey, typeclass=typeclass)
             )
 
     # recursively traverese prototype_parent chain
@@ -682,19 +692,22 @@ def validate_prototype(
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()
         if protkey is not None and protstring == protkey:
-            _flags["errors"].append("Prototype {} tries to parent itself.".format(protkey))
+            _flags["errors"].append(_("Prototype {protkey} tries to parent itself.").format(
+                protkey=protkey))
         protparent = protparents.get(protstring)
         if not protparent:
             _flags["errors"].append(
-                "Prototype {}'s prototype_parent '{}' was not found.".format(protkey, protstring)
+                _("Prototype {protkey}'s prototype_parent '{parent}' was not found.").format(
+                    protkey=protkey, parent=protstring)
             )
         if id(prototype) in _flags["visited"]:
             _flags["errors"].append(
-                "{} has infinite nesting of prototypes.".format(protkey or prototype)
+                _("{protkey} has infinite nesting of prototypes.").format(
+                    protkey=protkey or prototype)
             )
 
         if _flags["errors"]:
-            raise RuntimeError("Error: " + "\nError: ".join(_flags["errors"]))
+            raise RuntimeError(_("Error: ") + _("\nError: ").join(_flags["errors"]))
         _flags["visited"].append(id(prototype))
         _flags["depth"] += 1
         validate_prototype(
@@ -709,16 +722,16 @@ def validate_prototype(
     # if we get back to the current level without a typeclass it's an error.
     if strict and is_prototype_base and _flags["depth"] <= 0 and not _flags["typeclass"]:
         _flags["errors"].append(
-            "Prototype {} has no `typeclass` defined anywhere in its parent\n "
-            "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
-            "prototype with a typeclass.".format(protkey)
+            _("Prototype {protkey} has no `typeclass` defined anywhere in its parent\n "
+              "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
+              "prototype with a typeclass.").format(protkey=protkey)
         )
 
     if _flags["depth"] <= 0:
         if _flags["errors"]:
-            raise RuntimeError("Error: " + "\nError: ".join(_flags["errors"]))
+            raise RuntimeError(_("Error: " + "\nError: ").join(_flags["errors"]))
         if _flags["warnings"]:
-            raise RuntimeWarning("Warning: " + "\nWarning: ".join(_flags["warnings"]))
+            raise RuntimeWarning(_("Warning: " + "\nWarning: ").join(_flags["warnings"]))
 
     # make sure prototype_locks are set to defaults
     prototype_locks = [
@@ -831,10 +844,10 @@ def prototype_to_str(prototype):
                     category=category if category else "|wNone|n"
                 )
             out.append(
-                "{attrkey}{cat_locks} |c=|n {value}".format(
+                "{attrkey}{cat_locks}{locks} |c=|n {value}".format(
                     attrkey=attrkey,
                     cat_locks=cat_locks,
-                    locks=locks if locks else "|wNone|n",
+                    locks=" |w(locks:|n {locks})".format(locks=locks) if locks else "",
                     value=value,
                 )
             )
