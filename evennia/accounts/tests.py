@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from mock import Mock, MagicMock, patch
 from random import randint
 from unittest import TestCase
@@ -11,8 +10,6 @@ from evennia.accounts.accounts import DefaultAccount, DefaultGuest
 from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 from evennia.utils.utils import uses_database
-
-from django.conf import settings
 
 
 class TestAccountSessionHandler(TestCase):

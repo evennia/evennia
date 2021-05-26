@@ -13,7 +13,6 @@ from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.utils import make_iter, lazy_property, class_from_module
 from evennia.commands.cmdsethandler import CmdSetHandler
-from evennia.server.session import Session
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
 from evennia.typeclasses.attributes import AttributeHandler, InMemoryAttributeBackend, DbHolder
 
@@ -21,9 +20,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
-
-# i18n
-from django.utils.translation import gettext as _
 
 _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
@@ -45,7 +41,10 @@ class ServerSession(_BASE_SESSION_CLASS):
     """
 
     def __init__(self):
-        """Initiate to avoid AttributeErrors down the line"""
+        """
+        Initiate to avoid AttributeErrors down the line
+
+        """
         self.puppet = None
         self.account = None
         self.cmdset_storage_string = ""
@@ -321,7 +320,10 @@ class ServerSession(_BASE_SESSION_CLASS):
         self.sessionhandler.data_in(session or self, **kwargs)
 
     def __eq__(self, other):
-        """Handle session comparisons"""
+        """
+        Handle session comparisons
+
+        """
         try:
             return self.address == other.address
         except AttributeError:
@@ -368,6 +370,7 @@ class ServerSession(_BASE_SESSION_CLASS):
     def at_cmdset_get(self, **kwargs):
         """
         A dummy hook all objects with cmdsets need to have
+
         """
 
         pass
@@ -414,7 +417,10 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     # @ndb.deleter
     def ndb_del(self):
-        """Stop accidental deletion."""
+        """
+        Stop accidental deletion.
+
+        """
         raise Exception("Cannot delete the ndb object!")
 
     ndb = property(ndb_get, ndb_set, ndb_del)
@@ -423,5 +429,8 @@ class ServerSession(_BASE_SESSION_CLASS):
     # Mock access method for the session (there is no lock info
     # at this stage, so we just present a uniform API)
     def access(self, *args, **kwargs):
-        """Dummy method to mimic the logged-in API."""
+        """
+        Dummy method to mimic the logged-in API.
+
+        """
         return True

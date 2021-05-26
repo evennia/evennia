@@ -124,6 +124,7 @@ _LOCK_HANDLER = None
 class LockException(Exception):
     """
     Raised during an error in a lock.
+
     """
 
     pass
@@ -139,6 +140,7 @@ _LOCKFUNCS = {}
 def _cache_lockfuncs():
     """
     Updates the cache.
+
     """
     global _LOCKFUNCS
     _LOCKFUNCS = {}
@@ -163,7 +165,7 @@ _RE_OK = re.compile(r"%s|and|or|not")
 #
 
 
-class LockHandler(object):
+class LockHandler:
     """
     This handler should be attached to all objects implementing
     permission checks, under the property 'lockhandler'.
@@ -260,16 +262,13 @@ class LockHandler(object):
                 continue
             if access_type in locks:
                 duplicates += 1
-                wlist.append(
-                    _(
-                        "LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
-                        % {
-                            "obj": self.obj,
-                            "access_type": access_type,
-                            "source": locks[access_type][2],
-                            "goal": raw_lockstring,
-                        }
-                    )
+                wlist.append(_(
+                    "LockHandler on {obj}: access type '{access_type}' "
+                    "changed from '{source}' to '{goal}' ".format(
+                        obj=self.obj,
+                        access_type=access_type,
+                        source=locks[access_type][2],
+                        goal=raw_lockstring))
                 )
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and WARNING_LOG:
@@ -284,12 +283,14 @@ class LockHandler(object):
     def _cache_locks(self, storage_lockstring):
         """
         Store data
+
         """
         self.locks = self._parse_lockstring(storage_lockstring)
 
     def _save_locks(self):
         """
         Store locks to obj
+
         """
         self.obj.lock_storage = ";".join([tup[2] for tup in self.locks.values()])
 
@@ -693,8 +694,7 @@ def check_lockstring(
         access_type=access_type,
     )
 
-def check_perm(
-    obj, permission, no_superuser_bypass=False):
+def check_perm(obj, permission, no_superuser_bypass=False):
     """
     Shortcut for checking if an object has the given `permission`.  If the
     permission is in `settings.PERMISSION_HIERARCHY`, the check passes

@@ -9,8 +9,6 @@ manager's conf() method.
 
 """
 from django.db import models
-from django.urls import reverse
-from django.contrib.contenttypes.models import ContentType
 
 from evennia.utils.idmapper.models import WeakSharedMemoryModel
 from evennia.utils import logger, utils

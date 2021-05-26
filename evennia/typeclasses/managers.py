@@ -595,13 +595,21 @@ class TypeclassManager(TypedObjectManager):
         Search by supplying a string with optional extra search criteria to aid the query.
 
         Args:
-            query (str): A search criteria that accepts extra search criteria on the
+            query (str): A search criteria that accepts extra search criteria on the following
+            forms:
 
-                following forms: [key|alias|#dbref...] [tag==<tagstr>[:category]...] [attr==<key>:<value>:category...]
-                                          "                !=             "               !=      "
+                [key|alias|#dbref...]
+                [tag==<tagstr>[:category]...]
+                [attr==<key>:<value>:category...]
+
+            All three can be combined in the same query, separated by spaces.
+
         Returns:
-            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or
-            ==, != in tags or attributes, enclose them in quotes.
+            matches (queryset): A queryset result matching all queries exactly. If wanting to use
+                spaces or ==, != in tags or attributes, enclose them in quotes.
+
+        Example:
+            house = smart_search("key=foo alias=bar tag=house:building tag=magic attr=color:red")
 
         Note:
             The flexibility of this method is limited by the input line format. Tag/attribute

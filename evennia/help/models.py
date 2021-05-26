@@ -168,7 +168,9 @@ class HelpEntry(SharedMemoryModel):
         a named view of 'character-create' would be referenced by this method.
 
         ex.
-        url(r'characters/create/', ChargenView.as_view(), name='character-create')
+        ::
+
+            url(r'characters/create/', ChargenView.as_view(), name='character-create')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -183,7 +185,7 @@ class HelpEntry(SharedMemoryModel):
         """
         try:
             return reverse("%s-create" % slugify(cls._meta.verbose_name))
-        except:
+        except Exception:
             return "#"
 
     def web_get_detail_url(self):
@@ -198,8 +200,9 @@ class HelpEntry(SharedMemoryModel):
         a named view of 'character-detail' would be referenced by this method.
 
         ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
-            CharDetailView.as_view(), name='character-detail')
+        ::
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+                CharDetailView.as_view(), name='character-detail')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -217,8 +220,7 @@ class HelpEntry(SharedMemoryModel):
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
-        except Exception as e:
-            print(e)
+        except Exception:
             return "#"
 
     def web_get_update_url(self):
@@ -233,8 +235,10 @@ class HelpEntry(SharedMemoryModel):
         a named view of 'character-update' would be referenced by this method.
 
         ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
-            CharUpdateView.as_view(), name='character-update')
+        ::
+
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+                CharUpdateView.as_view(), name='character-update')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -252,7 +256,7 @@ class HelpEntry(SharedMemoryModel):
                 "%s-update" % slugify(self._meta.verbose_name),
                 kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_delete_url(self):
@@ -266,8 +270,10 @@ class HelpEntry(SharedMemoryModel):
         a named view of 'character-detail' would be referenced by this method.
 
         ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
-            CharDeleteView.as_view(), name='character-delete')
+        ::
+
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
+                CharDeleteView.as_view(), name='character-delete')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -285,7 +291,7 @@ class HelpEntry(SharedMemoryModel):
                 "%s-delete" % slugify(self._meta.verbose_name),
                 kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     # Used by Django Sites/Admin

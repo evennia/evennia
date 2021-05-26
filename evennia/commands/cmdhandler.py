@@ -80,50 +80,50 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 # is the normal "production message to echo to the account.
 
 _ERROR_UNTRAPPED = (
-    """
+    _("""
 An untrapped error occurred.
-""",
-    """
+"""),
+    _("""
 An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
-""",
+"""),
 )
 
 _ERROR_CMDSETS = (
-    """
+    _("""
 A cmdset merger-error occurred. This is often due to a syntax
 error in one of the cmdsets to merge.
-""",
-    """
+"""),
+    _("""
 A cmdset merger-error occurred. Please file a bug report detailing the
 steps to reproduce.
-""",
+"""),
 )
 
 _ERROR_NOCMDSETS = (
-    """
+    _("""
 No command sets found! This is a critical bug that can have
 multiple causes.
-""",
-    """
+"""),
+    _("""
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
 the server admin through" some other means for assistance.
-""",
+"""),
 )
 
 _ERROR_CMDHANDLER = (
-    """
+    _("""
 A command handler bug occurred. If this is not due to a local change,
 please file a bug report with the Evennia project, including the
 traceback and steps to reproduce.
-""",
-    """
+"""),
+    _("""
 A command handler bug occurred. Please notify staff - they should
 likely file a bug report with the Evennia project.
-""",
+"""),
 )
 
-_ERROR_RECURSION_LIMIT = (
+_ERROR_RECURSION_LIMIT = _(
     "Command recursion limit ({recursion_limit}) " "reached for '{raw_cmdname}' ({cmdclass})."
 )
 
@@ -146,7 +146,7 @@ def _msg_err(receiver, stringtuple):
             production string (with a timestamp) to be shown to the user.
 
     """
-    string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
+    string = _("{traceback}\n{errmsg}\n(Traceback was logged {timestamp}).")
     timestamp = logger.timeformat()
     tracestring = format_exc()
     logger.log_trace()
@@ -299,6 +299,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
         def _get_local_obj_cmdsets(obj):
             """
             Helper-method; Get Object-level cmdsets
+
             """
             # Gather cmdsets from location, objects in location or carried
             try:
@@ -352,6 +353,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             """
             Helper method; Get cmdset while making sure to trigger all
             hooks safely. Returns the stack and the valid options.
+
             """
             try:
                 yield obj.at_cmdset_get()
@@ -384,13 +386,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                                 cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                             ]
                         cmdsets += local_obj_cmdsets
-                    # if not current.no_channels:
-                    #     # also objs may have channels
-                    #     channel_cmdsets = yield _get_channel_cmdset(obj)
-                    #     cmdsets += channel_cmdsets
-                # if not current.no_channels:
-                #     channel_cmdsets = yield _get_channel_cmdset(account)
-                #     cmdsets += channel_cmdsets
 
         elif callertype == "account":
             # we are calling the command from the account level
@@ -408,11 +403,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                             cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                         ]
                     cmdsets += local_obj_cmdsets
-                # if not current.no_channels:
-                #     # also objs may have channels
-                #     cmdsets += yield _get_channel_cmdset(obj)
-            # if not current.no_channels:
-            #     cmdsets += yield _get_channel_cmdset(account)
 
         elif callertype == "object":
             # we are calling the command from the object level
@@ -426,9 +416,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                     ]
                 cmdsets += yield local_obj_cmdsets
-            # if not current.no_channels:
-            #     # also objs may have channels
-            #     cmdsets += yield _get_channel_cmdset(obj)
         else:
             raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
 

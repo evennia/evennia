@@ -2,7 +2,6 @@
 Custom manager for Objects.
 """
 import re
-from itertools import chain
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
@@ -154,7 +153,8 @@ class ObjectDBManager(TypedObjectManager):
 
         Args:
             attribute_name (str): Attribute key to search for.
-            attribute_value (any):  Attribute value to search for. This can also be database objects.
+            attribute_value (any):  Attribute value to search for. This can also be database
+                objects.
             candidates (list, optional): Candidate objects to limit search to.
             typeclasses (list, optional): Python pats to restrict matches with.
 
@@ -591,6 +591,7 @@ class ObjectDBManager(TypedObjectManager):
         """
         Clear the db_sessid field of all objects having also the
         db_account field set.
+
         """
         self.filter(db_sessid__isnull=False).update(db_sessid=None)
 

@@ -15,6 +15,7 @@ http://localhost:4001/webclient.)
                  The WebClient resource in this module will
                  handle these requests and act as a gateway
                  to sessions connected over the webclient.
+
 """
 import json
 import re
@@ -27,7 +28,7 @@ from django.utils.functional import Promise
 from django.conf import settings
 from evennia.utils.ansi import parse_ansi
 from evennia.utils import utils
-from evennia.utils.utils import to_bytes, to_str
+from evennia.utils.utils import to_bytes
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
@@ -223,10 +224,13 @@ class AjaxWebClient(resource.Resource):
         return jsonify({"msg": host_string, "csessid": csessid})
 
     def mode_keepalive(self, request):
-
         """
         This is called by render_POST when the
         client is replying to the keepalive.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         csessid = self.get_client_sessid(request)
         self.last_alive[csessid] = (time.time(), False)

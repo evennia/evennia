@@ -7,7 +7,6 @@ total runtime of the server and the current uptime.
 """
 
 import time
-from calendar import monthrange
 from datetime import datetime, timedelta
 
 from django.db.utils import OperationalError

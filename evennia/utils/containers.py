@@ -19,7 +19,7 @@ from evennia.utils import logger
 SCRIPTDB = None
 
 
-class Container(object):
+class Container:
     """
     Base container class. A container is simply a storage object whose
     properties can be acquired as a property on it. This is generally
@@ -156,9 +156,8 @@ class GlobalScriptContainer(Container):
             return new_script
 
         if ((found.interval != interval)
-            or (found.start_delay != start_delay)
-            or (found.repeats != repeats)
-        ):
+                or (found.start_delay != start_delay)
+                or (found.repeats != repeats)):
             # the setup changed
             found.start(interval=interval, start_delay=start_delay, repeats=repeats)
         if found.desc != desc:

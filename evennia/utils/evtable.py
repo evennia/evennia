@@ -239,12 +239,12 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = d_len(chunks[-1])
+                ln = d_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
-                if cur_len + l <= width:
+                if cur_len + ln <= width:
                     cur_line.append(chunks.pop())
-                    cur_len += l
+                    cur_len += ln
 
                 # Nope, this line is full.
                 else:
@@ -262,10 +262,10 @@ class ANSITextWrapper(TextWrapper):
             # Convert current line back to a string and store it in list
             # of all lines (return value).
             if cur_line:
-                l = ""
+                ln = ""
                 for w in cur_line:  # ANSI fix
-                    l += w  #
-                lines.append(indent + l)
+                    ln += w  #
+                lines.append(indent + ln)
         return lines
 
 
@@ -1099,8 +1099,9 @@ class EvTable(object):
             height (int, optional): Fixed height of table. Defaults to being unset. Width is
                 still given precedence. If given, table cells will crop text rather
                 than expand vertically.
-            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as even width as
-                     possible. This often looks best also for mixed-length tables. Default is `False`.
+            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as
+                even width as possible. This often looks best also for mixed-length tables. Default
+                is `False`.
             maxwidth (int, optional):  This will set a maximum width
                 of the table while allowing it to be smaller. Only if it grows wider than this
                 size will it be resized by expanding horizontally (or crop `height` is given).
@@ -1347,7 +1348,8 @@ class EvTable(object):
         self.ncols = ncols
         self.nrows = nrowmax
 
-        # add borders - these add to the width/height, so we must do this before calculating width/height
+        # add borders - these add to the width/height, so we must do this before calculating
+        # width/height
         self._borders()
 
         # equalize widths within each column
@@ -1434,7 +1436,8 @@ class EvTable(object):
             except Exception:
                 raise
 
-        # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
+        # equalize heights for each row (we must do this here, since it may have changed to fit new
+        # widths)
         cheights = [
             max(cell.get_height() for cell in (col[iy] for col in self.worktable))
             for iy in range(nrowmax)

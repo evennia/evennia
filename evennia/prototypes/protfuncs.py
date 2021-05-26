@@ -51,8 +51,6 @@ def protfunc_callable_protkey(*args, **kwargs):
         return prot_value
 
 
-
-
 # this is picked up by FuncParser
 FUNCPARSER_CALLABLES = {
     "protkey": protfunc_callable_protkey,

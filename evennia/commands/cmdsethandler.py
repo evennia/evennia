@@ -62,6 +62,7 @@ Since any number of CommandSets can be piled on top of each other, you
 can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
+
 """
 import sys
 from traceback import format_exc
@@ -168,7 +169,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         if "." in path:
             modpath, classname = python_path.rsplit(".", 1)
         else:
-            raise ImportError("The path '%s' is not on the form modulepath.ClassName" % path)
+            raise ImportError(f"The path '{path}' is not on the form modulepath.ClassName")
 
         try:
             # first try to get from cache
@@ -312,6 +313,7 @@ class CmdSetHandler(object):
     def __str__(self):
         """
         Display current commands
+
         """
 
         strings = ["<CmdSetHandler> stack:"]
@@ -331,7 +333,7 @@ class CmdSetHandler(object):
 
         if mergelist:
             # current is a result of mergers
-            mergelist="+".join(mergelist)
+            mergelist = "+".join(mergelist)
             strings.append(f" <Merged {mergelist}>: {self.current}")
         else:
             # current is a single cmdset
@@ -421,7 +423,8 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, persistent=True, permanent=True, default_cmdset=False, **kwargs):
+    def add(self, cmdset, emit_to_obj=None, persistent=True, default_cmdset=False,
+            **kwargs):
         """
         Add a cmdset to the handler, on top of the old ones, unless it
         is set as the default one (it will then end up at the bottom of the stack)
@@ -431,8 +434,6 @@ class CmdSetHandler(object):
                 to such an object.
             emit_to_obj (Object, optional): An object to receive error messages.
             persistent (bool, optional): Let cmdset remain across server reload.
-            permanent (bool, optional): DEPRECATED. This has the same use as
-                `persistent`.
             default_cmdset (Cmdset, optional): Insert this to replace the
                 default cmdset position (there is only one such position,
                 always at the bottom of the stack).
@@ -450,10 +451,9 @@ class CmdSetHandler(object):
 
         """
         if "permanent" in kwargs:
-            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed to "
+            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed name to "
                            "'persistent' and now defaults to True.")
-
-        permanent = persistent or permanent
+            persistent = kwargs['permanent'] if persistent is None else persistent
 
         if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
@@ -465,8 +465,8 @@ class CmdSetHandler(object):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset and cmdset.key != "_CMDSET_ERROR":
-            cmdset.permanent = permanent
-            if permanent and cmdset.key != "_CMDSET_ERROR":
+            cmdset.permanent = persistent  # TODO change on cmdset too
+            if persistent and cmdset.key != "_CMDSET_ERROR":
                 # store the path permanently
                 storage = self.obj.cmdset_storage or [""]
                 if default_cmdset:
@@ -480,17 +480,21 @@ class CmdSetHandler(object):
                 self.cmdset_stack.append(cmdset)
             self.update()
 
-    def add_default(self, cmdset, emit_to_obj=None, permanent=True):
+    def add_default(self, cmdset, emit_to_obj=None, persistent=True, **kwargs):
         """
         Shortcut for adding a default cmdset.
 
         Args:
             cmdset (Cmdset): The Cmdset to add.
             emit_to_obj (Object, optional): Gets error messages
-            permanent (bool, optional): The new Cmdset should survive a server reboot.
+            persistent (bool, optional): The new Cmdset should survive a server reboot.
 
         """
-        self.add(cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True)
+        if "permanent" in kwargs:
+            logger.log_dep("obj.cmdset.add_default() kwarg 'permanent' has changed name to "
+                           "'persistent'.")
+            persistent = kwargs['permanent'] if persistent is None else persistent
+        self.add(cmdset, emit_to_obj=emit_to_obj, persistent=persistent, default_cmdset=True)
 
     def remove(self, cmdset=None, default_cmdset=False):
         """

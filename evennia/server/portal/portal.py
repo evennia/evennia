@@ -183,6 +183,7 @@ class Portal(object):
 
         Returns:
             server_twistd_cmd (list): An instruction for starting the server, to pass to Popen.
+
         """
         server_twistd_cmd = [
             "twistd",
@@ -196,7 +197,10 @@ class Portal(object):
         return server_twistd_cmd
 
     def get_info_dict(self):
-        "Return the Portal info, for display."
+        """
+        Return the Portal info, for display.
+
+        """
         return INFO_DICT
 
     def shutdown(self, _reactor_stopping=False, _stop_server=False):
@@ -354,7 +358,8 @@ if SSH_ENABLED:
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = ssh.makeFactory(
-                {"protocolFactory": _ssh_protocol, "protocolArgs": (), "sessions": PORTAL_SESSIONS,}
+                {"protocolFactory": _ssh_protocol,
+                 "protocolArgs": (), "sessions": PORTAL_SESSIONS}
             )
             factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
@@ -390,7 +395,7 @@ if WEBSERVER_ENABLED:
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
-                    from evennia.server.portal import webclient
+                    from evennia.server.portal import webclient  # noqa
                     from autobahn.twisted.websocket import WebSocketServerFactory
 
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
@@ -417,10 +422,13 @@ if WEBSERVER_ENABLED:
             if WEB_PLUGINS_MODULE:
                 try:
                     web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
-                except Exception as e:  # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                except Exception:
+                    # Legacy user has not added an at_webproxy_root_creation function in existing
+                    # web plugins file
                     INFO_DICT["errors"] = (
-                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
-                        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() "
+                        "not found copy 'evennia/game_template/server/conf/web_plugins.py to "
+                        "mygame/server/conf."
                     )
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
@@ -435,4 +443,3 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     if plugin_module:
         plugin_module.start_plugin_services(PORTAL)
-

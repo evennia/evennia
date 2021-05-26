@@ -145,6 +145,7 @@ class RSSBotFactory(object):
     def start(self):
         """
         Called by portalsessionhandler. Starts the bot.
+
         """
 
         def errback(fail):

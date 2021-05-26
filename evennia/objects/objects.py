@@ -299,6 +299,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Returns all exits from this object, i.e. all objects at this
         location having the property destination != `None`.
+
         """
         return [exi for exi in self.contents if exi.destination]
 
@@ -345,6 +346,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Returns:
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
+
         """
         plural_category = "plural_key"
         key = kwargs.get("key", self.key)
@@ -700,6 +702,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Keyword Args:
             Keyword arguments will be passed to the function for all objects.
+
         """
         contents = self.contents
         if exclude:
@@ -947,6 +950,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Destroys all of the exits and any exits pointing to this
         object as a destination.
+
         """
         for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
             out_exit.delete()
@@ -957,6 +961,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Moves all objects (accounts/things) to their home location or
         to default home.
+
         """
         # Gather up everything that thinks this is its location.
         default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
@@ -979,11 +984,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             # If for some reason it's still None...
             if not home:
-                string = "Missing default home, '%s(#%d)' "
-                string += "now has a null location."
                 obj.location = None
                 obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
-                logger.log_err(string % (obj.name, obj.dbid))
+                logger.log_err("Missing default home - '{name}(#{dbid})' now "
+                               "has a null location.".format(name=obj.name, dbid=obj.dbid))
                 return
 
             if obj.has_account:
@@ -1539,7 +1543,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_display_name(self.location)
+            string = _("You now have {name} in your possession.").format(
+                name=self.get_display_name(self.location))
             self.location.msg(string)
             return
 
@@ -1547,9 +1552,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if msg:
                 string = msg
             else:
-                string = "{object} arrives to {destination} from {origin}."
+                string = _("{object} arrives to {destination} from {origin}.")
         else:
-            string = "{object} arrives to {destination}."
+            string = _("{object} arrives to {destination}.")
 
         origin = source_location
         destination = self.location
@@ -2157,7 +2162,7 @@ class DefaultCharacter(DefaultObject):
         key = cls.normalize_name(key)
 
         if not cls.validate_name(key):
-            errors.append("Invalid character name.")
+            errors.append(_("Invalid character name."))
             return obj, errors
 
         # Set the supplied key as the name of the intended object
@@ -2176,7 +2181,7 @@ class DefaultCharacter(DefaultObject):
             # Check to make sure account does not have too many chars
             if account:
                 if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                    errors.append("There are too many characters associated with this account.")
+                    errors.append(_("There are too many characters associated with this account."))
                     return obj, errors
 
             # Create the Character
@@ -2202,10 +2207,10 @@ class DefaultCharacter(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is a character."
+                obj.db.desc = description if description else _("This is a character.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating object '{key} object.")
             logger.log_err(e)
 
         return obj, errors
@@ -2274,6 +2279,7 @@ class DefaultCharacter(DefaultObject):
         Args:
             account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
+
         """
         if (
             self.location is None
@@ -2287,7 +2293,8 @@ class DefaultCharacter(DefaultObject):
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
             account.msg(
-                "|r%s has no location and no home is set.|n" % self, session=session
+                _("|r{obj} has no location and no home is set.|n").format(obj=self),
+                session=session
             )  # Note to set home.
 
     def at_post_puppet(self, **kwargs):
@@ -2305,11 +2312,12 @@ class DefaultCharacter(DefaultObject):
             puppeting this Object.
 
         """
-        self.msg("\nYou become |c%s|n.\n" % self.name)
+        self.msg(_("\nYou become |c{name}|n.\n").format(name=self.key))
         self.msg((self.at_look(self.location), {"type": "look"}), options=None)
 
         def message(obj, from_obj):
-            obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
+            obj.msg(_("{name} has entered the game.").format(name=self.get_display_name(obj)),
+                    from_obj=from_obj)
 
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
@@ -2332,7 +2340,8 @@ class DefaultCharacter(DefaultObject):
             if self.location:
 
                 def message(obj, from_obj):
-                    obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+                    obj.msg(_("{name} has left the game.").format(name=self.get_display_name(obj)),
+                            from_obj=from_obj)
 
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
@@ -2343,6 +2352,7 @@ class DefaultCharacter(DefaultObject):
         """
         Returns the idle time of the least idle session in seconds. If
         no sessions are connected it returns nothing.
+
         """
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
@@ -2354,6 +2364,7 @@ class DefaultCharacter(DefaultObject):
         """
         Returns the maximum connection time of all connected sessions
         in seconds. Returns nothing if there are no sessions.
+
         """
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
@@ -2447,7 +2458,7 @@ class DefaultRoom(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is a room."
+                obj.db.desc = description if description else _("This is a room.")
 
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -2653,7 +2664,7 @@ class DefaultExit(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is an exit."
+                obj.db.desc = description if description else _("This is an exit.")
 
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -2750,4 +2761,4 @@ class DefaultExit(DefaultObject):
             read for an error string instead.
 
         """
-        traversing_object.msg("You cannot go there.")
+        traversing_object.msg(_("You cannot go there."))

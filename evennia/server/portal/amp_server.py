@@ -43,7 +43,10 @@ class AMPServerFactory(protocol.ServerFactory):
     noisy = False
 
     def logPrefix(self):
-        "How this is named in logs"
+        """
+        How this is named in logs
+
+        """
         return "AMP"
 
     def __init__(self, portal):

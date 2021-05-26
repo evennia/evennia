@@ -93,7 +93,10 @@ def loads(data):
 
 
 def _get_logger():
-    "Delay import of logger until absolutely necessary"
+    """
+    Delay import of logger until absolutely necessary
+
+    """
     global _LOGGER
     if not _LOGGER:
         from evennia.utils import logger as _LOGGER
@@ -102,7 +105,10 @@ def _get_logger():
 
 @wraps
 def catch_traceback(func):
-    "Helper decorator"
+    """
+    Helper decorator
+
+    """
 
     def decorator(*args, **kwargs):
         try:
@@ -353,6 +359,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
     def dataReceived(self, data):
         """
         Handle non-AMP messages, such as HTTP communication.
+
         """
         # print("dataReceived: {}".format(data))
         if data[:1] == NUL:
@@ -413,6 +420,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         that is irrelevant. If a true connection error happens, the
         portal will continuously try to reconnect, showing the problem
         that way.
+
         """
         # print("ConnectionLost: {}: {}".format(self, reason))
         try:
@@ -422,20 +430,20 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
     # Error handling
 
-    def errback(self, e, info):
+    def errback(self, err, info):
         """
         Error callback.
         Handles errors to avoid dropping connections on server tracebacks.
 
         Args:
-            e (Failure): Deferred error instance.
+            err (Failure): Deferred error instance.
             info (str): Error string.
 
         """
-        e.trap(Exception)
+        err.trap(Exception)
         _get_logger().log_err(
             "AMP Error from {info}: {trcbck} {err}".format(
-                info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()
+                info=info, trcbck=err.getTraceback(), err=err.getErrorMessage()
             )
         )
 

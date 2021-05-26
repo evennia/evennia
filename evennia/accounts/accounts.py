@@ -1,5 +1,5 @@
 """
-Typeclass for Account objects
+Typeclass for Account objects.
 
 Note that this object is primarily intended to
 store OOC information, not game info! This
@@ -54,7 +54,8 @@ _CMDHANDLER = None
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(
-    name='creation', limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+    name='creation', limit=settings.CREATION_THROTTLE_LIMIT,
+    timeout=settings.CREATION_THROTTLE_TIMEOUT
 )
 LOGIN_THROTTLE = Throttle(
     name='login', limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
@@ -292,11 +293,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg(_("You are already puppeting this object."))
+            self.msg("You are already puppeting this object.")
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
+            self.msg("You don't have permission to puppet '{obj.key}'.")
             return
         if obj.account:
             # object already puppeted
@@ -312,8 +313,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     else:
                         txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
                         txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
-                        self.msg(_(txt1), session=session)
-                        self.msg(_(txt2), session=obj.sessions.all())
+                        self.msg(txt1, session=session)
+                        self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
@@ -543,7 +544,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             # Update throttle
             if ip:
-                LOGIN_THROTTLE.update(ip, "Too many authentication failures.")
+                LOGIN_THROTTLE.update(ip, _("Too many authentication failures."))
 
             # Try to call post-failure hook
             session = kwargs.get("session", None)
@@ -658,8 +659,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             password (str): Password to set.
 
         Notes:
-            This is called by Django also when logging in; it should not be mixed up with validation, since that
-            would mean old passwords in the database (pre validation checks) could get invalidated.
+            This is called by Django also when logging in; it should not be mixed up with
+            validation, since that would mean old passwords in the database (pre validation checks)
+            could get invalidated.
 
         """
         super(DefaultAccount, self).set_password(password)
@@ -798,12 +800,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 )
                 logger.log_sec(f"Account Created: {account} (IP: {ip}).")
 
-            except Exception as e:
+            except Exception:
                 errors.append(
-                    _(
-                        "There was an error creating the Account. If this problem persists, contact an admin."
-                    )
-                )
+                    _("There was an error creating the Account. "
+                      "If this problem persists, contact an admin."))
                 logger.log_trace()
                 return None, errors
 
@@ -819,7 +819,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # join the new account to the public channel
             pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
             if not pchannel or not pchannel.connect(account):
-                string = f"New account '{account.key}' could not connect to public channel!"
+                string = "New account '{account.key}' could not connect to public channel!"
                 errors.append(string)
                 logger.log_err(string)
 
@@ -1574,7 +1574,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return _("{target} has no in-game appearance.").format(target=target)
+                return f"{target} has no in-game appearance."
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1617,19 +1617,18 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        _(
-                            "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
-                        )
+                        "\n\n You don't have any characters yet. See |whelp charcreate|n for "
+                        "creating one."
                     )
                 else:
-                    result.append("\n |w@charcreate <name> [=description]|n - create new character")
+                    result.append("\n |wcharcreate <name> [=description]|n - create new character")
                     result.append(
-                        "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
+                        "\n |wchardelete <name>|n - delete a character (cannot be undone!)"
                     )
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""
-                result.append("\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)")
+                result.append("\n |wic <character>|n - enter the game (|wooc|n to get back here)")
                 if is_su:
                     result.append(
                         f"\n\nAvailable character{string_s_ending} ({len(characters)}/unlimited):"
@@ -1651,11 +1650,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                             sid = sess in sessions and sessions.index(sess) + 1
                             if sess and sid:
                                 result.append(
-                                    f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by you in session {sid})"
-                                )
+                                    f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] "
+                                    f"(played by you in session {sid})")
                             else:
                                 result.append(
-                                    f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by someone else)"
+                                    f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] "
+                                    "(played by someone else)"
                                 )
                     else:
                         # character is "free to puppet"
@@ -1668,6 +1668,7 @@ class DefaultGuest(DefaultAccount):
     """
     This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
+
     """
 
     @classmethod
@@ -1675,6 +1676,7 @@ class DefaultGuest(DefaultAccount):
         """
         Forwards request to cls.authenticate(); returns a DefaultGuest object
         if one is available for use.
+
         """
         return cls.authenticate(**kwargs)
 
@@ -1742,7 +1744,7 @@ class DefaultGuest(DefaultAccount):
 
                 return account, errors
 
-        except Exception as e:
+        except Exception:
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.

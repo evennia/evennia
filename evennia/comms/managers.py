@@ -218,7 +218,6 @@ class MsgManager(TypedObjectManager):
         else:
             raise CommError
 
-
     def search_message(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
         Search the message database for particular messages. At least

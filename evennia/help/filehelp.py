@@ -113,6 +113,7 @@ class FileHelpStorageHandler:
 
     Note that this is not meant to any searching/lookup - that is all handled
     by the help command.
+
     """
 
     def __init__(self, help_file_modules=settings.FILE_HELP_ENTRY_MODULES):

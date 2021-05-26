@@ -16,6 +16,7 @@ database.
 Channels are central objects that act as targets for Msgs. Accounts can
 connect to channels by use of a ChannelConnect object (this object is
 necessary to easily be able to delete connections on the fly).
+
 """
 from django.conf import settings
 from django.utils import timezone
@@ -165,7 +166,8 @@ class Msg(SharedMemoryModel):
     db_tags = models.ManyToManyField(
         Tag,
         blank=True,
-        help_text="tags on this message. Tags are simple string markers to identify, group and alias messages.",
+        help_text="tags on this message. Tags are simple string markers to "
+        "identify, group and alias messages.",
     )
 
     # Database manager
@@ -309,7 +311,6 @@ class Msg(SharedMemoryModel):
         self.db_receiver_external = ""
         self.save()
 
-
     def remove_receiver(self, receivers):
         """
         Remove a single receiver, a list of receivers, or a single extral receiver.
@@ -337,8 +338,8 @@ class Msg(SharedMemoryModel):
             elif clsname == "ScriptDB":
                 self.db_receivers_scripts.remove(receiver)
 
-
-    def __hide_from_get(self):
+    @property
+    def hide_from(self):
         """
         Getter. Allows for value = self.hide_from.
         Returns two lists of accounts and objects.
@@ -349,9 +350,12 @@ class Msg(SharedMemoryModel):
             self.db_hide_from_objects.all(),
         )
 
-    # @hide_from_sender.setter
-    def __hide_from_set(self, hiders):
-        "Setter. Allows for self.hide_from = value. Will append to hiders"
+    @hide_from.setter
+    def hide_from(self, hiders):
+        """
+        Setter. Allows for self.hide_from = value. Will append to hiders.
+
+        """
         for hider in make_iter(hiders):
             if not hider:
                 continue
@@ -363,21 +367,25 @@ class Msg(SharedMemoryModel):
             elif clsname == "ObjectDB":
                 self.db_hide_from_objects.add(hider.__dbclass__)
 
-    # @hide_from_sender.deleter
-    def __hide_from_del(self):
-        "Deleter. Allows for del self.hide_from_senders"
+    @hide_from.deleter
+    def hide_from(self):
+        """
+        Deleter. Allows for del self.hide_from_senders
+
+        """
         self.db_hide_from_accounts.clear()
         self.db_hide_from_objects.clear()
         self.save()
-
-    hide_from = property(__hide_from_get, __hide_from_set, __hide_from_del)
 
     #
     # Msg class methods
     #
 
     def __str__(self):
-        "This handles what is shown when e.g. printing the message"
+        """
+        This handles what is shown when e.g. printing the message.
+
+        """
         senders = ",".join(getattr(obj, "key", str(obj)) for obj in self.senders)
         receivers = ",".join(getattr(obj, "key", str(obj)) for obj in self.receivers)
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
@@ -407,9 +415,8 @@ class Msg(SharedMemoryModel):
 
 class TempMsg(object):
     """
-    This is a non-persistent object for sending temporary messages
-    that will not be stored.  It mimics the "real" Msg object, but
-    doesn't require sender to be given.
+    This is a non-persistent object for sending temporary messages that will not be stored.  It
+    mimics the "real" Msg object, but doesn't require sender to be given.
 
     """
 
@@ -452,6 +459,7 @@ class TempMsg(object):
     def __str__(self):
         """
         This handles what is shown when e.g. printing the message.
+
         """
         senders = ",".join(obj.key for obj in self.senders)
         receivers = ",".join(obj.key for obj in self.receivers)
@@ -477,6 +485,7 @@ class TempMsg(object):
 
         Args:
             receiver (Object, Account, Script, str or list): Receivers to remove.
+
         """
 
         for o in make_iter(receiver):
@@ -513,6 +522,7 @@ class SubscriptionHandler(object):
     This handler manages subscriptions to the
     channel and hides away which type of entity is
     subscribing (Account or Object)
+
     """
 
     def __init__(self, obj):
@@ -634,7 +644,8 @@ class SubscriptionHandler(object):
                 if not obj.is_connected:
                     continue
             except ObjectDoesNotExist:
-                # a subscribed object has already been deleted. Mark that we need a recache and ignore it
+                # a subscribed object has already been deleted. Mark that we need a recache and
+                # ignore it
                 recache_needed = True
                 continue
             subs.append(obj)
@@ -688,7 +699,7 @@ class ChannelDB(TypedObject):
     __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
     __applabel__ = "comms"
 
-    class Meta(object):
+    class Meta:
         "Define Django meta options"
         verbose_name = "Channel"
         verbose_name_plural = "Channels"

@@ -364,8 +364,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             if getattr(self, opt) is not None
         ])
         options = (", " + options) if options else ""
-        return f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: " + ", ".join(
-            [str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        return (f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: "
+                + ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)]))
 
     def __iter__(self):
         """
@@ -477,7 +477,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # This is used for diagnosis.
         cmdset_c.actual_mergetype = mergetype
 
-        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
+        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
+        # cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands, allow_duplicates=True)
@@ -670,5 +671,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         Hook method - this should be overloaded in the inheriting
         class, and should take care of populating the cmdset by use of
         self.add().
+
         """
         pass
