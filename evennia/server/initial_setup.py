@@ -25,13 +25,11 @@ ERROR_NO_SUPERUSER = """
     """
 
 
-LIMBO_DESC = _(
-    """
-Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
+LIMBO_DESC = _("""
+Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 As Account #1 you can create a demo/tutorial area with '|wbatchcommand tutorial_world.build|n'.
-    """
-)
+""")
 
 
 WARNING_POSTGRESQL_FIX = """
@@ -40,7 +38,7 @@ WARNING_POSTGRESQL_FIX = """
     but the superuser was not yet connected to them. Please use in
     game commands to connect Account #1 to those channels when first
     logging in.
-    """
+"""
 
 
 def get_god_account():

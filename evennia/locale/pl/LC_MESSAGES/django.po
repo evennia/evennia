@@ -1,6 +1,6 @@
 # Polish localization for the EVENNIA.
 # Copyright (C) 2019
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Evennia package.
 # FIRST AUTHOR <akroczyk@gmail.com>, 2019.
 #
 msgid ""

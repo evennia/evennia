@@ -326,8 +326,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         """
         cname = self.__class__.__name__
         estring = _(
-            "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
-        ) % {"key": self.key, "dbid": self.dbid, "cname": cname, "err": e.getErrorMessage()}
+            "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'.".format(
+                key=self.key, dbid=self.dbid, name=cname, err=e.getErrorMessage()))
         try:
             self.db_obj.msg(estring)
         except Exception:

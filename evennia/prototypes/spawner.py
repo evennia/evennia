@@ -471,7 +471,7 @@ def flatten_diff(diff):
         else:
             raise RuntimeError(
                 _("Diff contains non-dicts that are not on the "
-                  "form (old, new, inst): {diffpart}").format(diffpart)
+                  "form (old, new, action_to_take): {diffpart}").format(diffpart)
             )
         return out
 

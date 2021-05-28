@@ -1333,10 +1333,31 @@ def list_node(option_generator, select=None, pagesize=10):
     Example:
 
         ```python
-        list_node(['foo', 'bar'], select)
+        def select(caller, selection, available_choices=None, **kwargs):
+            '''
+            Args:
+                caller (Object or Account): User of the menu.
+                selection (str): What caller chose in the menu
+                available_choices (list): The keys of elements available on the *current listing
+                    page*.
+                **kwargs: Kwargs passed on from the node.
+            Returns:
+                tuple, str or None: A tuple (nextnodename, **kwargs) or just nextnodename.  Return
+                    `None` to go back to the listnode.
+
+            # (do something with `selection` here)
+
+            return "nextnode", **kwargs
+
+        @list_node(['foo', 'bar'], select)
         def node_index(caller):
             text = "describing the list"
-            return text, []
+
+            # optional extra options in addition to the list-options
+            extra_options = []
+
+            return text, extra_options
+
         ```
 
     Notes:
@@ -1364,9 +1385,10 @@ def list_node(option_generator, select=None, pagesize=10):
                 if callable(select):
                     try:
                         if bool(getargspec(select).keywords):
-                            return select(caller, selection, available_choices=available_choices)
+                            return select(
+                                caller, selection, available_choices=available_choices, **kwargs)
                         else:
-                            return select(caller, selection)
+                            return select(caller, selection, **kwargs)
                     except Exception:
                         logger.log_trace()
                 elif select:
@@ -1405,7 +1427,7 @@ def list_node(option_generator, select=None, pagesize=10):
             # callback being called with a result from the available choices
             options.extend(
                 [
-                    {"desc": opt, "goto": (_select_parser, {"available_choices": page})}
+                    {"desc": opt, "goto": (_select_parser, {"available_choices": page, **kwargs})}
                     for opt in page
                 ]
             )

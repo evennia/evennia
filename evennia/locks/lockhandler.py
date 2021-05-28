@@ -235,7 +235,8 @@ class LockHandler:
                 funcname, rest = (part.strip().strip(")") for part in funcstring.split("(", 1))
                 func = _LOCKFUNCS.get(funcname, None)
                 if not callable(func):
-                    elist.append(_("Lock: lock-function '%s' is not available.") % funcstring)
+                    elist.append(_("Lock: lock-function '{lockfunc}' is not available.").format(
+                        lockfunc=funcstring))
                     continue
                 args = list(arg.strip() for arg in rest.split(",") if arg and "=" not in arg)
                 kwargs = dict(

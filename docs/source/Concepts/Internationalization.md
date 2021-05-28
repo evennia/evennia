@@ -48,7 +48,11 @@ two-character international language codes are found
     as clean and easy- to-read as possible.
 ```
 
-If you cannot find your language in `evennia/locale/` it's because noone has
+Translations are found in the core `evennia/` library, under
+`evennia/evennia/locale/`. You must make sure to have cloned this repository
+from [Evennia's github](github:evennia) before you can proceed.
+
+If you cannot find your language in `evennia/evennia/locale/` it's because noone has
 translated it yet.  Alternatively you might have the language but find the
 translation bad ... You are welcome to help improve the situation!
 
@@ -56,8 +60,9 @@ To start a new translation you need to first have cloned the Evennia repositry
 with GIT and activated a python virtualenv as described on the [Setup
 Quickstart](../Setup/Setup-Quickstart) page.
 
-Go to your game dir and make sure your `virtualenv` is active so the `evennia`
-command is available. Then run
+Go to `evennia/evennia/` - that is, not your game dir, but inside the `evennia/`
+repo itself. If you see the `locale/` folder you are in the right place.  Make
+sure your `virtualenv` is active so the `evennia` command is available. Then run
 
      evennia makemessages --locale <language-code>
 
