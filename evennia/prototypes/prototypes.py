@@ -54,6 +54,8 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
     "tags",
     "attrs",
 )
+_ERRSTR = _("Error")
+_WARNSTR = _("Warning")
 PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 
@@ -341,14 +343,16 @@ def delete_prototype(prototype_key, caller=None):
     stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
 
     if not stored_prototype:
-        raise PermissionError(_("Prototype {} was not found.").format(prototype_key))
+        raise PermissionError(_("Prototype {prototype_key} was not found.").format(
+            prototype_key=prototype_key))
 
     stored_prototype = stored_prototype[0]
     if caller:
         if not stored_prototype.access(caller, "edit"):
             raise PermissionError(
-                _("{} needs explicit 'edit' permissions to "
-                  "delete prototype {}.").format(caller, prototype_key)
+                _("{caller} needs explicit 'edit' permissions to "
+                  "delete prototype {prototype_key}.").format(
+                      caller=caller, prototype_key=prototype_key)
             )
     stored_prototype.delete()
     return True
@@ -659,7 +663,7 @@ def validate_prototype(
     protkey = protkey and protkey.lower() or prototype.get("prototype_key", None)
 
     if strict and not bool(protkey):
-        _flags["errors"].append(_("Prototype lacks a `prototype_key`."))
+        _flags["errors"].append(_("Prototype lacks a 'prototype_key'."))
         protkey = "[UNSET]"
 
     typeclass = prototype.get("typeclass")
@@ -674,7 +678,7 @@ def validate_prototype(
         else:
             _flags["warnings"].append(
                 _("Prototype {protkey} can only be used as a mixin since it lacks "
-                  "a typeclass or a prototype_parent.").format(protkey=protkey)
+                  "'typeclass' or 'prototype_parent' keys.").format(protkey=protkey)
             )
 
     if strict and typeclass:
@@ -707,7 +711,7 @@ def validate_prototype(
             )
 
         if _flags["errors"]:
-            raise RuntimeError(_("Error: ") + _("\nError: ").join(_flags["errors"]))
+            raise RuntimeError(f"{_ERRSTR}: " + f"\n{_ERRSTR}: ".join(_flags["errors"]))
         _flags["visited"].append(id(prototype))
         _flags["depth"] += 1
         validate_prototype(
@@ -729,9 +733,9 @@ def validate_prototype(
 
     if _flags["depth"] <= 0:
         if _flags["errors"]:
-            raise RuntimeError(_("Error: " + "\nError: ").join(_flags["errors"]))
+            raise RuntimeError(f"{_ERRSTR}:_" + f"\n{_ERRSTR}: ".join(_flags["errors"]))
         if _flags["warnings"]:
-            raise RuntimeWarning(_("Warning: " + "\nWarning: ").join(_flags["warnings"]))
+            raise RuntimeWarning(f"{_WARNSTR}: " + f"\n{_WARNSTR}: ".join(_flags["warnings"]))
 
     # make sure prototype_locks are set to defaults
     prototype_locks = [

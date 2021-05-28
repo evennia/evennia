@@ -512,7 +512,7 @@ class CmdEditorGroup(CmdEditorBase):
             # :dd <l> - delete line <l>
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            caller.msg(_("Deleted {string}.").format(string= self.lstr))
+            caller.msg(_("Deleted {string}.").format(string=self.lstr))
         elif cmd == ":dw":
             # :dw <w> - delete word in entire buffer
             # :dw <l> <w> delete word only on line(s) <l>
@@ -522,9 +522,11 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg(_("Removed %s for lines %i-%i.") % (self.arg1, lstart + 1, lend + 1))
+                    caller.msg(_("Removed {arg1} for lines {l1}-{l2}.").format(
+                        arg1=self.arg1, l1=lstart + 1, l2=lend + 1))
                 else:
-                    caller.msg(_("Removed %s for %s.") % (self.arg1, self.lstr))
+                    caller.msg(_("Removed {arg1} for {line}.").format(
+                        arg1=self.arg1, line=self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
                 sarea = re.sub(r"%s" % self.arg1.strip("'").strip('"'), "", sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
@@ -539,19 +541,19 @@ class CmdEditorGroup(CmdEditorBase):
                     editor._indent = 0
                     if editor._persistent:
                         caller.attributes.add("_eveditor_indent", 0)
-            caller.msg(_("Cleared %i lines from buffer.") % self.nlines)
+            caller.msg(_("Cleared {nlines} lines from buffer.").format(nlines=self.nlines))
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
             cbuf = linebuffer[lstart:lend]
             editor._copy_buffer = cbuf
-            caller.msg(_("%s, %s yanked.") % (self.lstr.capitalize(), cbuf))
+            caller.msg(_("{line}, {cbuf} yanked.").format(line=self.lstr.capitalize(), cbuf=cbuf))
         elif cmd == ":x":
             # :x <l> - cut line to copy buffer
             cbuf = linebuffer[lstart:lend]
             editor._copy_buffer = cbuf
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            caller.msg(_("%s, %s cut.") % (self.lstr.capitalize(), cbuf))
+            caller.msg(_("{line}, {cbuf} cut.").format(line=self.lstr.capitalize(), cbuf=cbuf))
         elif cmd == ":p":
             # :p <l> paste line(s) from copy buffer
             if not editor._copy_buffer:
@@ -559,7 +561,8 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg(_("Pasted buffer %s to %s.") % (editor._copy_buffer, self.lstr))
+                caller.msg(_("Pasted buffer {cbuf} to {line}.").format(
+                    buf=editor._copy_buffer, line=self.lstr))
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split("\n")
@@ -568,7 +571,8 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg(_("Inserted %i new line(s) at %s.") % (len(new_lines), self.lstr))
+                caller.msg(_("Inserted {num} new line(s) at {line}.").format(
+                    num=len(new_lines), line=self.lstr))
         elif cmd == ":r":
             # :r <l> <txt> - replace lines
             new_lines = self.args.split("\n")
@@ -577,7 +581,8 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lend:]
                 editor.update_buffer(buf)
-                caller.msg(_("Replaced %i line(s) at %s.") % (len(new_lines), self.lstr))
+                caller.msg(_("Replaced {num} line(s) at {line}.").format(
+                    num=len(new_lines), line=self.lstr))
         elif cmd == ":I":
             # :I <l> <txt> - insert text at beginning of line(s) <l>
             if not self.raw_string and not editor._codefunc:
@@ -589,7 +594,7 @@ class CmdEditorGroup(CmdEditorBase):
                     + linebuffer[lend:]
                 )
                 editor.update_buffer(buf)
-                caller.msg(_("Inserted text at beginning of %s.") % self.lstr)
+                caller.msg(_("Inserted text at beginning of {line}.").format(line=self.lstr))
         elif cmd == ":A":
             # :A <l> <txt> - append text after end of line(s)
             if not self.args:
@@ -601,7 +606,7 @@ class CmdEditorGroup(CmdEditorBase):
                     + linebuffer[lend:]
                 )
                 editor.update_buffer(buf)
-                caller.msg(_("Appended text to end of %s.") % self.lstr)
+                caller.msg(_("Appended text to end of {line}.").format(line=self.lstr))
         elif cmd == ":s":
             # :s <li> <w> <txt> - search and replace words
             # in entire buffer or on certain lines
@@ -612,12 +617,13 @@ class CmdEditorGroup(CmdEditorBase):
                     lstart = 0
                     lend = self.cline + 1
                     caller.msg(
-                        _("Search-replaced %s -> %s for lines %i-%i.")
-                        % (self.arg1, self.arg2, lstart + 1, lend)
+                        _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
+                            arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend)
                     )
                 else:
                     caller.msg(
-                        _("Search-replaced %s -> %s for %s.") % (self.arg1, self.arg2, self.lstr)
+                        _("Search-replaced {arg1} -> {arg2} for {line}.").format(
+                            arg1=self.arg1, arg2=self.arg2, line=self.lstr)
                     )
                 sarea = "\n".join(linebuffer[lstart:lend])
 
@@ -639,9 +645,10 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(_("Flood filled lines %i-%i.") % (lstart + 1, lend))
+                caller.msg(_("Flood filled lines {l1}-{l2}.").format(
+                    l1=lstart + 1, l2=lend))
             else:
-                caller.msg(_("Flood filled %s.") % self.lstr)
+                caller.msg(_("Flood filled {line}.").format(line=self.lstr))
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = fill(fbuf, width=width)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
@@ -671,9 +678,11 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                self.caller.msg(_("%s-justified lines %i-%i.") % (align_name[align], lstart + 1, lend))
+                self.caller.msg(_("{align}-justified lines {l1}-{l2}.").format(
+                    align=align_name[align], l1=lstart + 1, l2=lend))
             else:
-                self.caller.msg(_("%s-justified %s.") % (align_name[align], self.lstr))
+                self.caller.msg(_("{align}-justified {line}.").format(
+                    align=align_name[align], line=self.lstr))
             jbuf = "\n".join(linebuffer[lstart:lend])
             jbuf = justify(jbuf, width=width, align=align)
             buf = linebuffer[:lstart] + jbuf.split("\n") + linebuffer[lend:]
@@ -684,9 +693,9 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(_("Indented lines %i-%i.") % (lstart + 1, lend))
+                caller.msg(_("Indented lines {l1}-{l2}.").format(l1=lstart + 1, l2=lend))
             else:
-                caller.msg(_("Indented %s.") % self.lstr)
+                caller.msg(_("Indented {line}.").format(line=self.lstr))
             fbuf = [indent + line for line in linebuffer[lstart:lend]]
             buf = linebuffer[:lstart] + fbuf + linebuffer[lend:]
             editor.update_buffer(buf)
@@ -695,9 +704,10 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(_("Removed left margin (dedented) lines %i-%i.") % (lstart + 1, lend))
+                caller.msg(_("Removed left margin (dedented) lines {l1}-{l2}.").format(
+                    l1=lstart + 1, l2=lend))
             else:
-                caller.msg(_("Removed left margin (dedented) %s.") % self.lstr)
+                caller.msg(_("Removed left margin (dedented) {line}.").format(line=self.lstr))
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = dedent(fbuf)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
@@ -705,7 +715,7 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":echo":
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
-            caller.msg(_("Echo mode set to %s") % editor._echo_mode)
+            caller.msg(_("Echo mode set to {mode}").format(mode=editor._echo_mode))
         elif cmd == ":!":
             if editor._codefunc:
                 editor._codefunc(caller, editor._buffer)
@@ -717,7 +727,9 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.decrease_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(_("Decreased indentation: new indentation is {}.").format(indent))
+                    caller.msg(_(
+                        "Decreased indentation: new indentation is {indent}.").format(
+                            indent=indent))
                 else:
                     caller.msg(_("|rManual indentation is OFF.|n Use := to turn it on."))
             else:
@@ -728,7 +740,9 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.increase_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(_("Increased indentation: new indentation is {}.").format(indent))
+                    caller.msg(_(
+                        "Increased indentation: new indentation is {indent}.").format(
+                            indent=indent))
                 else:
                     caller.msg(_("|rManual indentation is OFF.|n Use := to turn it on."))
             else:
@@ -764,7 +778,7 @@ class EvEditorCmdSet(CmdSet):
 # -------------------------------------------------------------
 
 
-class EvEditor(object):
+class EvEditor:
     """
     This defines a line editor object. It creates all relevant commands
     and tracks the current state of the buffer. It also cleans up after
@@ -1033,7 +1047,7 @@ class EvEditor(object):
         header = (
             "|n"
             + sep * 10
-            + _("Line Editor [%s]") % self._key
+            + _("Line Editor [{name}]") % self._key
             + sep * (_DEFAULT_WIDTH - 24 - len(self._key))
         )
         footer = (

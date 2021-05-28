@@ -104,7 +104,7 @@ SyntaxError encountered when loading cmdset '{path}'.
 
 _ERROR_CMDSET_EXCEPTION = _(
     """{traceback}
-Compile/Run error when loading cmdset '{path}'.",
+Compile/Run error when loading cmdset '{path}'.
 (Traceback was logged {timestamp})"""
 )
 

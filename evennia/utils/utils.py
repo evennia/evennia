@@ -2216,7 +2216,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     error = ""
     if not matches:
         # no results.
-        error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
+        error = kwargs.get("nofound_string") or _("Could not find '{query}'.").format(query=query)
         matches = None
     elif len(matches) > 1:
         multimatch_string = kwargs.get("multimatch_string")
@@ -2241,7 +2241,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 name=result.get_display_name(caller)
                 if hasattr(result, "get_display_name")
                 else query,
-                aliases=" [%s]" % ";".join(aliases) if aliases else "",
+                aliases=" [{alias}]".format(alias=";".join(aliases) if aliases else ""),
                 info=result.get_extra_info(caller),
             )
         matches = None

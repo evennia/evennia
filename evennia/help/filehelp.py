@@ -4,7 +4,7 @@ will be treated as non-command help entries and displayed in the same way as
 help entries created using the `sethelp` default command. After changing an
 entry on-disk you need to reload the server to have the change show in-game.
 
-An filehelp file is a regular python modules with dicts representing each help
+An filehelp file is a regular python module with dicts representing each help
 entry. If a list `HELP_ENTRY_DICTS` is found in the module, this should be a list of
 dicts.  Otherwise *all* top-level dicts in the module will be assumed to be a
 help-entry dict.
@@ -15,23 +15,23 @@ Each help-entry dict is on the form
     {'key': <str>,
      'category': <str>,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY
      'aliases': <list>,   # optional
-     'text': <str>}``
+     'text': <str>}
 
-where the ``category`` is optional and the ``text`` should be formatted on the
+where the `category` is optional and the `text`` should be formatted on the
 same form as other help entry-texts and contain ``# subtopics`` as normal.
 
 New help-entry modules are added to the system by providing the python-path to
 the module to `settings.FILE_HELP_ENTRY_MODULES`. Note that if same-key entries are
 added, entries in latter modules will override that of earlier ones. Use
-``settings.DEFAULT_HELP_CATEGORY`` to customize what category is used if
+`settings.DEFAULT_HELP_CATEGORY`` to customize what category is used if
 not set explicitly.
 
 An example of the contents of a module:
 ::
 
     help_entry1 = {
-        "key": "The Gods",   # case-insensitive, can be searched by 'gods' as well
-        "aliases": ['pantheon', 'religion']
+        "key": "The Gods",   # case-insensitive, also partial-matching ('gods') works
+        "aliases": ['pantheon', 'religion'],
         "category": "Lore",
         "text": '''
             The gods formed the world ...
