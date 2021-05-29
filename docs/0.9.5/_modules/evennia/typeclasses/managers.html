@@ -636,13 +636,21 @@
 <span class="sd">        Search by supplying a string with optional extra search criteria to aid the query.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (str): A search criteria that accepts extra search criteria on the</span>
+<span class="sd">            query (str): A search criteria that accepts extra search criteria on the following</span>
+<span class="sd">            forms:</span>
 
-<span class="sd">                following forms: [key|alias|#dbref...] [tag==&lt;tagstr&gt;[:category]...] [attr==&lt;key&gt;:&lt;value&gt;:category...]</span>
-<span class="sd">                                          &quot;                !=             &quot;               !=      &quot;</span>
+<span class="sd">                [key|alias|#dbref...]</span>
+<span class="sd">                [tag==&lt;tagstr&gt;[:category]...]</span>
+<span class="sd">                [attr==&lt;key&gt;:&lt;value&gt;:category...]</span>
+
+<span class="sd">            All three can be combined in the same query, separated by spaces.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or</span>
-<span class="sd">            ==, != in tags or attributes, enclose them in quotes.</span>
+<span class="sd">            matches (queryset): A queryset result matching all queries exactly. If wanting to use</span>
+<span class="sd">                spaces or ==, != in tags or attributes, enclose them in quotes.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            house = smart_search(&quot;key=foo alias=bar tag=house:building tag=magic attr=color:red&quot;)</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            The flexibility of this method is limited by the input line format. Tag/attribute</span>

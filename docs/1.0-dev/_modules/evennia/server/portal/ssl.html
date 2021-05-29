@@ -92,6 +92,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communication is the same as telnet, except data transfer</span>
 <span class="sd">    is done with encryption.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SSLProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -104,6 +105,7 @@
 <span class="sd">    This function looks for RSA key and certificate in the current</span>
 <span class="sd">    directory. If files ssl.key and ssl.cert does not exist, they</span>
 <span class="sd">    are created.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">keyfile</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">certfile</span><span class="p">)):</span>
@@ -116,10 +118,11 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># create the RSA key and store it.</span>
-            <span class="n">KEY_LENGTH</span> <span class="o">=</span> <span class="mi">1024</span>
-            <span class="n">rsaKey</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">RSA</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">KEY_LENGTH</span><span class="p">))</span>
-            <span class="n">keyString</span> <span class="o">=</span> <span class="n">rsaKey</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;OPENSSH&quot;</span><span class="p">)</span>
-            <span class="n">file</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="s2">&quot;w+b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">keyString</span><span class="p">)</span>
+            <span class="n">KEY_LENGTH</span> <span class="o">=</span> <span class="mi">2048</span>
+            <span class="n">rsa_key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">RSA</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">KEY_LENGTH</span><span class="p">))</span>
+            <span class="n">key_string</span> <span class="o">=</span> <span class="n">rsa_key</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;OPENSSH&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="s2">&quot;w+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+                <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key_string</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">NO_AUTOGEN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">keyfile</span><span class="o">=</span><span class="n">keyfile</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>

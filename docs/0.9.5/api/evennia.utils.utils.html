@@ -1509,16 +1509,35 @@ of the game directory.</p>
 <dd><p>List available typeclasses from all available modules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>parent</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, only return typeclasses inheriting (at any distance)
-from this parent.</p>
+<dd class="field-odd"><p><strong>parent</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, only return typeclasses inheriting
+(at any distance) from this parent.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>dict</em> – On the form <strong>{“typeclass.path”: typeclass, …}</strong></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This will dynamically retrieve all abstract django models inheriting at any distance
-from the TypedObject base (aka a Typeclass) so it will work fine with any custom
+<p>This will dynamically retrieve all abstract django models inheriting at
+any distance from the TypedObject base (aka a Typeclass) so it will
+work fine with any custom classes being added.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.get_all_cmdsets">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_all_cmdsets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_all_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_all_cmdsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available cmdsets from all available modules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, only return cmdsets inheriting (at
+any distance) from this parent.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dict</em> – On the form {“cmdset.path”: cmdset, …}</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will dynamically retrieve all abstract django models inheriting at
+any distance from the CmdSet base so it will work fine with any custom
 classes being added.</p>
 </dd></dl>
 

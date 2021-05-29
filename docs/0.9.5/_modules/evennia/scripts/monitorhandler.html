@@ -68,11 +68,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a resource singleton that allows for registering</span>
 <span class="sd">    callbacks for when a field or Attribute is updated (saved).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MonitorHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">savekey</span> <span class="o">=</span> <span class="s2">&quot;_monitorhandler_save&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>

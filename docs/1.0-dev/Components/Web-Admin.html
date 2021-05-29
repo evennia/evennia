@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The Web Admin &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Web Admin</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-web-admin">
+<h1>The Web Admin<a class="headerlink" href="#the-web-admin" title="Permalink to this headline">¶</a></h1>
+<p>The Evennia <em>Web admin</em> is a customized <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/contrib/admin/">Django admin site</a>
+used for manipulating the game database using a graphical interface. You
+have to be logged into the site to use it. It then appears as an <code class="docutils literal notranslate"><span class="pre">Admin</span></code> link
+the top of your website. You can also go to <a class="reference external" href="http://localhost:4001/admin">http://localhost:4001/admin</a> when
+running locally.</p>
+<p>Almost all actions done in the admin can also be done in-game by use of Admin-
+or Builder-commands.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The admin is pretty self-explanatory - you can see lists of each object type,
+create new instances of each type and also add new Attributes/tags them. The
+admin frontpage will give a summary of all relevant entities and how they are
+used.</p>
+<p>There are a few use cases that requires some additional explanation though.</p>
+<section id="adding-objects-to-attributes">
+<h3>Adding objects to Attributes<a class="headerlink" href="#adding-objects-to-attributes" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">value</span></code> field of an Attribute is pickled into a special form. This is usually not
+something you need to worry about (the admin will pickle/unpickle) the value
+for you), <em>except</em> if you want to store a database-object in an attribute. Such
+objects are actually stored as a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> with object-unique data.</p>
+<ol>
+<li><p>Find the object you want to add to the Attribute. At the bottom of the first section
+you’ll find the field <em>Serialized string</em>. This string shows a Python tuple like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;__packed_dbobj__&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;objects&#39;</span><span class="p">,</span> <span class="s1">&#39;objectdb&#39;</span><span class="p">),</span> <span class="s1">&#39;2021:05:15-08:59:30:624660&#39;</span><span class="p">,</span> <span class="mi">358</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mark and copy this tuple-string to your clipboard exactly as it stands (parentheses and all).</p>
+</li>
+<li><p>Go to the entity that should have the new Attribute and create the Attribute. In its <code class="docutils literal notranslate"><span class="pre">value</span></code>
+field, paste the tuple-string you copied before. Save!</p></li>
+<li><p>If you want to store multiple objects in, say, a list, you can do so by literally
+typing a python list <code class="docutils literal notranslate"><span class="pre">[tuple,</span> <span class="pre">tuple,</span> <span class="pre">tuple,</span> <span class="pre">...]</span></code> where you paste in the serialized
+tuple-strings with commas. At some point it’s probably easier to do this in code though …</p></li>
+</ol>
+</section>
+<section id="linking-accounts-and-characters">
+<h3>Linking Accounts and Characters<a class="headerlink" href="#linking-accounts-and-characters" title="Permalink to this headline">¶</a></h3>
+<p>In <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> 0 or 1, each connection can have one Account and one
+Character, usually with the same name. Normally this is done by the user
+creating a new account and logging in - a matching Character will then be
+created for them. You can however also do so manually in the admin:</p>
+<ol class="simple">
+<li><p>First create the complete Account in the admin.</p></li>
+<li><p>Next, create the Object (usually of <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass) and name it the same
+as the Account. It also needs a command-set. The default CharacterCmdset is a good bet.</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Puppeting</span> <span class="pre">Account</span></code> field, select the Account.</p></li>
+<li><p>Make sure to save everything.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Link</span> <span class="pre">to</span> <span class="pre">Account</span></code> button (this will only work if you saved first). This will
+add the needed locks and Attributes to the Account to allow them to immediately
+connect to the Character when they next log in. This will (where possible):</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">account.db._last_puppet</span></code> to the Character.</p></li>
+<li><p>Add Character to <code class="docutils literal notranslate"><span class="pre">account.db._playabel_characters</span></code> list.</p></li>
+<li><p>Add/extend the <code class="docutils literal notranslate"><span class="pre">puppet:</span></code> lock on the Character to include <code class="docutils literal notranslate"><span class="pre">puppet:pid(&lt;Character.id&gt;)</span></code></p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="building-with-the-admin">
+<h3>Building with the Admin<a class="headerlink" href="#building-with-the-admin" title="Permalink to this headline">¶</a></h3>
+<p>It’s possible (if probably not very practical at scale) to build and describe
+rooms in the Admin.</p>
+<ol class="simple">
+<li><p>Create an <code class="docutils literal notranslate"><span class="pre">Object</span></code> of a Room-typeclass with a suitable room-name.</p></li>
+<li><p>Set an Attribute ‘desc’ on the room - the value of this Attribute is the
+room’s description.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Tags</span></code> of <code class="docutils literal notranslate"><span class="pre">type</span></code> ‘alias’ to add room-aliases (no type for regular tags)</p></li>
+</ol>
+<p>Exits:</p>
+<ol class="simple">
+<li><p>Exits are <code class="docutils literal notranslate"><span class="pre">Objects</span></code> of an <code class="docutils literal notranslate"><span class="pre">Exit</span></code> typeclass, so create one.</p></li>
+<li><p>The exit has <code class="docutils literal notranslate"><span class="pre">Location</span></code> of the room you just created.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Destination</span></code> set to where the exit leads to.</p></li>
+<li><p>Set a ‘desc’ Attribute, this is shown if someone looks at the exit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tags</span></code> of <code class="docutils literal notranslate"><span class="pre">type</span></code> ‘alias’ are alternative names users can use to go through
+this exit.</p></li>
+</ol>
+</section>
+</section>
+<section id="grant-others-access-to-the-admin">
+<h2>Grant others access to the admin<a class="headerlink" href="#grant-others-access-to-the-admin" title="Permalink to this headline">¶</a></h2>
+<p>The access to the admin is controlled by the <code class="docutils literal notranslate"><span class="pre">Staff</span> <span class="pre">status</span></code> flag on the
+Account.  Without this flag set, even superusers will not even see the admin
+link on the web page. The staff-status has no in-game equivalence.</p>
+<p>Only Superusers can change the <code class="docutils literal notranslate"><span class="pre">Superuser</span> <span class="pre">status</span></code> flag, and grant new
+permissions to accounts. The superuser is the only permission level that is
+also relevant in-game. <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Permissions</span></code> and <code class="docutils literal notranslate"><span class="pre">Groups</span></code> found on the <code class="docutils literal notranslate"><span class="pre">Account</span></code>
+admin page <em>only</em> affects the admin - they have no connection to the in-game
+<a class="reference internal" href="Permissions.html"><span class="doc">Permissions</span></a> (Player, Builder, Admin etc).</p>
+<p>For a staffer with <code class="docutils literal notranslate"><span class="pre">Staff</span> <span class="pre">status</span></code> to be able to actually do anything, the
+superuser must grant at least some permissions for them on their Account. This
+can also be good in order to limit mistakes. It can be a good idea to not allow
+the <code class="docutils literal notranslate"><span class="pre">Can</span> <span class="pre">delete</span> <span class="pre">Account</span></code> permission, for example.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you grant staff-status and permissions to an Account and they still cannot
+access the admin’s content, try reloading the server.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If a staff member has access to the in-game <code class="docutils literal notranslate"><span class="pre">py</span></code> command, they can just as
+well have their admin <code class="docutils literal notranslate"><span class="pre">Superuser</span> <span class="pre">status</span></code> set too. The reason is that <code class="docutils literal notranslate"><span class="pre">py</span></code>
+grants them all the power they need to set the <code class="docutils literal notranslate"><span class="pre">is_superuser</span></code> flag on their
+account manually. There is a reason access to the <code class="docutils literal notranslate"><span class="pre">py</span></code> command must be
+considered carefully …</p>
+</div>
+</section>
+<section id="customizing-the-web-admin">
+<h2>Customizing the web admin<a class="headerlink" href="#customizing-the-web-admin" title="Permalink to this headline">¶</a></h2>
+<p>Customizing the admin is a big topic and something beyond the scope of this
+documentation. See the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/contrib/admin/">official Django docs</a> for
+the details. This is just a brief summary.</p>
+<p>See the <a class="reference internal" href="Website.html"><span class="doc">Website</span></a> page for an overview of the components going into
+generating a web page. The Django admin uses the same principle except that
+Django provides a lot of tools to automate the admin-generation for us.</p>
+<p>Admin templates are found in <code class="docutils literal notranslate"><span class="pre">evennia/web/templates/admin/</span></code> but you’ll find
+this is relatively empty. This is because most of the templates are just
+inherited directly from their original location in the Django package
+(<code class="docutils literal notranslate"><span class="pre">django/contrib/admin/templates/</span></code>). So if you wanted to override one you’d have
+to copy it from <em>there</em> into your <code class="docutils literal notranslate"><span class="pre">mygame/templates/admin/</span></code> folder. Same is true
+for CSS files.</p>
+<p>The admin site’s backend code (the views) is found in <code class="docutils literal notranslate"><span class="pre">evennia/web/admin/</span></code>. It
+is organized into <code class="docutils literal notranslate"><span class="pre">admin</span></code>-classes, like <code class="docutils literal notranslate"><span class="pre">ObjectAdmin</span></code>, <code class="docutils literal notranslate"><span class="pre">AccountAdmin</span></code> etc.
+These automatically use the underlying database models to generate useful views
+for us without us havint go code the forms etc ourselves.</p>
+<p>The top level <code class="docutils literal notranslate"><span class="pre">AdminSite</span></code> (the admin configuration referenced in django docs)
+is found in <code class="docutils literal notranslate"><span class="pre">evennia/web/utils/adminsite.py</span></code>.</p>
+<section id="change-the-title-of-the-admin">
+<h3>Change the title of the admin<a class="headerlink" href="#change-the-title-of-the-admin" title="Permalink to this headline">¶</a></h3>
+<p>By default the admin’s title is <code class="docutils literal notranslate"><span class="pre">Evennia</span> <span class="pre">web</span> <span class="pre">admin</span></code>. To change this, add the
+following to your <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code>:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/urls.py</span>
+
+<span class="c1"># ...</span>
+
+<span class="kn">from</span> <span class="nn">django.conf.admin</span> <span class="kn">import</span> <span class="n">site</span>
+
+<span class="c1">#...</span>
+
+<span class="n">site</span><span class="o">.</span><span class="n">site_header</span> <span class="o">=</span> <span class="s2">&quot;My great game admin&quot;</span>
+
+</pre></div>
+</td></tr></table></div>
+<p>Reload the server and the admin’s title header will have changed.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Web Admin</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#adding-objects-to-attributes">Adding objects to Attributes</a></li>
+<li><a class="reference internal" href="#linking-accounts-and-characters">Linking Accounts and Characters</a></li>
+<li><a class="reference internal" href="#building-with-the-admin">Building with the Admin</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#grant-others-access-to-the-admin">Grant others access to the admin</a></li>
+<li><a class="reference internal" href="#customizing-the-web-admin">Customizing the web admin</a><ul>
+<li><a class="reference internal" href="#change-the-title-of-the-admin">Change the title of the admin</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Web-Admin.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Web-Admin.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Web Admin</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

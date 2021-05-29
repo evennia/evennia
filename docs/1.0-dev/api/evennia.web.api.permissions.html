@@ -40,13 +40,14 @@
             
   <section id="module-evennia.web.api.permissions">
 <span id="evennia-web-api-permissions"></span><h1>evennia.web.api.permissions<a class="headerlink" href="#module-evennia.web.api.permissions" title="Permalink to this headline">¶</a></h1>
+<p>Sets up an api-access permission check using the in-game permission hierarchy.</p>
 <dl class="py class">
 <dt id="evennia.web.api.permissions.EvenniaPermission">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.permissions.</code><code class="sig-name descname">EvenniaPermission</code><a class="reference internal" href="../_modules/evennia/web/api/permissions.html#EvenniaPermission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.permissions.EvenniaPermission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.permissions.BasePermission</span></code></p>
-<p>A Django Rest Framework permission class that allows us to use
-Evennia’s permission structure. Based on the action in a given
-view, we’ll check a corresponding Evennia access/lock check.</p>
+<p>A Django Rest Framework permission class that allows us to use Evennia’s
+permission structure. Based on the action in a given view, we’ll check a
+corresponding Evennia access/lock check.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.permissions.EvenniaPermission.MINIMUM_LIST_PERMISSION">
 <code class="sig-name descname">MINIMUM_LIST_PERMISSION</code><em class="property"> = 'builder'</em><a class="headerlink" href="#evennia.web.api.permissions.EvenniaPermission.MINIMUM_LIST_PERMISSION" title="Permalink to this definition">¶</a></dt>

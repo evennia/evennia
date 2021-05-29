@@ -82,8 +82,8 @@
 <span class="sd">        supported are &#39;edit&#39; and &#39;use&#39;.</span>
 <span class="sd">    prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype</span>
 <span class="sd">        in listings</span>
-<span class="sd">    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or</span>
-<span class="sd">        a list of parents, for multiple left-to-right inheritance.</span>
+<span class="sd">    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent</span>
+<span class="sd">        prototype, or a list of parents, for multiple left-to-right inheritance.</span>
 <span class="sd">    prototype: Deprecated. Same meaning as &#39;parent&#39;.</span>
 
 <span class="sd">    typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use</span>
@@ -180,6 +180,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
@@ -397,8 +398,8 @@
 <span class="sd">            This is most useful for displaying.</span>
 <span class="sd">        implicit_keep (bool, optional): If set, the resulting diff will assume KEEP unless the new</span>
 <span class="sd">            prototype explicitly change them. That is, if a key exists in `prototype1` and</span>
-<span class="sd">            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is particularly</span>
-<span class="sd">            useful for auto-generated prototypes when updating objects.</span>
+<span class="sd">            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is</span>
+<span class="sd">            particularly useful for auto-generated prototypes when updating objects.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        diff (dict): A structure detailing how to convert prototype1 to prototype2. All</span>
@@ -511,8 +512,8 @@
                 <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Diff contains non-dicts that are not on the &quot;</span>
-                <span class="s2">&quot;form (old, new, inst): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Diff contains non-dicts that are not on the &quot;</span>
+                  <span class="s2">&quot;form (old, new, action_to_take): </span><span class="si">{diffpart}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
 
@@ -735,11 +736,13 @@
                     <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
                             <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                        <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                                                    <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
                     <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;aliases&quot;</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
                             <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                        <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                                                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
                     <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
                             <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -965,7 +968,8 @@
             <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
+                    <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
                 <span class="c1"># settings.DEFAULT_HOME not existing is common for unittests</span>
                 <span class="k">pass</span>
@@ -987,7 +991,8 @@
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
-            <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">),</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">))</span>
+            <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">),</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                         <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">))</span>
 
         <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">prototype_key</span><span class="p">:</span>

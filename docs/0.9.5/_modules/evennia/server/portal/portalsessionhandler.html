@@ -40,7 +40,8 @@
             
   <h1>Source code for evennia.server.portal.portalsessionhandler</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Sessionhandler for portal sessions</span>
+<span class="sd">Sessionhandler for portal sessions.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -52,6 +53,7 @@
 <span class="kn">from</span> <span class="nn">evennia.server.portal.amp</span> <span class="kn">import</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="c1"># module import</span>
 <span class="n">_MOD_IMPORT</span> <span class="o">=</span> <span class="kc">None</span>
@@ -75,6 +77,8 @@
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1"># Portal-SessionHandler class</span>
 <span class="c1"># -------------------------------------------------------------</span>
+
+<span class="n">DOS_PROTECTION_MSG</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{servername}</span><span class="s2"> DoS protection is active. You are queued to connect in </span><span class="si">{num}</span><span class="s2"> seconds ...&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="PortalSessionHandler"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">PortalSessionHandler</span><span class="p">(</span><span class="n">SessionHandler</span><span class="p">):</span>
@@ -152,16 +156,12 @@
             <span class="n">_CONNECTION_QUEUE</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">session</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span>
-                    <span class="n">text</span><span class="o">=</span><span class="p">[</span>
-                        <span class="p">[</span>
-                            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> DoS protection is active. You are queued to connect in </span><span class="si">%g</span><span class="s2"> seconds ...&quot;</span>
-                            <span class="o">%</span> <span class="p">(</span>
-                                <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="p">,</span>
-                                <span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span><span class="p">,</span>
-                            <span class="p">)</span>
-                        <span class="p">],</span>
+                    <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">DOS_PROTECTION_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                         <span class="n">servername</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="p">,</span>
+                         <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span><span class="p">),),</span>
                         <span class="p">{},</span>
-                    <span class="p">]</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -261,6 +261,7 @@
 <div class="viewcode-block" id="PortalSessionHandler.disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect_all">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect all sessions, informing the Server.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
@@ -519,7 +520,6 @@
 
 
 <span class="n">_PORTAL_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER_CLASS</span><span class="p">)</span>
-
 <span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">_PORTAL_SESSION_HANDLER_CLASS</span><span class="p">()</span>
 </pre></div>
 

@@ -50,6 +50,7 @@
 <span class="sd">game world, policy info, rules and similar.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
@@ -71,7 +72,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="HelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry">[docs]</a><span class="k">class</span> <span class="nc">HelpEntry</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry">[docs]</a><span class="k">class</span> <span class="nc">HelpEntry</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic help entry.</span>
 
@@ -117,9 +118,8 @@
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to &quot;</span>
         <span class="s2">&quot;identify, group and alias objects.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="c1"># (deprecated, only here to allow MUX helpfile load (don&#39;t use otherwise)).</span>
-    <span class="c1"># TODO: remove this when not needed anymore.</span>
-    <span class="n">db_staff_only</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Creation date. This is not changed once the object is created.</span>
+    <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;creation date&quot;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Database manager</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">HelpEntryManager</span><span class="p">()</span>
@@ -127,19 +127,19 @@
 
     <span class="c1"># lazy-loaded handlers</span>
 
-<div class="viewcode-block" id="HelpEntry.locks"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.locks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.locks"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.locks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.tags"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.tags">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.tags"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.tags">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TagHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.aliases"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.aliases">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.aliases"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.aliases">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AliasHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Help Entry&quot;</span>
         <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Help Entries&quot;</span>
@@ -149,11 +149,13 @@
     <span class="c1"># HelpEntry main class methods</span>
     <span class="c1">#</span>
     <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;HelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-<div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access.</span>
 <span class="sd">        accessing_obj - object trying to access this one</span>
@@ -179,7 +181,7 @@
     <span class="c1"># Web/Django methods</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="HelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
@@ -194,7 +196,7 @@
             <span class="s2">&quot;admin:</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_change&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">content_type</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="n">content_type</span><span class="o">.</span><span class="n">model</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="HelpEntry.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
@@ -207,7 +209,9 @@
 <span class="sd">        a named view of &#39;character-create&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;characters/create/&#39;, ChargenView.as_view(), name=&#39;character-create&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;characters/create/&#39;, ChargenView.as_view(), name=&#39;character-create&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -222,10 +226,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-create&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
@@ -237,8 +241,9 @@
 <span class="sd">        a named view of &#39;character-detail&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
-<span class="sd">            CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
+<span class="sd">        ::</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
+<span class="sd">                CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -256,11 +261,10 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-detail&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_help_category</span><span class="p">),</span> <span class="s2">&quot;topic&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
@@ -272,8 +276,10 @@
 <span class="sd">        a named view of &#39;character-update&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
-<span class="sd">            CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -291,10 +297,10 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-update&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_help_category</span><span class="p">),</span> <span class="s2">&quot;topic&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
@@ -305,8 +311,10 @@
 <span class="sd">        a named view of &#39;character-detail&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
-<span class="sd">            CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
+<span class="sd">                CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -324,7 +332,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-delete&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_help_category</span><span class="p">),</span> <span class="s2">&quot;topic&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
     <span class="c1"># Used by Django Sites/Admin</span>

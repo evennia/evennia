@@ -51,7 +51,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">fnmatch</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
@@ -158,6 +157,7 @@
 <div class="viewcode-block" id="InMemoryAttribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttribute">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This Attribute is used purely for NAttributes/NAttributeHandler. It has no database backend.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Primary Key has no meaning for an InMemoryAttribute. This merely serves to satisfy other code.</span>
@@ -167,11 +167,12 @@
 <span class="sd">        Create an Attribute that exists only in Memory.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            pk (int): This is a fake &#39;primary key&#39; / id-field. It doesn&#39;t actually have to be unique, but is fed an</span>
-<span class="sd">                incrementing number from the InMemoryBackend by default. This is needed only so Attributes can be</span>
-<span class="sd">                sorted. Some parts of the API also see the lack of a .pk field as a sign that the Attribute was</span>
-<span class="sd">                deleted.</span>
+<span class="sd">            pk (int): This is a fake &#39;primary key&#39; / id-field. It doesn&#39;t actually have to be</span>
+<span class="sd">                unique, but is fed an incrementing number from the InMemoryBackend by default. This</span>
+<span class="sd">                is needed only so Attributes can be sorted. Some parts of the API also see the lack</span>
+<span class="sd">                of a .pk field as a sign that the Attribute was deleted.</span>
 <span class="sd">            **kwargs: Other keyword arguments are used to construct the actual Attribute.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pk</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="o">=</span> <span class="n">pk</span>
@@ -202,6 +203,7 @@
 <div class="viewcode-block" id="Attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.Attribute">[docs]</a><span class="k">class</span> <span class="nc">Attribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">,</span> <span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This attribute is stored via Django. Most Attributes will be using this class.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#</span>
@@ -260,7 +262,7 @@
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
-        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Evennia Attribute&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Attribute&quot;</span>
 
     <span class="c1"># Wrapper properties to easily set database fields. These are</span>
     <span class="c1"># @property decorators that allows to access these fields using</span>
@@ -285,8 +287,8 @@
     <span class="n">lock_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__lock_storage_get</span><span class="p">,</span> <span class="n">__lock_storage_set</span><span class="p">,</span> <span class="n">__lock_storage_del</span><span class="p">)</span>
 
     <span class="c1"># value property (wraps db_value)</span>
-    <span class="c1"># @property</span>
-    <span class="k">def</span> <span class="nf">__value_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for `value = self.value`.</span>
 <span class="sd">        We cannot cache here since it makes certain cases (such</span>
@@ -295,8 +297,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_value</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="c1"># @value.setter</span>
-    <span class="k">def</span> <span class="nf">__value_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setter. Allows for self.value = value. We cannot cache here,</span>
 <span class="sd">        see self.__value_get.</span>
@@ -304,13 +306,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db_value</span> <span class="o">=</span> <span class="n">to_pickle</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_value&quot;</span><span class="p">])</span>
 
-    <span class="c1"># @value.deleter</span>
-    <span class="k">def</span> <span class="nf">__value_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@value</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deleter. Allows for del attr.value. This removes the entire attribute.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-
-    <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__value_get</span><span class="p">,</span> <span class="n">__value_set</span><span class="p">,</span> <span class="n">__value_del</span><span class="p">)</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <span class="c1">#</span>
 <span class="c1"># Handlers making use of the Attribute model</span>
@@ -388,7 +387,7 @@
 
     <span class="k">def</span> <span class="nf">_get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">        Fetch cache key.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): The key of the Attribute being searched for.</span>
@@ -569,7 +568,8 @@
 
 <div class="viewcode-block" id="IAttributeBackend.create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates Attribute (using the class specified for the backend), (optionally) caches it, and returns it.</span>
+<span class="sd">        Creates Attribute (using the class specified for the backend), (optionally) caches it, and</span>
+<span class="sd">        returns it.</span>
 
 <span class="sd">        This MUST actively save the Attribute to whatever database backend is used, AND</span>
 <span class="sd">        call self.set_cache(key, category, new_attrobj)</span>
@@ -754,7 +754,8 @@
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># have to cast the results to a list or we&#39;ll get a RuntimeError for removing from the dict we&#39;re iterating</span>
+            <span class="c1"># have to cast the results to a list or we&#39;ll get a RuntimeError for removing from the</span>
+            <span class="c1"># dict we&#39;re iterating</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span></div>
 
@@ -775,10 +776,10 @@
 
 <div class="viewcode-block" id="InMemoryAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttributeBackend</span><span class="p">(</span><span class="n">IAttributeBackend</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and normally lost</span>
-<span class="sd">    on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes it manages, but these are</span>
-<span class="sd">    of little importance beyond sorting and satisfying the caching logic to know an Attribute hasn&#39;t been</span>
-<span class="sd">    deleted out from under the cache&#39;s nose.</span>
+<span class="sd">    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and</span>
+<span class="sd">    normally lost on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes</span>
+<span class="sd">    it manages, but these are of little importance beyond sorting and satisfying the caching logic</span>
+<span class="sd">    to know an Attribute hasn&#39;t been deleted out from under the cache&#39;s nose.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -850,7 +851,8 @@
 
 <div class="viewcode-block" id="InMemoryAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes the Attribute from local storage. Once it&#39;s out of the cache, garbage collection will handle the rest.</span>
+<span class="sd">        Removes the Attribute from local storage. Once it&#39;s out of the cache, garbage collection</span>
+<span class="sd">        will handle the rest.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            attr (IAttribute): The attribute to delete.</span>
@@ -969,8 +971,9 @@
 <span class="sd">        Setup the AttributeHandler.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            obj (TypedObject): An Account, Object, Channel, ServerSession (not technically a typed object), etc.</span>
-<span class="sd">            backend_class (IAttributeBackend class): The class of the backend to use.</span>
+<span class="sd">            obj (TypedObject): An Account, Object, Channel, ServerSession (not technically a typed</span>
+<span class="sd">                object), etc.  backend_class (IAttributeBackend class): The class of the backend to</span>
+<span class="sd">                use.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">)</span></div>
@@ -1303,6 +1306,7 @@
     <span class="nb">all</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_all</span><span class="p">)</span></div>
 
 
+<span class="c1">#</span>
 <span class="c1"># Nick templating</span>
 <span class="c1">#</span>
 
@@ -1322,7 +1326,7 @@
 
 <span class="sd">This will be converted to the following regex:</span>
 
-<span class="sd">\@desc (?P&lt;1&gt;\w+) (?P&lt;2&gt;\w+) $(?P&lt;3&gt;\w+)</span>
+<span class="sd">    \@desc (?P&lt;1&gt;\w+) (?P&lt;2&gt;\w+) $(?P&lt;3&gt;\w+)</span>
 
 <span class="sd">Supported template markers (through fnmatch)</span>
 <span class="sd">   *       matches anything (non-greedy)     -&gt; .*?</span>
@@ -1385,7 +1389,7 @@
         <span class="c1"># groups.  we need to split out any | - separated parts so we can</span>
         <span class="c1"># attach the line-break/ending extras all regexes require.</span>
         <span class="n">pattern_regex_string</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">or_part</span> <span class="o">+</span>  <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
+            <span class="n">or_part</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
             <span class="k">for</span> <span class="n">or_part</span> <span class="ow">in</span> <span class="n">_RE_OR</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
 
     <span class="k">else</span><span class="p">:</span>

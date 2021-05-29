@@ -111,6 +111,7 @@
 <span class="k">def</span> <span class="nf">call_at_first_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receives a signal just after the object is saved.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">at_first_save</span><span class="p">()</span>
@@ -119,6 +120,7 @@
 <span class="k">def</span> <span class="nf">remove_attributes_on_delete</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wipe object&#39;s Attributes when it&#39;s deleted</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">instance</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
@@ -140,6 +142,7 @@
 <span class="sd">    Metaclass which should be set for the root of model proxies</span>
 <span class="sd">    that don&#39;t define any new fields, like Object, Script etc. This</span>
 <span class="sd">    is the basis for the typeclassing system.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
@@ -221,15 +224,16 @@
 <span class="sd">    mechanics for managing connected attributes.</span>
 
 <span class="sd">    The TypedObject has the following properties:</span>
-<span class="sd">      key - main name</span>
-<span class="sd">      name - alias for key</span>
-<span class="sd">      typeclass_path - the path to the decorating typeclass</span>
-<span class="sd">      typeclass - auto-linked typeclass</span>
-<span class="sd">      date_created - time stamp of object creation</span>
-<span class="sd">      permissions - perm strings</span>
-<span class="sd">      dbref - #id of object</span>
-<span class="sd">      db - persistent attribute storage</span>
-<span class="sd">      ndb - non-persistent attribute storage</span>
+
+<span class="sd">    - key - main name</span>
+<span class="sd">    - name - alias for key</span>
+<span class="sd">    - typeclass_path - the path to the decorating typeclass</span>
+<span class="sd">    - typeclass - auto-linked typeclass</span>
+<span class="sd">    - date_created - time stamp of object creation</span>
+<span class="sd">    - permissions - perm strings</span>
+<span class="sd">    - dbref - #id of object</span>
+<span class="sd">    - db - persistent attribute storage</span>
+<span class="sd">    - ndb - non-persistent attribute storage</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -250,7 +254,8 @@
         <span class="s2">&quot;typeclass&quot;</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds &quot;</span>
+                  <span class="s2">&quot;a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Creation date. This is not changed once the object is created.</span>
@@ -259,16 +264,20 @@
     <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; &quot;</span>
+                  <span class="s2">&quot;on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and &quot;</span>
+                  <span class="s2">&quot;how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># many2many relationships</span>
     <span class="n">db_attributes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Attribute</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able &quot;</span>
+                  <span class="s2">&quot;python object (see docs for special cases).&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Tag</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to identify, group and alias objects.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to identify, &quot;</span>
+                  <span class="s2">&quot;group and alias objects.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Database manager</span>
@@ -383,7 +392,7 @@
     <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObject.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObject.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django setup info.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -743,8 +752,8 @@
     <span class="c1"># Attribute storage</span>
     <span class="c1">#</span>
 
-    <span class="c1"># @property db</span>
-    <span class="k">def</span> <span class="nf">__db_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attribute handler wrapper. Allows for the syntax</span>
 
@@ -767,26 +776,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_db_holder</span> <span class="o">=</span> <span class="n">DbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_holder</span>
 
-    <span class="c1"># @db.setter</span>
-    <span class="k">def</span> <span class="nf">__db_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="nd">@db</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="s2">&quot;Stop accidentally replacing the db object&quot;</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Cannot assign directly to db object! &quot;</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Use db.attr=value instead.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
-    <span class="c1"># @db.deleter</span>
-    <span class="k">def</span> <span class="nf">__db_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@db</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Stop accidental deletion.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the db object!&quot;</span><span class="p">)</span>
-
-    <span class="n">db</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__db_get</span><span class="p">,</span> <span class="n">__db_set</span><span class="p">,</span> <span class="n">__db_del</span><span class="p">)</span>
 
     <span class="c1">#</span>
     <span class="c1"># Non-persistent (ndb) storage</span>
     <span class="c1">#</span>
 
-    <span class="c1"># @property ndb</span>
-    <span class="k">def</span> <span class="nf">__ndb_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ndb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A non-attr_obj store (ndb: NonDataBase). Everything stored</span>
 <span class="sd">        to this is guaranteed to be cleared when a server is shutdown.</span>
@@ -799,19 +806,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span> <span class="o">=</span> <span class="n">DbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nattrhandler&quot;</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;nattributes&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span>
 
-    <span class="c1"># @db.setter</span>
-    <span class="k">def</span> <span class="nf">__ndb_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="nd">@ndb</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">ndb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="s2">&quot;Stop accidentally replacing the ndb object&quot;</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Cannot assign directly to ndb object! &quot;</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Use ndb.attr=value instead.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
-    <span class="c1"># @db.deleter</span>
-    <span class="k">def</span> <span class="nf">__ndb_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@ndb</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span> <span class="nf">ndb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Stop accidental deletion.&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the ndb object!&quot;</span><span class="p">)</span>
-
-    <span class="n">ndb</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__ndb_get</span><span class="p">,</span> <span class="n">__ndb_set</span><span class="p">,</span> <span class="n">__ndb_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TypedObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -921,7 +926,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-create&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -961,7 +966,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-detail&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_puppet_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_puppet_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_puppet_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -973,19 +978,17 @@
 <span class="sd">            str: URI path to object puppet page, if defined.</span>
 
 <span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
 
-<span class="sd">            ```python</span>
-<span class="sd">            Oscar (Character) = &#39;/characters/oscar/1/puppet/&#39;</span>
-<span class="sd">            ```</span>
+<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/puppet/&#39;</span>
 
 <span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
 <span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
 <span class="sd">            a named view of &#39;character-puppet&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
 
-<span class="sd">            ```python</span>
-<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/puppet/$&#39;,</span>
-<span class="sd">                CharPuppetView.as_view(), name=&#39;character-puppet&#39;)</span>
-<span class="sd">            ```</span>
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/puppet/$&#39;,</span>
+<span class="sd">                    CharPuppetView.as_view(), name=&#39;character-puppet&#39;)</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">            HTML anchor.</span>
@@ -1001,7 +1004,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-puppet&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1021,11 +1024,10 @@
 <span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
 <span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
 <span class="sd">            a named view of &#39;character-update&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
 
-<span class="sd">            ```python</span>
-<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
 <span class="sd">                CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
-<span class="sd">            ```</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">            HTML anchor.</span>
@@ -1041,7 +1043,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-update&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1061,11 +1063,10 @@
 <span class="sd">            somewhere in urls.py that follows the format &#39;modelname-action&#39;, so</span>
 <span class="sd">            in this case a named view of &#39;character-detail&#39; would be referenced</span>
 <span class="sd">            by this method.</span>
+<span class="sd">            ::</span>
 
-<span class="sd">            ```python</span>
-<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
 <span class="sd">                CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
-<span class="sd">            ```</span>
 
 <span class="sd">            If no View has been created and defined in urls.py, returns an HTML</span>
 <span class="sd">            anchor.</span>
@@ -1081,7 +1082,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-delete&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
     <span class="c1"># Used by Django Sites/Admin</span>

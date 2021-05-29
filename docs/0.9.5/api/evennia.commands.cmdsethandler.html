@@ -176,7 +176,7 @@ to the central <strong>cmdhandler.get_and_merge_cmdsets()</strong>!</p>
 
 <dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a cmdset to the handler, on top of the old ones, unless it
 is set as the default one (it will then end up at the bottom of the stack)</p>
 <dl class="field-list simple">
@@ -186,8 +186,6 @@ is set as the default one (it will then end up at the bottom of the stack)</p>
 to such an object.</p></li>
 <li><p><strong>emit_to_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – An object to receive error messages.</p></li>
 <li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Let cmdset remain across server reload.</p></li>
-<li><p><strong>permanent</strong> (<em>bool</em><em>, </em><em>optional</em>) – DEPRECATED. This has the same use as
-<strong>persistent</strong>.</p></li>
 <li><p><strong>default_cmdset</strong> (<em>Cmdset</em><em>, </em><em>optional</em>) – Insert this to replace the
 default cmdset position (there is only one such position,
 always at the bottom of the stack).</p></li>
@@ -208,14 +206,14 @@ it’s a ‘quirk’ that has to be documented.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.add_default">
-<code class="sig-name descname">add_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut for adding a default cmdset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cmdset</strong> (<em>Cmdset</em>) – The Cmdset to add.</p></li>
 <li><p><strong>emit_to_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Gets error messages</p></li>
-<li><p><strong>permanent</strong> (<em>bool</em><em>, </em><em>optional</em>) – The new Cmdset should survive a server reboot.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – The new Cmdset should survive a server reboot.</p></li>
 </ul>
 </dd>
 </dl>

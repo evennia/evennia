@@ -120,8 +120,7 @@ FuncParser using callables from <strong>settings.FUNCPARSER_OUTGOING_MESSAGES_MO
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The relevant session instance.</p></li>
-<li><p><strong>kwargs</strong> (<em>dict</em>) – of the instruction (like “text”). Suitable values for each
-keyword are:
+<li><p><strong>kwargs</strong> (<em>dict</em>) – the name of the instruction (like “text”). Suitable values for each keyword are:
 - arg                -&gt;  [[arg], {}]
 - [args]             -&gt;  [[args], {}]
 - {kwargs}           -&gt;  [[], {kwargs}]
@@ -144,13 +143,10 @@ applied.</p>
 <dt id="evennia.server.sessionhandler.ServerSessionHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.sessionhandler.</code><code class="sig-name descname">ServerSessionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#ServerSessionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.ServerSessionHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.server.sessionhandler.SessionHandler" title="evennia.server.sessionhandler.SessionHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.sessionhandler.SessionHandler</span></code></a></p>
-<p>This object holds the stack of sessions active in the game at
-any time.</p>
-<p>A session register with the handler in two steps, first by
-registering itself with the connect() method. This indicates an
-non-authenticated session. Whenever the session is authenticated
-the session together with the related account is sent to the login()
-method.</p>
+<p>This object holds the stack of sessions active in the game at any time.</p>
+<p>A session register with the handler in two steps, first by registering itself with the connect()
+method. This indicates an non-authenticated session. Whenever the session is authenticated the
+session together with the related account is sent to the login() method.</p>
 <dl class="py method">
 <dt id="evennia.server.sessionhandler.ServerSessionHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#ServerSessionHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.ServerSessionHandler.__init__" title="Permalink to this definition">¶</a></dt>
@@ -270,9 +266,8 @@ itself down)</p>
 <dl class="py method">
 <dt id="evennia.server.sessionhandler.ServerSessionHandler.login">
 <code class="sig-name descname">login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/sessionhandler.html#ServerSessionHandler.login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.sessionhandler.ServerSessionHandler.login" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log in the previously unloggedin session and the account we by
-now should know is connected to it. After this point we assume
-the session to be logged in one way or another.</p>
+<dd><p>Log in the previously unloggedin session and the account we by now should know is connected
+to it. After this point we assume the session to be logged in one way or another.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -454,7 +449,7 @@ object.</p>
 </dl>
 <dl class="simple">
 <dt>Returns.</dt><dd><dl class="simple">
-<dt>sessions (Session or list): Can be more than one of Object is controlled by</dt><dd><p>more than one Session (MULTISESSION_MODE &gt; 1).</p>
+<dt>sessions (Session or list): Can be more than one of Object is controlled by more than</dt><dd><p>one Session (MULTISESSION_MODE &gt; 1).</p>
 </dd>
 </dl>
 </dd>
@@ -472,7 +467,7 @@ object.</p>
 </dl>
 <dl class="simple">
 <dt>Returns.</dt><dd><dl class="simple">
-<dt>sessions (Session or list): Can be more than one of Object is controlled by</dt><dd><p>more than one Session (MULTISESSION_MODE &gt; 1).</p>
+<dt>sessions (Session or list): Can be more than one of Object is controlled by more than</dt><dd><p>one Session (MULTISESSION_MODE &gt; 1).</p>
 </dd>
 </dl>
 </dd>

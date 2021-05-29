@@ -280,12 +280,12 @@
                 <span class="k">del</span> <span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">ln</span> <span class="o">=</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
                 <span class="c1"># Can at least squeeze this chunk onto the current line.</span>
-                <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">ln</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
                     <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
-                    <span class="n">cur_len</span> <span class="o">+=</span> <span class="n">l</span>
+                    <span class="n">cur_len</span> <span class="o">+=</span> <span class="n">ln</span>
 
                 <span class="c1"># Nope, this line is full.</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -303,10 +303,10 @@
             <span class="c1"># Convert current line back to a string and store it in list</span>
             <span class="c1"># of all lines (return value).</span>
             <span class="k">if</span> <span class="n">cur_line</span><span class="p">:</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">ln</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">cur_line</span><span class="p">:</span>  <span class="c1"># ANSI fix</span>
-                    <span class="n">l</span> <span class="o">+=</span> <span class="n">w</span>  <span class="c1">#</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
+                    <span class="n">ln</span> <span class="o">+=</span> <span class="n">w</span>  <span class="c1">#</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="n">ln</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">lines</span></div>
 
 
@@ -1140,8 +1140,9 @@
 <span class="sd">            height (int, optional): Fixed height of table. Defaults to being unset. Width is</span>
 <span class="sd">                still given precedence. If given, table cells will crop text rather</span>
 <span class="sd">                than expand vertically.</span>
-<span class="sd">            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as even width as</span>
-<span class="sd">                     possible. This often looks best also for mixed-length tables. Default is `False`.</span>
+<span class="sd">            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as</span>
+<span class="sd">                even width as possible. This often looks best also for mixed-length tables. Default</span>
+<span class="sd">                is `False`.</span>
 <span class="sd">            maxwidth (int, optional):  This will set a maximum width</span>
 <span class="sd">                of the table while allowing it to be smaller. Only if it grows wider than this</span>
 <span class="sd">                size will it be resized by expanding horizontally (or crop `height` is given).</span>
@@ -1388,7 +1389,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrowmax</span>
 
-        <span class="c1"># add borders - these add to the width/height, so we must do this before calculating width/height</span>
+        <span class="c1"># add borders - these add to the width/height, so we must do this before calculating</span>
+        <span class="c1"># width/height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_borders</span><span class="p">()</span>
 
         <span class="c1"># equalize widths within each column</span>
@@ -1475,7 +1477,8 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">raise</span>
 
-        <span class="c1"># equalize heights for each row (we must do this here, since it may have changed to fit new widths)</span>
+        <span class="c1"># equalize heights for each row (we must do this here, since it may have changed to fit new</span>
+        <span class="c1"># widths)</span>
         <span class="n">cheights</span> <span class="o">=</span> <span class="p">[</span>
             <span class="nb">max</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worktable</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrowmax</span><span class="p">)</span>

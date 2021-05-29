@@ -40,15 +40,35 @@
             
   <section id="module-evennia.web.api.views">
 <span id="evennia-web-api-views"></span><h1>evennia.web.api.views<a class="headerlink" href="#module-evennia.web.api.views" title="Permalink to this headline">¶</a></h1>
-<p>Views are the functions that are called by different url endpoints.
-The Django Rest Framework provides collections called ‘ViewSets’, which
-can generate a number of views for the common CRUD operations.</p>
+<p>Views are the functions that are called by different url endpoints. The Django
+Rest Framework provides collections called ‘ViewSets’, which can generate a
+number of views for the common CRUD operations.</p>
+<dl class="py class">
+<dt id="evennia.web.api.views.GeneralViewSetMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">GeneralViewSetMixin</code><a class="reference internal" href="../_modules/evennia/web/api/views.html#GeneralViewSetMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.GeneralViewSetMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mixin for both typeclass- and non-typeclass entities.</p>
+<dl class="py method">
+<dt id="evennia.web.api.views.GeneralViewSetMixin.get_serializer_class">
+<code class="sig-name descname">get_serializer_class</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#GeneralViewSetMixin.get_serializer_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.GeneralViewSetMixin.get_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow different serializers for certain actions.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt id="evennia.web.api.views.TypeclassViewSetMixin">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">TypeclassViewSetMixin</code><a class="reference internal" href="../_modules/evennia/web/api/views.html#TypeclassViewSetMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.TypeclassViewSetMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.GeneralViewSetMixin" title="evennia.web.api.views.GeneralViewSetMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.GeneralViewSetMixin</span></code></a></p>
 <p>This mixin adds some shared functionality to each viewset of a typeclass. They all use the same
 permission classes and filter backend. You can override any of these in your own viewsets.</p>
+<p>The <strong>set_atribute</strong> action is  an example of a custom action added to a
+viewset. Based on the name of the method, it will create a default url_name
+(used for reversing) and url_path.  The ‘pk’ argument is automatically
+passed to this action because it has a url path of the format &lt;object
+type&gt;/:pk/set-attribute. The get_object method is automatically set in the
+expected viewset classes that will inherit this, using the pk that’s passed
+along to retrieve the object.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.TypeclassViewSetMixin.permission_classes">
 <code class="sig-name descname">permission_classes</code><em class="property"> = [&lt;class 'evennia.web.api.permissions.EvenniaPermission'&gt;]</em><a class="headerlink" href="#evennia.web.api.views.TypeclassViewSetMixin.permission_classes" title="Permalink to this definition">¶</a></dt>
@@ -62,14 +82,8 @@ permission classes and filter backend. You can override any of these in your own
 <dl class="py method">
 <dt id="evennia.web.api.views.TypeclassViewSetMixin.set_attribute">
 <code class="sig-name descname">set_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">pk</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#TypeclassViewSetMixin.set_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.TypeclassViewSetMixin.set_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is an example of a custom action added to a viewset. Based on the name of the
-method, it will create a default url_name (used for reversing) and url_path.
-The ‘pk’ argument is automatically passed to this action because it has a url path
-of the format &lt;object type&gt;/:pk/set-attribute. The get_object method is automatically
-set in the expected viewset classes that will inherit this, using the pk that’s
-passed along to retrieve the object.</p>
-<p>This action will set an attribute if the db_value is defined, or remove it
-if no db_value is provided.</p>
+<dd><p>This action will set an attribute if the db_value is defined, or remove
+it if no db_value is provided.</p>
 </dd></dl>
 
 </dd></dl>
@@ -78,10 +92,8 @@ if no db_value is provided.</p>
 <dt id="evennia.web.api.views.ObjectDBViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">ObjectDBViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#ObjectDBViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.ObjectDBViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.TypeclassViewSetMixin" title="evennia.web.api.views.TypeclassViewSetMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.TypeclassViewSetMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ModelViewSet</span></code></p>
-<p>An example of a basic viewset for all ObjectDB instances. It declares the
-serializer to use for both retrieving and changing/creating/deleting
-instances. Serializers are similar to django forms, used for the
-transmitting of data (typically json).</p>
+<p>The Object is the parent for all in-game entities that have a location
+(rooms, exits, characters etc).</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.ObjectDBViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#evennia.web.api.views.ObjectDBViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
@@ -97,6 +109,12 @@ transmitting of data (typically json).</p>
 <dt id="evennia.web.api.views.ObjectDBViewSet.filterset_class">
 <code class="sig-name descname">filterset_class</code><a class="headerlink" href="#evennia.web.api.views.ObjectDBViewSet.filterset_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet" title="evennia.web.api.filters.ObjectDBFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.ObjectDBFilterSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.ObjectDBViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.ObjectDBViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer" title="evennia.web.api.serializers.ObjectListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.ObjectListSerializer</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -130,12 +148,17 @@ transmitting of data (typically json).</p>
 <dt id="evennia.web.api.views.CharacterViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">CharacterViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#CharacterViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.CharacterViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.ObjectDBViewSet" title="evennia.web.api.views.ObjectDBViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.ObjectDBViewSet</span></code></a></p>
-<p>This overrides the queryset to only retrieve Character objects
-based on your DefaultCharacter typeclass path.</p>
+<p>Characters are a type of Object commonly used as player avatars in-game.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.CharacterViewSet.queryset">
 <code class="sig-name descname">queryset</code><a class="headerlink" href="#evennia.web.api.views.CharacterViewSet.queryset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.CharacterViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.CharacterViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer" title="evennia.web.api.serializers.ObjectListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.ObjectListSerializer</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.web.api.views.CharacterViewSet.basename">
@@ -168,11 +191,17 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.RoomViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">RoomViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#RoomViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.RoomViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.ObjectDBViewSet" title="evennia.web.api.views.ObjectDBViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.ObjectDBViewSet</span></code></a></p>
-<p>Viewset for Room objects</p>
+<p>Rooms indicate discrete locations in-game.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.RoomViewSet.queryset">
 <code class="sig-name descname">queryset</code><a class="headerlink" href="#evennia.web.api.views.RoomViewSet.queryset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.RoomViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.RoomViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer" title="evennia.web.api.serializers.ObjectListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.ObjectListSerializer</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.web.api.views.RoomViewSet.basename">
@@ -205,11 +234,18 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.ExitViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">ExitViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#ExitViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.ExitViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.ObjectDBViewSet" title="evennia.web.api.views.ObjectDBViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.ObjectDBViewSet</span></code></a></p>
-<p>Viewset for Exit objects</p>
+<p>Exits are objects with a destination and allows for traversing from one
+location to another.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.ExitViewSet.queryset">
 <code class="sig-name descname">queryset</code><a class="headerlink" href="#evennia.web.api.views.ExitViewSet.queryset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.ExitViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.ExitViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer" title="evennia.web.api.serializers.ObjectListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.ObjectListSerializer</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.web.api.views.ExitViewSet.basename">
@@ -242,7 +278,7 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.AccountDBViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">AccountDBViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#AccountDBViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.AccountDBViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.TypeclassViewSetMixin" title="evennia.web.api.views.TypeclassViewSetMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.TypeclassViewSetMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ModelViewSet</span></code></p>
-<p>Viewset for Account objects</p>
+<p>Accounts represent the players connected to the game</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.AccountDBViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#evennia.web.api.views.AccountDBViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
@@ -258,6 +294,12 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.AccountDBViewSet.filterset_class">
 <code class="sig-name descname">filterset_class</code><a class="headerlink" href="#evennia.web.api.views.AccountDBViewSet.filterset_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet" title="evennia.web.api.filters.AccountDBFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.AccountDBFilterSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.AccountDBViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.AccountDBViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer" title="evennia.web.api.serializers.AccountListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.AccountListSerializer</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -291,7 +333,8 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.ScriptDBViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">ScriptDBViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#ScriptDBViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.ScriptDBViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.TypeclassViewSetMixin" title="evennia.web.api.views.TypeclassViewSetMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.TypeclassViewSetMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ModelViewSet</span></code></p>
-<p>Viewset for Script objects</p>
+<p>Scripts are meta-objects for storing system data, running timers etc. They
+have no in-game existence.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.ScriptDBViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#evennia.web.api.views.ScriptDBViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
@@ -307,6 +350,12 @@ based on your DefaultCharacter typeclass path.</p>
 <dt id="evennia.web.api.views.ScriptDBViewSet.filterset_class">
 <code class="sig-name descname">filterset_class</code><a class="headerlink" href="#evennia.web.api.views.ScriptDBViewSet.filterset_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet" title="evennia.web.api.filters.ScriptDBFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.ScriptDBFilterSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.ScriptDBViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.ScriptDBViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer" title="evennia.web.api.serializers.ScriptListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.ScriptListSerializer</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -332,6 +381,62 @@ based on your DefaultCharacter typeclass path.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.views.ScriptDBViewSet.suffix">
 <code class="sig-name descname">suffix</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.ScriptDBViewSet.suffix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.views.HelpViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.views.</code><code class="sig-name descname">HelpViewSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/views.html#HelpViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.views.HelpViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.views.GeneralViewSetMixin" title="evennia.web.api.views.GeneralViewSetMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.views.GeneralViewSetMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ModelViewSet</span></code></p>
+<p>Database-stored help entries.
+Note that command auto-help and file-based help entries are not accessible this way.</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer" title="evennia.web.api.serializers.HelpSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.HelpSerializer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.queryset">
+<code class="sig-name descname">queryset</code><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.filterset_class">
+<code class="sig-name descname">filterset_class</code><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.filterset_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.filters.html#evennia.web.api.filters.HelpFilterSet" title="evennia.web.api.filters.HelpFilterSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.filters.HelpFilterSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.list_serializer_class">
+<code class="sig-name descname">list_serializer_class</code><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.list_serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer" title="evennia.web.api.serializers.HelpListSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.HelpListSerializer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.basename">
+<code class="sig-name descname">basename</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.basename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.description">
+<code class="sig-name descname">description</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.detail">
+<code class="sig-name descname">detail</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.detail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.name">
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.views.HelpViewSet.suffix">
+<code class="sig-name descname">suffix</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.views.HelpViewSet.suffix" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

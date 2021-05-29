@@ -47,7 +47,7 @@ sessions etc.</p>
 <dt id="evennia.server.portal.telnet.TelnetServerFactory">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.telnet.</code><code class="sig-name descname">TelnetServerFactory</code><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetServerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetServerFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ServerFactory</span></code></p>
-<p>This is only to name this better in logs</p>
+<p>This exists only to name this better in logs.</p>
 <dl class="py attribute">
 <dt id="evennia.server.portal.telnet.TelnetServerFactory.noisy">
 <code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.portal.telnet.TelnetServerFactory.noisy" title="Permalink to this definition">¶</a></dt>
@@ -93,7 +93,7 @@ of incoming data.</p>
 <dd><p>Allow to toggle the NOP keepalive for those sad clients that
 can’t even handle a NOP instruction. This is turned off by the
 protocol_flag NOPKEEPALIVE (settable e.g. by the default
-<strong>&#64;option</strong> command).</p>
+<strong>option</strong> command).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -201,7 +201,7 @@ directly.</p>
 <dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.disconnect">
 <code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>generic hook for the engine to call in order to
+<dd><p>Generic hook for the engine to call in order to
 disconnect this protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

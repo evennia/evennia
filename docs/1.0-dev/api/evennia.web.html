@@ -40,10 +40,8 @@
             
   <section id="module-evennia.web">
 <span id="evennia-web"></span><h1>evennia.web<a class="headerlink" href="#module-evennia.web" title="Permalink to this headline">¶</a></h1>
-<p>This sub-package holds the web presence of Evennia, using normal
-Django to relate the database contents to web pages. Also the basic
-webclient and the website are defined in here (the webserver itself is
-found under the <strong>server</strong> package).</p>
+<p>This sub-package holds the web presence of Evennia, using normal Django to
+relate the database contents to web pages.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="evennia.web.urls.html">evennia.web.urls</a></li>
@@ -51,16 +49,36 @@ found under the <strong>server</strong> package).</p>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.admin.html">evennia.web.admin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.accounts.html">evennia.web.admin.accounts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.attributes.html">evennia.web.admin.attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.comms.html">evennia.web.admin.comms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.frontpage.html">evennia.web.admin.frontpage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.help.html">evennia.web.admin.help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.objects.html">evennia.web.admin.objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.scripts.html">evennia.web.admin.scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.server.html">evennia.web.admin.server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.tags.html">evennia.web.admin.tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.urls.html">evennia.web.admin.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.admin.utils.html">evennia.web.admin.utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="evennia.web.api.html">evennia.web.api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.filters.html">evennia.web.api.filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.permissions.html">evennia.web.api.permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.root.html">evennia.web.api.root</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.serializers.html">evennia.web.api.serializers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.tests.html">evennia.web.api.tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.urls.html">evennia.web.api.urls</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.api.views.html">evennia.web.api.views</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.templatetags.html">evennia.web.templatetags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.templatetags.addclass.html">evennia.web.templatetags.addclass</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="evennia.web.utils.html">evennia.web.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.adminsite.html">evennia.web.utils.adminsite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.backends.html">evennia.web.utils.backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.general_context.html">evennia.web.utils.general_context</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.middleware.html">evennia.web.utils.middleware</a></li>
@@ -76,9 +94,15 @@ found under the <strong>server</strong> package).</p>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.website.forms.html">evennia.web.website.forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.website.tests.html">evennia.web.website.tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.website.urls.html">evennia.web.website.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.views.html">evennia.web.website.views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.templatetags.html">evennia.web.website.templatetags</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.templatetags.addclass.html">evennia.web.website.templatetags.addclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.views.html">evennia.web.website.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.accounts.html">evennia.web.website.views.accounts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.channels.html">evennia.web.website.views.channels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.characters.html">evennia.web.website.views.characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.errors.html">evennia.web.website.views.errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.help.html">evennia.web.website.views.help</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.index.html">evennia.web.website.views.index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.mixins.html">evennia.web.website.views.mixins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.objects.html">evennia.web.website.views.objects</a></li>
 </ul>
 </li>
 </ul>

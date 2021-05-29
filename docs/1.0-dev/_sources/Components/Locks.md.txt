@@ -43,7 +43,7 @@ command:
 ```python
      if not obj.access(accessing_obj, 'delete'):
          accessing_obj.msg("Sorry, you may not delete that.")
-         return 
+         return
 ```
 
 ## Defining locks
@@ -51,16 +51,16 @@ command:
 Defining a lock (i.e. an access restriction) in Evennia is done by adding simple strings of lock
 definitions to the object's `locks` property using `obj.locks.add()`.
 
-Here are some examples of lock strings (not including the quotes): 
+Here are some examples of lock strings (not including the quotes):
 
 ```python
      delete:id(34)   # only allow obj #34 to delete
-     edit:all()      # let everyone edit 
+     edit:all()      # let everyone edit
      # only those who are not "very_weak" or are Admins may pick this up
-     get: not attr(very_weak) or perm(Admin) 
+     get: not attr(very_weak) or perm(Admin)
 ```
 
-Formally, a lockstring has the following syntax: 
+Formally, a lockstring has the following syntax:
 
 ```python
      access_type: [NOT] lockfunc1([arg1,..]) [AND|OR] [NOT] lockfunc2([arg1,...]) [...]
@@ -77,7 +77,7 @@ total result is `True`, the lock is passed.
 You can create several lock types one after the other by separating them with a semicolon (`;`) in
 the lockstring. The string below yields the same result as the previous example:
 
-    delete:id(34);edit:all();get: not attr(very_weak) or perm(Admin) 
+    delete:id(34);edit:all();get: not attr(very_weak) or perm(Admin)
 
 
 ### Valid access_types
@@ -92,7 +92,7 @@ the default command set) actually checks for, as in the example of `delete` abov
 
 Below are the access_types checked by the default commandset.
 
-- [Commands](./Commands) 
+- [Commands](./Commands)
   - `cmd` - this defines who may call this command at all.
 - [Objects](./Objects):
   - `control` - who is the "owner" of the object. Can set locks, delete it etc. Defaults to the
@@ -109,10 +109,10 @@ something like `call:false()`.
   - `get`- who may pick up the object and carry it around.
   - `puppet` - who may "become" this object and control it as their "character".
   - `attrcreate` - who may create new attributes on the object (default True)
-- [Characters](./Objects#Characters): 
+- [Characters](./Objects#Characters):
   - Same as for Objects
-- [Exits](./Objects#Exits): 
-  - Same as for Objects 
+- [Exits](./Objects#Exits):
+  - Same as for Objects
   - `traverse` - who may pass the exit.
 - [Accounts](./Accounts):
   - `examine` - who may examine the account's properties.
@@ -147,7 +147,7 @@ read a board or post to a board. You could then define locks such as:
 
 ```python
      obj.locks.add("read:perm(Player);post:perm(Admin)")
-``` 
+```
 
 This will create a 'read' access type for Characters having the `Player` permission or above and a
 'post' access type for those with `Admin` permissions or above (see below how the `perm()` lock
@@ -158,7 +158,7 @@ trying to read the board):
 ```python
      if not obj.access(accessing_obj, 'read'):
          accessing_obj.msg("Sorry, you may not read that.")
-         return 
+         return
 ```
 
 ### Lock functions
@@ -178,15 +178,15 @@ arguments explicitly given in the lock definition will appear as extra arguments
 ```python
     # A simple example lock function. Called with e.g. `id(34)`. This is
     # defined in, say mygame/server/conf/lockfuncs.py
-    
+
     def id(accessing_obj, accessed_obj, *args, **kwargs):
         if args:
             wanted_id = args[0]
             return accessing_obj.id == wanted_id
-        return False 
+        return False
 ```
 
-The above could for example be used in a lock function like this: 
+The above could for example be used in a lock function like this:
 
 ```python
     # we have `obj` and `owner_object` from before
@@ -202,7 +202,7 @@ We could check if the "edit" lock is passed with something like this:
         return
 ```
 
-In this example, everyone except the `caller` with the right `id` will get the error. 
+In this example, everyone except the `caller` with the right `id` will get the error.
 
 > (Using the `*` and `**` syntax causes Python to magically put all extra arguments into a list
 `args` and all keyword arguments into a dictionary `kwargs` respectively. If you are unfamiliar with
@@ -258,123 +258,6 @@ child object to change the default. Also creation commands like `create` changes
 objects you create - for example it sets the `control` lock_type so as to allow you, its creator, to
 control and delete the object.
 
-# Permissions
-
-> This section covers the underlying code use of permissions. If you just want to learn how to
-practically assign permissions in-game, refer to the [Building Permissions](../Concepts/Building-Permissions)
-page, which details how you use the `perm` command.
-
-A *permission* is simply a list of text strings stored  in the handler `permissions` on `Objects`
-and `Accounts`. Permissions can be used as a convenient way to structure access levels and
-hierarchies. It is set by the `perm` command. Permissions are especially handled by the `perm()` and
-`pperm()` lock functions listed above.
-
-Let's say we have a `red_key` object. We also have red chests that we want to unlock with this key.
-
-    perm red_key = unlocks_red_chests
-
-This gives the `red_key` object the permission "unlocks_red_chests".  Next we lock our red chests:
-
-    lock red chest = unlock:perm(unlocks_red_chests)
-
-What this lock will expect is to the fed the actual key object. The `perm()` lock function will
-check the permissions set on the key and only return true if the permission is the one given.
-
-Finally we need to actually check this lock somehow. Let's say the chest has an command `open <key>`
-sitting on itself. Somewhere in its code the command needs to figure out which key you are using and
-test if this key has the correct permission:
-
-```python
-    # self.obj is the chest 
-    # and used_key is the key we used as argument to
-    # the command. The self.caller is the one trying
-    # to unlock the chest
-    if not self.obj.access(used_key, "unlock"):
-        self.caller.msg("The key does not fit!")
-        return 
-```
-
-All new accounts are given a default set of permissions defined by
-`settings.PERMISSION_ACCOUNT_DEFAULT`.
-
-Selected permission strings can be organized in a *permission hierarchy* by editing the tuple
-`settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows:
-
-     Developer        # like superuser but affected by locks
-     Admin            # can administrate accounts
-     Builder          # can edit the world
-     Helper           # can edit help files
-     Player           # can chat and send tells (default level)
-
-(Also the plural form works, so you could use `Developers` etc too). 
-
-> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is
-set. This is never part of `settings.PERMISSION_HIERARCHY`.
-
-The main use of this is that if you use the lock function `perm()` mentioned above, a lock check for
-a particular permission in the hierarchy will *also* grant access to those with *higher* hierarchy
-access. So if you have the permission "Admin" you will also pass a lock defined as `perm(Builder)`
-or any of those levels below "Admin".
-
-When doing an access check from an [Object](./Objects) or Character, the `perm()` lock function will
-always first use the permissions of any Account connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the
-Account permission will always be used (this stops an Account from escalating their permission by
-puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact
-match is required, first on the Account and if not found there (or if no Account is connected), then
-on the Object itself.
-
-Here is how you use `perm` to give an account more permissions: 
-
-     perm/account Tommy = Builders
-     perm/account/del Tommy = Builders # remove it again
-
-Note the use of the `/account` switch. It means you assign the permission to the
-[Accounts](./Accounts) Tommy instead of any [Character](./Objects) that also happens to be named
-"Tommy".
-
-Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character
-they are currently puppeting. This is especially important to remember when assigning permissions
-from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its
-character. So to be sure to avoid confusion you should generally put hierarchy permissions on the
-Account, not on their Characters (but see also [quelling](./Locks#Quelling)).
-
-Below is an example of an object without any connected account
-
-```python
-    obj1.permissions = ["Builders", "cool_guy"]
-    obj2.locks.add("enter:perm_above(Accounts) and perm(cool_guy)")
-    
-    obj2.access(obj1, "enter") # this returns True!
-```
-
-And one example of a puppet with a connected account:
-
-```python
-    account.permissions.add("Accounts")
-    puppet.permissions.add("Builders", "cool_guy")
-    obj2.locks.add("enter:perm_above(Accounts) and perm(cool_guy)")
-    
-    obj2.access(puppet, "enter") # this returns False!
-```
-
-## Superusers
-
-There is normally only one *superuser* account and that is the one first created when starting
-Evennia (User #1). This is sometimes known as the "Owner" or "God" user.  A superuser has more than
-full access - it completely *bypasses* all locks so no checks are even run. This allows for the
-superuser to always have access to everything in an emergency. But it also hides any eventual errors
-you might have made in your lock definitions. So when trying out game systems you should either use
-quelling (see below) or make a second Developer-level character so your locks get tested correctly.
-
-## Quelling
-
-The `quell` command can be used to enforce the `perm()` lockfunc to ignore permissions on the
-Account and instead use the permissions on the Character only. This can be used e.g. by staff to
-test out things with a lower permission level. Return to the normal operation with `unquell`.  Note
-that quelling will use the smallest of any hierarchical permission on the Account or Character, so
-one cannot escalate one's Account permission by quelling to a high-permission Character. Also the
-superuser can quell their powers this way, making them affectable by locks.
 
 ## More Lock definition examples
 
@@ -384,7 +267,7 @@ You are only allowed to do *examine* on this object if you have 'excellent' eyes
 an Attribute `eyesight` with the value `excellent` defined on yourself) or if you have the
 "Builders" permission string assigned to you.
 
-    open: holds('the green key') or perm(Builder) 
+    open: holds('the green key') or perm(Builder)
 
 This could be called by the `open` command on a "door" object. The check is passed if you are a
 Builder or has the right key in your inventory.
@@ -453,7 +336,7 @@ object has the attribute *strength* of the right value. For this we would need t
 function that checks if attributes have a value greater than a given value. Luckily there is already
 such a one included in evennia (see `evennia/locks/lockfuncs.py`), called `attr_gt`.
 
-So the lock string will look like this: `get:attr_gt(strength, 50)`.  We put this on the box now: 
+So the lock string will look like this: `get:attr_gt(strength, 50)`.  We put this on the box now:
 
      lock box = get:attr_gt(strength, 50)
 
@@ -463,20 +346,20 @@ strength above 50 however and you'll pick it up no problem. Done! A very heavy b
 If you wanted to set this up in python code, it would look something like this:
 
 ```python
-   
+
  from evennia import create_object
-    
+
     # create, then set the lock
     box = create_object(None, key="box")
     box.locks.add("get:attr_gt(strength, 50)")
-    
+
     # or we can assign locks in one go right away
     box = create_object(None, key="box", locks="get:attr_gt(strength, 50)")
-    
+
     # set the attributes
     box.db.desc = "This is a very big and heavy box."
     box.db.get_err_msg = "You are not strong enough to lift this box."
-    
+
     # one heavy box, ready to withstand all but the strongest...
 ```
 

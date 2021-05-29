@@ -160,10 +160,10 @@ other access calls.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pk</strong> (<em>int</em>) – This is a fake ‘primary key’ / id-field. It doesn’t actually have to be unique, but is fed an
-incrementing number from the InMemoryBackend by default. This is needed only so Attributes can be
-sorted. Some parts of the API also see the lack of a .pk field as a sign that the Attribute was
-deleted.</p></li>
+<li><p><strong>pk</strong> (<em>int</em>) – This is a fake ‘primary key’ / id-field. It doesn’t actually have to be
+unique, but is fed an incrementing number from the InMemoryBackend by default. This
+is needed only so Attributes can be sorted. Some parts of the API also see the lack
+of a .pk field as a sign that the Attribute was deleted.</p></li>
 <li><p><strong>**kwargs</strong> – Other keyword arguments are used to construct the actual Attribute.</p></li>
 </ul>
 </dd>
@@ -499,7 +499,8 @@ this will lead to Trouble. Ignored for InMemory attributes.</p></li>
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.IAttributeBackend.create_attribute">
 <code class="sig-name descname">create_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.create_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.create_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates Attribute (using the class specified for the backend), (optionally) caches it, and returns it.</p>
+<dd><p>Creates Attribute (using the class specified for the backend), (optionally) caches it, and
+returns it.</p>
 <p>This MUST actively save the Attribute to whatever database backend is used, AND
 call self.set_cache(key, category, new_attrobj)</p>
 <dl class="field-list simple">
@@ -679,10 +680,10 @@ type <strong>attredit</strong> on the Attribute in question.</p></li>
 <dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">InMemoryAttributeBackend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.IAttributeBackend" title="evennia.typeclasses.attributes.IAttributeBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.IAttributeBackend</span></code></a></p>
-<p>This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and normally lost
-on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes it manages, but these are
-of little importance beyond sorting and satisfying the caching logic to know an Attribute hasn’t been
-deleted out from under the cache’s nose.</p>
+<p>This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and
+normally lost on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes
+it manages, but these are of little importance beyond sorting and satisfying the caching logic
+to know an Attribute hasn’t been deleted out from under the cache’s nose.</p>
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">attrtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.__init__" title="Permalink to this definition">¶</a></dt>
@@ -772,7 +773,8 @@ deleted out from under the cache’s nose.</p>
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute">
 <code class="sig-name descname">do_delete_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes the Attribute from local storage. Once it’s out of the cache, garbage collection will handle the rest.</p>
+<dd><p>Removes the Attribute from local storage. Once it’s out of the cache, garbage collection
+will handle the rest.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p>
@@ -925,10 +927,9 @@ and/or caching complications.</p>
 <dd><p>Setup the AttributeHandler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed object), etc.</p></li>
-<li><p><strong>backend_class</strong> (<em>IAttributeBackend class</em>) – The class of the backend to use.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed
+object), etc.  backend_class (IAttributeBackend class): The class of the backend to
+use.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1262,10 +1263,9 @@ They also always use the <strong>strvalue</strong> fields for their data.</p>
 <dd><p>Setup the AttributeHandler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed object), etc.</p></li>
-<li><p><strong>backend_class</strong> (<em>IAttributeBackend class</em>) – The class of the backend to use.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – An Account, Object, Channel, ServerSession (not technically a typed
+object), etc.  backend_class (IAttributeBackend class): The class of the backend to
+use.</p>
 </dd>
 </dl>
 </dd></dl>

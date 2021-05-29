@@ -183,14 +183,14 @@ documentation specifically regarding DRF integration.</p>
 
 <dl class="py attribute">
 <dt id="evennia.web.api.filters.AccountDBFilterSet.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ['db_key', 'db_typeclass_path', 'db_tags__db_key', 'db_tags__db_category', 'username', 'db_is_connected', 'db_is_bot']</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fields</code><em class="property"> = ['db_typeclass_path', 'db_tags__db_key', 'db_tags__db_category', 'username', 'db_is_connected', 'db_is_bot']</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.Meta.fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.web.api.filters.AccountDBFilterSet.base_filters">
-<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'db_is_bot': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_is_connected': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_category': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_typeclass_path': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;, 'username': &lt;django_filters.filters.CharFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'db_is_bot': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_is_connected': &lt;django_filters.rest_framework.filters.BooleanFilter object&gt;, 'db_tags__db_category': &lt;django_filters.filters.CharFilter object&gt;, 'db_tags__db_key': &lt;django_filters.filters.CharFilter object&gt;, 'db_typeclass_path': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;, 'username': &lt;django_filters.filters.CharFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.AccountDBFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -230,6 +230,23 @@ documentation specifically regarding DRF integration.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.filters.ScriptDBFilterSet.declared_filters">
 <code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;, 'permission': &lt;evennia.web.api.filters.PermissionFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.ScriptDBFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.filters.HelpFilterSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">HelpFilterSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">request</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/filters.html#HelpFilterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.HelpFilterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_filters.rest_framework.filterset.FilterSet</span></code></p>
+<p>Filter for help entries</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.HelpFilterSet.base_filters">
+<code class="sig-name descname">base_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'category': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.HelpFilterSet.base_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.filters.HelpFilterSet.declared_filters">
+<code class="sig-name descname">declared_filters</code><em class="property"> = {'alias': &lt;evennia.web.api.filters.AliasFilter object&gt;, 'category': &lt;django_filters.filters.CharFilter object&gt;, 'name': &lt;django_filters.filters.CharFilter object&gt;}</em><a class="headerlink" href="#evennia.web.api.filters.HelpFilterSet.declared_filters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

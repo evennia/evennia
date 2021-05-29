@@ -75,7 +75,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['top', 'quit', 'q', 'a', 'e', 'back', 'b', 'next', 'abort', 'n', 'end', 't']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['abort', 'a', 'e', 'b', 'quit', 'end', 'n', 'top', 'next', 'q', 'back', 't']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -101,7 +101,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'top quit q a e back b next abort n end t', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort a e b quit end n top next q back t', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -373,14 +373,15 @@ strings, querysets, django.Paginator, EvTables and any iterables with strings.</
 <p class="rubric">Notes</p>
 <p>If overridden, this method must perform the following  actions:</p>
 <ul class="simple">
-<li><p>read and re-store <strong>self._data</strong> (the incoming data set) if needed for pagination to work.</p></li>
+<li><p>read and re-store <strong>self._data</strong> (the incoming data set) if needed for pagination to
+work.</p></li>
 <li><p>set <strong>self._npages</strong> to the total number of pages. Default is 1.</p></li>
 <li><p>set <strong>self._paginator</strong> to a callable that will take a page number 1…N and return
 the data to display on that page (not any decorations or next/prev buttons). If only
 wanting to change the paginator, override <strong>self.paginator</strong> instead.</p></li>
-<li><p>set <strong>self._page_formatter</strong> to a callable that will receive the page from <strong>self._paginator</strong>
-and format it with one element per line. Default is <strong>str</strong>. Or override <strong>self.page_formatter</strong>
-directly instead.</p></li>
+<li><p>set <strong>self._page_formatter</strong> to a callable that will receive the page from
+<strong>self._paginator</strong> and format it with one element per line. Default is <strong>str</strong>. Or
+override <strong>self.page_formatter</strong> directly instead.</p></li>
 </ul>
 <p>By default, helper methods are called that perform these actions
 depending on supported inputs.</p>

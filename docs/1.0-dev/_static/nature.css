@@ -340,7 +340,8 @@ div.code-block-caption {
 }
 
 .versionchanged {
-  background-color: #f7f7f7;
+  background-color: #b7e6e8;
+  padding-left: 10px;
 }
 
 .deprecated {

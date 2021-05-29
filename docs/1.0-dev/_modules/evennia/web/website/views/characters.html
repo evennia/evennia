@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.web.website.views.characters &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.characters</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.website.views.characters</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Views for manipulating Characters (children of Objects often used for</span>
+<span class="sd">puppeting).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.mixins</span> <span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Lower</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">RedirectView</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">TypeclassMixin</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">ObjectDeleteView</span><span class="p">,</span> <span class="n">ObjectUpdateView</span><span class="p">,</span> <span class="n">ObjectCreateView</span>
+<span class="kn">from</span> <span class="nn">evennia.web.website</span> <span class="kn">import</span> <span class="n">forms</span>
+
+
+<div class="viewcode-block" id="CharacterMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterMixin">[docs]</a><span class="k">class</span> <span class="nc">CharacterMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
+
+<span class="sd">    Any view class with this in its inheritance list will be modified to work</span>
+<span class="sd">    with Character objects instead of generic Objects or otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
+                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharacterForm</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;character-manage&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CharacterMixin.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will override the Django get_queryset method to only</span>
+<span class="sd">        return a list of characters associated with the current authenticated</span>
+<span class="sd">        user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            queryset (QuerySet): Django queryset for use in the given view.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get IDs of characters owned by account</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
+
+        <span class="c1"># Return a queryset consisting of those characters</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterListView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterListView">[docs]</a><span class="k">class</span> <span class="nc">CharacterListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player can view a list</span>
+<span class="sd">    of all other characters.</span>
+
+<span class="sd">    This view requires authentication by default as a nominal effort to prevent</span>
+<span class="sd">    human stalkers and automated bots/scrapers from harvesting data on your users.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_list.html&quot;</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="c1"># -- Evennia constructs --</span>
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Character List&quot;</span>
+    <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;view&quot;</span>
+
+<div class="viewcode-block" id="CharacterListView.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will override the Django get_queryset method to return a</span>
+<span class="sd">        list of all characters (filtered/sorted) instead of just those limited</span>
+<span class="sd">        to the account.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            queryset (QuerySet): Django queryset for use in the given view.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+
+        <span class="c1"># Return a queryset consisting of characters the user is allowed to</span>
+        <span class="c1"># see.</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_type</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterPuppetView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterPuppetView">[docs]</a><span class="k">class</span> <span class="nc">CharacterPuppetView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player can &quot;puppet&quot; one</span>
+<span class="sd">    of their characters within the context of the website.</span>
+
+<span class="sd">    It also ensures that any user attempting to puppet something is logged in,</span>
+<span class="sd">    and that their intended puppet is one that they own.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CharacterPuppetView.get_redirect_url"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterPuppetView.get_redirect_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_redirect_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Django hook.</span>
+
+<span class="sd">        This view returns the URL to which the user should be redirected after</span>
+<span class="sd">        a passed or failed puppet attempt.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            url (str): Path to post-puppet destination.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the requested character, if it belongs to the authenticated user</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+
+        <span class="c1"># Get the page the user came from</span>
+        <span class="n">next_page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">char</span><span class="p">:</span>
+            <span class="c1"># If the account owns the char, store the ID of the char in the</span>
+            <span class="c1"># Django request&#39;s session (different from Evennia session!).</span>
+            <span class="c1"># We do this because characters don&#39;t serialize well.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;puppet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;You become &#39;</span><span class="si">%s</span><span class="s2">&#39;!&quot;</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If the puppeting failed, clear out the cached puppet value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;puppet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;You cannot become &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">next_page</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterManageView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterManageView">[docs]</a><span class="k">class</span> <span class="nc">CharacterManageView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player can browse,</span>
+<span class="sd">    edit, or delete their own characters.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_manage_list.html&quot;</span>
+
+    <span class="c1"># -- Evennia constructs --</span>
+    <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Manage Characters&quot;</span></div>
+
+
+<div class="viewcode-block" id="CharacterUpdateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterUpdateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterUpdateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectUpdateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
+<span class="sd">    ObjectUpdateView) can edit the attributes of a character they own.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharacterUpdateForm</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_form.html&quot;</span></div>
+
+
+<div class="viewcode-block" id="CharacterDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterDetailView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDetailView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a user can view the attributes of</span>
+<span class="sd">    a character, owned by them or not.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_detail.html&quot;</span>
+
+    <span class="c1"># -- Evennia constructs --</span>
+    <span class="c1"># What attributes to display for this object</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">]</span>
+    <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;view&quot;</span>
+
+<div class="viewcode-block" id="CharacterDetailView.get_queryset"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterDetailView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will override the Django get_queryset method to return a</span>
+<span class="sd">        list of all characters the user may access.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            queryset (QuerySet): Django queryset for use in the given view.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+
+        <span class="c1"># Return a queryset consisting of characters the user is allowed to</span>
+        <span class="c1"># see.</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_type</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterDeleteView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterDeleteView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDeleteView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDeleteView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
+<span class="sd">    ObjectDeleteView) can delete a character they own.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CharacterCreateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterCreateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterCreateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectCreateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
+<span class="sd">    ObjectCreateView) can create a new character.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># -- Django constructs --</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_form.html&quot;</span>
+
+<div class="viewcode-block" id="CharacterCreateView.form_valid"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.characters.html#evennia.web.website.views.characters.CharacterCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Django hook, modified for Evennia.</span>
+
+<span class="sd">        This hook is called after a valid form is submitted.</span>
+
+<span class="sd">        When an character creation form is submitted and the data is deemed valid,</span>
+<span class="sd">        proceeds with creating the Character object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get account object creating the character</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">character</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Get attributes from the form</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">charname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">)</span>
+        <span class="c1"># Create a character</span>
+        <span class="n">character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">charname</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="c1"># Echo error messages to the user</span>
+            <span class="p">[</span><span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
+            <span class="c1"># Assign attributes from form</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="c1"># Return the user to the character management page, unless overridden</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Your character &#39;</span><span class="si">%s</span><span class="s2">&#39; was created!&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_url</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Call the Django &quot;form failed&quot; hook</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Your character could not be created.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_invalid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="characters.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.characters</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
