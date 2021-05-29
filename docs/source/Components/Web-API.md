@@ -108,7 +108,7 @@ Overall, reading up on [Django Rest Framework ViewSets](https://www.django-rest-
 other parts of their documentation is required for expanding and
 customizing the API.
 
-Check out the [Website](Website) page for help on how to override code, templates
+Check out the [Website](./Website) page for help on how to override code, templates
 and static files.
 - API templates (for the web-display) is located in `evennia/web/api/templates/rest_framework/` (it must
   be named such to allow override of the original REST framework templates).

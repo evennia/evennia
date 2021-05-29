@@ -1,7 +1,7 @@
-evennia.accounts.admin 
+evennia.web.admin.help 
 =============================
 
-.. automodule:: evennia.accounts.admin
+.. automodule:: evennia.web.admin.help
    :members:
    :undoc-members:
    :show-inheritance:

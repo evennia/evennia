@@ -1,7 +1,7 @@
-evennia.server.admin 
+evennia.web.api.root 
 ===========================
 
-.. automodule:: evennia.server.admin
+.. automodule:: evennia.web.api.root
    :members:
    :undoc-members:
    :show-inheritance:

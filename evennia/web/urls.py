@@ -2,17 +2,17 @@
 File that determines what each URL points to. This uses Python regular expressions.
 This is the starting point when a user enters an URL.
 
- 1. The URL is matched with a regex, tying it to a given view. Note that this central url.py
-    file includes url.py from all the various web-components found in views/ so the search
-    space is much larger than what is shown here.
- 2. The view (a Python function or class is executed)
- 3. The view uses a template (a HTML file which may contain template markers for dynamically
-    modifying its contents; the locations of such templates are given by
-    `settings.TEMPLATES[0]['DIRS']`) and which may in turn may include static
-    assets (CSS, images etc).
- 4. The view 'renders' the template into a finished HTML page, replacing all
- dynamic content as appropriate.
- 5. The HTML page is returned to the user.
+1. The URL is matched with a regex, tying it to a given view. Note that this central url.py
+   file includes url.py from all the various web-components found in views/ so the search
+   space is much larger than what is shown here.
+2. The view (a Python function or class is executed)
+3. The view uses a template (a HTML file which may contain template markers for dynamically
+   modifying its contents; the locations of such templates are given by
+   `settings.TEMPLATES[0]['DIRS']`) and which may in turn may include static
+   assets (CSS, images etc).
+4. The view 'renders' the template into a finished HTML page, replacing all
+   dynamic content as appropriate.
+5. The HTML page is returned to the user.
 
 """
 

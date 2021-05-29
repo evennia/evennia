@@ -182,15 +182,16 @@ class TypedObject(SharedMemoryModel):
     mechanics for managing connected attributes.
 
     The TypedObject has the following properties:
-      key - main name
-      name - alias for key
-      typeclass_path - the path to the decorating typeclass
-      typeclass - auto-linked typeclass
-      date_created - time stamp of object creation
-      permissions - perm strings
-      dbref - #id of object
-      db - persistent attribute storage
-      ndb - non-persistent attribute storage
+
+    - key - main name
+    - name - alias for key
+    - typeclass_path - the path to the decorating typeclass
+    - typeclass - auto-linked typeclass
+    - date_created - time stamp of object creation
+    - permissions - perm strings
+    - dbref - #id of object
+    - db - persistent attribute storage
+    - ndb - non-persistent attribute storage
 
     """
 
@@ -937,7 +938,7 @@ class TypedObject(SharedMemoryModel):
         Examples:
             ::
 
-            Oscar (Character) = '/characters/oscar/1/puppet/'
+                Oscar (Character) = '/characters/oscar/1/puppet/'
 
             For this to work, the developer must have defined a named view somewhere
             in urls.py that follows the format 'modelname-action', so in this case
