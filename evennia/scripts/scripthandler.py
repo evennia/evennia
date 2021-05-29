@@ -48,15 +48,11 @@ class ScriptHandler(object):
                     next_repeat = script.time_until_next_repeat()
                 except Exception:
                     next_repeat = "?"
-            string += _(
-                "\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
-            ) % {
-                "key": script.key,
-                "next_repeat": next_repeat,
-                "interval": interval,
-                "repeats": repeats,
-                "desc": script.desc,
-            }
+            string += _("\n '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}").format(
+                key=script.key, next_repeat=next_repeat,
+                interval=interval,
+                repeats=repeats,
+                desc=script.desc)
         return string.strip()
 
     def add(self, scriptclass, key=None, autostart=True):
