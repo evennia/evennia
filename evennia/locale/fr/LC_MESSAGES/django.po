@@ -1,8 +1,7 @@
 # The French translation for the Evennia server.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) 2018
 # This file is distributed under the same license as the Evennia package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Maintained by: vincent-lg <vincent.legoff.srs@gmail.com>, 2018-
+# Vincent Le Geoff <vincent-lg <vincent.legoff.srs@gmail.com>, 2018
 #
 msgid ""
 msgstr ""

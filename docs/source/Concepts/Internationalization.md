@@ -3,8 +3,44 @@
 *Internationalization* (often abbreviated *i18n* since there are 18 characters
 between the first "i" and the last "n" in that word) allows Evennia's core
 server to return texts in other languages than English - without anyone having
-to edit the source code. Take a look at the `locale` directory of the Evennia
-installation, there you will find which languages are currently supported.
+to edit the source code.
+
+Language-translations are done by volunteers. Therefore language support can
+vary a lot depending on when they were last updated. Below are all languages
+(besides English) with som level of support. Generally, any language not
+updated after May 2021 will be missing translations.
+
+
+```eval_rst
+
++---------------+----------------------+--------------+
+| Language Code | Language             | Last updated |
++===============+======================+==============+
+| es            | Spanish              | Aug 2019     |
++---------------+----------------------+--------------+
+| fr            | French               | Nov 2018     |
++---------------+----------------------+--------------+
+| it            | Italian              | Feb 2015     |
++---------------+----------------------+--------------+
+| ko            | Korean(simplified)   | Sep 2019     |
++---------------+----------------------+--------------+
+| la            | Latin                | Feb 2021     |
++---------------+----------------------+--------------+
+| po            | Polish               | Feb 2019     |
++---------------+----------------------+--------------+
+| pt            | Portugese            | Dec 2015     |
++---------------+----------------------+--------------+
+| ru-RU         | Russian (Russia)     | Apr 2020     |
++---------------+----------------------+--------------+
+| sv            | Swedish              | June 2021    |
++---------------+----------------------+--------------+
+| zh-Hans       | Chinese (simplified) | May 2019     |
++---------------+----------------------+--------------+
+```
+
+Language translations are found in the [evennia/locale](github:evennia/locale/)
+folder. Read below if you want to help improve an existing translation of
+contribute a new one.
 
 ## Changing server language
 
@@ -12,22 +48,33 @@ Change language by adding the following to your `mygame/server/conf/settings.py`
 file:
 
 ```python
-
     USE_I18N = True
     LANGUAGE_CODE = 'en'
 
 ```
 
-Here `'en'` should be changed to the abbreviation for one of the supported
-languages found in `locale/`. Restart the server to activate i18n. The
-two-character international language codes are found
-[here](http://www.science.co.il/Language/Codes.asp).
+Here `'en'` (the default English) should be changed to the abbreviation for one
+of the supported languages found in `locale/` (and in the list above). Restart
+the server to activate i18n.
+
+```important::
+
+    Even for a 'fully translated' language you will still see English text
+    in many places when you start Evennia. This is because we expect you (the
+    developer) to know English (you are reading this manual after all). So we
+    translate hard-coded strings that the end player may see - things you can't
+    easily change from your mygame/ folder. Outputs from Commands and
+    Typeclasses are generally not translated, nor are command/log outputs -
+    and these are likely to be the brunt of the text the player will see.
+
+```
 
 > Windows Note: If you get errors concerning `gettext` or `xgettext` on Windows,
 > see the
 > [Django documentation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows).
 > A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
 > available on [Github](https://github.com/mlocati/gettext-iconv-windows).
+
 
 ## Translating Evennia
 
@@ -36,8 +83,7 @@ two-character international language codes are found
     Evennia offers translations of hard-coded strings in the server, things like
     "Connection closed" or "Server restarted", strings that end users will see and
     which game devs are not supposed to change on their own. Text you see in the log
-    file or on the command line (like error messages) are generally *not* translated
-    (this is a part of Python).
+    file or on the command line/log are *not* translated.
 
     In addition, text in default Commands and in default Typeclasses will *not* be
     translated by switching *i18n* language. To translate Commands and Typeclass
@@ -46,14 +92,15 @@ two-character international language codes are found
     *i18n* code to commands tend to add complexity to code that is *meant* to be
     changed anyway.  One of the goals of Evennia is to keep the user-changeable code
     as clean and easy- to-read as possible.
+
 ```
 
 Translations are found in the core `evennia/` library, under
 `evennia/evennia/locale/`. You must make sure to have cloned this repository
 from [Evennia's github](github:evennia) before you can proceed.
 
-If you cannot find your language in `evennia/evennia/locale/` it's because noone has
-translated it yet.  Alternatively you might have the language but find the
+If you cannot find your language in `evennia/evennia/locale/` it's because noone
+has translated it yet.  Alternatively you might have the language but find the
 translation bad ... You are welcome to help improve the situation!
 
 To start a new translation you need to first have cloned the Evennia repositry

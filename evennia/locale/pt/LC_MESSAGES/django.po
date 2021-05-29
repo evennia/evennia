@@ -1,4 +1,4 @@
-# EVENNIA Beta 0.5.0 - Tradução em Português
+# EVENNIA - Tradução em Português
 # Copyright (C) 2015, Daniel Dias Rodrigues (a.k.a. Nerun)
 # This file is distributed under the same license as the Evennia package.
 # Nerun <nerunblogs@gmail.com>, 2015.

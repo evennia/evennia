@@ -1,4 +1,4 @@
-# Latin translator
+# Spanish 
 # Copyright (C) Evennia
 # This file is distributed under the same license as the Evennia package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
