@@ -51,7 +51,6 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -77,6 +76,7 @@
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
+
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
@@ -246,7 +246,7 @@
         <span class="n">baseline</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">baseline_index</span><span class="p">]</span>
         <span class="n">spaceremove</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">baseline</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">line</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">spaceremove</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)))</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span>
+            <span class="n">line</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">spaceremove</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))):]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span>
         <span class="p">)</span></div>
 
 
@@ -385,7 +385,7 @@
     <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">istart</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">irows</span> <span class="ow">in</span> <span class="n">nrows</span><span class="p">:</span>
-        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onecol</span><span class="p">[</span><span class="n">istart</span> <span class="p">:</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">irows</span><span class="p">])</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onecol</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">irows</span><span class="p">])</span>
         <span class="n">istart</span> <span class="o">=</span> <span class="n">istart</span> <span class="o">+</span> <span class="n">irows</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">:</span>
@@ -1071,8 +1071,6 @@
     <span class="k">return</span> <span class="n">engine</span> <span class="o">==</span> <span class="s2">&quot;django.db.backends.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span></div>
 
 
-
-
 <div class="viewcode-block" id="delay"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.delay">[docs]</a><span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delay the calling of a callback (function).</span>
@@ -1280,8 +1278,8 @@
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="n">errstring</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> ERROR: IRC is enabled, but twisted.words is not installed. Please install it.&quot;</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   Linux Debian/Ubuntu users should install package &#39;python-twisted-words&#39;, others&quot;</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords.&quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   Linux Debian/Ubuntu users should install package &#39;python-twisted-words&#39;, &quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> others can get it from http://twistedmatrix.com/trac/wiki/TwistedWords.&quot;</span>
             <span class="p">)</span>
             <span class="n">not_error</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -1953,7 +1951,7 @@
 
             <span class="n">wl</span> <span class="o">=</span> <span class="n">wls</span><span class="p">[</span><span class="n">ie</span><span class="p">]</span>
             <span class="n">lrow</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="n">debug</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="c1"># debug = row.replace(&quot; &quot;, &quot;.&quot;)</span>
 
             <span class="k">if</span> <span class="n">lrow</span> <span class="o">+</span> <span class="n">wl</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
                 <span class="c1"># this slot extends outside grid, move to next line</span>
@@ -2010,8 +2008,6 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># full multi-line grid</span>
         <span class="k">return</span> <span class="n">_weighted_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span></div>
-
-
 
 
 <div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>
@@ -2262,7 +2258,7 @@
     <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
         <span class="c1"># no results.</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nofound_string&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">query</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nofound_string&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find &#39;</span><span class="si">{query}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">multimatch_string</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multimatch_string&quot;</span><span class="p">)</span>
@@ -2287,7 +2283,7 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
                 <span class="k">else</span> <span class="n">query</span><span class="p">,</span>
-                <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot; [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot; [</span><span class="si">{alias}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                 <span class="n">info</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2365,7 +2361,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># current working directory, assumed to be somewhere inside gamedir.</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">inum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
         <span class="n">gpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="k">if</span> <span class="s2">&quot;server&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">gpath</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="s2">&quot;settings.py&quot;</span><span class="p">)):</span>
@@ -2380,16 +2376,16 @@
 <span class="sd">    List available typeclasses from all available modules.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        parent (str, optional): If given, only return typeclasses inheriting (at any distance)</span>
-<span class="sd">            from this parent.</span>
+<span class="sd">        parent (str, optional): If given, only return typeclasses inheriting</span>
+<span class="sd">            (at any distance) from this parent.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: On the form `{&quot;typeclass.path&quot;: typeclass, ...}`</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        This will dynamically retrieve all abstract django models inheriting at any distance</span>
-<span class="sd">        from the TypedObject base (aka a Typeclass) so it will work fine with any custom</span>
-<span class="sd">        classes being added.</span>
+<span class="sd">        This will dynamically retrieve all abstract django models inheriting at</span>
+<span class="sd">        any distance from the TypedObject base (aka a Typeclass) so it will</span>
+<span class="sd">        work fine with any custom classes being added.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
@@ -2406,6 +2402,34 @@
             <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="k">return</span> <span class="n">typeclasses</span></div>
+
+
+<div class="viewcode-block" id="get_all_cmdsets"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.get_all_cmdsets">[docs]</a><span class="k">def</span> <span class="nf">get_all_cmdsets</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List available cmdsets from all available modules.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parent (str, optional): If given, only return cmdsets inheriting (at</span>
+<span class="sd">            any distance) from this parent.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: On the form {&quot;cmdset.path&quot;: cmdset, ...}</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This will dynamically retrieve all abstract django models inheriting at</span>
+<span class="sd">        any distance from the CmdSet base so it will work fine with any custom</span>
+<span class="sd">        classes being added.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+
+    <span class="n">base_cmdset</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="k">if</span> <span class="n">parent</span> <span class="k">else</span> <span class="n">CmdSet</span>
+
+    <span class="n">cmdsets</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">subclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">):</span> <span class="n">subclass</span>
+        <span class="k">for</span> <span class="n">subclass</span> <span class="ow">in</span> <span class="n">base_cmdset</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">cmdsets</span></div>
 
 
 <div class="viewcode-block" id="interactive"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.contrib.tutorial_examples.red_button.interactive">[docs]</a><span class="k">def</span> <span class="nf">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>

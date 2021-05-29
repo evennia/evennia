@@ -76,7 +76,7 @@ command:</p>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">):</span>
          <span class="n">accessing_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Sorry, you may not delete that.&quot;</span><span class="p">)</span>
-         <span class="k">return</span> 
+         <span class="k">return</span>
 </pre></div>
 </td></tr></table></div>
 </section>
@@ -89,9 +89,9 @@ definitions to the object’s <code class="docutils literal notranslate"><span c
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span>   <span class="c1"># only allow obj #34 to delete</span>
-     <span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>      <span class="c1"># let everyone edit </span>
+     <span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>      <span class="c1"># let everyone edit</span>
      <span class="c1"># only those who are not &quot;very_weak&quot; or are Admins may pick this up</span>
-     <span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span> 
+     <span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Formally, a lockstring has the following syntax:</p>
@@ -106,7 +106,7 @@ returns either <code class="docutils literal notranslate"><span class="pre">True
 total result is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the lock is passed.</p>
 <p>You can create several lock types one after the other by separating them with a semicolon (<code class="docutils literal notranslate"><span class="pre">;</span></code>) in
 the lockstring. The string below yields the same result as the previous example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">);</span><span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span><span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">34</span><span class="p">);</span><span class="n">edit</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span><span class="n">get</span><span class="p">:</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">(</span><span class="n">very_weak</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="valid-access-types">
@@ -205,7 +205,7 @@ trying to read the board):</p>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">):</span>
          <span class="n">accessing_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Sorry, you may not read that.&quot;</span><span class="p">)</span>
-         <span class="k">return</span> 
+         <span class="k">return</span>
 </pre></div>
 </td></tr></table></div>
 </section>
@@ -230,12 +230,12 @@ arguments explicitly given in the lock definition will appear as extra arguments
 <span class="normal">7</span>
 <span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A simple example lock function. Called with e.g. `id(34)`. This is</span>
     <span class="c1"># defined in, say mygame/server/conf/lockfuncs.py</span>
-    
+
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">wanted_id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">wanted_id</span>
-        <span class="k">return</span> <span class="kc">False</span> 
+        <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 </td></tr></table></div>
 <p>The above could for example be used in a lock function like this:</p>
@@ -313,126 +313,6 @@ child object to change the default. Also creation commands like <code class="doc
 objects you create - for example it sets the <code class="docutils literal notranslate"><span class="pre">control</span></code> lock_type so as to allow you, its creator, to
 control and delete the object.</p>
 </section>
-</section>
-<section id="permissions">
-<h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
-<blockquote>
-<div><p>This section covers the underlying code use of permissions. If you just want to learn how to
-practically assign permissions in-game, refer to the <a class="reference internal" href="../Concepts/Building-Permissions.html"><span class="doc">Building Permissions</span></a>
-page, which details how you use the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command.</p>
-</div></blockquote>
-<p>A <em>permission</em> is simply a list of text strings stored  in the handler <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>
-and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Permissions can be used as a convenient way to structure access levels and
-hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command. Permissions are especially handled by the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">pperm()</span></code> lock functions listed above.</p>
-<p>Let’s say we have a <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object. We also have red chests that we want to unlock with this key.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perm</span> <span class="n">red_key</span> <span class="o">=</span> <span class="n">unlocks_red_chests</span>
-</pre></div>
-</div>
-<p>This gives the <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object the permission “unlocks_red_chests”.  Next we lock our red chests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lock</span> <span class="n">red</span> <span class="n">chest</span> <span class="o">=</span> <span class="n">unlock</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">unlocks_red_chests</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>What this lock will expect is to the fed the actual key object. The <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lock function will
-check the permissions set on the key and only return true if the permission is the one given.</p>
-<p>Finally we need to actually check this lock somehow. Let’s say the chest has an command <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">&lt;key&gt;</span></code>
-sitting on itself. Somewhere in its code the command needs to figure out which key you are using and
-test if this key has the correct permission:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># self.obj is the chest </span>
-    <span class="c1"># and used_key is the key we used as argument to</span>
-    <span class="c1"># the command. The self.caller is the one trying</span>
-    <span class="c1"># to unlock the chest</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">used_key</span><span class="p">,</span> <span class="s2">&quot;unlock&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The key does not fit!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> 
-</pre></div>
-</td></tr></table></div>
-<p>All new accounts are given a default set of permissions defined by
-<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
-<p>Selected permission strings can be organized in a <em>permission hierarchy</em> by editing the tuple
-<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.  Evennia’s default permission hierarchy is as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Developer</span>        <span class="c1"># like superuser but affected by locks</span>
- <span class="n">Admin</span>            <span class="c1"># can administrate accounts</span>
- <span class="n">Builder</span>          <span class="c1"># can edit the world</span>
- <span class="n">Helper</span>           <span class="c1"># can edit help files</span>
- <span class="n">Player</span>           <span class="c1"># can chat and send tells (default level)</span>
-</pre></div>
-</div>
-<p>(Also the plural form works, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> etc too).</p>
-<blockquote>
-<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is
-set. This is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
-</div></blockquote>
-<p>The main use of this is that if you use the lock function <code class="docutils literal notranslate"><span class="pre">perm()</span></code> mentioned above, a lock check for
-a particular permission in the hierarchy will <em>also</em> grant access to those with <em>higher</em> hierarchy
-access. So if you have the permission “Admin” you will also pass a lock defined as <code class="docutils literal notranslate"><span class="pre">perm(Builder)</span></code>
-or any of those levels below “Admin”.</p>
-<p>When doing an access check from an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> or Character, the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lock function will
-always first use the permissions of any Account connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the
-Account permission will always be used (this stops an Account from escalating their permission by
-puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact
-match is required, first on the Account and if not found there (or if no Account is connected), then
-on the Object itself.</p>
-<p>Here is how you use <code class="docutils literal notranslate"><span class="pre">perm</span></code> to give an account more permissions:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">perm</span><span class="o">/</span><span class="n">account</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
- <span class="n">perm</span><span class="o">/</span><span class="n">account</span><span class="o">/</span><span class="k">del</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span> <span class="c1"># remove it again</span>
-</pre></div>
-</div>
-<p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the
-<a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc">Character</span></a> that also happens to be named
-“Tommy”.</p>
-<p>Putting permissions on the <em>Account</em> guarantees that they are kept, <em>regardless</em> of which Character
-they are currently puppeting. This is especially important to remember when assigning permissions
-from the <em>hierarchy tree</em> - as mentioned above, an Account’s permissions will overrule that of its
-character. So to be sure to avoid confusion you should generally put hierarchy permissions on the
-Account, not on their Characters (but see also <a class="reference external" href="Components/Locks.html#Quelling">quelling</a>).</p>
-<p>Below is an example of an object without any connected account</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">obj1</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">]</span>
-    <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
-    
-    <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns True!</span>
-</pre></div>
-</td></tr></table></div>
-<p>And one example of a puppet with a connected account:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Accounts&quot;</span><span class="p">)</span>
-    <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
-    <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
-    
-    <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns False!</span>
-</pre></div>
-</td></tr></table></div>
-<section id="superusers">
-<h2>Superusers<a class="headerlink" href="#superusers" title="Permalink to this headline">¶</a></h2>
-<p>There is normally only one <em>superuser</em> account and that is the one first created when starting
-Evennia (User #1). This is sometimes known as the “Owner” or “God” user.  A superuser has more than
-full access - it completely <em>bypasses</em> all locks so no checks are even run. This allows for the
-superuser to always have access to everything in an emergency. But it also hides any eventual errors
-you might have made in your lock definitions. So when trying out game systems you should either use
-quelling (see below) or make a second Developer-level character so your locks get tested correctly.</p>
-</section>
-<section id="quelling">
-<h2>Quelling<a class="headerlink" href="#quelling" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">quell</span></code> command can be used to enforce the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lockfunc to ignore permissions on the
-Account and instead use the permissions on the Character only. This can be used e.g. by staff to
-test out things with a lower permission level. Return to the normal operation with <code class="docutils literal notranslate"><span class="pre">unquell</span></code>.  Note
-that quelling will use the smallest of any hierarchical permission on the Account or Character, so
-one cannot escalate one’s Account permission by quelling to a high-permission Character. Also the
-superuser can quell their powers this way, making them affectable by locks.</p>
-</section>
 <section id="more-lock-definition-examples">
 <h2>More Lock definition examples<a class="headerlink" href="#more-lock-definition-examples" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">examine</span><span class="p">:</span> <span class="n">attr</span><span class="p">(</span><span class="n">eyesight</span><span class="p">,</span> <span class="n">excellent</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Builders</span><span class="p">)</span>
@@ -441,7 +321,7 @@ superuser can quell their powers this way, making them affectable by locks.</p>
 <p>You are only allowed to do <em>examine</em> on this object if you have ‘excellent’ eyesight (that is, has
 an Attribute <code class="docutils literal notranslate"><span class="pre">eyesight</span></code> with the value <code class="docutils literal notranslate"><span class="pre">excellent</span></code> defined on yourself) or if you have the
 “Builders” permission string assigned to you.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">open</span><span class="p">:</span> <span class="n">holds</span><span class="p">(</span><span class="s1">&#39;the green key&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Builder</span><span class="p">)</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">open</span><span class="p">:</span> <span class="n">holds</span><span class="p">(</span><span class="s1">&#39;the green key&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Builder</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This could be called by the <code class="docutils literal notranslate"><span class="pre">open</span></code> command on a “door” object. The check is passed if you are a
@@ -534,20 +414,20 @@ strength above 50 however and you’ll pick it up no problem. Done! A very heavy
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>   
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
-    
+
     <span class="c1"># create, then set the lock</span>
     <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
     <span class="n">box</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;get:attr_gt(strength, 50)&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># or we can assign locks in one go right away</span>
     <span class="n">box</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;get:attr_gt(strength, 50)&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># set the attributes</span>
     <span class="n">box</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a very big and heavy box.&quot;</span>
     <span class="n">box</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span> <span class="o">=</span> <span class="s2">&quot;You are not strong enough to lift this box.&quot;</span>
-    
+
     <span class="c1"># one heavy box, ready to withstand all but the strongest...</span>
 </pre></div>
 </td></tr></table></div>
@@ -601,11 +481,6 @@ interface. It’s stand-alone from the permissions described above.</p>
 </li>
 <li><a class="reference internal" href="#checking-simple-strings">Checking simple strings</a></li>
 <li><a class="reference internal" href="#default-locks">Default locks</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#permissions">Permissions</a><ul>
-<li><a class="reference internal" href="#superusers">Superusers</a></li>
-<li><a class="reference internal" href="#quelling">Quelling</a></li>
 <li><a class="reference internal" href="#more-lock-definition-examples">More Lock definition examples</a></li>
 <li><a class="reference internal" href="#a-complete-example-of-setting-locks-on-an-object">A complete example of setting locks on an object</a></li>
 <li><a class="reference internal" href="#on-django-s-permission-system">On Django’s permission system</a></li>

@@ -13,6 +13,7 @@ evennia.web.api
 
    evennia.web.api.filters
    evennia.web.api.permissions
+   evennia.web.api.root
    evennia.web.api.serializers
    evennia.web.api.tests
    evennia.web.api.urls

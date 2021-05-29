@@ -48,7 +48,7 @@
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">TempMsg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
@@ -89,7 +89,6 @@
     <span class="c1"># default nick-alias replacements (default using the &#39;channel&#39; command)</span>
     <span class="n">channel_msg_nick_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{alias}</span><span class="s2">\s*?|</span><span class="si">{alias}</span><span class="s2">\s+?(?P&lt;arg1&gt;.+?)&quot;</span>
     <span class="n">channel_msg_nick_replacement</span> <span class="o">=</span> <span class="s2">&quot;channel </span><span class="si">{channelname}</span><span class="s2"> = $1&quot;</span>
-
 
 <div class="viewcode-block" id="DefaultChannel.at_first_save"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -747,7 +746,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-create&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -762,8 +761,10 @@
 <span class="sd">        a named view of &#39;channel-detail&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;,</span>
-<span class="sd">            ChannelDetailView.as_view(), name=&#39;channel-detail&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;,</span>
+<span class="sd">                ChannelDetailView.as_view(), name=&#39;channel-detail&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -781,7 +782,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-detail&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -796,8 +797,10 @@
 <span class="sd">        a named view of &#39;channel-update&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
-<span class="sd">            ChannelUpdateView.as_view(), name=&#39;channel-update&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                ChannelUpdateView.as_view(), name=&#39;channel-update&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -815,7 +818,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-update&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -848,7 +851,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-delete&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
     <span class="c1"># Used by Django Sites/Admin</span>

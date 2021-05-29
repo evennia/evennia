@@ -11,7 +11,6 @@ evennia.server
 .. toctree::
    :maxdepth: 6
 
-   evennia.server.admin
    evennia.server.amp_client
    evennia.server.connection_wizard
    evennia.server.deprecations

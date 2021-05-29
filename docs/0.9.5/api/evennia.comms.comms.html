@@ -648,11 +648,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-detail’ would be referenced by this method.</p>
-<p>ex.
-url(r’channels/(?P&lt;slug&gt;[wd-]+)/$’,</p>
-<blockquote>
-<div><p>ChannelDetailView.as_view(), name=’channel-detail’)</p>
-</div></blockquote>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;</span><span class="p">,</span>
+    <span class="n">ChannelDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-detail&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -674,11 +674,11 @@ object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-update’ would be referenced by this method.</p>
-<p>ex.
-url(r’channels/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/change/$’,</p>
-<blockquote>
-<div><p>ChannelUpdateView.as_view(), name=’channel-update’)</p>
-</div></blockquote>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;</span><span class="p">,</span>
+    <span class="n">ChannelUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-update&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -725,11 +725,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-detail’ would be referenced by this method.</p>
-<p>ex.
-url(r’channels/(?P&lt;slug&gt;[wd-]+)/$’,</p>
-<blockquote>
-<div><p>ChannelDetailView.as_view(), name=’channel-detail’)</p>
-</div></blockquote>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;</span><span class="p">,</span>
+    <span class="n">ChannelDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-detail&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to

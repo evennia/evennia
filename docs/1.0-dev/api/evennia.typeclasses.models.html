@@ -68,18 +68,18 @@ these to create custom managers.</p>
 <p>Abstract Django model.</p>
 <p>This is the basis for a typed object. It also contains all the
 mechanics for managing connected attributes.</p>
-<dl class="simple">
-<dt>The TypedObject has the following properties:</dt><dd><p>key - main name
-name - alias for key
-typeclass_path - the path to the decorating typeclass
-typeclass - auto-linked typeclass
-date_created - time stamp of object creation
-permissions - perm strings
-dbref - #id of object
-db - persistent attribute storage
-ndb - non-persistent attribute storage</p>
-</dd>
-</dl>
+<p>The TypedObject has the following properties:</p>
+<ul class="simple">
+<li><p>key - main name</p></li>
+<li><p>name - alias for key</p></li>
+<li><p>typeclass_path - the path to the decorating typeclass</p></li>
+<li><p>typeclass - auto-linked typeclass</p></li>
+<li><p>date_created - time stamp of object creation</p></li>
+<li><p>permissions - perm strings</p></li>
+<li><p>dbref - #id of object</p></li>
+<li><p>db - persistent attribute storage</p></li>
+<li><p>ndb - non-persistent attribute storage</p></li>
+</ul>
 <dl class="py attribute">
 <dt id="evennia.typeclasses.models.TypedObject.db_key">
 <code class="sig-name descname">db_key</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.db_key" title="Permalink to this definition">¶</a></dt>
@@ -530,6 +530,44 @@ developer’s responsibility.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.date_created">
+<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.date_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_date_created</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.get_next_by_db_date_created">
+<code class="sig-name descname">get_next_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.get_next_by_db_date_created" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.get_previous_by_db_date_created">
+<code class="sig-name descname">get_previous_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.get_previous_by_db_date_created" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.lock_storage">
+<em class="property">property </em><code class="sig-name descname">lock_storage</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_lock_storage</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.models.TypedObject.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.typeclasses.models.TypedObject'</em><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.typeclass_path">
+<em class="property">property </em><code class="sig-name descname">typeclass_path</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.typeclass_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_typeclass_path</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.models.TypedObject.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.typeclasses.models.TypedObject.web_get_detail_url">
 <code class="sig-name descname">web_get_detail_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/models.html#TypedObject.web_get_detail_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.web_get_detail_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to view details for
@@ -603,7 +641,7 @@ object.</p>
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-update’ would be referenced by this method.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;</span><span class="p">,</span>
-    <span class="n">CharUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-update&#39;</span><span class="p">)</span>
+<span class="n">CharUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-update&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If no View has been created and defined in urls.py, returns an
@@ -631,7 +669,7 @@ somewhere in urls.py that follows the format ‘modelname-action’, so
 in this case a named view of ‘character-detail’ would be referenced
 by this method.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-delete&#39;</span><span class="p">)</span>
+<span class="n">CharDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-delete&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If no View has been created and defined in urls.py, returns an HTML
@@ -639,12 +677,6 @@ anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
 the actual view and limiting who can delete this object is the
 developer’s responsibility.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.models.TypedObject.date_created">
-<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.date_created" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for getting database field <strong>db_date_created</strong>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -674,38 +706,6 @@ HTML anchor.</p>
 the actual view and limiting who can view this object is the
 developer’s responsibility.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.models.TypedObject.get_next_by_db_date_created">
-<code class="sig-name descname">get_next_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.get_next_by_db_date_created" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.models.TypedObject.get_previous_by_db_date_created">
-<code class="sig-name descname">get_previous_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.get_previous_by_db_date_created" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.models.TypedObject.lock_storage">
-<em class="property">property </em><code class="sig-name descname">lock_storage</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for getting database field <strong>db_lock_storage</strong>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.typeclasses.models.TypedObject.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.typeclasses.models.TypedObject'</em><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.typeclasses.models.TypedObject.typeclass_path">
-<em class="property">property </em><code class="sig-name descname">typeclass_path</code><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.typeclass_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for getting database field <strong>db_typeclass_path</strong>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.typeclasses.models.TypedObject.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.typename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 

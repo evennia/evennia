@@ -85,11 +85,9 @@
 <span class="sd">---</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -275,8 +273,6 @@
                 <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown parsed function &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">parsedfunc</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
                                    <span class="sa">f</span><span class="s2">&quot;(available: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">parsedfunc</span><span class="p">)</span>
-
-        <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
         <span class="c1"># build kwargs in the proper priority order</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">default_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">reserved_kwargs</span><span class="p">,</span>
@@ -648,7 +644,7 @@
 <span class="sd">        - `$py(3 + 4) -&gt; 7`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">safe_convert_to_types</span><span class="p">((</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">safe_convert_to_types</span><span class="p">((</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span></div>
 
 
@@ -736,7 +732,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">args</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">safe_convert_to_types</span><span class="p">(((</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">{})</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">safe_convert_to_types</span><span class="p">(((</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">{}),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="n">num</span><span class="p">,</span> <span class="o">*</span><span class="n">significant</span> <span class="o">=</span> <span class="n">args</span>
     <span class="n">significant</span> <span class="o">=</span> <span class="n">significant</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">significant</span> <span class="k">else</span> <span class="mi">0</span>
@@ -1074,7 +1070,8 @@
                                       <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_you"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_you</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_you"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_you</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $you() or $you(key)</span>
 
@@ -1123,10 +1120,12 @@
     <span class="n">capitalize</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">capitalize</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;You&quot;</span> <span class="k">if</span> <span class="n">capitalize</span> <span class="k">else</span> <span class="s2">&quot;you&quot;</span>
-    <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_You"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_You">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_You</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_You"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_You">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_You</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $You() - capitalizes the &#39;you&#39; output.</span>
 

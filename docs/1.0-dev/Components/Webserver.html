@@ -40,7 +40,75 @@
             
   <section id="webserver">
 <h1>Webserver<a class="headerlink" href="#webserver" title="Permalink to this headline">¶</a></h1>
-<p>TODO: There is no central docs for this component yet.</p>
+<p>When Evennia starts it also spins up its own Twisted-based web server. The
+webserver is responsible for serving the html pages of the game’s website. It
+can also serve static resources like images and music.</p>
+<p>The webclient runs as part of the <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server</span></a> process of
+Evennia. This means that it can directly access cached objects modified
+in-game, and there is no risk of working with objects that are temporarily
+out-of-sync in the database.</p>
+<p>The webserver runs on Twisted and is meant to be used in a production
+environment. It leverages the Django web framework and provides:</p>
+<ul class="simple">
+<li><p>A <a class="reference internal" href="Website.html"><span class="doc">Game Website</span></a> - this is what you see when you go to
+<code class="docutils literal notranslate"><span class="pre">localhost:4001</span></code>. The look of the website is meant to be customized to your
+game. Users logged into the website will be auto-logged into the game if they
+do so with the webclient since they share the same login credentials (there
+is no way to safely do auto-login with telnet clients).</p></li>
+<li><p>The <a class="reference internal" href="Web-Admin.html"><span class="doc">Web Admin</span></a> is based on the Django web admin and allows you to
+edit the game database in a graphical interface.</p></li>
+<li><p>The <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a> page is served by the webserver, but the actual
+game communication (sending/receiving data) is done by the javascript client
+on the page opening a websocket connection directly to Evennia’s Portal.</p></li>
+<li><p>The <a class="reference internal" href="Web-API.html"><span class="doc">Evennia REST-API</span></a> allows for accessing the database from outside the game
+(only if `REST_API_ENABLED=True).</p></li>
+</ul>
+<section id="basic-webserver-data-flow">
+<h2>Basic Webserver data flow<a class="headerlink" href="#basic-webserver-data-flow" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>A user enters an url in their browser (or clicks a button). This leads to
+the browser sending a <em>HTTP request</em> to the server containing an url-path
+(like for <code class="docutils literal notranslate"><span class="pre">https://localhost:4001/</span></code>, the part of the url we need to consider
+<code class="docutils literal notranslate"><span class="pre">/</span></code>). Other possibilities would be <code class="docutils literal notranslate"><span class="pre">/admin/</span></code>, <code class="docutils literal notranslate"><span class="pre">/login/</span></code>, <code class="docutils literal notranslate"><span class="pre">/channels/</span></code> etc.</p></li>
+<li><p>evennia (through Django) will make use of the regular expressions registered
+in the <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file.  This acts as a rerouter to <em>views</em>, which are
+regular Python functions or callable classes able to process the incoming
+request (think of these as similar to the right Evennia Command being
+selected to handle your input - views are like Commands in this sense). In
+the case of <code class="docutils literal notranslate"><span class="pre">/</span></code> we reroute to a view handling the main index-page of the
+website.</p></li>
+<li><p>The view code will prepare all the data needed by the web page. For the default
+index page, this means gather the game statistics so you can see how many
+are currently connected to the game etc.</p></li>
+<li><p>The view will next fetch a <em>template</em>. A template is a HTML-document with special
+‘placeholder’ tags (written as <code class="docutils literal notranslate"><span class="pre">{{...}}</span></code> or <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">...</span> <span class="pre">%}</span></code> usually). These
+placeholders allow the view to inject dynamic content into the HTML and make
+the page customized to the current situation. For the index page, it means
+injecting the current player-count in the right places of the html page. This
+is called ‘rendering’ the template. The result is a complete HTML page.</p></li>
+<li><p>(The view can also pull in a <em>form</em> to customize user-input in a similar way.)</p></li>
+<li><p>The finished HTML page is packed into a <em>HTTP response</em> and returned to the
+web browser, which can now display the page!</p></li>
+</ol>
+<section id="a-note-on-the-webclient">
+<h3>A note on the webclient<a class="headerlink" href="#a-note-on-the-webclient" title="Permalink to this headline">¶</a></h3>
+<p>The web browser can also execute code directly without talking to the Server.
+This code must be written/loaded into the web page and is written using the
+Javascript programming language (there is no way around this, it is what web
+browsers understand). Executing Javascript is something the web browser does,
+it operates independently from Evennia. Small snippets of javascript can be
+used on a page to have buttons react, make small animations etc that doesn’t
+require the server.</p>
+<p>In the case of the <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a>, Evennia will load the Webclient page
+as above, but the page then initiates Javascript code (a lot of it) responsible
+for actually displaying the client GUI, allows you to resize windows etc.</p>
+<p>After it starts, the webclient ‘calls home’ and spins up a
+<a class="reference external" href="https://en.wikipedia.org/wiki/WebSocket">websocket</a> link to the Evennia Portal - this
+is how all data is then exchanged. So after the initial loading of the
+webclient page, the above sequence doesn’t happen again until close the tab and
+come back or you reload it manually in your browser.</p>
+</section>
+</section>
 </section>
 
 
@@ -63,6 +131,17 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Webserver</a><ul>
+<li><a class="reference internal" href="#basic-webserver-data-flow">Basic Webserver data flow</a><ul>
+<li><a class="reference internal" href="#a-note-on-the-webclient">A note on the webclient</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">

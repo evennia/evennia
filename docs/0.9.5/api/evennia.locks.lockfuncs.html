@@ -48,106 +48,6 @@ Run the <strong>access()</strong> method of the handler to execute the lock chec
 <p>Note that <strong>accessing_obj</strong> and <strong>accessed_obj</strong> can be any object type
 with a lock variable/field, so be careful to not expect
 a certain object type.</p>
-<p><strong>Appendix: MUX locks</strong></p>
-<p>Below is a list nicked from the MUX help file on the locks available
-in standard MUX. Most of these are not relevant to core Evennia since
-locks in Evennia are considerably more flexible and can be implemented
-on an individual command/typeclass basis rather than as globally
-available like the MUX ones. So many of these are not available in
-basic Evennia, but could all be implemented easily if needed for the
-individual game.</p>
-<section id="mux-name-affects-effect">
-<h2>MUX Name:      Affects:        Effect:<a class="headerlink" href="#mux-name-affects-effect" title="Permalink to this headline">¶</a></h2>
-<dl>
-<dt>DefaultLock:   Exits:          controls who may traverse the exit to</dt><dd><blockquote>
-<div><blockquote>
-<div><dl class="simple">
-<dt>its destination.</dt><dd><p>Evennia: “traverse:&lt;lockfunc()&gt;”</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>Rooms:          controls whether the account sees the</dt><dd><p>SUCC or FAIL message for the room
-following the room description when
-looking at the room.</p>
-<blockquote>
-<div><p>Evennia: Custom typeclass</p>
-</div></blockquote>
-</dd>
-<dt>Accounts/Things: controls who may GET the object.</dt><dd><p>Evennia: “get:&lt;lockfunc()”</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>EnterLock:    Accounts/Things: controls who may ENTER the object</dt><dd><p>Evennia:</p>
-</dd>
-<dt>GetFromLock:  All but Exits:  controls who may gets things from a</dt><dd><dl class="simple">
-<dt>given location.</dt><dd><p>Evennia:</p>
-</dd>
-</dl>
-</dd>
-<dt>GiveLock:     Accounts/Things: controls who may give the object.</dt><dd><p>Evennia:</p>
-</dd>
-<dt>LeaveLock:    Accounts/Things: controls who may LEAVE the object.</dt><dd><p>Evennia:</p>
-</dd>
-<dt>LinkLock:     All but Exits:  controls who may link to the location</dt><dd><p>if the location is LINK_OK (for linking
-exits or setting drop-tos) or ABODE (for
-setting homes)</p>
-<blockquote>
-<div><p>Evennia:</p>
-</div></blockquote>
-</dd>
-<dt>MailLock:     Accounts:        controls who may &#64;mail the account.</dt><dd><p>Evennia:</p>
-</dd>
-<dt>OpenLock:     All but Exits:  controls who may open an exit.</dt><dd><p>Evennia:</p>
-</dd>
-<dt>PageLock:     Accounts:        controls who may page the account.</dt><dd><p>Evennia: “send:&lt;lockfunc()&gt;”</p>
-</dd>
-<dt>ParentLock:   All:            controls who may make &#64;parent links to</dt><dd><dl class="simple">
-<dt>the object.</dt><dd><p>Evennia: Typeclasses and</p>
-</dd>
-</dl>
-<p>“puppet:&lt;lockstring()&gt;”</p>
-</dd>
-<dt>ReceiveLock:  Accounts/Things: controls who may give things to the</dt><dd><dl class="simple">
-<dt>object.</dt><dd><p>Evennia:</p>
-</dd>
-</dl>
-</dd>
-<dt>SpeechLock:   All but Exits:  controls who may speak in that location</dt><dd><p>Evennia:</p>
-</dd>
-<dt>TeloutLock:   All but Exits:  controls who may teleport out of the</dt><dd><dl class="simple">
-<dt>location.</dt><dd><p>Evennia:</p>
-</dd>
-</dl>
-</dd>
-<dt>TportLock:    Rooms/Things:   controls who may teleport there</dt><dd><p>Evennia:</p>
-</dd>
-<dt>UseLock:      All but Exits:  controls who may USE the object, GIVE</dt><dd><p>the object money and have the PAY
-attributes run, have their messages
-heard and possibly acted on by LISTEN
-and AxHEAR, and invoke $-commands
-stored on the object.</p>
-<blockquote>
-<div><p>Evennia: Commands and Cmdsets.</p>
-</div></blockquote>
-</dd>
-<dt>DropLock:     All but rooms:  controls who may drop that object.</dt><dd><p>Evennia:</p>
-</dd>
-<dt>VisibleLock:  All:            Controls object visibility when the</dt><dd><p>object is not dark and the looker
-passes the lock. In DARK locations, the
-object must also be set LIGHT and the
-viewer must pass the VisibleLock.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Evennia: Room typeclass with</dt><dd><p>Dark/light script</p>
-</dd>
-</dl>
-</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
 <dl class="py function">
 <dt id="evennia.locks.lockfuncs.true">
 <code class="sig-prename descclassname">evennia.locks.lockfuncs.</code><code class="sig-name descname">true</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockfuncs.html#true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockfuncs.true" title="Permalink to this definition">¶</a></dt>
@@ -168,6 +68,11 @@ viewer must pass the VisibleLock.</p>
 <dl class="py function">
 <dt id="evennia.locks.lockfuncs.none">
 <code class="sig-prename descclassname">evennia.locks.lockfuncs.</code><code class="sig-name descname">none</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockfuncs.html#none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockfuncs.none" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="evennia.locks.lockfuncs.superuser">
+<code class="sig-prename descclassname">evennia.locks.lockfuncs.</code><code class="sig-name descname">superuser</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockfuncs.html#superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockfuncs.superuser" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -462,15 +367,6 @@ an object matching the given key.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.locks.lockfuncs.superuser">
-<code class="sig-prename descclassname">evennia.locks.lockfuncs.</code><code class="sig-name descname">superuser</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockfuncs.html#superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockfuncs.superuser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Only accepts an accesing_obj that is superuser (e.g. user #1)</p>
-<p>Since a superuser would not ever reach this check (superusers
-bypass the lock entirely), any user who gets this far cannot be a
-superuser, hence we just return False. :)</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="evennia.locks.lockfuncs.has_account">
 <code class="sig-prename descclassname">evennia.locks.lockfuncs.</code><code class="sig-name descname">has_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">accessed_obj</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockfuncs.html#has_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockfuncs.has_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only returns true if accessing_obj has_account is true, that is,
@@ -495,7 +391,6 @@ unpacked to their real value. We only support basic properties.</p>
 </dd></dl>
 
 </section>
-</section>
 
 
             <div class="clearer"></div>
@@ -517,14 +412,6 @@ unpacked to their real value. We only support basic properties.</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">evennia.locks.lockfuncs</a><ul>
-<li><a class="reference internal" href="#mux-name-affects-effect">MUX Name:      Affects:        Effect:</a></li>
-</ul>
-</li>
-</ul>
-
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">

@@ -55,7 +55,6 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeHandler</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">,</span> <span class="n">DbHolder</span>
 
@@ -63,9 +62,6 @@
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 <span class="n">_ObjectDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_ANSI</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="c1"># i18n</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
 
@@ -87,7 +83,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ServerSession.__init__"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initiate to avoid AttributeErrors down the line&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initiate to avoid AttributeErrors down the line</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_storage_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -363,7 +362,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">session</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Handle session comparisons&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle session comparisons</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">address</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -410,6 +412,7 @@
 <div class="viewcode-block" id="ServerSession.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A dummy hook all objects with cmdsets need to have</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">pass</span></div>
@@ -456,7 +459,10 @@
 
     <span class="c1"># @ndb.deleter</span>
 <div class="viewcode-block" id="ServerSession.ndb_del"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.ndb_del">[docs]</a>    <span class="k">def</span> <span class="nf">ndb_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop accidental deletion.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop accidental deletion.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the ndb object!&quot;</span><span class="p">)</span></div>
 
     <span class="n">ndb</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">ndb_get</span><span class="p">,</span> <span class="n">ndb_set</span><span class="p">,</span> <span class="n">ndb_del</span><span class="p">)</span>
@@ -465,7 +471,10 @@
     <span class="c1"># Mock access method for the session (there is no lock info</span>
     <span class="c1"># at this stage, so we just present a uniform API)</span>
 <div class="viewcode-block" id="ServerSession.access"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Dummy method to mimic the logged-in API.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dummy method to mimic the logged-in API.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 </pre></div>
 

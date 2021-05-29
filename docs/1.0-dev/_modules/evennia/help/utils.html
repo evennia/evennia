@@ -115,7 +115,6 @@
         <span class="n">custom_stop_words_filter</span> <span class="o">=</span> <span class="n">stop_word_filter</span><span class="o">.</span><span class="n">generate_stop_word_filter</span><span class="p">(</span><span class="n">stop_words</span><span class="p">)</span>
         <span class="n">_LUNR_BUILDER_PIPELINE</span> <span class="o">=</span> <span class="p">(</span><span class="n">trimmer</span><span class="p">,</span> <span class="n">custom_stop_words_filter</span><span class="p">,</span> <span class="n">stemmer</span><span class="p">)</span>
 
-
     <span class="n">indx</span> <span class="o">=</span> <span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">search_index_entry</span> <span class="k">for</span> <span class="n">cnd</span> <span class="ow">in</span> <span class="n">candidate_entries</span><span class="p">]</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">indx</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">cand</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">cand</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate_entries</span><span class="p">)}</span>
 

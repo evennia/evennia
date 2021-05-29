@@ -102,8 +102,7 @@
     <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
     <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
-    <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
-
+    <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>  <span class="c1"># noqa</span>
 
 <span class="c1"># -------------------------------------------------------------------</span>
 <span class="c1"># Search manager-wrappers</span>
@@ -284,7 +283,7 @@
 <span class="k">def</span> <span class="nf">search_channel_attribute</span><span class="p">(</span>
     <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="k">return</span> <span class="n">Channel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
         <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="n">attrtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span>
 

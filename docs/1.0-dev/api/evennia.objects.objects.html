@@ -49,8 +49,7 @@ entities.</p>
 <dt id="evennia.objects.objects.ObjectSessionHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.objects.objects.</code><code class="sig-name descname">ObjectSessionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#ObjectSessionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.ObjectSessionHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Handles the get/setting of the sessid
-comma-separated integer field</p>
+<p>Handles the get/setting of the sessid comma-separated integer field</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.ObjectSessionHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#ObjectSessionHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.ObjectSessionHandler.__init__" title="Permalink to this definition">¶</a></dt>
@@ -725,8 +724,8 @@ specified, the copy will be named &lt;old_key&gt;_copy by default.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_object_post_copy">
 <code class="sig-name descname">at_object_post_copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_obj</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_object_post_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_object_post_copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by DefaultObject.copy(). Meant to be overloaded. In case there’s extra data not covered by
-.copy(), this can be used to deal with it.</p>
+<dd><p>Called by DefaultObject.copy(). Meant to be overloaded. In case there’s extra data not
+covered by .copy(), this can be used to deal with it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>new_obj</strong> (<em>Object</em>) – The new Copy of this object.</p>
@@ -1408,7 +1407,8 @@ text from the object. Returning <strong>None</strong> aborts the command.</p>
 a say. This is sent by the whisper command by default.
 Other verbal commands could use this hook in similar
 ways.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the say/whisper.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
+say/whisper.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -1433,8 +1433,8 @@ re-writing it completely.</p>
 <li><p><strong>msg_self</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – If boolean True, echo <strong>message</strong> to self. If a string,
 return that message. If False or unset, don’t echo to self.</p></li>
 <li><p><strong>msg_location</strong> (<em>str</em><em>, </em><em>optional</em>) – The message to echo to self’s location.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the message
-(by default only used by whispers).</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the
+message (by default only used by whispers).</p></li>
 <li><p><strong>msg_receivers</strong> (<em>str</em>) – Specific message to pass to the receiver(s). This will parsed
 with the {receiver} placeholder replaced with the given receiver.</p></li>
 </ul>
@@ -1539,9 +1539,10 @@ errors (list): A list of errors in string form, if any.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.normalize_name">
 <em class="property">classmethod </em><code class="sig-name descname">normalize_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.normalize_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.normalize_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Normalize the character name prior to creating. Note that this should be refactored
-to support i18n for non-latin scripts, but as we (currently) have no bug reports requesting better
-support of non-latin character sets, requiring character names to be latinified is an acceptable option.</p>
+<dd><p>Normalize the character name prior to creating. Note that this should be refactored to
+support i18n for non-latin scripts, but as we (currently) have no bug reports requesting
+better support of non-latin character sets, requiring character names to be latinified is an
+acceptable option.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
@@ -1770,7 +1771,8 @@ overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A string with identifying information to disambiguate the command, conventionally with a preceding space.</p>
+<dd class="field-even"><p>A string with identifying information to disambiguate the command, conventionally with a
+preceding space.</p>
 </dd>
 </dl>
 </dd></dl>

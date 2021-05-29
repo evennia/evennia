@@ -224,6 +224,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            server_twistd_cmd (list): An instruction for starting the server, to pass to Popen.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">server_twistd_cmd</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;twistd&quot;</span><span class="p">,</span>
@@ -237,7 +238,10 @@
         <span class="k">return</span> <span class="n">server_twistd_cmd</span>
 
 <div class="viewcode-block" id="Portal.get_info_dict"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Return the Portal info, for display.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Portal info, for display.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">INFO_DICT</span></div>
 
 <div class="viewcode-block" id="Portal.shutdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_stop_server</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -395,7 +399,8 @@
         <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">SSH_PORTS</span><span class="p">:</span>
             <span class="n">pstring</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifacestr</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">makeFactory</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;protocolFactory&quot;</span><span class="p">:</span> <span class="n">_ssh_protocol</span><span class="p">,</span> <span class="s2">&quot;protocolArgs&quot;</span><span class="p">:</span> <span class="p">(),</span> <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">PORTAL_SESSIONS</span><span class="p">,}</span>
+                <span class="p">{</span><span class="s2">&quot;protocolFactory&quot;</span><span class="p">:</span> <span class="n">_ssh_protocol</span><span class="p">,</span>
+                 <span class="s2">&quot;protocolArgs&quot;</span><span class="p">:</span> <span class="p">(),</span> <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">PORTAL_SESSIONS</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="n">factory</span><span class="o">.</span><span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">ssh_service</span> <span class="o">=</span> <span class="n">internet</span><span class="o">.</span><span class="n">TCPServer</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
@@ -431,7 +436,7 @@
                 <span class="k">if</span> <span class="n">WEBSOCKET_CLIENT_ENABLED</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">websocket_started</span><span class="p">:</span>
                     <span class="c1"># start websocket client port for the webclient</span>
                     <span class="c1"># we only support one websocket client</span>
-                    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient</span>
+                    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient</span>  <span class="c1"># noqa</span>
                     <span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketServerFactory</span>
 
                     <span class="n">w_interface</span> <span class="o">=</span> <span class="n">WEBSOCKET_CLIENT_INTERFACE</span>
@@ -458,10 +463,13 @@
             <span class="k">if</span> <span class="n">WEB_PLUGINS_MODULE</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">web_root</span> <span class="o">=</span> <span class="n">WEB_PLUGINS_MODULE</span><span class="o">.</span><span class="n">at_webproxy_root_creation</span><span class="p">(</span><span class="n">web_root</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># Legacy user has not added an at_webproxy_root_creation function in existing web plugins file</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># Legacy user has not added an at_webproxy_root_creation function in existing</span>
+                    <span class="c1"># web plugins file</span>
                     <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="s2">&quot;WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - &quot;</span>
-                        <span class="s2">&quot;copy &#39;evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.&quot;</span>
+                        <span class="s2">&quot;WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() &quot;</span>
+                        <span class="s2">&quot;not found copy &#39;evennia/game_template/server/conf/web_plugins.py to &quot;</span>
+                        <span class="s2">&quot;mygame/server/conf.&quot;</span>
                     <span class="p">)</span>
             <span class="n">web_root</span> <span class="o">=</span> <span class="n">Website</span><span class="p">(</span><span class="n">web_root</span><span class="p">,</span> <span class="n">logPath</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">HTTP_LOG_FILE</span><span class="p">)</span>
             <span class="n">web_root</span><span class="o">.</span><span class="n">is_portal</span> <span class="o">=</span> <span class="kc">True</span>
@@ -476,7 +484,6 @@
     <span class="c1"># external plugin services to start</span>
     <span class="k">if</span> <span class="n">plugin_module</span><span class="p">:</span>
         <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="n">PORTAL</span><span class="p">)</span>
-
 </pre></div>
 
             <div class="clearer"></div>

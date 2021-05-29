@@ -1,6 +1,4 @@
-# Webclient
-
-# **Web client**
+# Web Client
 
 Evennia comes with a MUD client accessible from a normal web browser. During development you can try
 it at `http://localhost:4001/webclient`. The client consists of several parts, all under

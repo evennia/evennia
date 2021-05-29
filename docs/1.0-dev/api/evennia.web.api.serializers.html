@@ -52,6 +52,7 @@ often django model instances, that we can use (deserialization).</p>
 <dt id="evennia.web.api.serializers.AttributeSerializer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">AttributeSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#AttributeSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.AttributeSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Serialize Attribute views.</p>
 <dl class="py class">
 <dt id="evennia.web.api.serializers.AttributeSerializer.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#AttributeSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.AttributeSerializer.Meta" title="Permalink to this definition">¶</a></dt>
@@ -133,12 +134,14 @@ often django model instances, that we can use (deserialization).</p>
 <dt id="evennia.web.api.serializers.TypeclassSerializerMixin">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">TypeclassSerializerMixin</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#TypeclassSerializerMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.TypeclassSerializerMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mixin that contains types shared by typeclasses. A note about tags, aliases, and permissions. You
-might note that the methods and fields are defined here, but they’re included explicitly in each child
-class. What gives? It’s a DRF error: serializer method fields which are inherited do not resolve correctly
-in child classes, and as of this current version (3.11) you must have them in the child classes explicitly
-to avoid field errors. Similarly, the child classes must contain the attribute serializer explicitly to
-not have them render PK-related fields.</p>
+<p>Mixin that contains types shared by typeclasses. A note about tags,
+aliases, and permissions. You might note that the methods and fields are
+defined here, but they’re included explicitly in each child class. What
+gives? It’s a DRF error: serializer method fields which are inherited do
+not resolve correctly in child classes, and as of this current version
+(3.11) you must have them in the child classes explicitly to avoid field
+errors. Similarly, the child classes must contain the attribute serializer
+explicitly to not have them render PK-related fields.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.serializers.TypeclassSerializerMixin.shared_fields">
 <code class="sig-name descname">shared_fields</code><em class="property"> = ['id', 'db_key', 'attributes', 'db_typeclass_path', 'aliases', 'tags', 'permissions']</em><a class="headerlink" href="#evennia.web.api.serializers.TypeclassSerializerMixin.shared_fields" title="Permalink to this definition">¶</a></dt>
@@ -207,9 +210,22 @@ not have them render PK-related fields.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.web.api.serializers.TypeclassListSerializerMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">TypeclassListSerializerMixin</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#TypeclassListSerializerMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.TypeclassListSerializerMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Shortened serializer for list views.</p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.TypeclassListSerializerMixin.shared_fields">
+<code class="sig-name descname">shared_fields</code><em class="property"> = ['id', 'db_key', 'db_typeclass_path']</em><a class="headerlink" href="#evennia.web.api.serializers.TypeclassListSerializerMixin.shared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.web.api.serializers.ObjectDBSerializer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">ObjectDBSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ObjectDBSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ObjectDBSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassSerializerMixin" title="evennia.web.api.serializers.TypeclassSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Serializing Objects.</p>
 <dl class="py class">
 <dt id="evennia.web.api.serializers.ObjectDBSerializer.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ObjectDBSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ObjectDBSerializer.Meta" title="Permalink to this definition">¶</a></dt>
@@ -259,6 +275,35 @@ not have them render PK-related fields.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.web.api.serializers.ObjectListSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">ObjectListSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ObjectListSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ObjectListSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassListSerializerMixin" title="evennia.web.api.serializers.TypeclassListSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassListSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Shortened representation for listings.]</p>
+<dl class="py class">
+<dt id="evennia.web.api.serializers.ObjectListSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ObjectListSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ObjectListSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ObjectListSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.serializers.ObjectListSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ObjectListSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['db_location', 'db_home', 'id', 'db_key', 'db_typeclass_path']</em><a class="headerlink" href="#evennia.web.api.serializers.ObjectListSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ObjectListSerializer.Meta.read_only_fields">
+<code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.ObjectListSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.web.api.serializers.AccountSerializer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">AccountSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#AccountSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.AccountSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassSerializerMixin" title="evennia.web.api.serializers.TypeclassSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
@@ -301,9 +346,39 @@ not have them render PK-related fields.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.web.api.serializers.AccountListSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">AccountListSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#AccountListSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.AccountListSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassListSerializerMixin" title="evennia.web.api.serializers.TypeclassListSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassListSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>A shortened form for listing.</p>
+<dl class="py class">
+<dt id="evennia.web.api.serializers.AccountListSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#AccountListSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.AccountListSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.AccountListSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.serializers.AccountListSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.AccountListSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['username', 'id', 'db_typeclass_path']</em><a class="headerlink" href="#evennia.web.api.serializers.AccountListSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.AccountListSerializer.Meta.read_only_fields">
+<code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.AccountListSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.web.api.serializers.ScriptDBSerializer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">ScriptDBSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ScriptDBSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ScriptDBSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassSerializerMixin" title="evennia.web.api.serializers.TypeclassSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Serializing Account.</p>
 <dl class="py class">
 <dt id="evennia.web.api.serializers.ScriptDBSerializer.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ScriptDBSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ScriptDBSerializer.Meta" title="Permalink to this definition">¶</a></dt>
@@ -322,6 +397,93 @@ not have them render PK-related fields.</p>
 <dl class="py attribute">
 <dt id="evennia.web.api.serializers.ScriptDBSerializer.Meta.read_only_fields">
 <code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.ScriptDBSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.serializers.ScriptListSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">ScriptListSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ScriptListSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ScriptListSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassListSerializerMixin" title="evennia.web.api.serializers.TypeclassListSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassListSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Shortened form for listing.</p>
+<dl class="py class">
+<dt id="evennia.web.api.serializers.ScriptListSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#ScriptListSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.ScriptListSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ScriptListSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.serializers.ScriptListSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.scripts.models.html#evennia.scripts.models.ScriptDB" title="evennia.scripts.models.ScriptDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.models.ScriptDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ScriptListSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['db_interval', 'db_persistent', 'db_start_delay', 'db_is_active', 'db_repeats', 'id', 'db_key', 'db_typeclass_path']</em><a class="headerlink" href="#evennia.web.api.serializers.ScriptListSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.ScriptListSerializer.Meta.read_only_fields">
+<code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.ScriptListSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.serializers.HelpSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">HelpSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#HelpSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.HelpSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassSerializerMixin" title="evennia.web.api.serializers.TypeclassSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Serializers Help entries (not a typeclass).</p>
+<dl class="py class">
+<dt id="evennia.web.api.serializers.HelpSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#HelpSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.HelpSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.serializers.HelpSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['id', 'db_key', 'db_help_category', 'db_entrytext', 'db_date_created', 'tags', 'aliases']</em><a class="headerlink" href="#evennia.web.api.serializers.HelpSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpSerializer.Meta.read_only_fields">
+<code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.HelpSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.api.serializers.HelpListSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.serializers.</code><code class="sig-name descname">HelpListSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#HelpListSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.HelpListSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.api.serializers.TypeclassListSerializerMixin" title="evennia.web.api.serializers.TypeclassListSerializerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.api.serializers.TypeclassListSerializerMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Shortened form for listings.</p>
+<dl class="py class">
+<dt id="evennia.web.api.serializers.HelpListSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/api/serializers.html#HelpListSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.serializers.HelpListSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpListSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.api.serializers.HelpListSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpListSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['id', 'db_key', 'db_help_category', 'db_date_created']</em><a class="headerlink" href="#evennia.web.api.serializers.HelpListSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.api.serializers.HelpListSerializer.Meta.read_only_fields">
+<code class="sig-name descname">read_only_fields</code><em class="property"> = ['id']</em><a class="headerlink" href="#evennia.web.api.serializers.HelpListSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

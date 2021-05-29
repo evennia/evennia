@@ -46,7 +46,7 @@
 <span class="sd">help entries created using the `sethelp` default command. After changing an</span>
 <span class="sd">entry on-disk you need to reload the server to have the change show in-game.</span>
 
-<span class="sd">An filehelp file is a regular python modules with dicts representing each help</span>
+<span class="sd">An filehelp file is a regular python module with dicts representing each help</span>
 <span class="sd">entry. If a list `HELP_ENTRY_DICTS` is found in the module, this should be a list of</span>
 <span class="sd">dicts.  Otherwise *all* top-level dicts in the module will be assumed to be a</span>
 <span class="sd">help-entry dict.</span>
@@ -57,23 +57,23 @@
 <span class="sd">    {&#39;key&#39;: &lt;str&gt;,</span>
 <span class="sd">     &#39;category&#39;: &lt;str&gt;,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY</span>
 <span class="sd">     &#39;aliases&#39;: &lt;list&gt;,   # optional</span>
-<span class="sd">     &#39;text&#39;: &lt;str&gt;}``</span>
+<span class="sd">     &#39;text&#39;: &lt;str&gt;}</span>
 
-<span class="sd">where the ``category`` is optional and the ``text`` should be formatted on the</span>
+<span class="sd">where the `category` is optional and the `text`` should be formatted on the</span>
 <span class="sd">same form as other help entry-texts and contain ``# subtopics`` as normal.</span>
 
 <span class="sd">New help-entry modules are added to the system by providing the python-path to</span>
 <span class="sd">the module to `settings.FILE_HELP_ENTRY_MODULES`. Note that if same-key entries are</span>
 <span class="sd">added, entries in latter modules will override that of earlier ones. Use</span>
-<span class="sd">``settings.DEFAULT_HELP_CATEGORY`` to customize what category is used if</span>
+<span class="sd">`settings.DEFAULT_HELP_CATEGORY`` to customize what category is used if</span>
 <span class="sd">not set explicitly.</span>
 
 <span class="sd">An example of the contents of a module:</span>
 <span class="sd">::</span>
 
 <span class="sd">    help_entry1 = {</span>
-<span class="sd">        &quot;key&quot;: &quot;The Gods&quot;,   # case-insensitive, can be searched by &#39;gods&#39; as well</span>
-<span class="sd">        &quot;aliases&quot;: [&#39;pantheon&#39;, &#39;religion&#39;]</span>
+<span class="sd">        &quot;key&quot;: &quot;The Gods&quot;,   # case-insensitive, also partial-matching (&#39;gods&#39;) works</span>
+<span class="sd">        &quot;aliases&quot;: [&#39;pantheon&#39;, &#39;religion&#39;],</span>
 <span class="sd">        &quot;category&quot;: &quot;Lore&quot;,</span>
 <span class="sd">        &quot;text&quot;: &#39;&#39;&#39;</span>
 <span class="sd">            The gods formed the world ...</span>
@@ -139,8 +139,13 @@
             <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="p">,</span>
             <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entrytext</span><span class="p">,</span>
-        <span class="p">}</span></div>
+        <span class="p">}</span>
 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;FileHelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 
 
 <div class="viewcode-block" id="FileHelpStorageHandler"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler">[docs]</a><span class="k">class</span> <span class="nc">FileHelpStorageHandler</span><span class="p">:</span>
@@ -150,6 +155,7 @@
 
 <span class="sd">    Note that this is not meant to any searching/lookup - that is all handled</span>
 <span class="sd">    by the help command.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FileHelpStorageHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">help_file_modules</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FILE_HELP_ENTRY_MODULES</span><span class="p">):</span>

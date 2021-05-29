@@ -47,6 +47,7 @@
 <span class="sd">documentation specifically regarding DRF integration.</span>
 
 <span class="sd">https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
@@ -67,6 +68,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A Q object that for searching by this tag type and name</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_tagtype</span><span class="o">=</span><span class="n">tag_type</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
 
@@ -74,6 +76,7 @@
 <div class="viewcode-block" id="TagTypeFilter"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.TagTypeFilter">[docs]</a><span class="k">class</span> <span class="nc">TagTypeFilter</span><span class="p">(</span><span class="n">CharFilter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class lets you create different filters for tags of a specified db_tagtype.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tag_type</span> <span class="o">=</span> <span class="kc">None</span>
@@ -102,11 +105,14 @@
 
 
 <div class="viewcode-block" id="BaseTypeclassFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.BaseTypeclassFilterSet">[docs]</a><span class="k">class</span> <span class="nc">BaseTypeclassFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A parent class with filters for aliases and permissions&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A parent class with filters for aliases and permissions</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
     <span class="n">alias</span> <span class="o">=</span> <span class="n">AliasFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">)</span>
     <span class="n">permission</span> <span class="o">=</span> <span class="n">PermissionFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTypeclassFilterSet.filter_name"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.BaseTypeclassFilterSet.filter_name">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">filter_name</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -126,7 +132,10 @@
 
 
 <div class="viewcode-block" id="ObjectDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This adds filters for ObjectDB instances - characters, rooms, exits, etc&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This adds filters for ObjectDB instances - characters, rooms, exits, etc</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ObjectDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ObjectDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span>
@@ -145,7 +154,9 @@
 
 <div class="viewcode-block" id="AccountDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_connected&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_bot&quot;</span><span class="p">]</span></div></div>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fi</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="p">(</span><span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_connected&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_bot&quot;</span><span class="p">])</span>
+                  <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s1">&#39;db_key&#39;</span><span class="p">]</span></div></div>
+
 
 
 <div class="viewcode-block" id="ScriptDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
@@ -163,6 +174,19 @@
             <span class="s2">&quot;db_persistent&quot;</span><span class="p">,</span>
             <span class="s2">&quot;db_interval&quot;</span><span class="p">,</span>
         <span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="HelpFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.HelpFilterSet">[docs]</a><span class="k">class</span> <span class="nc">HelpFilterSet</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter for help entries</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_category&quot;</span><span class="p">)</span>
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">AliasFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">)</span></div>
+
+
 </pre></div>
 
             <div class="clearer"></div>

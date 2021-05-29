@@ -57,7 +57,6 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">logfile</span>
@@ -88,6 +87,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        timestring (str): A formatted string of the given time.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">when</span> <span class="o">=</span> <span class="n">when</span> <span class="k">if</span> <span class="n">when</span> <span class="k">else</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -167,6 +167,7 @@
 <span class="sd">            server.log.2020_01_29</span>
 <span class="sd">            server.log.2020_01_29__1</span>
 <span class="sd">            server.log.2020_01_29__2</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">copy_suffix</span> <span class="o">=</span> <span class="mi">0</span>
@@ -187,7 +188,10 @@
         <span class="k">return</span> <span class="n">suffix</span></div>
 
 <div class="viewcode-block" id="WeeklyLogFile.write"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="s2">&quot;Write data to log file&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write data to log file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logfile</span><span class="o">.</span><span class="n">BaseLogFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toDate</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
@@ -196,6 +200,7 @@
 <div class="viewcode-block" id="PortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.PortalLogObserver">[docs]</a><span class="k">class</span> <span class="nc">PortalLogObserver</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">FileLogObserver</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformat logging</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">timeFormat</span> <span class="o">=</span> <span class="kc">None</span>
@@ -330,6 +335,7 @@
 <span class="sd">    Prints any generic debugging/informative info that should appear in the log.</span>
 
 <span class="sd">    infomsg: (string) The message to be logged.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">infomsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">infomsg</span><span class="p">)</span>
@@ -348,6 +354,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        depmsg (str): The deprecation message to log.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">depmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">depmsg</span><span class="p">)</span>
@@ -366,6 +373,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        secmsg (str): The security message to log.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">secmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">secmsg</span><span class="p">)</span>
@@ -387,6 +395,7 @@
 <span class="sd">    the LogFile&#39;s rotate method in order to append some of the last</span>
 <span class="sd">    lines of the previous log to the start of the new log, in order</span>
 <span class="sd">    to preserve a continuous chat history for channel log files.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># we delay import of settings to keep logger module as free</span>
@@ -402,6 +411,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotates our log file and appends some number of lines from</span>
 <span class="sd">        the previous log to the start of the new one.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">append_tail</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_lines_to_append</span>
                        <span class="k">if</span> <span class="n">num_lines_to_append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -418,9 +428,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience method for accessing our _file attribute&#39;s seek method,</span>
 <span class="sd">        which is used in tail_log_function.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            *args: Same args as file.seek</span>
 <span class="sd">            **kwargs: Same kwargs as file.seek</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -428,12 +440,14 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience method for accessing our _file attribute&#39;s readlines method,</span>
 <span class="sd">        which is used in tail_log_function.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            *args: same args as file.readlines</span>
 <span class="sd">            **kwargs: same kwargs as file.readlines</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            lines (list): lines from our _file attribute.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span></div></div>
 
@@ -591,7 +605,7 @@
             <span class="n">lines_found</span> <span class="o">=</span> <span class="n">filehandle</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
             <span class="n">block_count</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="c1"># return the right number of lines</span>
-        <span class="n">lines_found</span> <span class="o">=</span> <span class="n">lines_found</span><span class="p">[</span><span class="o">-</span><span class="n">nlines</span> <span class="o">-</span> <span class="n">offset</span> <span class="p">:</span> <span class="o">-</span><span class="n">offset</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">lines_found</span> <span class="o">=</span> <span class="n">lines_found</span><span class="p">[</span><span class="o">-</span><span class="n">nlines</span> <span class="o">-</span> <span class="n">offset</span><span class="p">:</span> <span class="o">-</span><span class="n">offset</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="n">callback</span><span class="p">(</span><span class="n">lines_found</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>

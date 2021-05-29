@@ -81,7 +81,7 @@ prototype_locks (str, optional): locks for restricting access to this prototype.
 <dl class="simple">
 <dt>prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype</dt><dd><p>in listings</p>
 </dd>
-<dt>prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or</dt><dd><p>a list of parents, for multiple left-to-right inheritance.</p>
+<dt>prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent</dt><dd><p>prototype, or a list of parents, for multiple left-to-right inheritance.</p>
 </dd>
 </dl>
 <p>prototype: Deprecated. Same meaning as ‘parent’.</p>
@@ -225,8 +225,8 @@ attr/tag (for example) are represented by a tuple.</p></li>
 This is most useful for displaying.</p></li>
 <li><p><strong>implicit_keep</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the resulting diff will assume KEEP unless the new
 prototype explicitly change them. That is, if a key exists in <strong>prototype1</strong> and
-not in <strong>prototype2</strong>, it will not be REMOVEd but set to KEEP instead. This is particularly
-useful for auto-generated prototypes when updating objects.</p></li>
+not in <strong>prototype2</strong>, it will not be REMOVEd but set to KEEP instead. This is
+particularly useful for auto-generated prototypes when updating objects.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

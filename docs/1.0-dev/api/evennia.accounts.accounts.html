@@ -40,7 +40,7 @@
             
   <section id="module-evennia.accounts.accounts">
 <span id="evennia-accounts-accounts"></span><h1>evennia.accounts.accounts<a class="headerlink" href="#module-evennia.accounts.accounts" title="Permalink to this headline">¶</a></h1>
-<p>Typeclass for Account objects</p>
+<p>Typeclass for Account objects.</p>
 <p>Note that this object is primarily intended to
 store OOC information, not game info! This
 object represents the actual user (not their
@@ -455,8 +455,9 @@ error (ValidationError, None): Any validation error(s) raised. Multiple</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This is called by Django also when logging in; it should not be mixed up with validation, since that
-would mean old passwords in the database (pre validation checks) could get invalidated.</p>
+<p>This is called by Django also when logging in; it should not be mixed up with
+validation, since that would mean old passwords in the database (pre validation checks)
+could get invalidated.</p>
 </dd></dl>
 
 <dl class="py method">

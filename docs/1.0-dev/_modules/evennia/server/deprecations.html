@@ -46,7 +46,7 @@
 
 <span class="sd">These all print to the terminal.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="kn">import</span> <span class="nn">os</span>
 
 <div class="viewcode-block" id="check_errors"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_errors">[docs]</a><span class="k">def</span> <span class="nf">check_errors</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -163,7 +163,23 @@
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
             <span class="s2">&quot;settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are &quot;</span>
             <span class="s2">&quot;unused and should be removed. The ChannelHandler is no more; &quot;</span>
-            <span class="s2">&quot;channels are now handled by aliasing the default &#39;channel&#39; command.&quot;</span><span class="p">)</span></div>
+            <span class="s2">&quot;channels are now handled by aliasing the default &#39;channel&#39; command.&quot;</span><span class="p">)</span>
+
+    <span class="n">template_overrides_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;template_overrides&quot;</span><span class="p">)</span>
+    <span class="n">static_overrides_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;static_overrides&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">template_overrides_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The template_overrides directory (</span><span class="si">{</span><span class="n">template_overrides_dir</span><span class="si">}</span><span class="s2">) has changed name.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot; - Rename your existing `template_overrides` folder to `templates` instead.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">static_overrides_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The static_overrides directory (</span><span class="si">{</span><span class="n">static_overrides_dir</span><span class="si">}</span><span class="s2">) has changed name.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot; 1. Delete any existing `web/static` folder and all its contents (this &quot;</span>
+            <span class="s2">&quot;was auto-generated)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot; 2. Rename your existing `static_overrides` folder to `static` instead.&quot;</span>
+        <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="check_warnings"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_warnings">[docs]</a><span class="k">def</span> <span class="nf">check_warnings</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

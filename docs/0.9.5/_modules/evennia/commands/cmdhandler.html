@@ -121,50 +121,50 @@
 <span class="c1"># is the normal &quot;production message to echo to the account.</span>
 
 <span class="n">_ERROR_UNTRAPPED</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">An untrapped error occurred.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">An untrapped error occurred. Please file a bug report detailing the steps to reproduce.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">An untrapped error occurred.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">An untrapped error occurred. Please file a bug report detailing the steps to reproduce.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSETS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A cmdset merger-error occurred. This is often due to a syntax</span>
-<span class="sd">error in one of the cmdsets to merge.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A cmdset merger-error occurred. Please file a bug report detailing the</span>
-<span class="sd">steps to reproduce.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">A cmdset merger-error occurred. This is often due to a syntax</span>
+<span class="s2">error in one of the cmdsets to merge.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">A cmdset merger-error occurred. Please file a bug report detailing the</span>
+<span class="s2">steps to reproduce.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_NOCMDSETS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">No command sets found! This is a critical bug that can have</span>
-<span class="sd">multiple causes.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">No command sets found! This is a sign of a critical bug.  If</span>
-<span class="sd">disconnecting/reconnecting doesn&#39;t&quot; solve the problem, try to contact</span>
-<span class="sd">the server admin through&quot; some other means for assistance.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">No command sets found! This is a critical bug that can have</span>
+<span class="s2">multiple causes.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">No command sets found! This is a sign of a critical bug.  If</span>
+<span class="s2">disconnecting/reconnecting doesn&#39;t&quot; solve the problem, try to contact</span>
+<span class="s2">the server admin through&quot; some other means for assistance.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDHANDLER</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A command handler bug occurred. If this is not due to a local change,</span>
-<span class="sd">please file a bug report with the Evennia project, including the</span>
-<span class="sd">traceback and steps to reproduce.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A command handler bug occurred. Please notify staff - they should</span>
-<span class="sd">likely file a bug report with the Evennia project.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">A command handler bug occurred. If this is not due to a local change,</span>
+<span class="s2">please file a bug report with the Evennia project, including the</span>
+<span class="s2">traceback and steps to reproduce.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">A command handler bug occurred. Please notify staff - they should</span>
+<span class="s2">likely file a bug report with the Evennia project.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 
-<span class="n">_ERROR_RECURSION_LIMIT</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">_ERROR_RECURSION_LIMIT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
     <span class="s2">&quot;Command recursion limit (</span><span class="si">{recursion_limit}</span><span class="s2">) &quot;</span> <span class="s2">&quot;reached for &#39;</span><span class="si">{raw_cmdname}</span><span class="s2">&#39; (</span><span class="si">{cmdclass}</span><span class="s2">).&quot;</span>
 <span class="p">)</span>
 
@@ -187,7 +187,7 @@
 <span class="sd">            production string (with a timestamp) to be shown to the user.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{traceback}</span><span class="se">\n</span><span class="si">{errmsg}</span><span class="se">\n</span><span class="s2">(Traceback was logged </span><span class="si">{timestamp}</span><span class="s2">).&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{traceback}</span><span class="se">\n</span><span class="si">{errmsg}</span><span class="se">\n</span><span class="s2">(Traceback was logged </span><span class="si">{timestamp}</span><span class="s2">).&quot;</span><span class="p">)</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
     <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
@@ -340,6 +340,7 @@
         <span class="k">def</span> <span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper-method; Get Object-level cmdsets</span>
+
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="c1"># Gather cmdsets from location, objects in location or carried</span>
             <span class="k">try</span><span class="p">:</span>
@@ -393,6 +394,7 @@
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper method; Get cmdset while making sure to trigger all</span>
 <span class="sd">            hooks safely. Returns the stack and the valid options.</span>
+
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_cmdset_get</span><span class="p">()</span>
@@ -425,13 +427,6 @@
                                 <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                             <span class="p">]</span>
                         <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-                    <span class="c1"># if not current.no_channels:</span>
-                    <span class="c1">#     # also objs may have channels</span>
-                    <span class="c1">#     channel_cmdsets = yield _get_channel_cmdset(obj)</span>
-                    <span class="c1">#     cmdsets += channel_cmdsets</span>
-                <span class="c1"># if not current.no_channels:</span>
-                <span class="c1">#     channel_cmdsets = yield _get_channel_cmdset(account)</span>
-                <span class="c1">#     cmdsets += channel_cmdsets</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the account level</span>
@@ -449,11 +444,6 @@
                             <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                         <span class="p">]</span>
                     <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-                <span class="c1"># if not current.no_channels:</span>
-                <span class="c1">#     # also objs may have channels</span>
-                <span class="c1">#     cmdsets += yield _get_channel_cmdset(obj)</span>
-            <span class="c1"># if not current.no_channels:</span>
-            <span class="c1">#     cmdsets += yield _get_channel_cmdset(account)</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the object level</span>
@@ -467,9 +457,6 @@
                         <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                     <span class="p">]</span>
                 <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">local_obj_cmdsets</span>
-            <span class="c1"># if not current.no_channels:</span>
-            <span class="c1">#     # also objs may have channels</span>
-            <span class="c1">#     cmdsets += yield _get_channel_cmdset(obj)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;get_and_merge_cmdsets: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
 

@@ -215,6 +215,7 @@
 <span class="sd">    The main Evennia server handler. This object sets up the database and</span>
 <span class="sd">    tracks and interlinks all the twisted network services that make up</span>
 <span class="sd">    evennia.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Evennia.__init__"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
@@ -284,6 +285,7 @@
 <span class="sd">        This allows for changing default cmdset locations and default</span>
 <span class="sd">        typeclasses in the settings file and have them auto-update all</span>
 <span class="sd">        already existing objects.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">INFO_DICT</span>
 
@@ -512,7 +514,10 @@
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;runtime&quot;</span><span class="p">,</span> <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">runtime</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Evennia.get_info_dict"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Return the server info, for display.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the server info, for display.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">INFO_DICT</span></div>
 
     <span class="c1"># server start/stop hooks</span>
@@ -521,6 +526,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every time the server starts up, regardless of</span>
 <span class="sd">        how it was shut down.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
@@ -529,6 +535,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called just before a server is shut down, regardless</span>
 <span class="sd">        of it is fore a reload, reset or shutdown.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_stop</span><span class="p">()</span></div>
@@ -536,6 +543,7 @@
 <div class="viewcode-block" id="Evennia.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_reload_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when server starts back up after a reload.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_start</span><span class="p">()</span></div>
@@ -546,7 +554,7 @@
 <span class="sd">        after reconnecting.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            mode (str): One of reload, reset or shutdown.</span>
+<span class="sd">            mode (str): One of &#39;reload&#39;, &#39;reset&#39; or &#39;shutdown&#39;.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -596,6 +604,7 @@
 <div class="viewcode-block" id="Evennia.at_server_reload_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_reload_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only time the server stops before a reload.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span></div>
@@ -604,6 +613,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server starts &quot;cold&quot;, i.e. after a</span>
 <span class="sd">        shutdown or a reset.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We need to do this just in case the server was killed in a way where</span>
         <span class="c1"># the normal cleanup operations did not have time to run.</span>
@@ -631,6 +641,7 @@
 <div class="viewcode-block" id="Evennia.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_cold_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server goes down due to a shutdown or reset.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span></div></div>

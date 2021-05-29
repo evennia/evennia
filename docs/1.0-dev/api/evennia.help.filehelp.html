@@ -44,7 +44,7 @@
 will be treated as non-command help entries and displayed in the same way as
 help entries created using the <strong>sethelp</strong> default command. After changing an
 entry on-disk you need to reload the server to have the change show in-game.</p>
-<p>An filehelp file is a regular python modules with dicts representing each help
+<p>An filehelp file is a regular python module with dicts representing each help
 entry. If a list <strong>HELP_ENTRY_DICTS</strong> is found in the module, this should be a list of
 dicts.  Otherwise <em>all</em> top-level dicts in the module will be assumed to be a
 help-entry dict.</p>
@@ -52,20 +52,20 @@ help-entry dict.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>
  <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>   <span class="c1"># optional, otherwise settings.DEFAULT_HELP_CATEGORY</span>
  <span class="s1">&#39;aliases&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">list</span><span class="o">&gt;</span><span class="p">,</span>   <span class="c1"># optional</span>
- <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">}</span><span class="o">****</span>
+ <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>where the <strong>**category**</strong> is optional and the <strong>**text**</strong> should be formatted on the
+<p>where the <strong>category</strong> is optional and the <strong>text**</strong> should be formatted on the
 same form as other help entry-texts and contain <strong>**# subtopics**</strong> as normal.</p>
 <p>New help-entry modules are added to the system by providing the python-path to
 the module to <strong>settings.FILE_HELP_ENTRY_MODULES</strong>. Note that if same-key entries are
 added, entries in latter modules will override that of earlier ones. Use
-<strong>**settings.DEFAULT_HELP_CATEGORY**</strong> to customize what category is used if
+<strong>settings.DEFAULT_HELP_CATEGORY**</strong> to customize what category is used if
 not set explicitly.</p>
 <p>An example of the contents of a module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help_entry1</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The Gods&quot;</span><span class="p">,</span>   <span class="c1"># case-insensitive, can be searched by &#39;gods&#39; as well</span>
-    <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;pantheon&#39;</span><span class="p">,</span> <span class="s1">&#39;religion&#39;</span><span class="p">]</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The Gods&quot;</span><span class="p">,</span>   <span class="c1"># case-insensitive, also partial-matching (&#39;gods&#39;) works</span>
+    <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;pantheon&#39;</span><span class="p">,</span> <span class="s1">&#39;religion&#39;</span><span class="p">],</span>
     <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;Lore&quot;</span><span class="p">,</span>
     <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        The gods formed the world ...</span>

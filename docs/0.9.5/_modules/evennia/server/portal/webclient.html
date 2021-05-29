@@ -85,6 +85,7 @@
 <div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketServerProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the server-side of the Websocket connection.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># nonce value, used to prevent the webclient from erasing the</span>
@@ -196,7 +197,7 @@
         <span class="c1"># in case anyone wants to expose this functionality later.</span>
         <span class="c1">#</span>
         <span class="c1"># sendClose() under autobahn/websocket/interfaces.py</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">CLOSE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">CLOSE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WebSocketClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -60,7 +60,7 @@
 <span class="n">SCRIPTDB</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base container class. A container is simply a storage object whose</span>
 <span class="sd">    properties can be acquired as a property on it. This is generally</span>
@@ -197,9 +197,8 @@
             <span class="k">return</span> <span class="n">new_script</span>
 
         <span class="k">if</span> <span class="p">((</span><span class="n">found</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">!=</span> <span class="n">start_delay</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">repeats</span> <span class="o">!=</span> <span class="n">repeats</span><span class="p">)</span>
-        <span class="p">):</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">!=</span> <span class="n">start_delay</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">repeats</span> <span class="o">!=</span> <span class="n">repeats</span><span class="p">)):</span>
             <span class="c1"># the setup changed</span>
             <span class="n">found</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">desc</span><span class="p">:</span>

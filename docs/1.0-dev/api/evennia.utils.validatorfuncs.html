@@ -87,8 +87,9 @@ If neither one is provided, defaults to UTC.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>entry</strong> (<em>string</em>) – This is a string from user-input. The intended format is, for example: “5d 2w 90s” for
-‘five days, two weeks, and ninety seconds.’ Invalid sections are ignored.</p></li>
+<li><p><strong>entry</strong> (<em>string</em>) – This is a string from user-input. The intended format is, for example:
+“5d 2w 90s” for ‘five days, two weeks, and ninety seconds.’ Invalid sections are
+ignored.</p></li>
 <li><p><strong>option_key</strong> (<em>str</em>) – Name to display this query as.</p></li>
 </ul>
 </dd>
@@ -121,14 +122,16 @@ If neither one is provided, defaults to UTC.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.validatorfuncs.boolean">
 <code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">boolean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entry</span></em>, <em class="sig-param"><span class="n">option_key</span><span class="o">=</span><span class="default_value">'True/False'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.boolean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simplest check in computer logic, right? This will take user input to flick the switch on or off
-:param entry: A value such as True, On, Enabled, Disabled, False, 0, or 1.
-:type entry: str
-:param option_key: What kind of Boolean we are setting. What Option is this for?
-:type option_key: str</p>
+<dd><p>Simplest check in computer logic, right? This will take user input to flick the switch on or off</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Boolean</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>str</em>) – A value such as True, On, Enabled, Disabled, False, 0, or 1.</p></li>
+<li><p><strong>option_key</strong> (<em>str</em>) – What kind of Boolean we are setting. What Option is this for?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boolean</p>
 </dd>
 </dl>
 </dd></dl>

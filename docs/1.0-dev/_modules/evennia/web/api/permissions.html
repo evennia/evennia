@@ -40,16 +40,23 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.web.api.permissions</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">permissions</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Sets up an api-access permission check using the in-game permission hierarchy.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">permissions</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_perm</span>
 
 
 <div class="viewcode-block" id="EvenniaPermission"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission">[docs]</a><span class="k">class</span> <span class="nc">EvenniaPermission</span><span class="p">(</span><span class="n">permissions</span><span class="o">.</span><span class="n">BasePermission</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Django Rest Framework permission class that allows us to use</span>
-<span class="sd">    Evennia&#39;s permission structure. Based on the action in a given</span>
-<span class="sd">    view, we&#39;ll check a corresponding Evennia access/lock check.</span>
+<span class="sd">    A Django Rest Framework permission class that allows us to use Evennia&#39;s</span>
+<span class="sd">    permission structure. Based on the action in a given view, we&#39;ll check a</span>
+<span class="sd">    corresponding Evennia access/lock check.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># subclass this to change these permissions</span>
@@ -82,9 +89,9 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="c1"># these actions don&#39;t support object-level permissions, so use the above definitions</span>
         <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_permistring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MINIMUM_LIST_PERMISSION</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">check_perm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MINIMUM_LIST_PERMISSION</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;create&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_permistring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MINIMUM_CREATE_PERMISSION</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">check_perm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MINIMUM_CREATE_PERMISSION</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># this means we&#39;ll check object-level permissions</span></div>
 
 <div class="viewcode-block" id="EvenniaPermission.check_locks"><a class="viewcode-back" href="../../../../api/evennia.web.api.permissions.html#evennia.web.api.permissions.EvenniaPermission.check_locks">[docs]</a>    <span class="nd">@staticmethod</span>
