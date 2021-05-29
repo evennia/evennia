@@ -150,7 +150,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         else:
             aliases = ''
 
-        help_text = "\n\n" + dedent(help_text.strip('\n')) + "\n" if help_text else ""
+        help_text = "\n" + dedent(help_text.strip('\n')) if help_text else ""
 
         if subtopics:
             subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
@@ -164,15 +164,17 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         if suggested:
             suggested = [f"|w{sug}|n" for sug in suggested]
             suggested = (
-                "\n|CSuggestions:|n\n{}".format(
+                "\n|COther topic suggestions:|n\n{}".format(
                     "\n  ".join(format_grid(suggested, width=self.client_width())))
             )
         else:
             suggested = ''
 
-        end = f"\n{separator}"
+        end = start
 
-        return "".join((start, title, aliases, help_text, subtopics, suggested, end))
+        partorder = (start, title + aliases, help_text, subtopics, suggested, end)
+
+        return "\n".join(part.rstrip() for part in partorder if part)
 
     def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False):
         """
@@ -340,7 +342,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         file_help_topics = FILE_HELP_ENTRIES.all(return_dict=True)
         db_topics = {
             topic.key.lower().strip(): topic for topic in HelpEntry.objects.all()
-                if topic.access(caller, "view", default=True)
+            if topic.access(caller, "view", default=True)
         }
         all_db_topics = list({**file_help_topics, **db_topics}.values())
 
@@ -378,7 +380,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         entries = [cmd for cmd in all_cmds if cmd] + all_db_topics + all_categories
 
         # lunr search fields/boosts
-        search_fields=[
+        search_fields = [
             {"field_name": "key", "boost": 10},
             {"field_name": "aliases", "boost": 9},
             {"field_name": "category", "boost": 8},
@@ -408,7 +410,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 # doing a full-text search in the actual texts of the help
                 # entries
 
-                search_fields=[
+                search_fields = [
                     {"field_name": "text", "boost": 1},
                 ]
 
@@ -420,7 +422,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                     )
 
                     if suggestions:
-                        help_text += "\n... But matches where found within the help texts of the suggestions below."
+                        help_text += (
+                            "\n... But matches where found within the help "
+                            "texts of the suggestions below.")
                         break
 
             output = self.format_help_entry(
@@ -524,7 +528,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             topic=topic,
             help_text=help_text,
             aliases=aliases if not subtopics else None,
-            subtopics=subtopic_index
+            subtopics=subtopic_index,
+            suggested=suggested
         )
 
         self.msg_help(output)
