@@ -1,7 +1,7 @@
-evennia.typeclasses.admin 
+evennia.web.admin.objects 
 ================================
 
-.. automodule:: evennia.typeclasses.admin
+.. automodule:: evennia.web.admin.objects
    :members:
    :undoc-members:
    :show-inheritance:

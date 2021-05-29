@@ -454,15 +454,14 @@ class EvMore(object):
             If overridden, this method must perform the following  actions:
 
             - read and re-store `self._data` (the incoming data set) if needed for pagination to
-                work.
+              work.
             - set `self._npages` to the total number of pages. Default is 1.
             - set `self._paginator` to a callable that will take a page number 1...N and return
               the data to display on that page (not any decorations or next/prev buttons). If only
               wanting to change the paginator, override `self.paginator` instead.
             - set `self._page_formatter` to a callable that will receive the page from
-                `self._paginator` and format it with one element per line. Default is `str`. Or
-                override `self.page_formatter`
-              directly instead.
+              `self._paginator` and format it with one element per line. Default is `str`. Or
+              override `self.page_formatter` directly instead.
 
             By default, helper methods are called that perform these actions
             depending on supported inputs.
