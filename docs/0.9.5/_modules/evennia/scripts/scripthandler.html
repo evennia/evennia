@@ -89,15 +89,11 @@
                     <span class="n">next_repeat</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="n">next_repeat</span> <span class="o">=</span> <span class="s2">&quot;?&quot;</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">%(key)s</span><span class="s2">&#39; (</span><span class="si">%(next_repeat)s</span><span class="s2">/</span><span class="si">%(interval)s</span><span class="s2">, </span><span class="si">%(repeats)s</span><span class="s2"> repeats): </span><span class="si">%(desc)s</span><span class="s2">&quot;</span>
-            <span class="p">)</span> <span class="o">%</span> <span class="p">{</span>
-                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                <span class="s2">&quot;next_repeat&quot;</span><span class="p">:</span> <span class="n">next_repeat</span><span class="p">,</span>
-                <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">interval</span><span class="p">,</span>
-                <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="n">repeats</span><span class="p">,</span>
-                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
-            <span class="p">}</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">{key}</span><span class="s2">&#39; (</span><span class="si">{next_repeat}</span><span class="s2">/</span><span class="si">{interval}</span><span class="s2">, </span><span class="si">{repeats}</span><span class="s2"> repeats): </span><span class="si">{desc}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">next_repeat</span><span class="o">=</span><span class="n">next_repeat</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+                <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ScriptHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

@@ -910,7 +910,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">err</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">err</span><span class="p">))</span>
             <span class="k">return</span>
 
-        <span class="n">errtxt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t perform move (&#39;</span><span class="si">%s</span><span class="s2">&#39;). Contact an admin.&quot;</span><span class="p">)</span>
+        <span class="n">errtxt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t perform move (</span><span class="si">{err}</span><span class="s2">). Contact an admin.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">emit_to_obj</span><span class="p">:</span>
             <span class="n">emit_to_obj</span> <span class="o">=</span> <span class="bp">self</span>
 
@@ -932,7 +932,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_before_move()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_before_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Save the old location</span>
@@ -943,7 +943,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">source_location</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_leave()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_object_leave()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
@@ -951,14 +951,14 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">announce_move_from</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_announce_move()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_announce_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Perform move</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">destination</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;location change&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+            <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;location change&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
@@ -966,7 +966,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">announce_move_to</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;announce_move_to()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;announce_move_to()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
@@ -975,7 +975,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">destination</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_receive()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_object_receive()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Execute eventual extra commands on this object after moving it</span>
@@ -984,7 +984,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_after_move&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_after_move&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -1013,8 +1013,8 @@
                 <span class="c1"># we are deleting default home!</span>
                 <span class="n">default_home</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find default home &#39;(#</span><span class="si">%d</span><span class="s2">)&#39;.&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="n">default_home_id</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find default home &#39;(#</span><span class="si">{dbid}</span><span class="s2">)&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbid</span><span class="o">=</span><span class="n">default_home_id</span><span class="p">))</span>
             <span class="n">default_home</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
@@ -1035,8 +1035,8 @@
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">home</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Your current location has ceased to exist,&quot;</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; moving you to </span><span class="si">%s</span><span class="s2">(#</span><span class="si">%d</span><span class="s2">).&quot;</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">home</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">home</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; moving you to (#</span><span class="si">{dbid}</span><span class="s2">).&quot;</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbid</span><span class="o">=</span><span class="n">home</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Famous last words: The account should never see this.</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;This place should not exist ... contact an admin.&quot;</span>
