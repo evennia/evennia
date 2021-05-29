@@ -562,7 +562,7 @@ class CmdEditorGroup(CmdEditorBase):
                 buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
                 caller.msg(_("Pasted buffer {cbuf} to {line}.").format(
-                    buf=editor._copy_buffer, line=self.lstr))
+                    cbuf=editor._copy_buffer, line=self.lstr))
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split("\n")
@@ -1047,7 +1047,7 @@ class EvEditor:
         header = (
             "|n"
             + sep * 10
-            + _("Line Editor [{name}]") % self._key
+            + _("Line Editor [{name}]").format(name=self._key)
             + sep * (_DEFAULT_WIDTH - 24 - len(self._key))
         )
         footer = (
