@@ -5,10 +5,10 @@ between the first "i" and the last "n" in that word) allows Evennia's core
 server to return texts in other languages than English - without anyone having
 to edit the source code.
 
-Language-translations are done by volunteers. Therefore language support can
-vary a lot depending on when they were last updated. Below are all languages
-(besides English) with som level of support. Generally, any language not
-updated after May 2021 will be missing translations.
+Language-translations are done by volunteers, so support can vary a lot
+depending on when a given language was last updated. Below are all languages
+(besides English) with some level of support. Generally, any language not
+updated after May 2021 will be missing some translations.
 
 ```eval_rst
 
@@ -21,7 +21,7 @@ updated after May 2021 will be missing translations.
 +---------------+----------------------+--------------+
 | it            | Italian              | Feb 2015     |
 +---------------+----------------------+--------------+
-| ko            | Korean(simplified)   | Sep 2019     |
+| ko            | Korean (simplified)  | Sep 2019     |
 +---------------+----------------------+--------------+
 | la            | Latin                | Feb 2021     |
 +---------------+----------------------+--------------+
@@ -29,7 +29,7 @@ updated after May 2021 will be missing translations.
 +---------------+----------------------+--------------+
 | pt            | Portugese            | Dec 2015     |
 +---------------+----------------------+--------------+
-| ru            | Russian (Russia)     | Apr 2020     |
+| ru            | Russian              | Apr 2020     |
 +---------------+----------------------+--------------+
 | sv            | Swedish              | June 2021    |
 +---------------+----------------------+--------------+
