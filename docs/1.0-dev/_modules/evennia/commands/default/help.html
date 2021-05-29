@@ -192,7 +192,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-        <span class="n">help_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">dedent</span><span class="p">(</span><span class="n">help_text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">help_text</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">help_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">dedent</span><span class="p">(</span><span class="n">help_text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">help_text</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">subtopics</span><span class="p">:</span>
             <span class="n">subtopics</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">subtop</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">subtop</span> <span class="ow">in</span> <span class="n">subtopics</span><span class="p">]</span>
@@ -206,15 +206,17 @@
         <span class="k">if</span> <span class="n">suggested</span><span class="p">:</span>
             <span class="n">suggested</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">sug</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">sug</span> <span class="ow">in</span> <span class="n">suggested</span><span class="p">]</span>
             <span class="n">suggested</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|CSuggestions:|n</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|COther topic suggestions:|n</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">format_grid</span><span class="p">(</span><span class="n">suggested</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">())))</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">suggested</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-        <span class="n">end</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">separator</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span>
 
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">aliases</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">subtopics</span><span class="p">,</span> <span class="n">suggested</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span></div>
+        <span class="n">partorder</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">title</span> <span class="o">+</span> <span class="n">aliases</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">subtopics</span><span class="p">,</span> <span class="n">suggested</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">partorder</span> <span class="k">if</span> <span class="n">part</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdHelp.format_help_index"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_index">[docs]</a>    <span class="k">def</span> <span class="nf">format_help_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_help_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_help_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title_lone_category</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -382,7 +384,7 @@
         <span class="n">file_help_topics</span> <span class="o">=</span> <span class="n">FILE_HELP_ENTRIES</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">db_topics</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">topic</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span> <span class="n">topic</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="n">all_db_topics</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="o">**</span><span class="n">file_help_topics</span><span class="p">,</span> <span class="o">**</span><span class="n">db_topics</span><span class="p">}</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
@@ -420,7 +422,7 @@
         <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">]</span> <span class="o">+</span> <span class="n">all_db_topics</span> <span class="o">+</span> <span class="n">all_categories</span>
 
         <span class="c1"># lunr search fields/boosts</span>
-        <span class="n">search_fields</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
             <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">},</span>
             <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
@@ -450,7 +452,7 @@
                 <span class="c1"># doing a full-text search in the actual texts of the help</span>
                 <span class="c1"># entries</span>
 
-                <span class="n">search_fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
                 <span class="p">]</span>
 
@@ -462,7 +464,9 @@
                     <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">suggestions</span><span class="p">:</span>
-                        <span class="n">help_text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... But matches where found within the help texts of the suggestions below.&quot;</span>
+                        <span class="n">help_text</span> <span class="o">+=</span> <span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... But matches where found within the help &quot;</span>
+                            <span class="s2">&quot;texts of the suggestions below.&quot;</span><span class="p">)</span>
                         <span class="k">break</span>
 
             <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
@@ -566,7 +570,8 @@
             <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
             <span class="n">help_text</span><span class="o">=</span><span class="n">help_text</span><span class="p">,</span>
             <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">subtopics</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">subtopics</span><span class="o">=</span><span class="n">subtopic_index</span>
+            <span class="n">subtopics</span><span class="o">=</span><span class="n">subtopic_index</span><span class="p">,</span>
+            <span class="n">suggested</span><span class="o">=</span><span class="n">suggested</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div></div>
