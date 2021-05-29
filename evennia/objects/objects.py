@@ -868,7 +868,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
             return
 
-        errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
+        errtxt = _("Couldn't perform move ({err}). Contact an admin.")
         if not emit_to_obj:
             emit_to_obj = self
 
@@ -890,7 +890,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 if not self.at_before_move(destination, **kwargs):
                     return False
             except Exception as err:
-                logerr(errtxt % "at_before_move()", err)
+                logerr(errtxt.format(err="at_before_move()"), err)
                 return False
 
         # Save the old location
@@ -901,7 +901,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 source_location.at_object_leave(self, destination, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_object_leave()", err)
+                logerr(errtxt.format(err="at_object_leave()"), err)
                 return False
 
         if not quiet:
@@ -909,14 +909,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.announce_move_from(destination, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_announce_move()", err)
+                logerr(errtxt.format(err="at_announce_move()"), err)
                 return False
 
         # Perform move
         try:
             self.location = destination
         except Exception as err:
-            logerr(errtxt % "location change", err)
+            logerr(errtxt.format(err="location change"), err)
             return False
 
         if not quiet:
@@ -924,7 +924,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.announce_move_to(source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "announce_move_to()", err)
+                logerr(errtxt.format(err="announce_move_to()"), err)
                 return False
 
         if move_hooks:
@@ -933,7 +933,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 destination.at_object_receive(self, source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_object_receive()", err)
+                logerr(errtxt.format(err="at_object_receive()"), err)
                 return False
 
         # Execute eventual extra commands on this object after moving it
@@ -942,7 +942,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.at_after_move(source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_after_move", err)
+                logerr(errtxt.format(err="at_after_move"), err)
                 return False
         return True
 
@@ -971,8 +971,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 # we are deleting default home!
                 default_home = None
         except Exception:
-            string = _("Could not find default home '(#%d)'.")
-            logger.log_err(string % default_home_id)
+            string = _("Could not find default home '(#{dbid})'.")
+            logger.log_err(string.format(dbid=default_home_id))
             default_home = None
 
         for obj in self.contents:
@@ -993,8 +993,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if obj.has_account:
                 if home:
                     string = "Your current location has ceased to exist,"
-                    string += " moving you to %s(#%d)."
-                    obj.msg(_(string) % (home.name, home.dbid))
+                    string += " moving you to (#{dbid})."
+                    obj.msg(_(string).format(dbid=home.dbid))
                 else:
                     # Famous last words: The account should never see this.
                     string = "This place should not exist ... contact an admin."

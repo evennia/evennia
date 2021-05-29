@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Evennia 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 11:09+0000\n"
-"PO-Revision-Date: 2021-05-29 13:22+0200\n"
+"POT-Creation-Date: 2021-05-29 16:25+0000\n"
+"PO-Revision-Date: 2021-05-29 17:54+0200\n"
 "Last-Translator: Griatch <griatch@gmail.com>\n"
 "Language-Team: Swedish <>\n"
 "Language: sv\n"
@@ -332,18 +332,18 @@ msgid "Lock: '{lockdef}' has no valid lock functions."
 msgstr "Lås: '{lockdef}' innehåller inga acceptabla låsfunktioner."
 
 #: objects/objects.py:871
-#, python-format
-msgid "Couldn't perform move ('%s'). Contact an admin."
-msgstr "Kunde inte utföra föflyttningen ('%s'). Kontakta en admininstrator."
+#, python-brace-format
+msgid "Couldn't perform move ({err}). Contact an admin."
+msgstr "Kunde inte utföra föflyttningen ('{err}'). Kontakta en admininstrator."
 
 #: objects/objects.py:881
 msgid "The destination doesn't exist."
 msgstr "Destinationen existerar inte."
 
 #: objects/objects.py:974
-#, python-format
-msgid "Could not find default home '(#%d)'."
-msgstr "Kunde inte hitta standard-hem '(#'%d)'."
+#, python-brace-format
+msgid "Could not find default home '(#{dbid})'."
+msgstr "Kunde inte hitta standard-hem '(#{dbid})'."
 
 #: objects/objects.py:988
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
@@ -522,14 +522,14 @@ msgstr ""
 "Diff innehåller icke-dicts som inte är på formen (gammal, ny, "
 "handling_att_utföra): {diffpart}"
 
-#: scripts/scripthandler.py:52
-#, python-format
+#: scripts/scripthandler.py:51
+#, python-brace-format
 msgid ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+" '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}"
 msgstr ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repetitioner): %(desc)s"
+" '{key}' ({next_repeat}/{interval}, {repeats} repetitioner): {desc}"
 
 #: scripts/scripts.py:329
 #, python-brace-format
@@ -752,7 +752,7 @@ msgstr ""
 "\n"
 "{error}\n"
 "\n"
-"|rSparfunktionen stötte på ett fel. Bufferten kunde inte sparas."
+"|rSparfunktionen stötte på ett fel. Bufferten kunde inte sparas.|n\n"
 
 #: utils/eveditor.py:133
 msgid "|rNo save function defined. Buffer cannot be saved.|n"
@@ -1101,7 +1101,6 @@ msgstr "Försök vara mer specifik."
 
 #: utils/utils.py:2219
 #, python-brace-format
-#| msgid "Could not find '%s'."
 msgid "Could not find '{query}'."
 msgstr "Kunde inte hitta '{query}'."
 
@@ -1226,7 +1225,6 @@ msgid "Change"
 msgstr "Ändra"
 
 #: web/templates/admin/app_list.html:39
-#| msgid "You don't have permission to edit anything."
 msgid "You don’t have permission to view or edit anything."
 msgstr "Du har inte rättigheter att se eller ändra någonting."
 

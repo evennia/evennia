@@ -10,7 +10,6 @@ vary a lot depending on when they were last updated. Below are all languages
 (besides English) with som level of support. Generally, any language not
 updated after May 2021 will be missing translations.
 
-
 ```eval_rst
 
 +---------------+----------------------+--------------+
@@ -26,15 +25,15 @@ updated after May 2021 will be missing translations.
 +---------------+----------------------+--------------+
 | la            | Latin                | Feb 2021     |
 +---------------+----------------------+--------------+
-| po            | Polish               | Feb 2019     |
+| pl            | Polish               | Feb 2019     |
 +---------------+----------------------+--------------+
 | pt            | Portugese            | Dec 2015     |
 +---------------+----------------------+--------------+
-| ru-RU         | Russian (Russia)     | Apr 2020     |
+| ru            | Russian (Russia)     | Apr 2020     |
 +---------------+----------------------+--------------+
 | sv            | Swedish              | June 2021    |
 +---------------+----------------------+--------------+
-| zh-Hans       | Chinese (simplified) | May 2019     |
+| zh            | Chinese (simplified) | May 2019     |
 +---------------+----------------------+--------------+
 ```
 
@@ -62,38 +61,22 @@ the server to activate i18n.
     Even for a 'fully translated' language you will still see English text
     in many places when you start Evennia. This is because we expect you (the
     developer) to know English (you are reading this manual after all). So we
-    translate hard-coded strings that the end player may see - things you can't
-    easily change from your mygame/ folder. Outputs from Commands and
-    Typeclasses are generally not translated, nor are command/log outputs -
-    and these are likely to be the brunt of the text the player will see.
+    translate *hard-coded strings that the end player may see* - things you
+    can't easily change from your mygame/ folder. Outputs from Commands and
+    Typeclasses are generally *not* translated, nor are console/log outputs.
 
 ```
 
-> Windows Note: If you get errors concerning `gettext` or `xgettext` on Windows,
-> see the
-> [Django documentation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows).
-> A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
-> available on [Github](https://github.com/mlocati/gettext-iconv-windows).
+```sidebar:: Windows users
 
+    If you get errors concerning `gettext` or `xgettext` on Windows,
+    see the `Django documentation <https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows>`_
+    A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
+    available on `Github <https://github.com/mlocati/gettext-iconv-windows>`_
+
+```
 
 ## Translating Evennia
-
-```important::
-
-    Evennia offers translations of hard-coded strings in the server, things like
-    "Connection closed" or "Server restarted", strings that end users will see and
-    which game devs are not supposed to change on their own. Text you see in the log
-    file or on the command line/log are *not* translated.
-
-    In addition, text in default Commands and in default Typeclasses will *not* be
-    translated by switching *i18n* language. To translate Commands and Typeclass
-    hooks you must overload them in your game directory and translate their returns
-    to the language you want. This is because from Evennia's perspective, adding
-    *i18n* code to commands tend to add complexity to code that is *meant* to be
-    changed anyway.  One of the goals of Evennia is to keep the user-changeable code
-    as clean and easy- to-read as possible.
-
-```
 
 Translations are found in the core `evennia/` library, under
 `evennia/evennia/locale/`. You must make sure to have cloned this repository
@@ -104,8 +87,8 @@ has translated it yet.  Alternatively you might have the language but find the
 translation bad ... You are welcome to help improve the situation!
 
 To start a new translation you need to first have cloned the Evennia repositry
-with GIT and activated a python virtualenv as described on the [Setup
-Quickstart](../Setup/Setup-Quickstart) page.
+with GIT and activated a python virtualenv as described on the
+[Setup Quickstart](../Setup/Setup-Quickstart) page.
 
 Go to `evennia/evennia/` - that is, not your game dir, but inside the `evennia/`
 repo itself. If you see the `locale/` folder you are in the right place.  Make
@@ -127,25 +110,52 @@ command will not overwrite any existing strings so you can run it as much as you
 want.
 
 Next head to `locale/<language-code>/LC_MESSAGES` and edit the `**.po` file you
-find there.  You can edit this with a normal text editor but it is easiest if
+find there. You can edit this with a normal text editor but it is easiest if
 you use a special po-file editor from the web (search the web for "po editor"
-for many free alternatives).
+for many free alternatives), for example:
+
+    - [gtranslator](https://wiki.gnome.org/Apps/Gtranslator)
+    - [poeditor](https://poeditor.com/)
 
 The concept of translating is simple, it's just a matter of taking the english
 strings you find in the `**.po` file and add your language's translation best
-you can. The `**.po` format (and many supporting editors) allow you to mark
-translations as "fuzzy". This tells the system (and future translators) that you
-are unsure about the translation, or that you couldn't find a translation that
-exactly matched the intention of the original text. Other translators will see
-this and might be able to improve it later.  Finally, you need to compile your
-translation into a more efficient form. Do so from the `evennia` folder again:
+you can. Once you are done, run
 
-    evennia compilemessages
+    `evennia compilemessages`
 
-This will go through all languages and create/update compiled files (`**.mo`)
-for them. This needs to be done whenever a `**.po` file is updated.
+This will compile all languages. Check your language and also check back to your
+`.po` file in case the process updated it - you may need to fill in some missing
+header fields and should usually note who did the translation.
 
 When you are done, make sure that everyone can benefit from your translation!
-Make a PR against Evennia with the updated `**.po` and `*.mo` files. Less
-ideally (if git is not your thing) you can also attach them to a new post in our
-forums.
+Make a PR against Evennia with the updated `**.po` file. Less ideally (if git is
+not your thing) you can also attach it to a new post in our forums.
+
+### Hints on translation
+
+Many of the translation strings use `{ ... }` placeholders. This is because they
+are to be used in `.format()` python operations. While you can change the
+_order_  of these if it makes more sense in your language, you must _not_
+translate the variables in these formatting tags - Python will look for them!
+
+    Original: "|G{key} connected|n"
+    Swedish:  "|G{key} anslöt|n"
+
+You must also retain line breaks _at the start and end_ of a message, if any
+(your po-editor should stop you if you don't). Try to also end with the same
+sentence delimiter (if that makes sense in your language).
+
+    Original: "\n(Unsuccessfull tried '{path}')."
+    Swedish: "\nMisslyckades med att nå '{path}')."
+
+Finally, try to get a feel for who a string is for. If a special technical term
+is used it may be more confusing than helpful to translate it, even if it's
+outside of a `{...}` tag. Even though the result is a mix of your language and
+English, clarity is more important. Many languages may also use the English term
+normally and reaching for a translation may make the result sound awkward
+instead.
+
+    Original: "\nError loading cmdset: No cmdset class '{classname}' in '{path}'.
+               \n(Traceback was logged {timestamp})"
+    Swedish:  "Fel medan cmdset laddades: Ingen cmdset-klass med namn '{classname}' i {path}.
+               \n(Traceback loggades {timestamp})"
