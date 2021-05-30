@@ -178,46 +178,94 @@ custom display of the list of commands and topics.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.commands.default.help.CmdHelp.check_show_help">
-<code class="sig-name descname">check_show_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.check_show_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.check_show_help" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper method. If this return True, the given cmd
-auto-help will be viewable in the help listing.
-Override this to easily select what is shown to
-the account. Note that only commands available
-in the caller’s merged cmdset are available.</p>
+<dt id="evennia.commands.default.help.CmdHelp.can_read_topic">
+<code class="sig-name descname">can_read_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd_or_topic</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.can_read_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.can_read_topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method. If this return True, the given help topic
+be viewable in the help listing. Note that even if this returns False,
+the entry will still be visible in the help index unless <strong>should_list_topic</strong>
+is also returning False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – Command class from the merged cmdset</p></li>
-<li><p><strong>caller</strong> (<em>Character</em><em>, </em><em>Account</em><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The current caller
-executing the help command.</p></li>
+<li><p><strong>cmd_or_topic</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><em>HelpEntry</em></a><em> or </em><a class="reference internal" href="evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry" title="evennia.help.filehelp.FileHelpEntry"><em>FileHelpEntry</em></a>) – The topic/command to test.</p></li>
+<li><p><strong>caller</strong> – the caller checking for access.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – If command can be viewed or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This uses the ‘read’ lock. If no ‘read’ lock is defined, the topic is assumed readable
+by all.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.can_list_topic">
+<code class="sig-name descname">can_list_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd_or_topic</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.can_list_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.can_list_topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should the specified command appear in the help table?</p>
+<p>This method only checks whether a specified command should appear in the table of
+topics/commands.  The command can be used by the caller (see the ‘should_show_help’ method)
+and the command will still be available, for instance, if a character type ‘help name of the
+command’.  However, if you return False, the specified command will not appear in the table.
+This is sometimes useful to “hide” commands in the table, but still access them through the
+help system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd_or_topic</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><em>HelpEntry</em></a><em> or </em><a class="reference internal" href="evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry" title="evennia.help.filehelp.FileHelpEntry"><em>FileHelpEntry</em></a>) – The topic/command to test.</p></li>
+<li><p><strong>caller</strong> – the caller checking for access.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – If command should be listed or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, the ‘view’ lock will be checked, and if no such lock is defined, the ‘read’
+lock will be used. If neither lock is defined, the help entry is assumed to be
+accessible to all.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.collect_topics">
+<code class="sig-name descname">collect_topics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'list'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.collect_topics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.collect_topics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect help topics from all sources (cmd/db/file).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – The user of the Command.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – One of ‘list’ or ‘query’, where the first means we are collecting to view
+the help index and the second because of wanting to search for a specific help
+entry/cmd to read. This determines which access should be checked.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tuple</em> – A tuple of three dicts containing the different types of help entries
+in the order cmd-help, db-help, file-help:</p>
+<blockquote>
+<div><p><strong>({key: cmd,…}, {key: dbentry,…}, {key: fileentry,…}</strong></p>
+</div></blockquote>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.commands.default.help.CmdHelp.should_list_cmd">
-<code class="sig-name descname">should_list_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.should_list_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.should_list_cmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Should the specified command appear in the help table?</p>
-<p>This method only checks whether a specified command should
-appear in the table of topics/commands.  The command can be
-used by the caller (see the ‘check_show_help’ method) and
-the command will still be available, for instance, if a
-character type ‘help name of the command’.  However, if
-you return False, the specified command will not appear in
-the table.  This is sometimes useful to “hide” commands in
-the table, but still access them through the help system.</p>
+<dt id="evennia.commands.default.help.CmdHelp.do_search">
+<code class="sig-name descname">do_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">entries</span></em>, <em class="sig-param"><span class="n">search_fields</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.do_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.do_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a help-query search, default using Lunr search engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cmd</strong> – the command to be tested.</p></li>
-<li><p><strong>caller</strong> – the caller of the help system.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – The help entry to search for.</p></li>
+<li><p><strong>entries</strong> (<em>list</em>) – All possibilities. A mix of commands, HelpEntries and FileHelpEntries.</p></li>
+<li><p><strong>search_fields</strong> (<em>list</em>) – A list of dicts defining how Lunr will find the
+search data on the elements. If not given, will use a default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>True</em> – the command should appear in the table.
-False: the command shouldn’t appear in the table.</p>
+<dd class="field-even"><p><em>tuple</em> – A tuple (match, suggestions).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -261,7 +309,7 @@ always matched before assuming the space begins a subtopic.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.help.CmdSetHelp">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.help.</code><code class="sig-name descname">CmdSetHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdSetHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.help.CmdHelp" title="evennia.commands.default.help.CmdHelp"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.help.CmdHelp</span></code></a></p>
 <p>Edit the help database.</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</p>
@@ -317,6 +365,11 @@ the user will be able to enter a partial match to access it.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.commands.default.help.CmdSetHelp.switch_options">
 <code class="sig-name descname">switch_options</code><em class="property"> = ('edit', 'replace', 'append', 'extend', 'delete')</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -331,16 +384,22 @@ the user will be able to enter a partial match to access it.</p>
 <code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = None</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdSetHelp.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdSetHelp.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>We want to use the default parser rather than the CmdHelp.parse</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="evennia.commands.default.help.CmdSetHelp.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdSetHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implement the function</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.help.CmdSetHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.help.CmdSetHelp.lock_storage">
