@@ -14,9 +14,13 @@ Each dict is on the form
 ::
 
     {'key': <str>,
+     'text': <str>}``     # the actual help text. Can contain # subtopic sections
      'category': <str>,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY
      'aliases': <list>,   # optional
-     'text': <str>}``     # the actual help text. Can contain # subtopic sections
+     'locks': <str>       # optional, 'view' controls seeing in help index, 'read'
+                          #           if the entry can be read. If 'view' is unset,
+                          #           'read' is used for the index. If unset, everyone
+                          #           can read/view the entry.
 
 """
 
@@ -25,6 +29,7 @@ HELP_ENTRY_DICTS = [
         "key": "evennia",
         "aliases": ['ev'],
         "category": "General",
+        "locks": "read:perm(Developer)",
         "text": """
             Evennia is a MUD game server in Python.
 
