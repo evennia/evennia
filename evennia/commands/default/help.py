@@ -259,46 +259,46 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         return help_index
 
-    def check_show_help(self, cmd, caller):
+    def check_show_help(self, cmd_or_topic, caller):
         """
-        Helper method. If this return True, the given cmd
-        auto-help will be viewable in the help listing.
-        Override this to easily select what is shown to
-        the account. Note that only commands available
-        in the caller's merged cmdset are available.
+        Helper method. If this return True, the given help topic
+        be viewable in the help listing. Note that even if this returns False,
+        the entry will still be visible in the help index unless `should_list_topic`
+        is also returning False.
 
         Args:
-            cmd (Command): Command class from the merged cmdset
-            caller (Character, Account or Session): The current caller
-                executing the help command.
+            cmd_or_topic (Command, HelpEntry or FileHelpEntry): The topic/command to test.
+            caller: the caller checking for access.
+
+        Returns:
+            bool: If command can be viewed or not.
 
         """
-        # return only those with auto_help set and passing the cmd: lock
-        return cmd.auto_help and cmd.access(caller)
+        if inherits_from(cmd_or_topic, "evennia.commands.command.Command"):
+            return cmd_or_topic.auto_help and cmd_or_topic.access(caller)
+        else:
+            return cmd_or_topic.access(caller, 'read', default=True)
 
-    def should_list_cmd(self, cmd, caller):
+    def should_list_topic(self, cmd_or_topic, caller):
         """
         Should the specified command appear in the help table?
 
-        This method only checks whether a specified command should
-        appear in the table of topics/commands.  The command can be
-        used by the caller (see the 'check_show_help' method) and
-        the command will still be available, for instance, if a
-        character type 'help name of the command'.  However, if
-        you return False, the specified command will not appear in
-        the table.  This is sometimes useful to "hide" commands in
-        the table, but still access them through the help system.
+        This method only checks whether a specified command should appear in the table of
+        topics/commands.  The command can be used by the caller (see the 'check_show_help' method)
+        and the command will still be available, for instance, if a character type 'help name of the
+        command'.  However, if you return False, the specified command will not appear in the table.
+        This is sometimes useful to "hide" commands in the table, but still access them through the
+        help system.
 
         Args:
-            cmd: the command to be tested.
-            caller: the caller of the help system.
+            cmd_or_topic (Command, HelpEntry or FileHelpEntry): The topic/command to test.
+            caller: the caller checking for access.
 
-        Return:
-            True: the command should appear in the table.
-            False: the command shouldn't appear in the table.
+        Returns:
+            bool: If command should be listed or not.
 
         """
-        return True
+        return cmd_or_topic.access(caller, 'view', default=True)
 
     def parse(self):
         """
@@ -336,39 +336,49 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
 
         # retrieve all available commands and database / file-help topics
-        all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
+        all_cmd_topics = [cmd for cmd in cmdset if self.check_show_help(cmd, caller) if cmd]
 
-        # we group the file-help topics with the db ones, giving the db ones priority
-        file_help_topics = FILE_HELP_ENTRIES.all(return_dict=True)
-        db_topics = {
-            topic.key.lower().strip(): topic for topic in HelpEntry.objects.all()
-            if topic.access(caller, "view", default=True)
+        # get all file-based help entries, checking perms
+        file_help_topics = {
+            topic.key.lower().strip(): topic
+            for topic in FILE_HELP_ENTRIES.all()
+            if topic.access(caller)
         }
-        all_db_topics = list({**file_help_topics, **db_topics}.values())
+        # get db-based help entries, checking perms
+        db_topics = {
+            topic.key.lower().strip(): topic
+            for topic in HelpEntry.objects.all()
+            if topic.access(caller)
+        }
+        # merge so db topics override file topics with same key
+        all_file_db_topics = list({**file_help_topics, **db_topics}.values())
 
+        # get all categories
         all_categories = list(set(
-            [HelpCategory(cmd.help_category) for cmd in all_cmds]
-            + [HelpCategory(topic.help_category) for topic in all_db_topics]
+            [HelpCategory(cmd.help_category) for cmd in all_cmd_topics]
+            + [HelpCategory(topic.help_category) for topic in all_file_db_topics]
         ))
 
         if not query:
             # list all available help entries, grouped by category. We want to
             # build dictionaries {category: [topic, topic, ...], ...}
             cmd_help_dict = defaultdict(list)
-            db_help_dict = defaultdict(list)
+            file_db_help_dict = defaultdict(list)
 
-            # Filter commands that should be reached by the help
+            # Filter commands/topics that should be reached by the help
             # system, but not be displayed in the table, or be displayed differently.
-            for cmd in all_cmds:
-                if self.should_list_cmd(cmd, caller):
-                    key = (cmd.auto_help_display_key
-                           if hasattr(cmd, "auto_help_display_key") else cmd.key)
+            for cmd in all_cmd_topics:
+                if self.should_list_topic(cmd, caller):
+                    key = (
+                        cmd.auto_help_display_key
+                        if hasattr(cmd, "auto_help_display_key") else cmd.key
+                    )
                     cmd_help_dict[cmd.help_category].append(key)
+            for topic in all_file_db_topics:
+                if self.should_list_topic(topic, caller):
+                    file_db_help_dict[topic.help_category].append(topic.key)
 
-            for db_topic in all_db_topics:
-                db_help_dict[db_topic.help_category].append(db_topic.key)
-
-            output = self.format_help_index(cmd_help_dict, db_help_dict)
+            output = self.format_help_index(cmd_help_dict, file_db_help_dict)
             self.msg_help(output)
 
             return
@@ -376,8 +386,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         # We have a query - try to find a specific topic/category using the
         # Lunr search engine
 
-        # all available options
-        entries = [cmd for cmd in all_cmds if cmd] + all_db_topics + all_categories
+        # all available help options - will be searched in order
+        entries = all_cmd_topics + all_file_db_topics + all_categories
 
         # lunr search fields/boosts
         search_fields = [
@@ -443,14 +453,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 {
                     match.key: [
                         cmd.key
-                        for cmd in all_cmds
+                        for cmd in all_cmd_topics
                         if match.key.lower() == cmd.help_category
                     ]
                 },
                 {
                     match.key: [
                         topic.key
-                        for topic in all_db_topics
+                        for topic in all_file_db_topics
                         if match.key.lower() == topic.help_category
                     ]
                 },

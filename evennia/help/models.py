@@ -114,12 +114,19 @@ class HelpEntry(SharedMemoryModel):
     def __repr__(self):
         return f"<HelpEntry {self.key}>"
 
-    def access(self, accessing_obj, access_type="read", default=False):
+    def access(self, accessing_obj, access_type="read", default=True):
         """
-        Determines if another object has permission to access.
-        accessing_obj - object trying to access this one
-        access_type - type of access sought
-        default - what to return if no lock of access_type was found
+        Determines if another object has permission to access this help entry.
+
+        Accesses used by default:
+            'read' - read the help entry itself.
+            'view' - see help entry in help index.
+
+        Args:
+            accessing_obj (Object or Account): Entity trying to access this one.
+            access_type (str): type of access sought.
+            default (bool): What to return if no lock of `access_type` was found.
+
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
 

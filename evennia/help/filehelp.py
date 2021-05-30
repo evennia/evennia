@@ -13,12 +13,13 @@ Each help-entry dict is on the form
 ::
 
     {'key': <str>,
+     'text': <str>,
      'category': <str>,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY
      'aliases': <list>,   # optional
-     'text': <str>}
+     'locks': <str>}      # optional, use access-type 'view'. Default is view:all()
 
-where the `category` is optional and the `text`` should be formatted on the
-same form as other help entry-texts and contain ``# subtopics`` as normal.
+The `text`` should be formatted on the same form as other help entry-texts and
+can contain ``# subtopics`` as normal.
 
 New help-entry modules are added to the system by providing the python-path to
 the module to `settings.FILE_HELP_ENTRY_MODULES`. Note that if same-key entries are
@@ -33,6 +34,7 @@ An example of the contents of a module:
         "key": "The Gods",   # case-insensitive, also partial-matching ('gods') works
         "aliases": ['pantheon', 'religion'],
         "category": "Lore",
+        "locks": "view:all()",   # this is optional unless restricting access
         "text": '''
             The gods formed the world ...
 
@@ -68,6 +70,8 @@ from django.conf import settings
 from evennia.utils.utils import (
     variable_from_module, make_iter, all_from_module)
 from evennia.utils import logger
+from evennia.utils.utils import lazy_property
+from evennia.locks.lockhandler import LockHandler
 
 _DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
@@ -84,6 +88,7 @@ class FileHelpEntry:
     aliases: list
     help_category: str
     entrytext: str
+    lock_storage: str
 
     @property
     def search_index_entry(self):
@@ -96,6 +101,7 @@ class FileHelpEntry:
             "aliases": " ".join(self.aliases),
             "category": self.help_category,
             "tags": "",
+            "locks": "",
             "text": self.entrytext,
         }
 
@@ -104,6 +110,22 @@ class FileHelpEntry:
 
     def __repr__(self):
         return f"<FileHelpEntry {self.key}>"
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
+    def access(self, accessing_obj, access_type="view", default=True):
+        """
+        Determines if another object has permission to access this help entry.
+
+        Args:
+            accessing_obj (Object or Account): Entity trying to access this one.
+            access_type (str): type of access sought.
+            default (bool): What to return if no lock of `access_type` was found.
+
+        """
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 
 class FileHelpStorageHandler:
@@ -154,14 +176,15 @@ class FileHelpStorageHandler:
             key = dct.get('key').lower().strip()
             category = dct.get('category', _DEFAULT_HELP_CATEGORY).strip()
             aliases = list(dct.get('aliases', []))
-            entrytext = dct.get('text')
+            entrytext = dct.get('text', '')
+            locks = dct.get('locks', '')
 
             if not key and entrytext:
                 logger.error(f"Cannot load file-help-entry (missing key or text): {dct}")
                 continue
 
             unique_help_entries[key] = FileHelpEntry(
-                key=key, help_category=category, aliases=aliases,
+                key=key, help_category=category, aliases=aliases, lock_storage=locks,
                 entrytext=entrytext)
 
         self.help_entries_dict = unique_help_entries
