@@ -10,7 +10,7 @@ on your sources.
 
 ## A quick list of code style points
 
- * 4-space indendation, NO TABS!
+ * 4-space indentation, NO TABS!
  * Unix line endings.
  * CamelCase is only used for classes, nothing else.
  * All non-global variable names and all function names are to be

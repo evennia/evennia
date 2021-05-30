@@ -70,7 +70,7 @@ class SystemNoMatch(COMMAND_DEFAULT_CLASS):
 
 
 #
-# Command called when there were mulitple matches to the command.
+# Command called when there were multiple matches to the command.
 #
 class SystemMultimatch(COMMAND_DEFAULT_CLASS):
     """

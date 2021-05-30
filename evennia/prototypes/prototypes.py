@@ -691,7 +691,7 @@ def validate_prototype(
                       err=err, protkey=protkey, typeclass=typeclass)
             )
 
-    # recursively traverese prototype_parent chain
+    # recursively traverse prototype_parent chain
 
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()

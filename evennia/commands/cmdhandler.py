@@ -572,7 +572,7 @@ def cmdhandler(
             cmd.raw_string = unformatted_raw_string
             # cmd.obj  # set via on-object cmdset handler for each command,
             # since this may be different for every command when
-            # merging multuple cmdsets
+            # merging multiple cmdsets
 
             if _testing:
                 # only return the command instance
