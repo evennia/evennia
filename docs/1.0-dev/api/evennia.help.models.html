@@ -134,11 +134,22 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="evennia.help.models.HelpEntry.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines if another object has permission to access.
-accessing_obj - object trying to access this one
-access_type - type of access sought
-default - what to return if no lock of access_type was found</p>
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if another object has permission to access this help entry.</p>
+<dl class="simple">
+<dt>Accesses used by default:</dt><dd><p>‘read’ - read the help entry itself.
+‘view’ - see help entry in help index.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity trying to access this one.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em>) – type of access sought.</p></li>
+<li><p><strong>default</strong> (<em>bool</em>) – What to return if no lock of <strong>access_type</strong> was found.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

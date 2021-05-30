@@ -55,12 +55,13 @@
 <span class="sd">::</span>
 
 <span class="sd">    {&#39;key&#39;: &lt;str&gt;,</span>
+<span class="sd">     &#39;text&#39;: &lt;str&gt;,</span>
 <span class="sd">     &#39;category&#39;: &lt;str&gt;,   # optional, otherwise settings.DEFAULT_HELP_CATEGORY</span>
 <span class="sd">     &#39;aliases&#39;: &lt;list&gt;,   # optional</span>
-<span class="sd">     &#39;text&#39;: &lt;str&gt;}</span>
+<span class="sd">     &#39;locks&#39;: &lt;str&gt;}      # optional, use access-type &#39;view&#39;. Default is view:all()</span>
 
-<span class="sd">where the `category` is optional and the `text`` should be formatted on the</span>
-<span class="sd">same form as other help entry-texts and contain ``# subtopics`` as normal.</span>
+<span class="sd">The `text`` should be formatted on the same form as other help entry-texts and</span>
+<span class="sd">can contain ``# subtopics`` as normal.</span>
 
 <span class="sd">New help-entry modules are added to the system by providing the python-path to</span>
 <span class="sd">the module to `settings.FILE_HELP_ENTRY_MODULES`. Note that if same-key entries are</span>
@@ -75,6 +76,7 @@
 <span class="sd">        &quot;key&quot;: &quot;The Gods&quot;,   # case-insensitive, also partial-matching (&#39;gods&#39;) works</span>
 <span class="sd">        &quot;aliases&quot;: [&#39;pantheon&#39;, &#39;religion&#39;],</span>
 <span class="sd">        &quot;category&quot;: &quot;Lore&quot;,</span>
+<span class="sd">        &quot;locks&quot;: &quot;view:all()&quot;,   # this is optional unless restricting access</span>
 <span class="sd">        &quot;text&quot;: &#39;&#39;&#39;</span>
 <span class="sd">            The gods formed the world ...</span>
 
@@ -110,6 +112,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">all_from_module</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 
 <span class="n">_DEFAULT_HELP_CATEGORY</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HELP_CATEGORY</span>
 
@@ -126,6 +130,7 @@
     <span class="n">aliases</span><span class="p">:</span> <span class="nb">list</span>
     <span class="n">help_category</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">entrytext</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lock_storage</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">search_index_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -138,6 +143,7 @@
             <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">),</span>
             <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="p">,</span>
             <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entrytext</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -145,7 +151,23 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;FileHelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;FileHelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+<div class="viewcode-block" id="FileHelpEntry.locks"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry.locks">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileHelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if another object has permission to access this help entry.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accessing_obj (Object or Account): Entity trying to access this one.</span>
+<span class="sd">            access_type (str): type of access sought.</span>
+<span class="sd">            default (bool): What to return if no lock of `access_type` was found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="FileHelpStorageHandler"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler">[docs]</a><span class="k">class</span> <span class="nc">FileHelpStorageHandler</span><span class="p">:</span>
@@ -196,14 +218,15 @@
             <span class="n">key</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">category</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="n">_DEFAULT_HELP_CATEGORY</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;aliases&#39;</span><span class="p">,</span> <span class="p">[]))</span>
-            <span class="n">entrytext</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+            <span class="n">entrytext</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">locks</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;locks&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">entrytext</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot load file-help-entry (missing key or text): </span><span class="si">{</span><span class="n">dct</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">unique_help_entries</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">FileHelpEntry</span><span class="p">(</span>
-                <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">help_category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">help_category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">lock_storage</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
                 <span class="n">entrytext</span><span class="o">=</span><span class="n">entrytext</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">help_entries_dict</span> <span class="o">=</span> <span class="n">unique_help_entries</span>
