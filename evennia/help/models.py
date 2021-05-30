@@ -9,7 +9,6 @@ forms of help that do not concern commands, like information about the
 game world, policy info, rules and similar.
 
 """
-from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse

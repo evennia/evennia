@@ -3,7 +3,7 @@ General Character commands usually available to all characters
 """
 import re
 from django.conf import settings
-from evennia.utils import utils, evtable
+from evennia.utils import utils
 from evennia.typeclasses.attributes import NickTemplateInvalid
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -400,7 +400,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
 
     key = "get"
     aliases = "grab"
-    locks = "cmd:all()"
+    locks = "cmd:all();view:perm(Developer);read:perm(Developer)"
     arg_regex = r"\s|$"
 
     def func(self):

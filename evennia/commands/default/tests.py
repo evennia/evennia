@@ -431,6 +431,7 @@ class TestHelp(CommandTest):
             help_module.CmdSetHelp(),
             "testhelp, General = This is a test",
             "Topic 'testhelp' was successfully created.",
+            cmdset=CharacterCmdSet()
         )
         self.call(help_module.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
 

@@ -8,16 +8,16 @@ outside the game in modules given by ``settings.FILE_HELP_ENTRY_MODULES``.
 
 """
 
-import re
 from dataclasses import dataclass
 from django.conf import settings
 from collections import defaultdict
-from evennia.utils.utils import fill, dedent
+from evennia.utils.utils import dedent
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.utils.eveditor import EvEditor
+from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.utils import (
     class_from_module,
     inherits_from,
@@ -259,7 +259,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         return help_index
 
-    def check_show_help(self, cmd_or_topic, caller):
+    def can_read_topic(self, cmd_or_topic, caller):
         """
         Helper method. If this return True, the given help topic
         be viewable in the help listing. Note that even if this returns False,
@@ -273,18 +273,22 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         Returns:
             bool: If command can be viewed or not.
 
+        Notes:
+            This uses the 'read' lock. If no 'read' lock is defined, the topic is assumed readable
+            by all.
+
         """
         if inherits_from(cmd_or_topic, "evennia.commands.command.Command"):
-            return cmd_or_topic.auto_help and cmd_or_topic.access(caller)
+            return cmd_or_topic.auto_help and cmd_or_topic.access(caller, 'read', default=True)
         else:
             return cmd_or_topic.access(caller, 'read', default=True)
 
-    def should_list_topic(self, cmd_or_topic, caller):
+    def can_list_topic(self, cmd_or_topic, caller):
         """
         Should the specified command appear in the help table?
 
         This method only checks whether a specified command should appear in the table of
-        topics/commands.  The command can be used by the caller (see the 'check_show_help' method)
+        topics/commands.  The command can be used by the caller (see the 'should_show_help' method)
         and the command will still be available, for instance, if a character type 'help name of the
         command'.  However, if you return False, the specified command will not appear in the table.
         This is sometimes useful to "hide" commands in the table, but still access them through the
@@ -297,8 +301,123 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         Returns:
             bool: If command should be listed or not.
 
+        Notes:
+            By default, the 'view' lock will be checked, and if no such lock is defined, the 'read'
+            lock will be used. If neither lock is defined, the help entry is assumed to be
+            accessible to all.
+
         """
-        return cmd_or_topic.access(caller, 'view', default=True)
+        has_view = (
+            "view:" in cmd_or_topic.locks
+            if inherits_from(cmd_or_topic, "evennia.commands.command.Command")
+            else cmd_or_topic.locks.get("view")
+        )
+
+        if has_view:
+            return cmd_or_topic.access(caller, 'view', default=True)
+        else:
+            # no explicit 'view' lock - use the 'read' lock
+            return cmd_or_topic.access(caller, 'read', default=True)
+
+    def collect_topics(self, caller, mode='list'):
+        """
+        Collect help topics from all sources (cmd/db/file).
+
+        Args:
+            caller (Object or Account): The user of the Command.
+            mode (str): One of 'list' or 'query', where the first means we are collecting to view
+                the help index and the second because of wanting to search for a specific help
+                entry/cmd to read. This determines which access should be checked.
+
+        Returns:
+            tuple: A tuple of three dicts containing the different types of help entries
+            in the order cmd-help, db-help, file-help:
+                `({key: cmd,...}, {key: dbentry,...}, {key: fileentry,...}`
+
+        """
+        # start with cmd-help
+        cmdset = self.cmdset
+        # removing doublets in cmdset, caused by cmdhandler
+        # having to allow doublet commands to manage exits etc.
+        cmdset.make_unique(caller)
+        # retrieve all available commands and database / file-help topics.
+        # also check the 'cmd:' lock here
+        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, 'cmd')]
+        # get all file-based help entries, checking perms
+        file_help_topics = {
+            topic.key.lower().strip(): topic
+            for topic in FILE_HELP_ENTRIES.all()
+        }
+        # get db-based help entries, checking perms
+        db_help_topics = {
+            topic.key.lower().strip(): topic
+            for topic in HelpEntry.objects.all()
+        }
+        if mode == 'list':
+            # check the view lock for all help entries/commands and determine key
+            cmd_help_topics = {
+                cmd.auto_help_display_key
+                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics if self.can_list_topic(cmd, caller)}
+            db_help_topics = {
+                key: entry for key, entry in db_help_topics.items()
+                if self.can_list_topic(entry, caller)
+            }
+            file_help_topics = {
+                key: entry for key, entry in file_help_topics.items()
+                if self.can_list_topic(entry, caller)}
+        else:
+            # query
+            cmd_help_topics = {
+                cmd.auto_help_display_key
+                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics if self.can_read_topic(cmd, caller)}
+            db_help_topics = {
+                key: entry for key, entry in db_help_topics.items()
+                if self.can_read_topic(entry, caller)
+            }
+            file_help_topics = {
+                key: entry for key, entry in file_help_topics.items()
+                if self.can_read_topic(entry, caller)}
+
+        return cmd_help_topics, db_help_topics, file_help_topics
+
+    def do_search(self, query, entries, search_fields=None):
+        """
+        Perform a help-query search, default using Lunr search engine.
+
+        Args:
+            query (str): The help entry to search for.
+            entries (list): All possibilities. A mix of commands, HelpEntries and FileHelpEntries.
+            search_fields (list): A list of dicts defining how Lunr will find the
+                search data on the elements. If not given, will use a default.
+
+        Returns:
+            tuple: A tuple (match, suggestions).
+
+        """
+        if not search_fields:
+            # lunr search fields/boosts
+            search_fields = [
+                {"field_name": "key", "boost": 10},
+                {"field_name": "aliases", "boost": 9},
+                {"field_name": "category", "boost": 8},
+                {"field_name": "tags", "boost": 1},  # tags are not used by default
+            ]
+        match, suggestions = None, None
+        for match_query in (query, f"{query}*"):
+            # We first do an exact word-match followed by a start-by query. The
+            # return of this will either be a HelpCategory, a Command or a
+            # HelpEntry/FileHelpEntry.
+            matches, suggestions = help_search_with_index(
+                match_query, entries,
+                suggestion_maxnum=self.suggestion_maxnum,
+                fields=search_fields
+            )
+            if matches:
+                match = matches[0]
+                break
+        return match, suggestions
 
     def parse(self):
         """
@@ -331,85 +450,52 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         query, subtopics, cmdset = self.topic, self.subtopics, self.cmdset
 
-        # removing doublets in cmdset, caused by cmdhandler
-        # having to allow doublet commands to manage exits etc.
-        cmdset.make_unique(caller)
-
-        # retrieve all available commands and database / file-help topics
-        all_cmd_topics = [cmd for cmd in cmdset if self.check_show_help(cmd, caller) if cmd]
-
-        # get all file-based help entries, checking perms
-        file_help_topics = {
-            topic.key.lower().strip(): topic
-            for topic in FILE_HELP_ENTRIES.all()
-            if topic.access(caller)
-        }
-        # get db-based help entries, checking perms
-        db_topics = {
-            topic.key.lower().strip(): topic
-            for topic in HelpEntry.objects.all()
-            if topic.access(caller)
-        }
-        # merge so db topics override file topics with same key
-        all_file_db_topics = list({**file_help_topics, **db_topics}.values())
-
-        # get all categories
-        all_categories = list(set(
-            [HelpCategory(cmd.help_category) for cmd in all_cmd_topics]
-            + [HelpCategory(topic.help_category) for topic in all_file_db_topics]
-        ))
-
         if not query:
             # list all available help entries, grouped by category. We want to
             # build dictionaries {category: [topic, topic, ...], ...}
-            cmd_help_dict = defaultdict(list)
-            file_db_help_dict = defaultdict(list)
 
-            # Filter commands/topics that should be reached by the help
-            # system, but not be displayed in the table, or be displayed differently.
-            for cmd in all_cmd_topics:
-                if self.should_list_topic(cmd, caller):
-                    key = (
-                        cmd.auto_help_display_key
-                        if hasattr(cmd, "auto_help_display_key") else cmd.key
-                    )
-                    cmd_help_dict[cmd.help_category].append(key)
-            for topic in all_file_db_topics:
-                if self.should_list_topic(topic, caller):
-                    file_db_help_dict[topic.help_category].append(topic.key)
+            cmd_help_topics, db_help_topics, file_help_topics = \
+                self.collect_topics(caller, mode='list')
 
-            output = self.format_help_index(cmd_help_dict, file_db_help_dict)
+            # db-topics override file-based ones
+            file_db_help_topics = {**file_help_topics, **db_help_topics}
+
+            # group by category (cmds are listed separately)
+            cmd_help_by_category = defaultdict(list)
+            file_db_help_by_category = defaultdict(list)
+            for key, cmd in cmd_help_topics.items():
+                cmd_help_by_category[cmd.help_category].append(key)
+            for key, entry in file_db_help_topics.items():
+                file_db_help_by_category[entry.help_category].append(key)
+
+            # generate the index and display
+            output = self.format_help_index(cmd_help_by_category,
+                                            file_db_help_by_category)
             self.msg_help(output)
 
             return
 
-        # We have a query - try to find a specific topic/category using the
-        # Lunr search engine
+        # search for a specific entry. We need to check for 'read' access here before # building the
+        # set of possibilities.
+        cmd_help_topics, db_help_topics, file_help_topics = \
+            self.collect_topics(caller, mode='query')
 
-        # all available help options - will be searched in order
-        entries = all_cmd_topics + all_file_db_topics + all_categories
+        # db-help topics takes priority over file-help
+        file_db_help_topics = {**file_help_topics, **db_help_topics}
+
+        # commands take priority over the other types
+        all_topics = {**file_db_help_topics, **cmd_help_topics}
+
+        # get all categories
+        all_categories = list(set(
+            HelpCategory(topic.help_category) for topic in all_topics.values()))
+
+        # all available help options - will be searched in order. We also check # the
+        # read-permission here.
+        entries = list(all_topics.values()) + all_categories
 
         # lunr search fields/boosts
-        search_fields = [
-            {"field_name": "key", "boost": 10},
-            {"field_name": "aliases", "boost": 9},
-            {"field_name": "category", "boost": 8},
-            {"field_name": "tags", "boost": 1},  # tags are not used by default
-        ]
-        match, suggestions = None, None
-
-        for match_query in (query, f"{query}*"):
-            # We first do an exact word-match followed by a start-by query. The
-            # return of this will either be a HelpCategory, a Command or a
-            # HelpEntry/FileHelpEntry.
-            matches, suggestions = help_search_with_index(
-                match_query, entries,
-                suggestion_maxnum=self.suggestion_maxnum,
-                fields=search_fields
-            )
-            if matches:
-                match = matches[0]
-                break
+        match, suggestions = self.do_search(query, entries)
 
         if not match:
             # no topic matches found. Only give suggestions.
@@ -448,24 +534,15 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         if isinstance(match, HelpCategory):
             # no subtopics for categories - these are just lists of topics
-
-            output = self.format_help_index(
-                {
-                    match.key: [
-                        cmd.key
-                        for cmd in all_cmd_topics
-                        if match.key.lower() == cmd.help_category
-                    ]
-                },
-                {
-                    match.key: [
-                        topic.key
-                        for topic in all_file_db_topics
-                        if match.key.lower() == topic.help_category
-                    ]
-                },
-                title_lone_category=True
-            )
+            category = match.key
+            category_lower = category.lower()
+            cmds_in_category = [key for key, cmd in cmd_help_topics.items()
+                                if category_lower == cmd.help_category]
+            topics_in_category = [key for key, topic in file_db_help_topics.items()
+                                  if category_lower == topic.help_category]
+            output = self.format_help_index({category: cmds_in_category},
+                                            {category: topics_in_category},
+                                            title_lone_category=True)
             self.msg_help(output)
             return
 
@@ -565,7 +642,7 @@ def _quithelp(caller):
     del caller.db._editing_help
 
 
-class CmdSetHelp(COMMAND_DEFAULT_CLASS):
+class CmdSetHelp(CmdHelp):
     """
     Edit the help database.
 
@@ -629,9 +706,15 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     """
 
     key = "sethelp"
+    aliases = []
     switch_options = ("edit", "replace", "append", "extend", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
+    arg_regex = None
+
+    def parse(self):
+        """We want to use the default parser rather than the CmdHelp.parse"""
+        return COMMAND_DEFAULT_CLASS.parse(self)
 
     def func(self):
         """Implement the function"""
@@ -659,18 +742,63 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         old_entry = None
 
         # check if we have an old entry with the same name
-        try:
-            for querystr in topicstrlist:
-                old_entry = HelpEntry.objects.find_topicmatch(querystr)  # also search by alias
-                if old_entry:
-                    old_entry = list(old_entry)[0]
+
+        cmd_help_topics, db_help_topics, file_help_topics = \
+            self.collect_topics(self.caller, mode='query')
+        # db-help topics takes priority over file-help
+        file_db_help_topics = {**file_help_topics, **db_help_topics}
+        # commands take priority over the other types
+        all_topics = {**file_db_help_topics, **cmd_help_topics}
+        # get all categories
+        all_categories = list(set(
+            HelpCategory(topic.help_category) for topic in all_topics.values()))
+        # all available help options - will be searched in order. We also check # the
+        # read-permission here.
+        entries = list(all_topics.values()) + all_categories
+
+        # default setup
+        category = lhslist[1] if nlist > 1 else DEFAULT_HELP_CATEGORY
+        lockstring = ",".join(lhslist[2:]) if nlist > 2 else "read:all()"
+
+        # search for existing entries of this or other types
+        old_entry = None
+        for querystr in topicstrlist:
+            match, _ = self.do_search(querystr, entries)
+            if match:
+                warning = None
+                if isinstance(match, HelpCategory):
+                    warning = (f"'{querystr}' matches (or partially matches) the name of "
+                               "help-category '{match.key}'. If you continue, your help entry will "
+                               "take precedence and the category (or part of its name) *may* not "
+                               "be usable for grouping help entries anymore.")
+                elif inherits_from(match, "evennia.commands.command.Command"):
+                    warning = (f"'{querystr}' matches (or partially matches) the key/alias of "
+                               "Command '{match.key}'. Command-help take precedence over other "
+                               "help entries so your help *may* be impossible to reach for those "
+                               "with access to that command.")
+                elif inherits_from(match, "evennia.help.filehelp.FileHelpEntry"):
+                    warning = (f"'{querystr}' matches (or partially matches) the name/alias of the "
+                               "file-based help file '{match.key}'. File-help entries cannot be "
+                               "modified from in-game (they are files on-disk). If you continue, "
+                               "your help entry *may* shadow the file-based one's name partly or "
+                               "completely.")
+                if warning:
+                    # show a warning for a clashing help-entry type. Even if user accepts this
+                    # we don't break here since we may need to show warnings for other inputs.
+                    # We don't count this as an old-entry hit because we can't edit these
+                    # types of entries.
+                    self.msg(f"|rWarning:\n|r{warning}|n")
+                    repl = yield("|wDo you still want to continue? Y/[N]?|n")
+                    if repl.lower() not in ('y', 'yes'):
+                        self.msg("Aborted.")
+                        return
+                else:
+                    # a db-based help entry - this is OK
+                    old_entry = match
+                    category = lhslist[1] if nlist > 1 else old_entry.help_category
+                    lockstring = ",".join(lhslist[2:]) if nlist > 2 else old_entry.locks.get()
                     break
-            category = lhslist[1] if nlist > 1 else old_entry.help_category
-            lockstring = ",".join(lhslist[2:]) if nlist > 2 else old_entry.locks.get()
-        except Exception:
-            old_entry = None
-            category = lhslist[1] if nlist > 1 else DEFAULT_HELP_CATEGORY
-            lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
+
         category = category.lower()
 
         if "edit" in switches:
@@ -739,8 +867,8 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 self.msg("Overwrote the old topic '%s'%s." % (topicstr, aliastxt))
             else:
                 self.msg(
-                    "Topic '%s'%s already exists. Use /replace to overwrite "
-                    "or /append or /merge to add text to it." % (topicstr, aliastxt)
+                    f"Topic '{topicstr}'{aliastxt} already exists. Use /edit to open in editor, or "
+                    "/replace, /append and /merge to modify it directly."
                 )
         else:
             # no old entry. Create a new one.
@@ -748,7 +876,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases
             )
             if new_entry:
-                self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
+                self.msg(f"Topic '{topicstr}'{aliastxt} was successfully created.")
                 if "edit" in switches:
                     # open the line editor to edit the helptext
                     self.caller.db._editing_help = new_entry
@@ -763,5 +891,5 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                     return
             else:
                 self.msg(
-                    "Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt)
+                    f"Error when creating topic '{topicstr}'{aliastxt}! Contact an admin."
                 )

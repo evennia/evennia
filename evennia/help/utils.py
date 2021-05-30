@@ -9,9 +9,9 @@ import re
 
 # these are words that Lunr normally ignores but which we want to find
 # since we use them (e.g. as command names).
-# Lunr's default word list is found here:
+# Lunr's default ignore-word list is found here:
 # https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
-_LUNR_STOP_WORD_FILTER_EXCEPTIONS = ("about", "might")
+_LUNR_STOP_WORD_FILTER_EXCEPTIONS = ("about", "might", "get")
 
 _LUNR = None
 _LUNR_EXCEPTION = None

@@ -51,6 +51,11 @@ Up requirements to Django 3.2+
   to the user and respond to their input. This complements the existing `get_input` helper.
 - Allow sending messages with `page/tell` without a `=` if target name contains no spaces.
 - New FileHelpStorage system allows adding help entries via external files.
+- `sethelp` command now warns if shadowing other help-types when creating a new
+  entry.
+- Help command now uses `view` lock to determine if cmd/entry shows in index and
+  `read` lock to determine if it can be read. It used to be `view` in the role
+  of the latter. Migration swaps these around.
 - In modules given by `settings.PROTOTYPE_MODULES`, spawner will now first look for a global
   list `PROTOTYPE_LIST` of dicts before loading all dicts in the module as prototypes.
 - New Channel-System using the `channel` command and nicks. Removed the `ChannelHandler` and the
