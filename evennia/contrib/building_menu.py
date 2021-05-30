@@ -577,7 +577,7 @@ class BuildingMenu(object):
     keys_go_back = ["@"]  # The keys allowing to go back in the menu tree
     sep_keys = "."  # The key separator for menus with more than 2 levels
     joker_key = "*"  # The special key meaning "anything" in a choice key
-    min_shortcut = 1  # The minimum length of shorcuts when `key` is not set
+    min_shortcut = 1  # The minimum length of shortcuts when `key` is not set
 
     def __init__(
         self,
