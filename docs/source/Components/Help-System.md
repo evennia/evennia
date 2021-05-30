@@ -6,7 +6,7 @@ match it will provide suggestsions, first from alternative topics and then by
 finding mentions of the search term in help entries.
 
 
-    help theatre
+    > help theatre
 
 ```
 ------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ Subtopics:
 ------------------------------------------------------------------------------
 ```
 
-    help evennia
+    > help evennia
 
 ```
 ------------------------------------------------------------------------------
@@ -56,8 +56,8 @@ Use the `/edit` switch to open the EvEditor for more convenient in-game writing
 (but note that devs can also create help entries outside the game using their
 regular code editor, see below).
 
-> You can also create help entries as Python modules, outside of the game. These
-> can not be modified from in-game.
+> You can also create help entries as Python modules, outside of the game. See
+> _FileHelp_ entries below.
 
 ## Sources of help entries
 
@@ -308,6 +308,25 @@ The help entry text will be dedented and will retain paragraphs. You should try
 to keep your strings a reasonable width (it will look better). Just reload the
 server and the file-based help entries will be available to view.
 
+## Entry priority
+
+Should you have clashing help-entries between the three types of available
+entries, the priority is
+
+    Command-auto-help > Db-help > File-help
+
+So if you create a db-help entry 'foo', it will replace any file-based help
+entry 'foo'. But if there is a Command 'foo', that's the help you'll get when
+you enter `help foo`.
+
+The reasoning for this is that commands must always be understood in order to
+play the game. Meanwhile db-based help can be kept up-to-date from in-game
+builders and may be less 'static' than the file-based ones.
+
+The `sethelp` command (which only deals with creating db-based help entries)
+will warn you if a new help entry might shadow/be shadowed by a
+same/similar-named command or file-based help entry.
+
 ## Locking help entries
 
 The default `help` command gather all available commands and help entries
@@ -350,6 +369,11 @@ help_entry = {
 
 ```
 
+```versionchanged:: 1.0
+   Changed the old 'view' lock to control the help-index inclusion and added
+   the new 'read' lock-type to control access to the entry itself.
+```
+
 ## Customizing the look of the help system
 
 This is done almost exclusively by overriding the `help` command
@@ -361,9 +385,9 @@ together and search through them on the fly. It also does all the formatting of
 the output.
 
 To make it easier to tweak the look, the parts of the code that changes the
-visual presentation has been broken out into separate methods
-`format_help_entry` and `format_help_index` - override these in your version of
-`help` to change the display as you please. See the api link above for details.
+visual presentation and entity searching has been broken out into separate
+methods on the command class. Override these in your version of `help` to change
+the display or tweak as you please. See the api link above for details.
 
 ## Technical notes
 
@@ -378,6 +402,6 @@ simple `==`, `startswith` and `in` matching (there are so relatively few of them
 at that point).
 
 ```versionchanged:: 1.0
-  Replaced the bag-of-words algorithm with lunr.
+  Replaced the old bag-of-words algorithm with lunr package.
 
 ```
