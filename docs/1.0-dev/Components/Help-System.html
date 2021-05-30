@@ -44,7 +44,7 @@
 free-form help documentation. It supports subtopics and if failing to find a
 match it will provide suggestsions, first from alternative topics and then by
 finding mentions of the search term in help entries.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help</span> <span class="n">theatre</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">theatre</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------------------------</span>
@@ -60,7 +60,7 @@ finding mentions of the search term in help entries.</p>
 <span class="o">------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help</span> <span class="n">evennia</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">evennia</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------------------------</span>
@@ -93,8 +93,8 @@ finding mentions of the search term in help entries.</p>
 (but note that devs can also create help entries outside the game using their
 regular code editor, see below).</p>
 <blockquote>
-<div><p>You can also create help entries as Python modules, outside of the game. These
-can not be modified from in-game.</p>
+<div><p>You can also create help entries as Python modules, outside of the game. See
+<em>FileHelp</em> entries below.</p>
 </div></blockquote>
 </section>
 <section id="sources-of-help-entries">
@@ -386,6 +386,23 @@ to keep your strings a reasonable width (it will look better). Just reload the
 server and the file-based help entries will be available to view.</p>
 </section>
 </section>
+<section id="entry-priority">
+<h2>Entry priority<a class="headerlink" href="#entry-priority" title="Permalink to this headline">¶</a></h2>
+<p>Should you have clashing help-entries between the three types of available
+entries, the priority is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Command</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">help</span> <span class="o">&gt;</span> <span class="n">Db</span><span class="o">-</span><span class="n">help</span> <span class="o">&gt;</span> <span class="n">File</span><span class="o">-</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>So if you create a db-help entry ‘foo’, it will replace any file-based help
+entry ‘foo’. But if there is a Command ‘foo’, that’s the help you’ll get when
+you enter <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">foo</span></code>.</p>
+<p>The reasoning for this is that commands must always be understood in order to
+play the game. Meanwhile db-based help can be kept up-to-date from in-game
+builders and may be less ‘static’ than the file-based ones.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command (which only deals with creating db-based help entries)
+will warn you if a new help entry might shadow/be shadowed by a
+same/similar-named command or file-based help entry.</p>
+</section>
 <section id="locking-help-entries">
 <h2>Locking help entries<a class="headerlink" href="#locking-help-entries" title="Permalink to this headline">¶</a></h2>
 <p>The default <code class="docutils literal notranslate"><span class="pre">help</span></code> command gather all available commands and help entries
@@ -433,6 +450,10 @@ lock is not used. A file-help example:</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Changed the old ‘view’ lock to control the help-index inclusion and added
+the new ‘read’ lock-type to control access to the entry itself.</p>
+</div>
 </section>
 <section id="customizing-the-look-of-the-help-system">
 <h2>Customizing the look of the help system<a class="headerlink" href="#customizing-the-look-of-the-help-system" title="Permalink to this headline">¶</a></h2>
@@ -443,9 +464,9 @@ responsible for collating the three sources of help-entries (commands/db/file)
 together and search through them on the fly. It also does all the formatting of
 the output.</p>
 <p>To make it easier to tweak the look, the parts of the code that changes the
-visual presentation has been broken out into separate methods
-<code class="docutils literal notranslate"><span class="pre">format_help_entry</span></code> and <code class="docutils literal notranslate"><span class="pre">format_help_index</span></code> - override these in your version of
-<code class="docutils literal notranslate"><span class="pre">help</span></code> to change the display as you please. See the api link above for details.</p>
+visual presentation and entity searching has been broken out into separate
+methods on the command class. Override these in your version of <code class="docutils literal notranslate"><span class="pre">help</span></code> to change
+the display or tweak as you please. See the api link above for details.</p>
 </section>
 <section id="technical-notes">
 <h2>Technical notes<a class="headerlink" href="#technical-notes" title="Permalink to this headline">¶</a></h2>
@@ -458,7 +479,7 @@ web-pages and produces much more sensible results than previous solutions.</p>
 simple <code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">startswith</span></code> and <code class="docutils literal notranslate"><span class="pre">in</span></code> matching (there are so relatively few of them
 at that point).</p>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.0: </span>Replaced the bag-of-words algorithm with lunr.</p>
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Replaced the old bag-of-words algorithm with lunr package.</p>
 </div>
 </section>
 </section>
@@ -497,6 +518,7 @@ at that point).</p>
 <li><a class="reference internal" href="#file-help-entries">File-help entries</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#entry-priority">Entry priority</a></li>
 <li><a class="reference internal" href="#locking-help-entries">Locking help entries</a></li>
 <li><a class="reference internal" href="#customizing-the-look-of-the-help-system">Customizing the look of the help system</a></li>
 <li><a class="reference internal" href="#technical-notes">Technical notes</a></li>
