@@ -1209,40 +1209,46 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
 
 class CmdTasks(COMMAND_DEFAULT_CLASS):
     """
-    Manage active tasks (delays).
-
-    Note:
-      Only the action requested on the first switch will be processed. All other switches will
-      be ignored.
-
-      Manipulation of a single task is intended to be done via the clickable links or through
-      code directly. Due to generally short life of a task, the inclusion of completion date
-      and function's memory reference guarentees an incorrect task will not be manipulated.
-
-      By default, tasks that are canceled and never called are automatically removed after
-      one minute.
+    Display or terminate active tasks (delays).
 
     Usage:
-      tasks
-        show all current active taks.
-      tasks[/switch] [function name]
-        Process the action in the switch to all tasks that are deferring a specific function name.
-        This would match the name of the callback you passed to a delay or the task handler.
-      tasks[/switch] [task id], [completion date], [function memory reference]
-        Process the action in the switch to a specific task.
-
-    Example:
-      tasks/cancel move_callback
-        Cancel all movement delays from the slow_exit contrib.
-        In this example slow exits creates it's tasks with: utils.delay(move_delay, move_callback)
+        tasks
+          show all current active taks.
+        tasks[/switch] [function name]
+          Process the action in the switch to all tasks that are deferring a specific function name.
+          This would match the name of the callback you passed to a delay or the task handler.
+        tasks[/switch] [task id], [completion date], [function memory reference]
+          Process the action in the switch to a specific task.
 
     Switches:
-      pause   - Pause the callback of a task.
-      unpause - Process all callbacks made since pause() was called.
-      do_task - Execute the task (call its callback).
-      call    - Call the callback of this task.
-      remove  - Remove a task without executing it.
-      cancel  - Stop a task from automatically executing.
+        pause   - Pause the callback of a task.
+        unpause - Process all callbacks made since pause() was called.
+        do_task - Execute the task (call its callback).
+        call    - Call the callback of this task.
+        remove  - Remove a task without executing it.
+        cancel  - Stop a task from automatically executing.
+
+    Notes:
+        A task is a single use method of delaying the call of a function.
+
+        Tasks can be created using utils.delay.
+        Reference: https://evennia.readthedocs.io/en/latest/Command-Duration.html
+
+        Only the action requested on the first switch will be processed. All other switches will
+        be ignored.
+
+        Manipulation of a single task is intended to be done via the clickable links or through
+        code directly. Due to generally short life of a task, the inclusion of completion date
+        and function's memory reference guarentees an incorrect task will not be manipulated.
+
+        By default, tasks that are canceled and never called are automatically removed after
+        one minute.
+
+    Example:
+        tasks/cancel move_callback
+          Cancel all movement delays from the slow_exit contrib.
+          In this example slow exits creates it's tasks with: utils.delay(move_delay, move_callback)
+
     """
 
     key = "tasks"
@@ -1260,7 +1266,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
         return t_comp_date, t_func_mem_ref
 
     def func(self):
-        caller = self.caller
         # get a reference of the global task handler
         global _TASK_HANDLER
         if _TASK_HANDLER is None:
@@ -1271,6 +1276,7 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             if self.switches or self.args:
                 self.msg('Likely the task has completed and been removed.')
             return
+
         # handle caller's request to manipulate a task(s)
         if self.switches or self.lhs:
             action_request = self.switches[0]
@@ -1301,7 +1307,8 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                     self.msg(f'No tasks deferring function name {arg_func_name} found.')
                     return
                 return True
-            err_arg_msg = 'Task ID, completion date and memory reference are required when manipulating a delay.'
+            err_arg_msg = 'Task ID, completion date and memory reference are required when ' \
+                           'manipulating a delay.'
             task_comp_msg = 'Task completed while processing request.'
             # handle missing arguments or switches
             if not self.switches and self.lhs:
@@ -1354,14 +1361,15 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg(task_comp_msg)
                 return
+
         # No task manupilation requested, build a table of tasks and display it
         # get the width of screen in characters
-        def_screen_width = settings.CLIENT_DEFAULT_WIDTH if settings.CLIENT_DEFAULT_WIDTH else 80
-        caller_session = caller.sessions.get()
-        width = caller_session[0].protocol_flags.get("SCREENWIDTH", def_screen_width)
+        width = self.client_width()
         # create table header and list to hold tasks data and actions
-        tasks_header = ('Task ID', 'Completion Date', 'Function', 'Arguments', 'KWARGS', 'persistent')
-        tasks_list = [list() for i in range(len(tasks_header))]  # empty list of lists, the size of the header
+        tasks_header = ('Task ID', 'Completion Date', 'Function', 'Arguments', 'KWARGS',
+                        'persistent')
+        # empty list of lists, the size of the header
+        tasks_list = [list() for i in range(len(tasks_header))]
         for task_id, task in _TASK_HANDLER.tasks.items():
             # collect data from the task
             t_comp_date, t_func_mem_ref = self.coll_date_func(task)
@@ -1383,5 +1391,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                 if width >= 75:
                     tasks_list[i][-1] = f"^{tasks_list[i][-1]}^"
         # create and display the table
-        tasks_table = EvTable(*tasks_header, table=tasks_list, maxwidth=width, border='cells', align='center')
+        tasks_table = EvTable(*tasks_header, table=tasks_list, maxwidth=width, border='cells',
+                              align='center')
         self.msg(tasks_table)
