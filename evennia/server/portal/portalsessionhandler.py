@@ -37,7 +37,8 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # Portal-SessionHandler class
 # -------------------------------------------------------------
 
-DOS_PROTECTION_MSG = _("{servername} DoS protection is active. You are queued to connect in {num} seconds ...")
+DOS_PROTECTION_MSG = _("{servername} DoS protection is active."
+                       "You are queued to connect in {num} seconds ...")
 
 
 class PortalSessionHandler(SessionHandler):

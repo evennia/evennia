@@ -26,7 +26,8 @@ class Throttle:
 
         Keyword Args:
             name (str): Name of this throttle.
-            limit (int): Max number of failures before imposing limiter
+            limit (int): Max number of failures before imposing limiter. If `None`,
+                the throttle is disabled.
             timeout (int): number of timeout seconds after
                 max number of tries has been reached.
             cache_size (int): Max number of attempts to record per IP within a
@@ -197,6 +198,10 @@ class Throttle:
                 False otherwise.
 
         """
+        if self.limit is None:
+            # throttle is disabled
+            return False
+
         now = time.time()
         ip = str(ip)
 

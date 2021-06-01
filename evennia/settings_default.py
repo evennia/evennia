@@ -697,7 +697,8 @@ PERMISSION_ACCOUNT_DEFAULT = "Player"
 CLIENT_DEFAULT_WIDTH = 78
 # telnet standard height is 24; does anyone use such low-res displays anymore?
 CLIENT_DEFAULT_HEIGHT = 45
-# Set rate limits per-IP on account creations and login attempts
+# Set rate limits per-IP on account creations and login attempts. Set limits
+# to None to disable.
 CREATION_THROTTLE_LIMIT = 2
 CREATION_THROTTLE_TIMEOUT = 10 * 60
 LOGIN_THROTTLE_LIMIT = 5
