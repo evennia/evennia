@@ -283,7 +283,7 @@ elif PROFILE == 'normal_player':
         (0.29, c_looks),
         (0.2, c_help),
         (0.3, c_moves),
-        (0.2, c_socialize),
+        (0.05, c_socialize),
         (0.1, c_measure_lag)
     )
 elif PROFILE == 'normal_builder':

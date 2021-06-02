@@ -85,7 +85,7 @@ You can now just do
 And even remove the default one if they don't want to use it
 
     channel/unalias public
-    public Hello
+    public Hello    (gives a command-not-found error now)
 
 But you can also use your alias with the `channel` command:
 
