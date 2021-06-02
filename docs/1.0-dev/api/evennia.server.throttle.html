@@ -64,7 +64,8 @@ caches for automatic key eviction and persistence configurability.</p>
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of this throttle.</p></li>
-<li><p><strong>limit</strong> (<em>int</em>) – Max number of failures before imposing limiter</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Max number of failures before imposing limiter. If <strong>None</strong>,
+the throttle is disabled.</p></li>
 <li><p><strong>timeout</strong> (<em>int</em>) – number of timeout seconds after
 max number of tries has been reached.</p></li>
 <li><p><strong>cache_size</strong> (<em>int</em>) – Max number of attempts to record per IP within a

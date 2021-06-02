@@ -82,8 +82,16 @@
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">protocol</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">time_format</span>
+<span class="kn">import</span> <span class="nn">django</span>
+<span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">evennia</span>  <span class="c1"># noqa</span>
+<span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">time_format</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>  <span class="c1"># noqa</span>
 
 <span class="c1"># Load the dummyrunner settings module</span>
 
@@ -93,8 +101,10 @@
         <span class="s2">&quot;Error: Dummyrunner could not find settings file at </span><span class="si">%s</span><span class="s2">&quot;</span>
         <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span>
     <span class="p">)</span>
+<span class="n">IDMAPPER_CACHE_MAXSIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span>
 
 <span class="n">DATESTRING</span> <span class="o">=</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S&quot;</span>
+<span class="n">CLIENTS</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># Settings</span>
 
@@ -113,18 +123,37 @@
 <span class="c1"># Port to use, if not specified on command line</span>
 <span class="n">TELNET_PORT</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">TELNET_PORT</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PORTS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1">#</span>
-<span class="n">NLOGGED_IN</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">NCONNECTED</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># client has received a connection</span>
+<span class="n">NLOGIN_SCREEN</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># client has seen the login screen (server responded)</span>
+<span class="n">NLOGGING_IN</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># client starting login procedure</span>
+<span class="n">NLOGGED_IN</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># client has authenticated and logged in</span>
 
-
-<span class="c1"># Messages</span>
+<span class="c1"># time when all clients have logged_in</span>
+<span class="n">TIME_ALL_LOGIN</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># actions since all logged in</span>
+<span class="n">TOTAL_ACTIONS</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">TOTAL_LAG_MEASURES</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># lag per 30s for all logged in</span>
+<span class="n">TOTAL_LAG</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">TOTAL_LAG_IN</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">TOTAL_LAG_OUT</span> <span class="o">=</span> <span class="mi">0</span>
 
 
 <span class="n">INFO_STARTING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    Dummyrunner starting using </span><span class="si">{N}</span><span class="s2"> dummy account(s). If you don&#39;t see</span>
+<span class="s2">    Dummyrunner starting using </span><span class="si">{nclients}</span><span class="s2"> dummy account(s). If you don&#39;t see</span>
 <span class="s2">    any connection messages, make sure that the Evennia server is</span>
 <span class="s2">    running.</span>
 
-<span class="s2">    Use Ctrl-C to stop/disconnect clients.</span>
+<span class="s2">    TELNET_PORT = </span><span class="si">{port}</span><span class="s2"></span>
+<span class="s2">    IDMAPPER_CACHE_MAXSIZE = </span><span class="si">{idmapper_cache_size}</span><span class="s2"> MB</span>
+<span class="s2">    TIMESTEP = </span><span class="si">{timestep}</span><span class="s2"> (rate </span><span class="si">{rate}</span><span class="s2">/s)</span>
+<span class="s2">    CHANCE_OF_LOGIN = </span><span class="si">{chance_of_login}</span><span class="s2">% per time step</span>
+<span class="s2">    CHANCE_OF_ACTION = </span><span class="si">{chance_of_action}</span><span class="s2">% per time step</span>
+<span class="s2">    -&gt; avg rate (per client, after login): </span><span class="si">{avg_rate}</span><span class="s2"> cmds/s</span>
+<span class="s2">    -&gt; total avg rate (after login): </span><span class="si">{avg_rate_total}</span><span class="s2"> cmds/s</span>
+
+<span class="s2">    Use Ctrl-C (or Cmd-C) to stop/disconnect all clients.</span>
+
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">ERROR_NO_MIXIN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -139,6 +168,7 @@
 <span class="s2">          to test all commands</span>
 <span class="s2">        - change PASSWORD_HASHERS to use a faster (but less safe) algorithm</span>
 <span class="s2">          when creating large numbers of accounts at the same time</span>
+<span class="s2">        - set LOGIN_THROTTLE/CREATION_THROTTLE=None to disable it</span>
 
 <span class="s2">    If you don&#39;t want to use the custom settings of the mixin for some</span>
 <span class="s2">    reason, you can change their values manually after the import, or</span>
@@ -210,6 +240,39 @@
 
 <span class="s2">&quot;&quot;&quot;</span>
 
+
+<div class="viewcode-block" id="CmdDummyRunnerEchoResponse"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse">[docs]</a><span class="k">class</span> <span class="nc">CmdDummyRunnerEchoResponse</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummyrunner command measuring the round-about response time</span>
+<span class="sd">    from sending to receiving a result.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        dummyrunner_echo_response &lt;timestamp&gt;</span>
+
+<span class="sd">    Responds with</span>
+<span class="sd">        dummyrunner_echo_response:&lt;timestamp&gt;,&lt;current_time&gt;</span>
+
+<span class="sd">    The dummyrunner will send this and then compare the send time</span>
+<span class="sd">    with the receive time on both ends.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;dummyrunner_echo_response&quot;</span>
+
+<div class="viewcode-block" id="CmdDummyRunnerEchoResponse.func"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># returns (dummy_client_timestamp,current_time)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dummyrunner_echo_response:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cmddummyrunner lag in: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DummyRunnerCmdSet"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet">[docs]</a><span class="k">class</span> <span class="nc">DummyRunnerCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummyrunner injected cmdset.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DummyRunnerCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDummyRunnerEchoResponse</span><span class="p">())</span></div></div>
+
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Helper functions</span>
 <span class="c1"># ------------------------------------------------------------</span>
@@ -223,12 +286,12 @@
 <span class="sd">    Makes unique ids.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        count (int): A globally unique counter.</span>
+<span class="sd">        str: A globally unique id.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">ICOUNT</span>
     <span class="n">ICOUNT</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ICOUNT</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:03d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ICOUNT</span><span class="p">))</span></div>
 
 
 <span class="n">GCOUNT</span> <span class="o">=</span> <span class="mi">0</span>
@@ -244,7 +307,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">GCOUNT</span>
     <span class="n">GCOUNT</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="n">GCOUNT</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="n">GCOUNT</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="makeiter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.makeiter">[docs]</a><span class="k">def</span> <span class="nf">makeiter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -264,7 +327,6 @@
 <span class="c1"># Client classes</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
-
 <div class="viewcode-block" id="DummyClient"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient">[docs]</a><span class="k">class</span> <span class="nc">DummyClient</span><span class="p">(</span><span class="n">telnet</span><span class="o">.</span><span class="n">StatefulTelnetProtocol</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles connection to a running Evennia server,</span>
@@ -273,29 +335,80 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="DummyClient.report"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">clientkey</span><span class="p">):</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">25</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="n">tim</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_timestamp</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">clientkey</span><span class="si">}{</span><span class="n">pad</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;conn: </span><span class="si">{</span><span class="n">NCONNECTED</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;welcome screen: </span><span class="si">{</span><span class="n">NLOGIN_SCREEN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;authing: </span><span class="si">{</span><span class="n">NLOGGING_IN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;loggedin/tot: </span><span class="si">{</span><span class="n">NLOGGED_IN</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">NCLIENTS</span><span class="si">}</span><span class="s2"> (after </span><span class="si">{</span><span class="n">tim</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="DummyClient.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when connection is first established.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">NCONNECTED</span>
         <span class="c1"># public properties</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="n">idcounter</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Dummy-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dummy-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># exit names created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># obj names created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_attempt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_started</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_report</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># already stepping in a cmd definition</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_login</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
 
-        <span class="n">reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logout</span><span class="p">)</span></div>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logout</span><span class="p">)</span>
+
+        <span class="n">NCONNECTED</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;-&gt; connected&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_welcome_screen</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_retry_welcome_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="p">:</span>
+            <span class="c1"># we have connected but not received anything for 30s.</span>
+            <span class="c1"># (unclear why this would be - overload?)</span>
+            <span class="c1"># try sending a look to get something to start with</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;?? retrying welcome screen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="c1"># make sure to check again later</span>
+            <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_welcome_screen</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_print_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">TIME_ALL_LOGIN</span><span class="p">,</span> <span class="n">TOTAL_ACTIONS</span>
+        <span class="k">global</span> <span class="n">TOTAL_LAG</span><span class="p">,</span> <span class="n">TOTAL_LAG_MEASURES</span><span class="p">,</span> <span class="n">TOTAL_LAG_IN</span><span class="p">,</span> <span class="n">TOTAL_LAG_OUT</span>
+
+        <span class="n">tim</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">TIME_ALL_LOGIN</span>
+        <span class="n">avgrate</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">TOTAL_ACTIONS</span> <span class="o">/</span> <span class="n">tim</span><span class="p">)</span>
+        <span class="n">lag</span> <span class="o">=</span> <span class="n">TOTAL_LAG</span> <span class="o">/</span> <span class="p">(</span><span class="n">TOTAL_LAG_MEASURES</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">lag_in</span> <span class="o">=</span> <span class="n">TOTAL_LAG_IN</span> <span class="o">/</span> <span class="p">(</span><span class="n">TOTAL_LAG_MEASURES</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">lag_out</span> <span class="o">=</span> <span class="n">TOTAL_LAG_OUT</span> <span class="o">/</span> <span class="p">(</span><span class="n">TOTAL_LAG_MEASURES</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">TOTAL_ACTIONS</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TOTAL_LAG</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TOTAL_LAG_IN</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TOTAL_LAG_OUT</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TOTAL_LAG_MEASURES</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TIME_ALL_LOGIN</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.. running 30s average: ~</span><span class="si">{</span><span class="n">avgrate</span><span class="si">}</span><span class="s2"> actions/s &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;lag: </span><span class="si">{</span><span class="n">lag</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s (in: </span><span class="si">{</span><span class="n">lag_in</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s, out: </span><span class="si">{</span><span class="n">lag_out</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_print_statistics</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DummyClient.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -306,15 +419,67 @@
 <span class="sd">            data (str): Incoming data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="mi">255</span><span class="p">)):</span>
-            <span class="c1"># wait until we actually get text back (not just telnet</span>
-            <span class="c1"># negotiation)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="c1"># start client tick</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
-            <span class="c1"># dissipate exact step by up to +/- 0.5 second</span>
-            <span class="n">timestep</span> <span class="o">=</span> <span class="n">TIMESTEP</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">timestep</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span></div>
+        <span class="k">global</span> <span class="n">NLOGIN_SCREEN</span><span class="p">,</span> <span class="n">NLOGGED_IN</span><span class="p">,</span> <span class="n">NLOGGING_IN</span><span class="p">,</span> <span class="n">NCONNECTED</span>
+        <span class="k">global</span> <span class="n">TOTAL_ACTIONS</span><span class="p">,</span> <span class="n">TIME_ALL_LOGIN</span>
+        <span class="k">global</span> <span class="n">TOTAL_LAG</span><span class="p">,</span> <span class="n">TOTAL_LAG_MEASURES</span><span class="p">,</span> <span class="n">TOTAL_LAG_IN</span><span class="p">,</span> <span class="n">TOTAL_LAG_OUT</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xff</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="c1"># regular text, not a telnet command</span>
+
+            <span class="k">if</span> <span class="n">NCLIENTS</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dummy-client sees:&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span><span class="p">:</span>
+                <span class="c1"># waiting for connection</span>
+                <span class="c1"># wait until we actually get text back (not just telnet</span>
+                <span class="c1"># negotiation)</span>
+                <span class="c1"># start client tick</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">TIMESTEP</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">TIMESTEP</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+                <span class="c1"># dither next attempt with random time</span>
+                <span class="n">timestep</span> <span class="o">=</span> <span class="n">TIMESTEP</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">df</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">df</span><span class="p">))</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">timestep</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connection_attempt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">NLOGIN_SCREEN</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">NCONNECTED</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;&lt;- server sent login screen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="p">:</span>
+                    <span class="c1"># logged in, ready to run</span>
+                    <span class="n">NLOGGED_IN</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">NLOGGING_IN</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;== logged in&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">NLOGGED_IN</span> <span class="o">==</span> <span class="n">NCLIENTS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">TIME_ALL_LOGIN</span><span class="p">:</span>
+                        <span class="c1"># all are logged in! We can start collecting statistics</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;.. All clients connected and logged in!&quot;</span><span class="p">)</span>
+                        <span class="n">TIME_ALL_LOGIN</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_print_statistics</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">TIME_ALL_LOGIN</span><span class="p">:</span>
+                    <span class="n">TOTAL_ACTIONS</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">strip_ansi</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dummyrunner_echo_response:&quot;</span><span class="p">):</span>
+                            <span class="c1"># handle special lag-measuring command. This returns</span>
+                            <span class="c1"># dummyrunner_echo_response:&lt;starttime&gt;,&lt;midpointtime&gt;</span>
+                            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                            <span class="n">_</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">start_time</span><span class="p">,</span> <span class="n">mid_time</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                            <span class="n">lag_in</span> <span class="o">=</span> <span class="n">mid_time</span> <span class="o">-</span> <span class="n">start_time</span>
+                            <span class="n">lag_out</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">mid_time</span>
+                            <span class="n">total_lag</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">start_time</span>  <span class="c1"># full round-about time</span>
+
+                            <span class="n">TOTAL_LAG</span> <span class="o">+=</span> <span class="n">total_lag</span>
+                            <span class="n">TOTAL_LAG_IN</span> <span class="o">+=</span> <span class="n">lag_in</span>
+                            <span class="n">TOTAL_LAG_OUT</span> <span class="o">+=</span> <span class="n">lag_out</span>
+                            <span class="n">TOTAL_LAG_MEASURES</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DummyClient.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -325,7 +490,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) lost connection (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;XX lost connection&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DummyClient.error"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -352,9 +517,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) logout (</span><span class="si">%s</span><span class="s2"> actions)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">istep</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-&gt; logout/disconnect (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">istep</span><span class="si">}</span><span class="s2"> actions)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DummyClient.step"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -363,7 +528,7 @@
 <span class="sd">        all &quot;intelligence&quot; of the dummy client.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">NLOGGED_IN</span>
+        <span class="k">global</span> <span class="n">NLOGGING_IN</span><span class="p">,</span> <span class="n">NLOGIN_SCREEN</span>
 
         <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
 
@@ -371,11 +536,13 @@
             <span class="c1"># no commands ready. Load some.</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">CHANCE_OF_LOGIN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">CHANCE_OF_LOGIN</span> <span class="ow">or</span> <span class="n">NLOGGING_IN</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+                    <span class="c1"># lower rate of logins, but not below 1 / s</span>
                     <span class="c1"># get the login commands</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">makeiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
-                    <span class="n">NLOGGED_IN</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># this is for book-keeping</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;connecting client </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">)...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">NLOGGED_IN</span><span class="p">,</span> <span class="n">NCLIENTS</span><span class="p">))</span>
+                    <span class="n">NLOGGING_IN</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># this is for book-keeping</span>
+                    <span class="n">NLOGIN_SCREEN</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;-&gt; create/login&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># no login yet, so cmdlist not yet set</span>
@@ -389,12 +556,26 @@
         <span class="c1"># at this point we always have a list of commands</span>
         <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">CHANCE_OF_ACTION</span><span class="p">:</span>
             <span class="c1"># send to the game</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dummyrunner_echo_response&quot;</span><span class="p">):</span>
+                <span class="c1"># we need to set the timer element as close to</span>
+                <span class="c1"># the send as possible</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action_started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">NCLIENTS</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dummy-client sent: </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="DummyFactory"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory">[docs]</a><span class="k">class</span> <span class="nc">DummyFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyFactory"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory">[docs]</a><span class="k">class</span> <span class="nc">DummyFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="n">DummyClient</span>
+    <span class="n">initialDelay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DummyFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
         <span class="s2">&quot;Setup the factory base (shared by all clients)&quot;</span>
@@ -439,7 +620,7 @@
     <span class="c1"># setting up all clients (they are automatically started)</span>
     <span class="n">factory</span> <span class="o">=</span> <span class="n">DummyFactory</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NCLIENTS</span><span class="p">):</span>
-        <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">TELNET_PORT</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">TELNET_PORT</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
     <span class="c1"># start reactor</span>
     <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
@@ -464,12 +645,23 @@
     <span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">nclients</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">INFO_STARTING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">INFO_STARTING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">nclients</span><span class="o">=</span><span class="n">nclients</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">TELNET_PORT</span><span class="p">,</span>
+        <span class="n">idmapper_cache_size</span><span class="o">=</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span><span class="p">,</span>
+        <span class="n">timestep</span><span class="o">=</span><span class="n">TIMESTEP</span><span class="p">,</span>
+        <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">TIMESTEP</span><span class="p">,</span>
+        <span class="n">chance_of_login</span><span class="o">=</span><span class="n">CHANCE_OF_LOGIN</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">chance_of_action</span><span class="o">=</span><span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">avg_rate</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span><span class="p">,</span>
+        <span class="n">avg_rate_total</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="n">nclients</span>
+    <span class="p">))</span>
 
     <span class="c1"># run the dummyrunner</span>
-    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">TIME_START</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="o">=</span><span class="n">nclients</span><span class="p">)</span>
     <span class="n">ttot</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
 
     <span class="c1"># output runtime</span>
