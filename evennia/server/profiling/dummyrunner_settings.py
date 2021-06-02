@@ -258,7 +258,7 @@ def c_measure_lag(client):
 # socializing_builder - builds a lot, creates help entries, moves, chat (spammy)
 # only_digger - extreme builder that only digs room after room
 
-PROFILE = "normal_player"
+PROFILE = "looker"
 
 
 if PROFILE == 'idler':
