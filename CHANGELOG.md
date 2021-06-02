@@ -65,6 +65,7 @@ Up requirements to Django 3.2+
 - Remove `mygame/web/static_overrides` and -`template_overrides`, reorganize website/admin/client/api
   into a more consistent structure for overriding. Expanded webpage documentation considerably.
 - REST API list-view was shortened (#2401). New CSS/HTML. Add ReDoc for API autodoc page.
+- Update and fix dummyrunner with cleaner code and setup.
 
 ### Evennia 0.9.5 (2019-2020)
 
