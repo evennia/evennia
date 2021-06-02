@@ -44,9 +44,9 @@
 the actions available to dummy accounts.</p>
 <p>The settings are global variables:</p>
 <ul class="simple">
-<li><p>TIMESTEP - time in seconds between each ‘tick’</p></li>
-<li><p>CHANCE_OF_ACTION - chance 0-1 of action happening</p></li>
-<li><p>CHANCE_OF_LOGIN - chance 0-1 of login happening</p></li>
+<li><p>TIMESTEP - time in seconds between each ‘tick’. 1 is a good start.</p></li>
+<li><p>CHANCE_OF_ACTION - chance 0-1 of action happening. Default is 0.5.</p></li>
+<li><p>CHANCE_OF_LOGIN - chance 0-1 of login happening. 0.01 is a good number.</p></li>
 <li><p>TELNET_PORT - port to use, defaults to settings.TELNET_PORT</p></li>
 <li><p>ACTIONS - see below</p></li>
 </ul>
@@ -58,16 +58,15 @@ the actions available to dummy accounts.</p>
 chance of occurring given by CHANCE_OF_LOGIN. This function is usually
 responsible for logging in the account. The second entry is always
 called when the dummyrunner disconnects from the server and should
-thus issue a logout command.  The other entries are tuples (chance,
+thus issue a logout command. The other entries are tuples (chance,
 func). They are picked randomly, their commonality based on the
 cumulative chance given (the chance is normalized between all options
-so if will still work also if the given chances don’t add up to 1).
-Since each function can return a list of game-command strings, each
-function may result in multiple operations.</p>
+so if will still work also if the given chances don’t add up to 1).</p>
+<p>The PROFILE variable define pre-made ACTION tuples for convenience.</p>
+<p>Each function should return an iterable of one or more command-call
+strings (like “look here”), so each can group multiple command operations.</p>
 <p>An action-function is called with a “client” argument which is a
-reference to the dummy client currently performing the action. It
-returns a string or a list of command strings to execute.  Use the
-client object for optionally saving data between actions.</p>
+reference to the dummy client currently performing the action.</p>
 <p>The client object has the following relevant properties and methods:</p>
 <ul class="simple">
 <li><p>key - an optional client key. This is only used for dummyrunner output.
@@ -168,6 +167,16 @@ commands (such as creating an account and logging in).</p>
 <dt id="evennia.server.profiling.dummyrunner_settings.c_moves_s">
 <code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_moves_s</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_moves_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_moves_s" title="Permalink to this definition">¶</a></dt>
 <dd><p>move through south exit if available</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_measure_lag">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_measure_lag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_measure_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_measure_lag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Special dummyrunner command, injected in c_login. It  measures
+response time. Including this in the ACTION tuple will give more
+dummyrunner output about just how fast commands are being processed.</p>
+<p>The dummyrunner will treat this special and inject the
+{timestamp} just before sending.</p>
 </dd></dl>
 
 </section>

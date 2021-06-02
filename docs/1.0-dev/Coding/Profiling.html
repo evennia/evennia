@@ -43,23 +43,26 @@
 <p><em>This is considered an advanced topic mainly of interest to server developers.</em></p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>Sometimes it can be useful to try to determine just how efficient a particular piece of code is, or
-to figure out if one could speed up things more than they are. There are many ways to test the
-performance of Python and the running server.</p>
-<p>Before digging into this section, remember Donald Knuth’s <a class="reference external" href="https://en.wikipedia.org/wiki/Program_optimization#When_to_optimize">words of
-wisdom</a>:</p>
+<p>Sometimes it can be useful to try to determine just how efficient a particular
+piece of code is, or to figure out if one could speed up things more than they
+are. There are many ways to test the performance of Python and the running
+server.</p>
+<p>Before digging into this section, remember Donald Knuth’s
+<a class="reference external" href="https://en.wikipedia.org/wiki/Program_optimization#When_to_optimize">words of wisdom</a>:</p>
 <blockquote>
 <div><p><em>[…]about 97% of the time: Premature optimization is the root of all evil</em>.</p>
 </div></blockquote>
-<p>That is, don’t start to try to optimize your code until you have actually identified a need to do
-so. This means your code must actually be working before you start to consider optimization.
-Optimization will also often make your code more complex and harder to read. Consider readability
-and maintainability and you may find that a small gain in speed is just not worth it.</p>
+<p>That is, don’t start to try to optimize your code until you have actually
+identified a need to do so. This means your code must actually be working before
+you start to consider optimization.  Optimization will also often make your code
+more complex and harder to read. Consider readability and maintainability and
+you may find that a small gain in speed is just not worth it.</p>
 </section>
 <section id="simple-timer-tests">
 <h2>Simple timer tests<a class="headerlink" href="#simple-timer-tests" title="Permalink to this headline">¶</a></h2>
-<p>Python’s <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module is very good for testing small things. For example, in order to test if it
-is faster to use a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop or a list comprehension you could use the following code:</p>
+<p>Python’s <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module is very good for testing small things. For example, in
+order to test if it is faster to use a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop or a list comprehension you
+could use the following code:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -75,87 +78,251 @@ is faster to use a <code class="docutils literal notranslate"><span class="pre">
    <span class="o">&lt;&lt;&lt;</span>  <span class="mf">5.358283996582031</span>
 </pre></div>
 </td></tr></table></div>
-<p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> keyword is used to set up things that should not be included in the time measurement,
-like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">[]</span></code> in the first call.</p>
-<p>By default the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> function will re-run the given test 1000000 times and returns the <em>total
-time</em> to do so (so <em>not</em> the average per test). A hint is to not use this default for testing
-something that includes database writes - for that you may want to use a lower number of repeats
-(say 100 or 1000) using the <code class="docutils literal notranslate"><span class="pre">number=100</span></code> keyword.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> keyword is used to set up things that should not be included in the
+time measurement, like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">[]</span></code> in the first call.</p>
+<p>By default the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> function will re-run the given test 1000000 times and
+returns the <em>total time</em> to do so (so <em>not</em> the average per test). A hint is to
+not use this default for testing something that includes database writes - for
+that you may want to use a lower number of repeats (say 100 or 1000) using the
+<code class="docutils literal notranslate"><span class="pre">number=100</span></code> keyword.</p>
 </section>
 <section id="using-cprofile">
 <h2>Using cProfile<a class="headerlink" href="#using-cprofile" title="Permalink to this headline">¶</a></h2>
-<p>Python comes with its own profiler, named cProfile (this is for cPython, no tests have been done
-with <code class="docutils literal notranslate"><span class="pre">pypy</span></code> at this point). Due to the way Evennia’s processes are handled, there is no point in
-using the normal way to start the profiler (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cProfile</span> <span class="pre">evennia.py</span></code>). Instead you start the
-profiler through the launcher:</p>
+<p>Python comes with its own profiler, named cProfile (this is for cPython, no
+tests have been done with <code class="docutils literal notranslate"><span class="pre">pypy</span></code> at this point). Due to the way Evennia’s
+processes are handled, there is no point in using the normal way to start the
+profiler (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cProfile</span> <span class="pre">evennia.py</span></code>). Instead you start the profiler
+through the launcher:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">profiler</span> <span class="n">start</span>
 </pre></div>
 </div>
-<p>This will start Evennia with the Server component running (in daemon mode) under cProfile. You could
-instead try <code class="docutils literal notranslate"><span class="pre">--profile</span></code> with the <code class="docutils literal notranslate"><span class="pre">portal</span></code> argument to profile the Portal (you would then need to
+<p>This will start Evennia with the Server component running (in daemon mode) under
+cProfile. You could instead try <code class="docutils literal notranslate"><span class="pre">--profile</span></code> with the <code class="docutils literal notranslate"><span class="pre">portal</span></code> argument to
+profile the Portal (you would then need to
 <a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc">start the Server separately</span></a>).</p>
-<p>Please note that while the profiler is running, your process will use a lot more memory than usual.
-Memory usage is even likely to climb over time. So don’t leave it running perpetually but monitor it
-carefully (for example using the <code class="docutils literal notranslate"><span class="pre">top</span></code> command on Linux or the Task Manager’s memory display on
-Windows).</p>
-<p>Once you have run the server for a while, you need to stop it so the profiler can give its report.
-Do <em>not</em> kill the program from your task manager or by sending it a kill signal - this will most
-likely also mess with the profiler. Instead either use <code class="docutils literal notranslate"><span class="pre">evennia.py</span> <span class="pre">stop</span></code> or (which may be even
-better), use <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> from inside the game.</p>
-<p>Once the server has fully shut down (this may be a lot slower than usual) you will find that
-profiler has created a new file <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/server.prof</span></code>.</p>
-</section>
+<p>Please note that while the profiler is running, your process will use a lot more
+memory than usual.  Memory usage is even likely to climb over time. So don’t
+leave it running perpetually but monitor it carefully (for example using the
+<code class="docutils literal notranslate"><span class="pre">top</span></code> command on Linux or the Task Manager’s memory display on Windows).</p>
+<p>Once you have run the server for a while, you need to stop it so the profiler
+can give its report.  Do <em>not</em> kill the program from your task manager or by
+sending it a kill signal - this will most likely also mess with the profiler.
+Instead either use <code class="docutils literal notranslate"><span class="pre">evennia.py</span> <span class="pre">stop</span></code> or (which may be even better), use
+<code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> from inside the game.</p>
+<p>Once the server has fully shut down (this may be a lot slower than usual) you
+will find that profiler has created a new file <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/server.prof</span></code>.</p>
 <section id="analyzing-the-profile">
-<h2>Analyzing the profile<a class="headerlink" href="#analyzing-the-profile" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file is a binary file. There are many ways to analyze and display its contents,
-all of which has only been tested in Linux (If you are a Windows/Mac user, let us know what works).</p>
-<p>We recommend the
-<a class="reference external" href="http://www.vrplumber.com/programming/runsnakerun/">Runsnake</a> visualizer to see the processor usage
-of different processes in a graphical form. For more detailed listing of usage time, you can use
-<a class="reference external" href="http://kcachegrind.sourceforge.net/html/Home.html">KCachegrind</a>. To make KCachegrind work with
-Python profiles you also need the wrapper script
-<a class="reference external" href="https://pypi.python.org/pypi/pyprof2calltree/">pyprof2calltree</a>. You can get pyprof2calltree via
-<code class="docutils literal notranslate"><span class="pre">pip</span></code> whereas KCacheGrind is something you need to get via your package manager or their homepage.</p>
-<p>How to analyze and interpret profiling data is not a trivial issue and depends on what you are
-profiling for. Evennia being an asynchronous server can also confuse profiling. Ask on the mailing
-list if you need help and be ready to be able to supply your <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file for comparison,
-along with the exact conditions under which it was obtained.</p>
+<h3>Analyzing the profile<a class="headerlink" href="#analyzing-the-profile" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file is a binary file. There are many ways to analyze and
+display its contents, all of which has only been tested in Linux (If you are a
+Windows/Mac user, let us know what works).</p>
+<p>You can look at the contents of the profile file with Python’s in-built <code class="docutils literal notranslate"><span class="pre">pstats</span></code>
+module in the evennia shell (it’s recommended you install <code class="docutils literal notranslate"><span class="pre">ipython</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ipython</span></code> in your virtualenv first, for prettier output):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">shell</span>
+</pre></div>
+</div>
+<p>Then in the shell</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pstats</span>
+<span class="kn">from</span> <span class="nn">pstats</span> <span class="kn">import</span> <span class="n">SortKey</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="s1">&#39;server/log/server.prof&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">strip_dirs</span><span class="p">()</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>See the
+<a class="reference external" href="https://docs.python.org/3/library/profile.html#instant-user-s-manual">Python profiling documentation</a>
+for more information.</p>
+<p>You can also visualize the data in various ways.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/RunSnakeRun/">Runsnake</a> visualizes the profile to
+give a good overview. Install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">runsnakerun</span></code>. Note that this
+may require a C compiler and be quite slow to install.</p></li>
+<li><p>For more detailed listing of usage time, you can use
+<a class="reference external" href="http://kcachegrind.sourceforge.net/html/Home.html">KCachegrind</a>. To make
+KCachegrind work with Python profiles you also need the wrapper script
+<a class="reference external" href="https://pypi.python.org/pypi/pyprof2calltree/">pyprof2calltree</a>. You can get
+<code class="docutils literal notranslate"><span class="pre">pyprof2calltree</span></code> via <code class="docutils literal notranslate"><span class="pre">pip</span></code> whereas KCacheGrind is something you need to get
+via your package manager or their homepage.</p></li>
+</ul>
+<p>How to analyze and interpret profiling data is not a trivial issue and depends
+on what you are profiling for. Evennia being an asynchronous server can also
+confuse profiling. Ask on the mailing list if you need help and be ready to be
+able to supply your <code class="docutils literal notranslate"><span class="pre">server.prof</span></code> file for comparison, along with the exact
+conditions under which it was obtained.</p>
+</section>
 </section>
 <section id="the-dummyrunner">
 <h2>The Dummyrunner<a class="headerlink" href="#the-dummyrunner" title="Permalink to this headline">¶</a></h2>
-<p>It is difficult to test “actual” game performance without having players in your game. For this
-reason Evennia comes with the <em>Dummyrunner</em> system. The Dummyrunner is a stress-testing system: a
-separate program that logs into your game with simulated players (aka “bots” or “dummies”). Once
-connected these dummies will semi-randomly perform various tasks from a list of possible actions.
-Use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> to stop the Dummyrunner.</p>
-<blockquote>
-<div><p>Warning: You should not run the Dummyrunner on a production database. It will spawn many objects
-and also needs to run with general permissions.</p>
-</div></blockquote>
-<p>To launch the Dummyrunner, first start your server normally (with or without profiling, as above).
-Then start a new terminal/console window and active your virtualenv there too. In the new terminal,
-try to connect 10 dummy players:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">dummyrunner</span> <span class="mi">10</span>
+<p>It is difficult to test “actual” game performance without having players in your
+game. For this reason Evennia comes with the <em>Dummyrunner</em> system. The
+Dummyrunner is a stress-testing system: a separate program that logs into your
+game with simulated players (aka “bots” or “dummies”). Once connected, these
+dummies will semi-randomly perform various tasks from a list of possible
+actions.  Use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> to stop the Dummyrunner.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You should not run the Dummyrunner on a production database. It
+will spawn many objects and also needs to run with general permissions.</p>
+</div>
+<p>This is the recommended process for using the dummy runner:</p>
+<ol>
+<li><p>Stop your server completely with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>.</p></li>
+<li><p>At <em>the end</em> of your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf.settings.py</span></code> file, add the line</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="kn">from</span> <span class="nn">evennia.server.profiling.settings_mixin</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
-<p>The first time you do this you will most likely get a warning from Dummyrunner. It will tell you to
-copy an import string to the end of your settings file. Quit the Dummyrunner (<code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>) and follow
-the instructions. Restart Evennia and try <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--dummyrunner</span> <span class="pre">10</span></code> again. Make sure to remove that
-extra settings line when running a public server.</p>
-<p>The actions perform by the dummies is controlled by a settings file. The default Dummyrunner
-settings file is <code class="docutils literal notranslate"><span class="pre">evennia/server/server/profiling/dummyrunner_settings.py</span></code> but you shouldn’t modify
-this directly. Rather create/copy the default file to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/</span></code> and modify it there. To
-make sure to use your file over the default, add the following line to your settings file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server/conf/dummyrunner_settings.py&quot;</span>
+<p>This will override your settings and disable Evennia’s rate limiters and
+DoS-protections, which would otherwise block mass-connecting clients from
+one IP. Notably, it will also change to a different (faster) password hasher.</p>
+</li>
+<li><p>(recommended): Build a new database. If you use default Sqlite3 and want to
+keep your existing database, just rename <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code> to
+<code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3_backup</span></code> and run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> to create a new superuser as usual.</p></li>
+<li><p>(recommended) Log into the game as your superuser. This is just so you
+can manually check response. If you kept an old database, you will <em>not</em>
+be able to connect with an <em>existing</em> user since the password hasher changed!</p></li>
+<li><p>Start the dummyrunner with 10 dummy users from the terminal with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="o">--</span><span class="n">dummyrunner</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code>) to stop it.</p>
+</li>
+</ol>
+<p>If you want to see what the dummies are actually doing you can run with a single
+dummy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">dummyrunner</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>The inputs/outputs from the dummy will then be printed. By default the runner
+uses the ‘looker’ profile, which just logs in and sends the ‘look’ command
+over and over. To change the settings, copy the file
+<code class="docutils literal notranslate"><span class="pre">evennia/server/profiling/dummyrunner_settings.py</span></code> to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/</span></code>
+directory, then add this line to your settings file to use it in the new
+location:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server/conf/dummyrunner_settings.py&quot;</span>
+</pre></div>
+</div>
+<p>The dummyrunner settings file is a python code module in its own right - it
+defines the actions available to the dummies. These are just tuples of command
+strings (like “look here”) for the dummy to send to the server along with a
+probability of them happening. The dummyrunner looks for a global variable
+<code class="docutils literal notranslate"><span class="pre">ACTIONS</span></code>, a list of tuples, where the first two elements define the
+commands for logging in/out of the server.</p>
+<p>Below is a simplified minimal setup (the default settings file adds a lot more
+functionality and info):</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># minimal dummyrunner setup file</span>
+
+<span class="c1"># Time between each dummyrunner &quot;tick&quot;, in seconds. Each dummy will be called</span>
+<span class="c1"># with this frequency.</span>
+<span class="n">TIMESTEP</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># Chance of a dummy actually performing an action on a given tick. This</span>
+<span class="c1"># spreads out usage randomly, like it would be in reality.</span>
+<span class="n">CHANCE_OF_ACTION</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1"># Chance of a currently unlogged-in dummy performing its login action every</span>
+<span class="c1"># tick. This emulates not all accounts logging in at exactly the same time.</span>
+<span class="n">CHANCE_OF_LOGIN</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+<span class="c1"># Which telnet port to connect to. If set to None, uses the first default</span>
+<span class="c1"># telnet port of the running server.</span>
+<span class="n">TELNET_PORT</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># actions</span>
+
+<span class="k">def</span> <span class="nf">c_login</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Character-</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">pwd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;23fwsf23sdfw23wef23&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;create </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pwd</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;connect </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pwd</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">c_logout</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">c_look</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;look here&quot;</span><span class="p">,</span> <span class="s2">&quot;look me&quot;</span><span class="p">)</span>
+
+<span class="c1"># this is read by dummyrunner.</span>
+<span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">c_login</span><span class="p">,</span>
+    <span class="n">c_logout</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c_look</span><span class="p">)</span>   <span class="c1"># (probability, command-generator)</span>
+<span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<blockquote>
-<div><p>Hint: Don’t start with too many dummies. The Dummyrunner defaults to taxing the server much more
-intensely than an equal number of human players. A good dummy number to start with is 10-100.</p>
-</div></blockquote>
-<p>Once you have the dummyrunner running, stop it with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>.</p>
-<p>Generally, the dummyrunner system makes for a decent test of general performance; but it is of
-course hard to actually mimic human user behavior. For this, actual real-game testing is required.</p>
+<p>At the bottom of the default file are a few default profiles you can test out
+by just setting the <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> variable to one of the options.</p>
+<section id="dummyrunner-hints">
+<h3>Dummyrunner hints<a class="headerlink" href="#dummyrunner-hints" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Don’t start with too many dummies. The Dummyrunner taxes the server much more
+than ‘real’ users tend to do. Start with 10-100 to begin with.</p></li>
+<li><p>Stress-testing can be fun, but also consider what a ‘realistic’ number of
+users would be for your game.</p></li>
+<li><p>Note in the dummyrunner output how many commands/s are being sent to the
+server by all dummies. This is usually a lot higher than what you’d
+realistically expect to see from the same number of users.</p></li>
+<li><p>The default settings sets up a ‘lag’ measure to measaure the round-about
+message time. It updates with an average every 30 seconds. It can be worth to
+have this running for a small number of dummies in one terminal before adding
+more by starting another dummyrunner in another terminal - the first one will
+act as a measure of how lag changes with different loads. Also verify the
+lag-times by entering commands manually in-game.</p></li>
+<li><p>Check the CPU usage of your server using <code class="docutils literal notranslate"><span class="pre">top/htop</span></code> (linux). In-game, use the
+<code class="docutils literal notranslate"><span class="pre">server</span></code> command.</p></li>
+<li><p>You can run the server with <code class="docutils literal notranslate"><span class="pre">--profiler</span> <span class="pre">start</span></code> to test it with dummies. Note
+that the profiler will itself affect server performance, especially memory
+consumption.</p></li>
+<li><p>Generally, the dummyrunner system makes for a decent test of general
+performance; but it is of course hard to actually mimic human user behavior.
+For this, actual real-game testing is required.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -184,9 +351,14 @@ course hard to actually mimic human user behavior. For this, actual real-game te
 <li><a class="reference internal" href="#">Profiling</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#simple-timer-tests">Simple timer tests</a></li>
-<li><a class="reference internal" href="#using-cprofile">Using cProfile</a></li>
+<li><a class="reference internal" href="#using-cprofile">Using cProfile</a><ul>
 <li><a class="reference internal" href="#analyzing-the-profile">Analyzing the profile</a></li>
-<li><a class="reference internal" href="#the-dummyrunner">The Dummyrunner</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-dummyrunner">The Dummyrunner</a><ul>
+<li><a class="reference internal" href="#dummyrunner-hints">Dummyrunner hints</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
