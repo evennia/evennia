@@ -2511,7 +2511,8 @@ class CmdExamine(ObjManipCommand):
             locks_string = " Default"
         output["Locks"] = locks_string
         # cmdsets
-        if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
+        if current_cmdset and not (
+                len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
 
             def _format_options(cmdset):
@@ -2735,6 +2736,9 @@ class CmdExamine(ObjManipCommand):
                     account = obj.account
                     objct = obj
 
+                # this is usually handled when a command runs, but when we examine
+                # we may have leftover inherited cmdsets directly after a move etc.
+                obj.cmdset.update()
                 # using callback to print results whenever function returns.
                 get_and_merge_cmdsets(
                     obj, session, account, objct, mergemode, self.raw_string
