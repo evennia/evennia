@@ -135,6 +135,17 @@ class ChannelDetailTest(EvenniaWebTest):
         return {"slug": slugify("demo")}
 
 
+class HelpListTest(EvenniaWebTest):
+    url_name = "help"
+
+
+class HelpDetailTest(EvenniaWebTest):
+    url_name = "help-entry-detail"
+
+    def get_kwargs(self):
+        return {"category": slugify("general"),
+                "topic": slugify("test-key")}
+
 class CharacterCreateView(EvenniaWebTest):
     url_name = "character-create"
     unauthenticated_response = 302

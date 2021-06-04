@@ -2,14 +2,152 @@
 Views to manipulate help entries.
 
 """
-
+from dataclasses import dataclass
 from django.utils.text import slugify
+from django.conf import settings
+from evennia.utils.utils import inherits_from
 from django.views.generic import ListView
 from django.http import HttpResponseBadRequest
 from django.db.models.functions import Lower
 from evennia.help.models import HelpEntry
+from evennia.help.filehelp import FILE_HELP_ENTRIES
 from .mixins import TypeclassMixin, EvenniaDetailView
+from django.views.generic import DetailView
+from evennia.utils.logger import log_info
 
+DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
+
+def get_help_category(help_entry):
+    if hasattr(help_entry, 'help_category'):
+        return help_entry.help_category
+    elif hasattr(help_entry, 'category'):
+        return help_entry.category
+    elif hasattr(help_entry, 'db_help_category'):
+        return help_entry.db_help_category
+    else:
+        return 'unsorted'
+
+def get_help_topic(help_entry):
+    topic = getattr(help_entry, 'key', False)
+    if not topic:
+        getattr(help_entry, 'db_key', False)
+    # log_info(f'get_help_topic returning: {topic}')
+    return topic
+
+def can_read_topic(cmd_or_topic, caller):
+        """
+        Helper method. If this return True, the given help topic
+        be viewable in the help listing. Note that even if this returns False,
+        the entry will still be visible in the help index unless `should_list_topic`
+        is also returning False.
+        Args:
+            cmd_or_topic (Command, HelpEntry or FileHelpEntry): The topic/command to test.
+            caller: the caller checking for access.
+        Returns:
+            bool: If command can be viewed or not.
+        Notes:
+            This uses the 'read' lock. If no 'read' lock is defined, the topic is assumed readable
+            by all.
+        """
+        if inherits_from(cmd_or_topic, "evennia.commands.command.Command"):
+            return cmd_or_topic.auto_help and cmd_or_topic.access(caller, 'read', default=True)
+        else:
+            return cmd_or_topic.access(caller, 'read', default=True)
+
+def can_list_topic(cmd_or_topic, caller):
+    """
+    Should the specified command appear in the help table?
+    This method only checks whether a specified command should appear in the table of
+    topics/commands.  The command can be used by the caller (see the 'should_show_help' method)
+    and the command will still be available, for instance, if a character type 'help name of the
+    command'.  However, if you return False, the specified command will not appear in the table.
+    This is sometimes useful to "hide" commands in the table, but still access them through the
+    help system.
+    Args:
+        cmd_or_topic (Command, HelpEntry or FileHelpEntry): The topic/command to test.
+        caller: the caller checking for access.
+    Returns:
+        bool: If command should be listed or not.
+    Notes:
+        By default, the 'view' lock will be checked, and if no such lock is defined, the 'read'
+        lock will be used. If neither lock is defined, the help entry is assumed to be
+        accessible to all.
+    """
+    has_view = (
+        "view:" in cmd_or_topic.locks
+        if inherits_from(cmd_or_topic, "evennia.commands.command.Command")
+        else cmd_or_topic.locks.get("view")
+    )
+
+    if has_view:
+        return cmd_or_topic.access(caller, 'view', default=True)
+    else:
+        # no explicit 'view' lock - use the 'read' lock
+        return cmd_or_topic.access(caller, 'read', default=True)
+
+def collect_topics(caller, mode='list'):
+        """
+        Collect help topics from all sources (cmd/db/file).
+        Args:
+            caller (Object or Account): The user of the Command.
+            mode (str): One of 'list' or 'query', where the first means we are collecting to view
+                the help index and the second because of wanting to search for a specific help
+                entry/cmd to read. This determines which access should be checked.
+        Returns:
+            tuple: A tuple of three dicts containing the different types of help entries
+            in the order cmd-help, db-help, file-help:
+                `({key: cmd,...}, {key: dbentry,...}, {key: fileentry,...}`
+        """
+        # start with cmd-help
+
+        # get Character's primary command set.
+        cmdset = caller.cmdset.get()[0]
+
+        # removing doublets in cmdset, caused by cmdhandler
+        # having to allow doublet commands to manage exits etc.
+        cmdset.make_unique(caller)
+
+        # retrieve all available commands and database / file-help topics.
+        # also check the 'cmd:' lock here
+        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, 'cmd')]
+        # get all file-based help entries, checking perms
+        file_help_topics = {
+            topic.key.lower().strip(): topic
+            for topic in FILE_HELP_ENTRIES.all()
+        }
+        # get db-based help entries, checking perms
+        db_help_topics = {
+            topic.key.lower().strip(): topic
+            for topic in HelpEntry.objects.all()
+        }
+        if mode == 'list':
+            # check the view lock for all help entries/commands and determine key
+            cmd_help_topics = {
+                cmd.auto_help_display_key
+                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics if can_list_topic(cmd, caller)}
+            db_help_topics = {
+                key: entry for key, entry in db_help_topics.items()
+                if can_list_topic(entry, caller)
+            }
+            file_help_topics = {
+                key: entry for key, entry in file_help_topics.items()
+                if can_list_topic(entry, caller)}
+        else:
+            # query
+            cmd_help_topics = {
+                cmd.auto_help_display_key
+                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics if can_read_topic(cmd, caller)}
+            db_help_topics = {
+                key: entry for key, entry in db_help_topics.items()
+                if can_read_topic(entry, caller)
+            }
+            file_help_topics = {
+                key: entry for key, entry in file_help_topics.items()
+                if can_read_topic(entry, caller)}
+
+        return cmd_help_topics, db_help_topics, file_help_topics
 
 class HelpMixin(TypeclassMixin):
     """
@@ -35,22 +173,36 @@ class HelpMixin(TypeclassMixin):
             queryset (QuerySet): List of Help entries available to the user.
 
         """
+        log_info('get_queryset')
         account = self.request.user
+        all_entries = []
+        if not str(account) == 'AnonymousUser':
+            # collect all help entries
+            cmd_help_topics, db_help_topics, file_help_topics = \
+            collect_topics(account.db._playable_characters[0], mode='query')
+            # combine and sort all the help entries
+            file_db_help_topics = {**file_help_topics, **db_help_topics}
+            all_topics = {**file_db_help_topics, **cmd_help_topics}
+            all_entries = list(all_topics.values())
+            all_entries.sort(key=get_help_category)
+            # log_info(f'{all_entries}')
+        log_info('get_queryset success')
+        return all_entries
 
-        # Get list of all HelpEntries
-        entries = self.typeclass.objects.all().iterator()
-
-        # Now figure out which ones the current user is allowed to see
-        bucket = [entry.id for entry in entries if entry.access(account, "view")]
-
-        # Re-query and set a sorted list
-        filtered = (
-            self.typeclass.objects.filter(id__in=bucket)
-            .order_by(Lower("db_key"))
-            .order_by(Lower("db_help_category"))
-        )
-
-        return filtered
+    def get_entries(self):
+        account = self.request.user
+        all_entries = []
+        if not str(account) == 'AnonymousUser':
+            # collect all help entries
+            cmd_help_topics, db_help_topics, file_help_topics = \
+            collect_topics(account.db._playable_characters[0], mode='query')
+            # combine and sort all the help entries
+            file_db_help_topics = {**file_help_topics, **db_help_topics}
+            all_topics = {**file_db_help_topics, **cmd_help_topics}
+            all_entries = list(all_topics.values())
+            all_entries.sort(key=get_help_category)
+            # log_info(f'{all_entries}')
+        return all_entries
 
 
 class HelpListView(HelpMixin, ListView):
@@ -68,7 +220,7 @@ class HelpListView(HelpMixin, ListView):
     page_title = "Help Index"
 
 
-class HelpDetailView(HelpMixin, EvenniaDetailView):
+class HelpDetailView(HelpMixin, DetailView):
     """
     Returns the detail page for a given help entry.
 
@@ -76,6 +228,14 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
 
     # -- Django constructs --
     template_name = "website/help_detail.html"
+
+    @property
+    def page_title(self):
+        # Makes sure the page has a sensible title.
+        #return "%s Detail" % self.typeclass._meta.verbose_name.title()
+        obj = self.get_object()
+        topic = get_help_topic(obj)
+        return f'{topic} detail'
 
     def get_context_data(self, **kwargs):
         """
@@ -86,21 +246,26 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
             context (dict): Django context object
 
         """
+        log_info('get_context_data')
         context = super().get_context_data(**kwargs)
 
         # Get the object in question
         obj = self.get_object()
 
         # Get queryset and filter out non-related categories
-        queryset = (
-            self.get_queryset()
-            .filter(db_help_category=obj.db_help_category)
-            .order_by(Lower("db_key"))
-        )
-        context["topic_list"] = queryset
+        full_set = self.get_queryset()
+        obj_topic = get_help_category(obj)
+        topic_set = []
+        for entry in full_set:
+            entry_topic = get_help_category(entry)
+            if entry_topic.lower() == obj_topic.lower():
+                topic_set.append(entry)
+        context["topic_list"] = topic_set
+
+        # log_info(f'topic_set: {topic_set}')
 
         # Find the index position of the given obj in the queryset
-        objs = list(queryset)
+        objs = list(topic_set)
         for i, x in enumerate(objs):
             if obj is x:
                 break
@@ -119,12 +284,18 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
             context["topic_previous"] = None
 
         # Format the help entry using HTML instead of newlines
-        text = obj.db_entrytext
+        text = 'Failed to find entry.'
+        if inherits_from(obj, "evennia.commands.command.Command"):
+            text = obj.__doc__
+        elif inherits_from(obj, "evennia.help.models.HelpEntry"):
+            text = obj.db_entrytext
+        elif inherits_from(obj, "evennia.help.filehelp.FileHelpEntry"):
+            text = obj.entrytext
         text = text.replace("\r\n\r\n", "\n\n")
         text = text.replace("\r\n", "\n")
         text = text.replace("\n", "<br />")
         context["entry_text"] = text
-
+        log_info('get_context_data success')
         return context
 
     def get_object(self, queryset=None):
@@ -136,27 +307,33 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
             entry (HelpEntry): HelpEntry requested in the URL.
 
         """
+        log_info('get_object start')
         # Get the queryset for the help entries the user can access
         if not queryset:
             queryset = self.get_queryset()
 
-        # Find the object in the queryset
+        # get the category and topic requested
         category = slugify(self.kwargs.get("category", ""))
         topic = slugify(self.kwargs.get("topic", ""))
-        obj = next(
-            (
-                x
-                for x in queryset
-                if slugify(x.db_help_category) == category and slugify(x.db_key) == topic
-            ),
-            None,
-        )
+
+        # Find the object in the queryset
+        obj = None
+        for entry in queryset:
+            # continue to next entry if the topics do not match
+            entry_topic = get_help_topic(entry)
+            if not entry_topic.lower() == topic.replace('-', ' '):
+                continue
+            # if the category also matches, object requested is found
+            entry_category = get_help_category(entry)
+            if entry_category.lower() == category.replace('-', ' '):
+                obj = entry
+                break
 
         # Check if this object was requested in a valid manner
         if not obj:
             return HttpResponseBadRequest(
-                "No %(verbose_name)s found matching the query"
-                % {"verbose_name": queryset.model._meta.verbose_name}
+                f"No ({category}/{topic})s found matching the query"
             )
 
+        log_info(f'get_obj returning {obj}')
         return obj
