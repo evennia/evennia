@@ -19,6 +19,7 @@ from evennia.help.manager import HelpEntryManager
 from evennia.typeclasses.models import Tag, TagHandler, AliasHandler
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import lazy_property
+from evennia.utils.logger import log_info
 
 __all__ = ("HelpEntry",)
 
@@ -221,11 +222,14 @@ class HelpEntry(SharedMemoryModel):
             path (str): URI path to object detail page, if defined.
 
         """
+
         try:
-            return reverse(
+            url = reverse(
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
+            # log_info(f'HelpEntry web_get_detail_url url: {url}')
+            return url
         except Exception:
             return "#"
 

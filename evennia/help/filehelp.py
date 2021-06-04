@@ -67,11 +67,14 @@ An example of the contents of a module:
 
 from dataclasses import dataclass
 from django.conf import settings
+from django.urls import reverse
+from django.utils.text import slugify
 from evennia.utils.utils import (
     variable_from_module, make_iter, all_from_module)
 from evennia.utils import logger
 from evennia.utils.utils import lazy_property
 from evennia.locks.lockhandler import LockHandler
+from evennia.utils.logger import log_info
 
 _DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
@@ -114,6 +117,43 @@ class FileHelpEntry:
     @lazy_property
     def locks(self):
         return LockHandler(self)
+
+    def web_get_detail_url(self):
+        """
+        Returns the URI path for a View that allows users to view details for
+        this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-detail' would be referenced by this method.
+
+        ex.
+        ::
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+                CharDetailView.as_view(), name='character-detail')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object detail page, if defined.
+
+        """
+        # log_info('filehelp web_get_detail_url start')
+        try:
+            return reverse(
+                'help-entry-detail',
+                kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
+            )
+        except Exception as e:
+            log_info(f'Exception: {getattr(e, "message", repr(e))}')
+            return "#"
 
     def access(self, accessing_obj, access_type="view", default=True):
         """
@@ -207,3 +247,5 @@ class FileHelpStorageHandler:
 
 # singleton to hold the loaded help entries
 FILE_HELP_ENTRIES = FileHelpStorageHandler()
+# Used by Django Sites/Admin
+#get_absolute_url = web_get_detail_url
