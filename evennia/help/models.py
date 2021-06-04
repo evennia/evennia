@@ -57,6 +57,9 @@ class HelpEntry(SharedMemoryModel):
     db_key = models.CharField(
         "help key", max_length=255, unique=True, help_text="key to search for"
     )
+    @lazy_property
+    def key(self):
+        return self.db_key
     # help category
     db_help_category = models.CharField(
         "help category",
@@ -64,6 +67,9 @@ class HelpEntry(SharedMemoryModel):
         default="General",
         help_text="organizes help entries in lists",
     )
+    @lazy_property
+    def help_category(self):
+        return self.db_help_category
     # the actual help entry text, in any formatting.
     db_entrytext = models.TextField(
         "help entry", blank=True, help_text="the main body of help text"
