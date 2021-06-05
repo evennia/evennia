@@ -6,6 +6,7 @@ Tests for the Mapsystem
 
 from unittest import TestCase, mock
 from . import mapsystem
+from parameterized import parameterized
 
 
 MAP1 = """
@@ -48,11 +49,17 @@ class TestMap1(TestCase):
         self.assertEqual([node.node_index for node in nodepath], [0, 1, 3])
         self.assertEqual(linkpath, ['e', 's'])
 
-    def test_get_map_region(self):
-        string = self.map.get_map_region(1, 0, dist=1)
-        lst = self.map.get_map_region(1, 0, dist=1, return_str=False)
+    @parameterized.expand([
+        (0, 0, "#-\n| ", [["#", "-"], ["|", " "]]),
+        (1, 0, "-#\n |", [["-", "#"], [" ", "|"]]),
+        (0, 1, "| \n#-", [["|", " "], ["#", "-"]]),
+        (1, 1, " |\n-#", [[" ", "|"], ["-", "#"]]),
 
-        self.assertEqual(string, "|\n#-")
-        self.assertEqual(lst, [["|"], ['#', '-']])
+    ])
+    def test_get_map_region(self, x, y, expectstr, expectlst):
+        string = self.map.get_map_region(x, y, dist=1)
+        lst = self.map.get_map_region(x, y, dist=1, return_str=False)
+        self.assertEqual(string, expectstr)
+        self.assertEqual(lst, expectlst)
 
 
