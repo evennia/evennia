@@ -47,3 +47,12 @@ class TestMap1(TestCase):
         nodepath, linkpath = self.map.get_shortest_path((0, 0), (1, 1))
         self.assertEqual([node.node_index for node in nodepath], [0, 1, 3])
         self.assertEqual(linkpath, ['e', 's'])
+
+    def test_get_map_region(self):
+        string = self.map.get_map_region(1, 0, dist=1)
+        lst = self.map.get_map_region(1, 0, dist=1, return_str=False)
+
+        self.assertEqual(string, "|\n#-")
+        self.assertEqual(lst, [["|"], ['#', '-']])
+
+

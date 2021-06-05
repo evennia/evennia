@@ -760,7 +760,7 @@ class Map:
 
         return nodepath, linkpath
 
-    def get_map_region(self, x, y, dist=2):
+    def get_map_region(self, x, y, dist=2, return_str=True):
         """
         Display the map centered on a point and everything around it within a certain distance.
 
@@ -770,6 +770,14 @@ class Map:
             dist (int): Number of gridpoints distance to show.
                 A value of 2 will show adjacent nodes, a value
                 of 1 will only show links from current node.
+            return_str (bool, optional): Return result as an
+                already formatted string.
+
+        Returns:
+            str or list: Depending on value of `return_str`. If a list,
+                this is 2D list of lines, [[str,str,str,...], [...]] where
+                each element is a single character in the display grid. To
+                extract a coordinate from it, use listing[iy][ix]
 
         """
         width, height = self.width, self.height
@@ -779,6 +787,11 @@ class Map:
         top, bottom = max(0, iy - dist), min(height, iy + dist)
 
         output = []
-        for line in self.display_map[top:bottom]:
-            output.append("".join(line[left:right]))
-        return "\n".join(output)
+        if return_str:
+            for line in self.display_map[top:bottom]:
+                output.append("".join(line[left:right]))
+            return "\n".join(output)
+        else:
+            for line in self.display_amp[top:bottom]:
+                output.append(line[left:right])
+            return output
