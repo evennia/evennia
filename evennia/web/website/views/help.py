@@ -2,30 +2,38 @@
 Views to manipulate help entries.
 
 """
-from dataclasses import dataclass
 from django.utils.text import slugify
 from django.conf import settings
 from evennia.utils.utils import inherits_from
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest
-from django.db.models.functions import Lower
 from evennia.help.models import HelpEntry
 from evennia.help.filehelp import FILE_HELP_ENTRIES
-from .mixins import TypeclassMixin, EvenniaDetailView
-from django.views.generic import DetailView
+from .mixins import TypeclassMixin
 from evennia.utils.logger import log_info
 
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
-def get_help_category(help_entry):
-    if hasattr(help_entry, 'help_category'):
-        return help_entry.help_category
-    elif hasattr(help_entry, 'category'):
-        return help_entry.category
-    elif hasattr(help_entry, 'db_help_category'):
-        return help_entry.db_help_category
-    else:
-        return 'unsorted'
+
+def get_help_category(help_entry, slugify_cat=True):
+    """Returns help category.
+
+    Args:
+        help_entry (HelpEntry, FileHelpEntry or Command): Help entry instance.
+        slugify_cat (bool): If true the return string is slugified. Default is True.
+
+    Notes:
+        If the entry does not have attribute 'web_help_entries'. One is created with
+        a slugified copy of the attribute help_category.
+        This attribute is used for sorting the entries for the help index (ListView) page.
+
+    Returns:
+        help_category (str): The category for the help entry.
+    """
+    if not hasattr(help_entry, 'web_help_category'):
+        setattr(help_entry, 'web_help_category', slugify(help_entry.help_category))
+    return slugify(help_entry.help_category) if slugify_cat else help_entry.help_category
+
 
 def get_help_topic(help_entry):
     topic = getattr(help_entry, 'key', False)
@@ -33,6 +41,7 @@ def get_help_topic(help_entry):
         getattr(help_entry, 'db_key', False)
     # log_info(f'get_help_topic returning: {topic}')
     return topic
+
 
 def can_read_topic(cmd_or_topic, caller):
         """
@@ -53,6 +62,7 @@ def can_read_topic(cmd_or_topic, caller):
             return cmd_or_topic.auto_help and cmd_or_topic.access(caller, 'read', default=True)
         else:
             return cmd_or_topic.access(caller, 'read', default=True)
+
 
 def can_list_topic(cmd_or_topic, caller):
     """
@@ -84,6 +94,7 @@ def can_list_topic(cmd_or_topic, caller):
     else:
         # no explicit 'view' lock - use the 'read' lock
         return cmd_or_topic.access(caller, 'read', default=True)
+
 
 def collect_topics(caller, mode='list'):
         """
@@ -149,6 +160,7 @@ def collect_topics(caller, mode='list'):
 
         return cmd_help_topics, db_help_topics, file_help_topics
 
+
 class HelpMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
@@ -180,11 +192,13 @@ class HelpMixin(TypeclassMixin):
             # collect all help entries
             cmd_help_topics, db_help_topics, file_help_topics = \
             collect_topics(account.db._playable_characters[0], mode='query')
-            # combine and sort all the help entries
+            # merge the entries
             file_db_help_topics = {**file_help_topics, **db_help_topics}
             all_topics = {**file_db_help_topics, **cmd_help_topics}
             all_entries = list(all_topics.values())
-            all_entries.sort(key=get_help_category)
+            # sort the entries
+            all_entries = sorted(all_entries, key=get_help_topic)  # sort alphabetically
+            all_entries.sort(key=get_help_category)  # group by categories
             # log_info(f'{all_entries}')
         log_info('get_queryset success')
         return all_entries
@@ -254,18 +268,18 @@ class HelpDetailView(HelpMixin, DetailView):
 
         # Get queryset and filter out non-related categories
         full_set = self.get_queryset()
-        obj_topic = get_help_category(obj)
-        topic_set = []
+        obj_category = get_help_category(obj)
+        category_set = []
         for entry in full_set:
-            entry_topic = get_help_category(entry)
-            if entry_topic.lower() == obj_topic.lower():
-                topic_set.append(entry)
-        context["topic_list"] = topic_set
+            entry_category = get_help_category(entry)
+            if entry_category.lower() == obj_category.lower():
+                category_set.append(entry)
+        context["topic_list"] = category_set
 
-        # log_info(f'topic_set: {topic_set}')
+        # log_info(f'category_set: {category_set}')
 
         # Find the index position of the given obj in the queryset
-        objs = list(topic_set)
+        objs = list(category_set)
         for i, x in enumerate(objs):
             if obj is x:
                 break
