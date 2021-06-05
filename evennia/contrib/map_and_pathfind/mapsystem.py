@@ -626,7 +626,6 @@ class Map:
 
         # first pass: read string-grid and parse even (x,y) coordinates into nodes
         for iy, line in enumerate(maplines[origo_y:]):
-            maxheight = max(maxheight, iy + 1)
             even_iy = iy % 2 == 0
             for ix, char in enumerate(line[origo_x:]):
 
@@ -635,6 +634,7 @@ class Map:
 
                 even_ix = ix % 2 == 0
                 maxwidth = max(maxwidth, ix + 1)
+                maxheight = max(maxheight, iy + 1)  # only increase if there's something on the line
 
                 mapnode_or_link_class = self.legend.get(char)
                 if not mapnode_or_link_class:
@@ -781,17 +781,16 @@ class Map:
 
         """
         width, height = self.width, self.height
-        # convert to string-map coordinates
+        # convert to string-map coordinates. Remember that y grid grows downwards
         ix, iy = max(0, min(x * 2, width)), max(0, min(y * 2, height))
-        left, right = max(0, ix - dist), min(width, ix + dist)
-        top, bottom = max(0, iy - dist), min(height, iy + dist)
-
+        left, right = max(0, ix - dist), min(width, ix + dist + 1)
+        top, bottom = max(0, iy - dist), min(height, iy + dist + 1)
         output = []
         if return_str:
             for line in self.display_map[top:bottom]:
                 output.append("".join(line[left:right]))
             return "\n".join(output)
         else:
-            for line in self.display_amp[top:bottom]:
+            for line in self.display_map[top:bottom]:
                 output.append(line[left:right])
             return output
