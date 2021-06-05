@@ -85,14 +85,14 @@ _REVERSE_DIRECTIONS = {
 }
 
 _MAPSCAN = {
-    "n": (0, 1),
-    "ne": (1, 1),
+    "n": (0, -1),
+    "ne": (1, -1),
     "e": (1, 0),
-    "se": (1, -1),
-    "s": (0, -1),
-    "sw": (-1, -1),
+    "se": (1, 1),
+    "s": (0, 1),
+    "sw": (-1, 1),
     "w": (-1, 0),
-    "nw": (-1, 1)
+    "nw": (-1, -1)
 }
 
 
@@ -117,6 +117,9 @@ class MapNode:
     # if printing this node should show another symbol. If set
     # to the empty string, use `symbol`.
     display_symbol = ''
+
+    # set during generation, but is also used for identification of the node
+    node_index = None
 
     def __init__(self, x, y, node_index):
         """
@@ -170,15 +173,16 @@ class MapNode:
                 # just because there is a link here, doesn't mean it's
                 # connected to this node. If so the `end_node` will be None.
 
-                end_node, weight = link.traverse(self, _REVERSE_DIRECTIONS(direction), string_map)
+                end_node, weight = link.traverse(_REVERSE_DIRECTIONS[direction], string_map)
                 if end_node:
                     # the link could be followed to an end node!
-                    self.links[direction] = end_node
-                    self.weights[direction] = weight
                     node_index = end_node.node_index
+                    self.links[direction] = end_node
+                    self.weights[node_index] = weight
 
-                    if weight < self.cheapest_to_node.get(node_index, _BIG):
-                        self.cheapest_to_node[node_index] = direction
+                    cheapest = self.cheapest_to_node.get(node_index, ("", _BIG))[1]
+                    if weight < cheapest:
+                        self.cheapest_to_node[node_index] = (direction, weight)
 
     def linkweights(self, nnodes):
         """
@@ -211,7 +215,7 @@ class MapNode:
             str: The direction (nw, se etc) to get to that node in the cheapest way.
 
         """
-        return self.cheapest_to_node[node.node_index]
+        return self.cheapest_to_node[node.node_index][0]
 
 
 class MapLink:
@@ -286,7 +290,7 @@ class MapLink:
             directions = _REVERSE_DIRECTIONS
         links = {}
         for direction in directions:
-            dx, dy = _MAPSCAN(direction)
+            dx, dy = _MAPSCAN[direction]
             end_x, end_y = self.x + dx, self.y + dy
             if end_x in string_map and end_y in string_map[end_x]:
                 links[direction] = string_map[end_x][end_y]
@@ -344,6 +348,7 @@ class MapLink:
             MapParserError: If a link lead to nowhere.
 
         """
+        # from evennia import set_trace;set_trace()
         end_direction = self.get_directions(start_direction, string_map).get(start_direction)
         if not end_direction:
             raise MapParserError(f"Link at ({self.x}, {self.y}) was connected to "
@@ -369,7 +374,7 @@ class MapLink:
         else:
             # we hit another link. Progress recursively.
             return next_target.traverse(
-                _REVERSE_DIRECTIONS(end_direction),
+                _REVERSE_DIRECTIONS[end_direction],
                 string_map, _weight=_weight, _linklen=_linklen + 1)
 
 
@@ -546,8 +551,8 @@ class Map:
 
         Args:
             map_module_or_dict (str, module or dict): Path or module pointing to a map. If a dict,
-                this should be a dict with a key 'map' and optionally 'room_legend' and
-                'link_legend' dicts to specify the map structure.
+                this should be a dict with a key 'map' and optionally a 'legend'
+                dicts to specify the map structure.
 
         """
         # load data from dict or file
@@ -562,7 +567,7 @@ class Map:
                 mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
 
         self.mapstring = mapdata['map']
-        self.node_legend = map_module_or_dict.get("legend", DEFAULT_LEGEND)
+        self.legend = map_module_or_dict.get("legend", DEFAULT_LEGEND)
 
         self.string_map = None
         self.node_map = None
@@ -579,7 +584,7 @@ class Map:
         self.parse()
 
     def __str__(self):
-        return "\n".join(self.display_map)
+        return "\n".join("".join(line) for line in self.display_map)
 
     def parse(self):
         """
@@ -590,10 +595,12 @@ class Map:
         Notes:
         """
         mapcorner_symbol = self.mapcorner_symbol
-        # this allows for [x][y] mapping with arbitrary objects
+        # this allows for string-based [x][y] mapping with arbitrary objects
         string_map = defaultdict(dict)
         # needed by pathfinder
         node_index_map = {}
+        # mapping nodes to real x,y positions
+        node_map = defaultdict(dict)
 
         mapstring = self.mapstring
         if mapcorner_symbol not in mapstring:
@@ -603,7 +610,7 @@ class Map:
         # find the the (xstring, ystring) position where the corner symbol is
         maplines = mapstring.split("\n")
         mapcorner_x, mapcorner_y = 0, 0
-        for mapcorner_y, line in maplines:
+        for mapcorner_y, line in enumerate(maplines):
             mapcorner_x = line.find(mapcorner_symbol)
             if mapcorner_x != -1:
                 break
@@ -619,7 +626,7 @@ class Map:
 
         # first pass: read string-grid and parse even (x,y) coordinates into nodes
         for iy, line in enumerate(maplines[origo_y:]):
-            maxheight = max(maxheight, iy)
+            maxheight = max(maxheight, iy + 1)
             even_iy = iy % 2 == 0
             for ix, char in enumerate(line[origo_x:]):
 
@@ -627,43 +634,37 @@ class Map:
                     continue
 
                 even_ix = ix % 2 == 0
-                maxwidth = max(maxwidth, ix)
+                maxwidth = max(maxwidth, ix + 1)
+
+                mapnode_or_link_class = self.legend.get(char)
+                if not mapnode_or_link_class:
+                    raise MapParserError(
+                        f"Symbol '{char}' on grid position ({ix,iy}) is not found in LEGEND.")
 
                 if even_iy and even_ix:
                     # a node position will only appear on even positions in the string grid.
-
-                    mapnode_class = self.node_legend.get(char)
-                    if not mapnode_class:
-                        raise MapParserError(f"Node symbol '{char}' not in NODE_LEGEND.")
-
-                    if hasattr(mapnode_class, "node_index"):
+                    if hasattr(mapnode_or_link_class, "node_index"):
                         # this is an actual node that represents an in-game location
                         # - register it properly.
                         # the x,y stored on the node is the 'actual' xy position in the game
                         # world, not just the position in the string map (that is stored
                         # in the string_map indices instead).
-                        string_map[ix][iy] = self.node_map[ix][iy] = node_index_map[node_index] = \
-                            mapnode_class(node_index=node_index, x=ix // 2, y=iy // 2)
+                        realx, realy = ix // 2, iy // 2
+                        string_map[ix][iy] = node_map[realx][realy] = node_index_map[node_index] = \
+                            mapnode_or_link_class(node_index=node_index, x=realx, y=realy)
                         node_index += 1
                         continue
-                    else:
-                        # we have a link at a coordinate position. Store it but don't add
-                        # it to the node_index_map since it doesn't have an in-game existence.
-                        string_map[ix][iy] = mapnode_class()  # actually a linknode class
-                else:
-                    # an in-between coordinates link
-                    linknode_class = self.link_legend(char)
-                    if not linknode_class:
-                        raise MapParserError(f"Link symbol '{char}' not in LINK_LEGEND.")
-                    string_map[ix][iy] = linknode_class()
 
-            # second pass: Here we loop over all nodes and have them connect to each other
-            # via the detected linkages.
-            for node in node_index_map:
-                node.build_links(string_map)
+                # an in-between coordinates, or on-node position link
+                string_map[ix][iy] = mapnode_or_link_class(x=ix, y=iy)
+
+        # second pass: Here we loop over all nodes and have them connect to each other
+        # via the detected linkages.
+        for node in node_index_map.values():
+            node.build_links(string_map)
 
         # build display map
-        display_map = [" " * maxwidth for _ in range(maxheight)]
+        display_map = [[" "] * maxwidth for _ in range(maxheight)]
         for ix, ydct in string_map.items():
             for iy, node_or_link in ydct.items():
                 display_map[iy][ix] = node_or_link.display_symbol
@@ -672,23 +673,28 @@ class Map:
         self.width = maxwidth
         self.height = maxheight
         self.string_map = string_map
-        self.node_index_map = self.node_index_map
+        self.node_index_map = node_index_map
         self.display_map = display_map
+        self.node_map = node_map
 
     def _get_node_from_coord(self, x, y):
         """
         Get a MapNode from a coordinate.
 
         Args:
-            x (int): X-coordinate on grid.
-            y (int): Y-coordinate on grid.
+            x (int): X-coordinate on game grid.
+            y (int): Y-coordinate on game grid.
+
+        Returns:
+            MapNode: The node found at the given coordinates.
+
 
         """
-        if not self.node_2d_map:
+        if not self.node_map:
             self.parse()
 
         try:
-            self.node_2d_map[x][y]
+            return self.node_map[x][y]
         except IndexError:
             raise MapError("_get_node_from_coord got coordinate ({x},{y}) which is "
                            "outside the grid size of (0,0) - ({self.width}, {self.height}).")
@@ -729,8 +735,8 @@ class Map:
 
         """
 
-        istartnode = self._get_node_from_coord(*endcoord).node_index
-        endnode = self._get_node_from_coord(*startcoord)
+        istartnode = self._get_node_from_coord(*startcoord).node_index
+        endnode = self._get_node_from_coord(*endcoord)
 
         if not self.pathfinding_routes:
             self._calculate_path_matrix()
@@ -774,5 +780,5 @@ class Map:
 
         output = []
         for line in self.display_map[top:bottom]:
-            output.append(line[left:right])
+            output.append("".join(line[left:right]))
         return "\n".join(output)
