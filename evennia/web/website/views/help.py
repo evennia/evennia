@@ -1,6 +1,8 @@
 """
 Views to manipulate help entries.
 
+Multi entry object type supported added by DaveWithTheNiceHat 2021
+    Pull Request #2429
 """
 from django.utils.text import slugify
 from django.conf import settings
@@ -11,6 +13,7 @@ from evennia.help.models import HelpEntry
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from .mixins import TypeclassMixin
 from evennia.utils.logger import log_info
+from evennia.utils.ansi import strip_ansi
 
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
@@ -305,10 +308,8 @@ class HelpDetailView(HelpMixin, DetailView):
             text = obj.db_entrytext
         elif inherits_from(obj, "evennia.help.filehelp.FileHelpEntry"):
             text = obj.entrytext
-        text = text.replace("\r\n\r\n", "\n\n")
-        text = text.replace("\r\n", "\n")
-        text = text.replace("\n", "<br />")
-        context["entry_text"] = text
+        text = strip_ansi(text)  # remove ansii markups
+        context["entry_text"] = text.strip()
         log_info('get_context_data success')
         return context
 
