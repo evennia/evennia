@@ -99,11 +99,11 @@ def can_list_topic(cmd_or_topic, caller):
         return cmd_or_topic.access(caller, 'read', default=True)
 
 
-def collect_topics(caller, mode='list'):
+def collect_topics(account, mode='list'):
         """
         Collect help topics from all sources (cmd/db/file).
         Args:
-            caller (Object or Account): The user of the Command.
+            account (Object or Account): The user of the Command.
             mode (str): One of 'list' or 'query', where the first means we are collecting to view
                 the help index and the second because of wanting to search for a specific help
                 entry/cmd to read. This determines which access should be checked.
@@ -113,17 +113,34 @@ def collect_topics(caller, mode='list'):
                 `({key: cmd,...}, {key: dbentry,...}, {key: fileentry,...}`
         """
         # start with cmd-help
-
-        # get Character's primary command set.
-        cmdset = caller.cmdset.get()[0]
-
-        # removing doublets in cmdset, caused by cmdhandler
-        # having to allow doublet commands to manage exits etc.
-        cmdset.make_unique(caller)
-
-        # retrieve all available commands and database / file-help topics.
-        # also check the 'cmd:' lock here
-        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, 'cmd')]
+        cmd_help_topics = []
+        if not str(account) == 'AnonymousUser':
+            # create list of account and account's puppets
+            puppets = account.db._playable_characters + [account]
+            # add the account's and puppets' commands to cmd_help_topics list
+            for puppet in puppets:
+                for cmdset in puppet.cmdset.get():
+                    # removing doublets in cmdset, caused by cmdhandler
+                    # having to allow doublet commands to manage exits etc.
+                    cmdset.make_unique(puppet)
+                    # retrieve all available commands and database / file-help topics.
+                    # also check the 'cmd:' lock here
+                    for cmd in cmdset:
+                        # skip the command if the puppet does not have access
+                        if not cmd.access(puppet, 'cmd'):
+                            continue
+                        # skip the command if it's help entry already exists in the topic list
+                        entry_exists = False
+                        for verify_cmd in cmd_help_topics:
+                            if verify_cmd.key and cmd.key and \
+                               verify_cmd.help_category == cmd.help_category and \
+                               verify_cmd.__doc__ == cmd.__doc__:
+                                entry_exists = True
+                                break
+                        if entry_exists:
+                            continue
+                        # add this command to the list
+                        cmd_help_topics.append(cmd)
         # get all file-based help entries, checking perms
         file_help_topics = {
             topic.key.lower().strip(): topic
@@ -139,27 +156,27 @@ def collect_topics(caller, mode='list'):
             cmd_help_topics = {
                 cmd.auto_help_display_key
                 if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
-                for cmd in cmd_help_topics if can_list_topic(cmd, caller)}
+                for cmd in cmd_help_topics if can_list_topic(cmd, account)}
             db_help_topics = {
                 key: entry for key, entry in db_help_topics.items()
-                if can_list_topic(entry, caller)
+                if can_list_topic(entry, account)
             }
             file_help_topics = {
                 key: entry for key, entry in file_help_topics.items()
-                if can_list_topic(entry, caller)}
+                if can_list_topic(entry, account)}
         else:
             # query
             cmd_help_topics = {
                 cmd.auto_help_display_key
                 if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
-                for cmd in cmd_help_topics if can_read_topic(cmd, caller)}
+                for cmd in cmd_help_topics if can_read_topic(cmd, account)}
             db_help_topics = {
                 key: entry for key, entry in db_help_topics.items()
-                if can_read_topic(entry, caller)
+                if can_read_topic(entry, account)
             }
             file_help_topics = {
                 key: entry for key, entry in file_help_topics.items()
-                if can_read_topic(entry, caller)}
+                if can_read_topic(entry, account)}
 
         return cmd_help_topics, db_help_topics, file_help_topics
 
@@ -190,35 +207,16 @@ class HelpMixin(TypeclassMixin):
         """
         log_info('get_queryset')
         account = self.request.user
-        all_entries = []
-        if not str(account) == 'AnonymousUser':
-            # collect all help entries
-            cmd_help_topics, db_help_topics, file_help_topics = \
-            collect_topics(account.db._playable_characters[0], mode='query')
-            # merge the entries
-            file_db_help_topics = {**file_help_topics, **db_help_topics}
-            all_topics = {**file_db_help_topics, **cmd_help_topics}
-            all_entries = list(all_topics.values())
-            # sort the entries
-            all_entries = sorted(all_entries, key=get_help_topic)  # sort alphabetically
-            all_entries.sort(key=get_help_category)  # group by categories
-            # log_info(f'{all_entries}')
+        # collect all help entries
+        cmd_help_topics, db_help_topics, file_help_topics = collect_topics(account, mode='query')
+        # merge the entries
+        file_db_help_topics = {**file_help_topics, **db_help_topics}
+        all_topics = {**file_db_help_topics, **cmd_help_topics}
+        all_entries = list(all_topics.values())
+        # sort the entries
+        all_entries = sorted(all_entries, key=get_help_topic)  # sort alphabetically
+        all_entries.sort(key=get_help_category)  # group by categories
         log_info('get_queryset success')
-        return all_entries
-
-    def get_entries(self):
-        account = self.request.user
-        all_entries = []
-        if not str(account) == 'AnonymousUser':
-            # collect all help entries
-            cmd_help_topics, db_help_topics, file_help_topics = \
-            collect_topics(account.db._playable_characters[0], mode='query')
-            # combine and sort all the help entries
-            file_db_help_topics = {**file_help_topics, **db_help_topics}
-            all_topics = {**file_db_help_topics, **cmd_help_topics}
-            all_entries = list(all_topics.values())
-            all_entries.sort(key=get_help_category)
-            # log_info(f'{all_entries}')
         return all_entries
 
 
@@ -249,7 +247,7 @@ class HelpDetailView(HelpMixin, DetailView):
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        #return "%s Detail" % self.typeclass._meta.verbose_name.title()
+        # return "%s Detail" % self.typeclass._meta.verbose_name.title()
         obj = self.get_object()
         topic = get_help_topic(obj)
         return f'{topic} detail'
