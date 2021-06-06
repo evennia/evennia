@@ -77,7 +77,7 @@ class TestMap1(TestCase):
         self.assertEqual(str(self.map).strip(), MAP1_DISPLAY)
 
     def test_node_from_coord(self):
-        node = self.map._get_node_from_coord(1, 1)
+        node = self.map.get_node_from_coord(1, 1)
         self.assertEqual(node.X, 1)
         self.assertEqual(node.x, 2)
         self.assertEqual(node.X, 1)
@@ -148,7 +148,7 @@ class TestMap2(TestCase):
 
     def test_node_from_coord(self):
         for mapnode in self.map.node_index_map.values():
-            node = self.map._get_node_from_coord(mapnode.X, mapnode.Y)
+            node = self.map.get_node_from_coord(mapnode.X, mapnode.Y)
             self.assertEqual(node, mapnode)
             self.assertEqual(node.x // 2, node.X)
             self.assertEqual(node.y // 2, node.Y)
@@ -184,3 +184,23 @@ class TestMap2(TestCase):
         """
         mapstr = self.map.get_map_display(coord, dist=4, character='@')
         self.assertEqual(expected, mapstr)
+
+    def test_extended_path_tracking__horizontal(self):
+        node = self.map.get_node_from_coord(4, 1)
+        self.assertEqual(
+            node.xy_steps_in_direction,
+            {'e': ['e'],
+             's': ['s'],
+             'w': ['w', 'w', 'w']}
+        )
+
+    def test_extended_path_tracking__vertical(self):
+        node = self.map.get_node_from_coord(2, 2)
+        self.assertEqual(
+            node.xy_steps_in_direction,
+            {'n': ['n', 'n', 'n'],
+             'e': ['e'],
+             's': ['s'],
+             'w': ['w']}
+        )
+
