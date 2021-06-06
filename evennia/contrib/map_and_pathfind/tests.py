@@ -84,35 +84,51 @@ class TestMap1(TestCase):
         self.assertEqual(node.y, 2)
 
     def test_get_shortest_path(self):
-        nodepath, linkpath = self.map.get_shortest_path((0, 0), (1, 1))
-        self.assertEqual([node.node_index for node in nodepath], [0, 1, 3])
-        self.assertEqual(linkpath, ['e', 'n'])
+        directions, path = self.map.get_shortest_path((0, 0), (1, 1))
+        self.assertEqual(directions, ['e', 'n'])
+        self.assertEqual(
+            [str(node) for node in path],
+            [str(self.map.node_index_map[0]),
+             'e',
+             str(self.map.node_index_map[1]),
+             'n',
+             str(self.map.node_index_map[3])]
+        )
 
     @parameterized.expand([
-        ((0, 0), "#-\n| ", [["#", "-"], ["|", " "]]),
-        ((1, 0), "-#\n |", [["-", "#"], [" ", "|"]]),
-        ((0, 1), "| \n#-", [["|", " "], ["#", "-"]]),
-        ((1, 1), " |\n-#", [[" ", "|"], ["-", "#"]]),
+        ((0, 0), "| \n#-", [["|", " "], ["#", "-"]]),
+        ((1, 0), " |\n-#", [[" ", "|"], ["-", "#"]]),
+        ((0, 1), "#-\n| ", [["#", "-"], ["|", " "]]),
+        ((1, 1), "-#\n |", [["-", "#"], [" ", "|"]]),
 
     ])
     def test_get_map_display(self, coord, expectstr, expectlst):
-        string = self.map.get_map_display(coord, dist=1, character=None)
-        lst = self.map.get_map_display(coord, dist=1, return_str=False, character=None)
-        self.assertEqual(string, expectstr)
-        self.assertEqual(lst, expectlst)
+        """
+        Test displaying a part of the map around a central point.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=1, character=None)
+        maplst = self.map.get_map_display(coord, dist=1, return_str=False, character=None)
+        self.assertEqual(expectstr, mapstr)
+        self.assertEqual(expectlst, maplst[::-1])
 
     @parameterized.expand([
-        ((0, 0), "@-\n| ", [["@", "-"], ["|", " "]]),
-        ((1, 0), "-@\n |", [["-", "@"], [" ", "|"]]),
-        ((0, 1), "| \n@-", [["|", " "], ["@", "-"]]),
-        ((1, 1), " |\n-@", [[" ", "|"], ["-", "@"]]),
+        ((0, 0), "| \n@-", [["|", " "], ["@", "-"]]),
+        ((1, 0), " |\n-@", [[" ", "|"], ["-", "@"]]),
+        ((0, 1), "@-\n| ", [["@", "-"], ["|", " "]]),
+        ((1, 1), "-@\n |", [["-", "@"], [" ", "|"]]),
 
     ])
     def test_get_map_display__character(self, coord, expectstr, expectlst):
-        string = self.map.get_map_display(coord, dist=1, character='@')
-        lst = self.map.get_map_display(coord, dist=1, return_str=False, character='@')
-        self.assertEqual(string, expectstr)
-        self.assertEqual(lst, expectlst)
+        """
+        Test displaying a part of the map around a central point, showing the
+        character @-symbol in that spot.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=1, character='@')
+        maplst = self.map.get_map_display(coord, dist=1, return_str=False, character='@')
+        self.assertEqual(expectstr, mapstr)
+        self.assertEqual(expectlst, maplst[::-1])  # flip y-axis to match print direction
 
 
 class TestMap2(TestCase):
@@ -125,4 +141,46 @@ class TestMap2(TestCase):
 
     def test_str_output(self):
         """Check the display_map"""
-        self.assertEqual(str(self.map).strip(), MAP2_DISPLAY)
+        # strip the leftover spaces on the right to better
+        # work with text editor stripping this automatically ...
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(stripped_map, MAP2_DISPLAY)
+
+    def test_node_from_coord(self):
+        for mapnode in self.map.node_index_map.values():
+            node = self.map._get_node_from_coord(mapnode.X, mapnode.Y)
+            self.assertEqual(node, mapnode)
+            self.assertEqual(node.x // 2, node.X)
+            self.assertEqual(node.y // 2, node.Y)
+
+    @parameterized.expand([
+        ((1, 0), (4, 0), ('e', 'e', 'e')),  # straight path
+        ((1, 0), (5, 1), ('n', 'e', 'e', 'e')),  # shortcut over long link
+        ((2, 2), (2, 5), ('n', 'n')),  # shortcut over long link (vertical)
+        ((4, 4), (0, 5), ('w', 'n', 'w', 'w')),  # shortcut over long link (vertical)
+        ((4, 0), (0, 5), ('n', 'w', 'n', 'n', 'n', 'w', 'w')),  # across entire grid
+        ((4, 0), (0, 5), ('n', 'w', 'n', 'n', 'n', 'w', 'w')),  # across entire grid
+        ((5, 3), (0, 3), ('s', 'w', 'w', 'w', 'w', 'n')),  # down and back
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        Test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+    @parameterized.expand([
+        ((1, 0), '#-#-#-#\n|   |  \n#-#-#--\n  |    \n  @-#-#'),
+        ((2, 2), '    #---#\n    |   |\n#   |   #\n|   |    \n#-#-@-#--\n|   '
+                 '|    \n#-#-#---#\n  |     |\n  #-#-#-#'),
+        ((4, 5), '#-#-@  \n|   |  \n#---#  \n|   |  \n|   #-#'),
+        ((5, 2), '--#  \n  |  \n  #-#\n    |\n#---@\n     \n--#-#\n  |  \n#-#  '),
+    ])
+    def test_get_map_display__character(self, coord, expected):
+        """
+        Test showing smaller part of grid, showing @-character in the middle.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=4, character='@')
+        self.assertEqual(expected, mapstr)
