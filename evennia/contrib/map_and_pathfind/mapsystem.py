@@ -165,6 +165,12 @@ class MapNode:
         self.weights = {}
         # lowest direction to a given neighbor
         self.cheapest_to_node = {}
+        # maps the directions (on the xygrid NOT on XYgrid!) taken if stepping
+        # out from this node in a  given direction until you get to the end node.
+        # This catches  eventual longer link chains that would otherwise be lost
+        # {startdirection: [direction, ...], ...}
+        # where the directional path-lists also include the start-direction
+        self.xy_steps_in_direction = {}
 
     def __str__(self):
         return f"<MapNode {self.node_index} XY=({self.X},{self.Y}) ({self.symbol})>"
@@ -194,12 +200,15 @@ class MapNode:
                 # just because there is a link here, doesn't mean it's
                 # connected to this node. If so the `end_node` will be None.
 
-                end_node, weight = link.traverse(_REVERSE_DIRECTIONS[direction], xygrid)
+                end_node, weight, steps = link.traverse(_REVERSE_DIRECTIONS[direction], xygrid)
                 if end_node:
                     # the link could be followed to an end node!
                     node_index = end_node.node_index
                     self.links[direction] = end_node
                     self.weights[node_index] = weight
+
+                    # this is useful for map building later
+                    self.xy_steps_in_direction[direction] = steps
 
                     cheapest = self.cheapest_to_node.get(node_index, ("", _BIG))[1]
                     if weight < cheapest:
@@ -352,9 +361,9 @@ class MapLink:
         """
         return self.weights
 
-    def traverse(self, start_direction, xygrid, _weight=0, _linklen=1):
+    def traverse(self, start_direction, xygrid, _weight=0, _linklen=1, _steps=None):
         """
-        Recursively traverse a set of links.
+        Recursively traverse the links out of this Linknode..
 
         Args:
             start_direction (str): The direction (n, ne etc) from which
@@ -363,9 +372,12 @@ class MapLink:
         Kwargs:
             _weight (int): Internal use.
             _linklen (int): Internal use.
+            _steps (list): Internal use.
 
         Returns:
-            tuple: The (node, weight) result of the traversal.
+            tuple: The (node, weight, links) result of the traversal, where links
+                is a list of directions (n, ne etc) that describes how to to get
+                to the node on the grid. This includes the first direction.
 
         Raises:
             MapParserError: If a link lead to nowhere.
@@ -388,17 +400,24 @@ class MapLink:
         _weight += self.get_weights(
             start_direction, xygrid, _weight).get(
                 start_direction, self.default_weight)
+        if _steps is None:
+            _steps = []
+        _steps.append(_REVERSE_DIRECTIONS[start_direction])
 
         if hasattr(next_target, "node_index"):
             # we reached a node, this is the end of the link.
             # we average the weight across all traversed link segments.
-            return next_target, (
-                _weight / max(1, _linklen) if self.average_long_link_weights else _weight)
+            return (
+                next_target,
+                _weight / max(1, _linklen) if self.average_long_link_weights else _weight,
+                _steps
+            )
+
         else:
             # we hit another link. Progress recursively.
             return next_target.traverse(
                 _REVERSE_DIRECTIONS[end_direction],
-                xygrid, _weight=_weight, _linklen=_linklen + 1)
+                xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
 
 
 # ----------------------------------
@@ -624,28 +643,6 @@ class Map:
     def __repr__(self):
         return f"<Map {self.max_X}x{self.max_Y}, {len(self.node_index_map)} nodes>"
 
-    def _get_node_from_coord(self, X, Y):
-        """
-        Get a MapNode from a coordinate.
-
-        Args:
-            X (int): X-coordinate on XY (game) grid.
-            Y (int): Y-coordinate on XY (game) grid.
-
-        Returns:
-            MapNode: The node found at the given coordinates.
-
-
-        """
-        if not self.XYgrid:
-            self.parse()
-
-        try:
-            return self.XYgrid[X][Y]
-        except IndexError:
-            raise MapError("_get_node_from_coord got coordinate ({x},{y}) which is "
-                           "outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
-
     def _calculate_path_matrix(self):
         """
         Solve the pathfinding problem using Dijkstra's algorithm.
@@ -834,6 +831,28 @@ class Map:
         # process the new(?) data
         self._parse()
 
+    def get_node_from_coord(self, X, Y):
+        """
+        Get a MapNode from a coordinate.
+
+        Args:
+            X (int): X-coordinate on XY (game) grid.
+            Y (int): Y-coordinate on XY (game) grid.
+
+        Returns:
+            MapNode: The node found at the given coordinates.
+
+
+        """
+        if not self.XYgrid:
+            self.parse()
+
+        try:
+            return self.XYgrid[X][Y]
+        except IndexError:
+            raise MapError("get_node_from_coord got coordinate ({x},{y}) which is "
+                           "outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
+
     def get_shortest_path(self, startcoord, endcoord):
         """
         Get the shortest route between two points on the grid.
@@ -850,8 +869,8 @@ class Map:
             the full path including the start- and end-node.
 
         """
-        startnode = self._get_node_from_coord(*startcoord)
-        endnode = self._get_node_from_coord(*endcoord)
+        startnode = self.get_node_from_coord(*startcoord)
+        endnode = self.get_node_from_coord(*endcoord)
 
         if not self.pathfinding_routes:
             self._calculate_path_matrix()
@@ -955,7 +974,7 @@ class Map:
 
             node_index_map = self.node_index_map
 
-            center_node = self._get_node_from_coord(iX, iY)
+            center_node = self.get_node_from_coord(iX, iY)
             # find all reachable nodes within a (weighted) distance of `dist`
             for inode, node_dist in enumerate(self.dist_matrix[center_node.node_index]):
                 if node_dist > dist:
@@ -963,14 +982,25 @@ class Map:
                 # we have a node within 'dist' from us, get, the route to it
                 node = node_index_map[inode]
                 _, path = self.get_shortest_path(node.iX, node.iY)
-
                 # follow directions to figure out which map coords to display
+                node0 = node
                 ix0, iy0 = ix, iy
-                # for path_element in path:
-                #     dx, dy = _MAPSCAN[direction]
-                #     ix0, iy0 = ix0 + dx, iy0 + dy
-                #     xmax, ymax = max(xmax, ix0), max(ymax, iy0)
-                #     points.append((ix0, iy0))
+                for path_element in path:
+                    if isinstance(path_element, str):
+                        # a direction - this can lead to following
+                        # a longer link-chain chain
+                        for dstep in node0.xy_steps_in_direction[path_element]:
+                            dx, dy = _MAPSCAN[dstep]
+                            ix0, iy0 = ix0 + dx, iy0 + dy
+                            xmax, ymax = max(xmax, ix0), max(ymax, iy0)
+                            points.append((ix0, iy0))
+                    else:
+                        # a Mapnode
+                        node0 = path_element
+                        ix0, iy0 = node0.ix, node0.iy
+                        points.append((ix0, iy0))
+
+
 
         else:
             # dist measures individual grid points
