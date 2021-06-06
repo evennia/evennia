@@ -74,7 +74,6 @@ from evennia.utils.utils import (
 from evennia.utils import logger
 from evennia.utils.utils import lazy_property
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.logger import log_info
 
 _DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 
@@ -145,14 +144,12 @@ class FileHelpEntry:
             path (str): URI path to object detail page, if defined.
 
         """
-        # log_info('filehelp web_get_detail_url start')
         try:
             return reverse(
                 'help-entry-detail',
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
-        except Exception as e:
-            log_info(f'Exception: {getattr(e, "message", repr(e))}')
+        except Exception:
             return "#"
 
     def access(self, accessing_obj, access_type="view", default=True):
