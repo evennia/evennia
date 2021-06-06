@@ -4,9 +4,9 @@ Tests for the Mapsystem
 
 """
 
-from unittest import TestCase, mock
-from . import mapsystem
+from unittest import TestCase
 from parameterized import parameterized
+from . import mapsystem
 
 
 MAP1 = """
@@ -20,10 +20,46 @@ MAP1 = """
  + 0 1 2
 
 """
+
 MAP1_DISPLAY = """
 #-#
 | |
 #-#
+""".strip()
+
+
+MAP2 = """
+
+ + 0 1 2 3 4 5
+
+ 5 #-#-#-#-#
+       |   |
+ 4     #---#
+       |   |
+ 3 #   |   #-#
+   |   |     |
+ 2 #-#-#-#---#
+   |   |
+ 1 #-#-#---#-#
+     |     |
+ 0   #-#-#-#
+
+ + 0 1 2 3 4 5
+
+"""
+
+MAP2_DISPLAY = """
+#-#-#-#-#
+    |   |
+    #---#
+    |   |
+#   |   #-#
+|   |     |
+#-#-#-#---#
+|   |
+#-#-#---#-#
+  |     |
+  #-#-#-#
 """.strip()
 
 
@@ -77,3 +113,16 @@ class TestMap1(TestCase):
         lst = self.map.get_map_display(coord, dist=1, return_str=False, character='@')
         self.assertEqual(string, expectstr)
         self.assertEqual(lst, expectlst)
+
+
+class TestMap2(TestCase):
+    """
+    Test with Map2 - a bigger map with some links crossing nodes.
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP2})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        self.assertEqual(str(self.map).strip(), MAP2_DISPLAY)
