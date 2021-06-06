@@ -13,10 +13,11 @@ MAP1 = """
 
  + 0 1 2
 
- 0 #-#
-   | |
  1 #-#
+   | |
+ 0 #-#
 
+ + 0 1 2
 
 """
 MAP1_DISPLAY = """
@@ -41,25 +42,38 @@ class TestMap1(TestCase):
 
     def test_node_from_coord(self):
         node = self.map._get_node_from_coord(1, 1)
-        self.assertEqual(node.x, 1)
-        self.assertEqual(node.y, 1)
+        self.assertEqual(node.X, 1)
+        self.assertEqual(node.x, 2)
+        self.assertEqual(node.X, 1)
+        self.assertEqual(node.y, 2)
 
     def test_get_shortest_path(self):
         nodepath, linkpath = self.map.get_shortest_path((0, 0), (1, 1))
         self.assertEqual([node.node_index for node in nodepath], [0, 1, 3])
-        self.assertEqual(linkpath, ['e', 's'])
+        self.assertEqual(linkpath, ['e', 'n'])
 
     @parameterized.expand([
-        (0, 0, "#-\n| ", [["#", "-"], ["|", " "]]),
-        (1, 0, "-#\n |", [["-", "#"], [" ", "|"]]),
-        (0, 1, "| \n#-", [["|", " "], ["#", "-"]]),
-        (1, 1, " |\n-#", [[" ", "|"], ["-", "#"]]),
+        ((0, 0), "#-\n| ", [["#", "-"], ["|", " "]]),
+        ((1, 0), "-#\n |", [["-", "#"], [" ", "|"]]),
+        ((0, 1), "| \n#-", [["|", " "], ["#", "-"]]),
+        ((1, 1), " |\n-#", [[" ", "|"], ["-", "#"]]),
 
     ])
-    def test_get_map_region(self, x, y, expectstr, expectlst):
-        string = self.map.get_map_region(x, y, dist=1)
-        lst = self.map.get_map_region(x, y, dist=1, return_str=False)
+    def test_get_map_display(self, coord, expectstr, expectlst):
+        string = self.map.get_map_display(coord, dist=1, character=None)
+        lst = self.map.get_map_display(coord, dist=1, return_str=False, character=None)
         self.assertEqual(string, expectstr)
         self.assertEqual(lst, expectlst)
 
+    @parameterized.expand([
+        ((0, 0), "@-\n| ", [["@", "-"], ["|", " "]]),
+        ((1, 0), "-@\n |", [["-", "@"], [" ", "|"]]),
+        ((0, 1), "| \n@-", [["|", " "], ["@", "-"]]),
+        ((1, 1), " |\n-@", [[" ", "|"], ["-", "@"]]),
 
+    ])
+    def test_get_map_display__character(self, coord, expectstr, expectlst):
+        string = self.map.get_map_display(coord, dist=1, character='@')
+        lst = self.map.get_map_display(coord, dist=1, return_str=False, character='@')
+        self.assertEqual(string, expectstr)
+        self.assertEqual(lst, expectlst)
