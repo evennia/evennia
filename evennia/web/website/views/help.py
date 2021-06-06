@@ -33,7 +33,7 @@ def get_help_category(help_entry, slugify_cat=True):
     Returns:
         help_category (str): The category for the help entry.
     """
-    help_category = help_entry.help_category if help_entry.help_category else DEFAULT_HELP_CATEGORY
+    help_category = getattr(help_entry, 'help_category', DEFAULT_HELP_CATEGORY)
     if not hasattr(help_entry, 'web_help_category'):
         setattr(help_entry, 'web_help_category', slugify(help_category))
     return slugify(help_category) if slugify_cat else help_category
