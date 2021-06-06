@@ -74,13 +74,17 @@ See `./example_maps.py` for some empty grid areas to start from.
 ----
 """
 from collections import defaultdict
-from scipy.sparse.csgraph import dijkstra
-from scipy.sparse import csr_matrix
-from scipy import zeros
+
+try:
+    from scipy.sparse.csgraph import dijkstra
+    from scipy.sparse import csr_matrix
+    from scipy import zeros
+except ImportError as err:
+    raise ImportError(
+        f"{err}\nThe MapSystem contrib requires "
+        "the SciPy package. Install with `pip install scipy'.")
 from evennia.utils.utils import variable_from_module, mod_import
 
-
-_BIG = 999999999999
 
 _REVERSE_DIRECTIONS = {
     "n": "s",
@@ -104,6 +108,8 @@ _MAPSCAN = {
     "nw": (1, -1)
 }
 
+_BIG = 999999999999
+
 
 class MapError(RuntimeError):
     pass
@@ -114,11 +120,9 @@ class MapParserError(MapError):
 
 class MapNode:
     """
-    This represents a 'room' node on the map.
-
-    A node is always located at an (int, int) location
-    on the map, even if it actually represents a throughput
-    to another node.
+    This represents a 'room' node on the map. MapNodes are always located
+    on even x,y coordinates on the on-map xygrid and represents specific coordinates
+    on the in-game XYgrid.
 
     """
     # symbol used in map definition
@@ -162,10 +166,13 @@ class MapNode:
         # lowest direction to a given neighbor
         self.cheapest_to_node = {}
 
+    def __str__(self):
+        return f"<MapNode {self.node_index} XY=({self.X},{self.Y}) ({self.symbol})>"
+
     def build_links(self, xygrid):
         """
-        Start tracking links in all cardinal directions to
-        tie this to another node.
+        Start tracking links in all cardinal directions to tie this to another node. All
+        links are placed on the xygrid since they never have an in-game representation.
 
         Args:
             xygrid (dict): A 2d dict-of-dicts with x,y coordinates as keys and nodes as values.
@@ -283,6 +290,9 @@ class MapLink:
         self.y = y
         if not self.display_symbol:
             self.display_symbol = self.symbol
+
+    def __str__(self):
+        return f"<LinkNode xy=({self.x},{self.y}) ({self.symbol})>"
 
     def get_visually_connected(self, xygrid, directions=None):
         """
@@ -596,7 +606,6 @@ class Map:
 
         # Dijkstra algorithm variables
         self.node_index_map = None
-        self.pathfinding_matrix = None
         self.dist_matrix = None
         self.pathfinding_routes = None
 
@@ -604,7 +613,16 @@ class Map:
         self.reload()
 
     def __str__(self):
-        return "\n".join("".join(line) for line in self.display_map)
+        """
+        Print the string representation of the map.
+        Since the y-axes origo is at the bottom, we must flip the
+        y-axis before printing (since printing is always top-to-bottom).
+
+        """
+        return "\n".join("".join(line) for line in self.display_map[::-1])
+
+    def __repr__(self):
+        return f"<Map {self.max_X}x{self.max_Y}, {len(self.node_index_map)} nodes>"
 
     def _get_node_from_coord(self, X, Y):
         """
@@ -626,7 +644,7 @@ class Map:
             return self.XYgrid[X][Y]
         except IndexError:
             raise MapError("_get_node_from_coord got coordinate ({x},{y}) which is "
-                           "outside the grid size of (0,0) - ({self.width}, {self.height}).")
+                           "outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
 
     def _calculate_path_matrix(self):
         """
@@ -827,11 +845,12 @@ class Map:
                 we want to find the shortest route to.
 
         Returns:
-            tuple: Two lists, first one containing the shortest sequence of map nodes to
-            traverse and the second a list of directions (n, se etc) describing the path.
+            tuple: Two lists, first containing the list of directions as strings (n, ne etc) and
+            the second is a mixed list of MapNodes and string-directions in a sequence describing
+            the full path including the start- and end-node.
 
         """
-        istartnode = self._get_node_from_coord(*startcoord).node_index
+        startnode = self._get_node_from_coord(*startcoord)
         endnode = self._get_node_from_coord(*endcoord)
 
         if not self.pathfinding_routes:
@@ -840,34 +859,45 @@ class Map:
         pathfinding_routes = self.pathfinding_routes
         node_index_map = self.node_index_map
 
-        nodepath = [endnode]
-        linkpath = []
+        path = [endnode]
+        directions = []
+        istartnode = startnode.node_index
         inextnode = endnode.node_index
 
         while pathfinding_routes[istartnode, inextnode] != -9999:
-            # the -9999 is set by algorithm for unreachable nodes or end-node
+            # the -9999 is set by algorithm for unreachable nodes or if trying
+            # to go a node we are already at (the start node in this case since
+            # we are working backwards).
             inextnode = pathfinding_routes[istartnode, inextnode]
-            nodepath.append(node_index_map[inextnode])
-            linkpath.append(nodepath[-1].get_cheapest_link_to(nodepath[-2]))
+            nextnode = node_index_map[inextnode]
+            directions.append(nextnode.get_cheapest_link_to(path[-1]))
+            path.extend((directions[-1], nextnode))
 
         # we have the path - reverse to get the correct order
-        nodepath = nodepath[::-1]
-        linkpath = linkpath[::-1]
+        path = path[::-1]
+        directions = directions[::-1]
 
-        return nodepath, linkpath
+        return directions, path
 
-    def get_map_display(self, coord, dist=2, character='@', return_str=True):
+    def get_map_display(self, coord, dist=2, only_nodes=False,
+                        character='@', max_size=None, return_str=True):
         """
         Display the map centered on a point and everything around it within a certain distance.
 
         Args:
             coord (tuple): (X,Y) in-world coordinate location.
-            dist (int, optional): Number of gridpoints distance to show.
-                A value of 2 will show adjacent nodes, a value
-                of 1 will only show links from current node. If this is None,
-                show entire map centered on iX,iY.
+            dist (int, optional): Number of gridpoints distance to show. Which
+                grid to use depends on the setting of `only_nodes`.
+            only_nodes (boolean): This determins if `dist` only counts the number of
+                full nodes or counts the number of actual visual map-grid-points
+                (including links). If set, it's recommended to set `max_size` to avoid
+                too-large map displays.
             character (str, optional): Place this symbol at the `coord` position
                 of the displayed map. Ignored if falsy.
+            max_size (tuple, optional): A max `(width, height)` of the resulting
+                string or list. This can be useful together with `only_nodes`
+                to avoid a map display growing unexpectedly. If unset, size
+                can grow up to the full size of the map.
             return_str (bool, optional): Return result as an
                 already formatted string.
 
@@ -878,25 +908,86 @@ class Map:
                 extract a character at (ix,iy) coordinate from it, use
                 indexing `outlist[iy][ix]` in that order.
 
+        Notes:
+            If outputting an output list, the y-axis must first be
+            reversed since printing happens top-bottom and the y coordinate
+            system goes bottom-up. This can be done simply with
+
+                reversed = outlist[::-1]
+
+            before starting the printout loop.
+
+            If `only_nodes` is True, a dist of 2 will give the following
+            result in a row of nodes:
+
+               #-#-@----------#-#
+
+            This display may grow much bigger than expected (both horizontally
+            and vertically). consider setting `max_size` if wanting to restrict the display size.
+            also note that link 'weights' are *included* in this estimate, so
+            if links have weights > 1, fewer nodes will be found for a given `dist`.
+
+            If `only_nodes` is False, dist of 2 would give
+
+                #-@--
+
+            This is more of a 'moving' overview type of map that just displays a part of the grid
+            you are on. It does not consider links or weights and may also show nodes not
+            actually reachable at the moment:
+
+                | |
+                # @-#
+
         """
         iX, iY = coord
         # convert inputs to xygrid
         width, height = self.max_x + 1, self.max_y + 1
         ix, iy = max(0, min(iX * 2, width)), max(0, min(iY * 2, height))
 
-        if dist is None:
-            gridmap = self.display_map
-            ixc, iyc = ix, iy
+        if only_nodes:
+            # dist measures only full, reachable nodes
+
+            # we will build a list of coordinates (from the full
+            # map display) to actually include in the final
+            points = [(ix, iy)]
+            xmax = 0
+            ymax = 0
+
+            node_index_map = self.node_index_map
+
+            center_node = self._get_node_from_coord(iX, iY)
+            # find all reachable nodes within a (weighted) distance of `dist`
+            for inode, node_dist in enumerate(self.dist_matrix[center_node.node_index]):
+                if node_dist > dist:
+                    continue
+                # we have a node within 'dist' from us, get, the route to it
+                node = node_index_map[inode]
+                _, path = self.get_shortest_path(node.iX, node.iY)
+
+                # follow directions to figure out which map coords to display
+                ix0, iy0 = ix, iy
+                # for path_element in path:
+                #     dx, dy = _MAPSCAN[direction]
+                #     ix0, iy0 = ix0 + dx, iy0 + dy
+                #     xmax, ymax = max(xmax, ix0), max(ymax, iy0)
+                #     points.append((ix0, iy0))
+
         else:
-            left, right = max(0, ix - dist), min(width, ix + dist + 1)
-            bottom, top = max(0, iy - dist), min(height, iy + dist + 1)
-            ixc, iyc = ix - left, iy - bottom
-            gridmap = [line[left:right] for line in self.display_map[bottom:top]]
+            # dist measures individual grid points
+            if dist is None:
+                gridmap = self.display_map
+                ixc, iyc = ix, iy
+            else:
+                left, right = max(0, ix - dist), min(width, ix + dist + 1)
+                bottom, top = max(0, iy - dist), min(height, iy + dist + 1)
+                ixc, iyc = ix - left, iy - bottom
+                gridmap = [line[left:right] for line in self.display_map[bottom:top]]
 
-        if character:
-            gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
+            if character:
+                gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
 
+        # we must flip the y-axis before returning
         if return_str:
-            return "\n".join("".join(line) for line in gridmap)
+            return "\n".join("".join(line) for line in gridmap[::-1])
         else:
             return gridmap
