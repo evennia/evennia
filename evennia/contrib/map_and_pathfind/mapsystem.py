@@ -175,6 +175,9 @@ class MapNode:
     def __str__(self):
         return f"<MapNode {self.node_index} XY=({self.X},{self.Y}) ({self.symbol})>"
 
+    def __repr__(self):
+        return str(self)
+
     def build_links(self, xygrid):
         """
         Start tracking links in all cardinal directions to tie this to another node. All
@@ -302,6 +305,9 @@ class MapLink:
 
     def __str__(self):
         return f"<LinkNode xy=({self.x},{self.y}) ({self.symbol})>"
+
+    def __repr__(self):
+        return str(self)
 
     def get_visually_connected(self, xygrid, directions=None):
         """
@@ -831,27 +837,33 @@ class Map:
         # process the new(?) data
         self._parse()
 
-    def get_node_from_coord(self, X, Y):
+    def get_node_from_coord(self, coords):
         """
         Get a MapNode from a coordinate.
 
         Args:
-            X (int): X-coordinate on XY (game) grid.
-            Y (int): Y-coordinate on XY (game) grid.
+            coords (tuple): X,Y coordinates on XYgrid.
 
         Returns:
-            MapNode: The node found at the given coordinates.
+            MapNode: The node found at the given coordinates. Returns
+                `None` if there is no mapnode at the given coordinate.
 
+        Raises:
+            MapError: If trying to specify an iX,iY outside
+                of the grid's maximum bounds.
 
         """
         if not self.XYgrid:
             self.parse()
 
-        try:
-            return self.XYgrid[X][Y]
-        except IndexError:
-            raise MapError("get_node_from_coord got coordinate ({x},{y}) which is "
+        iX, iY = coords
+        if not ((0 <= iX <= self.max_X) and (0 <= iY <= self.max_Y)):
+            raise MapError("get_node_from_coord got coordinate {coords} which is "
                            "outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
+        try:
+            return self.XYgrid[coords[0]][coords[1]]
+        except KeyError:
+            return None
 
     def get_shortest_path(self, startcoord, endcoord):
         """
@@ -869,10 +881,10 @@ class Map:
             the full path including the start- and end-node.
 
         """
-        startnode = self.get_node_from_coord(*startcoord)
-        endnode = self.get_node_from_coord(*endcoord)
+        startnode = self.get_node_from_coord(startcoord)
+        endnode = self.get_node_from_coord(endcoord)
 
-        if not self.pathfinding_routes:
+        if self.pathfinding_routes is None:
             self._calculate_path_matrix()
 
         pathfinding_routes = self.pathfinding_routes
@@ -898,7 +910,7 @@ class Map:
 
         return directions, path
 
-    def get_map_display(self, coord, dist=2, only_nodes=False,
+    def get_map_display(self, coord, dist=2, mode='scan',
                         character='@', max_size=None, return_str=True):
         """
         Display the map centered on a point and everything around it within a certain distance.
@@ -907,16 +919,14 @@ class Map:
             coord (tuple): (X,Y) in-world coordinate location.
             dist (int, optional): Number of gridpoints distance to show. Which
                 grid to use depends on the setting of `only_nodes`.
-            only_nodes (boolean): This determins if `dist` only counts the number of
-                full nodes or counts the number of actual visual map-grid-points
-                (including links). If set, it's recommended to set `max_size` to avoid
-                too-large map displays.
+            mode (str, optional): One of 'scan' or 'nodes'. In 'scan' mode, dist measure
+                number of xy grid points in all directions. If 'nodes', distance
+                measure how many full nodes away to display.
             character (str, optional): Place this symbol at the `coord` position
                 of the displayed map. Ignored if falsy.
-            max_size (tuple, optional): A max `(width, height)` of the resulting
-                string or list. This can be useful together with `only_nodes`
-                to avoid a map display growing unexpectedly. If unset, size
-                can grow up to the full size of the map.
+            max_size (tuple, optional): A max `(width, height)` to crop the displayed
+                return to. Make both odd numbers to get a perfect center.
+                If unset, display-size can grow up to the full size of the grid.
             return_str (bool, optional): Return result as an
                 already formatted string.
 
@@ -962,48 +972,77 @@ class Map:
         # convert inputs to xygrid
         width, height = self.max_x + 1, self.max_y + 1
         ix, iy = max(0, min(iX * 2, width)), max(0, min(iY * 2, height))
+        display_map = self.display_map
 
-        if only_nodes:
-            # dist measures only full, reachable nodes
+        if dist <= 0:
+            # show nothing but ourselves
+            return character if character else ' '
 
-            # we will build a list of coordinates (from the full
-            # map display) to actually include in the final
+        if mode == 'nodes':
+            # dist measures only full, reachable nodes.
+            # this requires a series of shortest-path
+            # Steps from on the pre-calulcated grid.
+
+            if not self.dist_matrix:
+                self._calculate_path_matrix()
+
+            xmin, ymin = width, height
+            xmax, ymax = 0, 0
+            # adjusted center of map section
+            ixc, iyc = ix, iy
+
+            center_node = self.get_node_from_coord((iX, iY))
+            if not center_node:
+                # there is nothing at this grid location
+                return character if character else ' '
+
+            # the points list coordinates on the xygrid to show.
             points = [(ix, iy)]
-            xmax = 0
-            ymax = 0
-
             node_index_map = self.node_index_map
 
-            center_node = self.get_node_from_coord(iX, iY)
             # find all reachable nodes within a (weighted) distance of `dist`
             for inode, node_dist in enumerate(self.dist_matrix[center_node.node_index]):
+
                 if node_dist > dist:
                     continue
+
                 # we have a node within 'dist' from us, get, the route to it
                 node = node_index_map[inode]
-                _, path = self.get_shortest_path(node.iX, node.iY)
+                _, path = self.get_shortest_path((iX, iY), (node.X, node.Y))
                 # follow directions to figure out which map coords to display
                 node0 = node
                 ix0, iy0 = ix, iy
                 for path_element in path:
+                    # we don't need the start node since we know it already
                     if isinstance(path_element, str):
                         # a direction - this can lead to following
                         # a longer link-chain chain
                         for dstep in node0.xy_steps_in_direction[path_element]:
                             dx, dy = _MAPSCAN[dstep]
                             ix0, iy0 = ix0 + dx, iy0 + dy
-                            xmax, ymax = max(xmax, ix0), max(ymax, iy0)
                             points.append((ix0, iy0))
+                            xmin, ymin = min(xmin, ix0), min(ymin, iy0)
+                            xmax, ymax = max(xmax, ix0), max(ymax, iy0)
                     else:
                         # a Mapnode
                         node0 = path_element
-                        ix0, iy0 = node0.ix, node0.iy
-                        points.append((ix0, iy0))
+                        ix0, iy0 = node0.x, node0.y
+                        if (ix0, iy0) != (ix, iy):
+                            points.append((ix0, iy0))
+                        xmin, ymin = min(xmin, ix0), min(ymin, iy0)
+                        xmax, ymax = max(xmax, ix0), max(ymax, iy0)
 
-
+            # from evennia import set_trace;set_trace()
+            ixc, iyc = ix - xmin, iy - ymin
+            # note - override width/height here since our grid is
+            # now different from the original for future cropping
+            width, height = xmax - xmin + 1, ymax - ymin + 1
+            gridmap = [[" "] * width for _ in range(height)]
+            for (ix0, iy0) in points:
+                gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
 
         else:
-            # dist measures individual grid points
+            # scan-mode (default) - dist measures individual grid points
             if dist is None:
                 gridmap = self.display_map
                 ixc, iyc = ix, iy
@@ -1011,13 +1050,20 @@ class Map:
                 left, right = max(0, ix - dist), min(width, ix + dist + 1)
                 bottom, top = max(0, iy - dist), min(height, iy + dist + 1)
                 ixc, iyc = ix - left, iy - bottom
-                gridmap = [line[left:right] for line in self.display_map[bottom:top]]
+                gridmap = [line[left:right] for line in display_map[bottom:top]]
 
-            if character:
-                gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
+        if character:
+            gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
 
-        # we must flip the y-axis before returning
+        if max_size:
+            # crop grid to make sure it doesn't grow too far
+            max_x, max_y = max_size
+            left, right = max(0, ixc - max_x // 2), min(width, ixc + max_x // 2 + 1)
+            bottom, top = max(0, iyc - max_y // 2), min(height, iyc + max_y // 2 + 1)
+            gridmap = [line[left:right] for line in gridmap[bottom:top]]
+
         if return_str:
+            # we must flip the y-axis before returning the string
             return "\n".join("".join(line) for line in gridmap[::-1])
         else:
             return gridmap
