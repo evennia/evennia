@@ -77,7 +77,7 @@ class TestMap1(TestCase):
         self.assertEqual(str(self.map).strip(), MAP1_DISPLAY)
 
     def test_node_from_coord(self):
-        node = self.map.get_node_from_coord(1, 1)
+        node = self.map.get_node_from_coord((1, 1))
         self.assertEqual(node.X, 1)
         self.assertEqual(node.x, 2)
         self.assertEqual(node.X, 1)
@@ -130,6 +130,20 @@ class TestMap1(TestCase):
         self.assertEqual(expectstr, mapstr)
         self.assertEqual(expectlst, maplst[::-1])  # flip y-axis to match print direction
 
+    @parameterized.expand([
+        ((0, 0), '#  \n|  \n@-#'),
+        ((0, 1), '@-#\n|  \n#  '),
+        ((1, 0), '  #\n  |\n#-@'),
+        ((1, 1), '#-@\n  |\n  #'),
+
+    ])
+    def test_get_map_display__nodes__character(self, coord, expected):
+        """
+        Get sub-part of map with node-mode.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=1, mode='nodes', character='@')
+        self.assertEqual(expected, mapstr)
 
 class TestMap2(TestCase):
     """
@@ -148,7 +162,7 @@ class TestMap2(TestCase):
 
     def test_node_from_coord(self):
         for mapnode in self.map.node_index_map.values():
-            node = self.map.get_node_from_coord(mapnode.X, mapnode.Y)
+            node = self.map.get_node_from_coord((mapnode.X, mapnode.Y))
             self.assertEqual(node, mapnode)
             self.assertEqual(node.x // 2, node.X)
             self.assertEqual(node.y // 2, node.Y)
@@ -177,7 +191,7 @@ class TestMap2(TestCase):
         ((4, 5), '#-#-@  \n|   |  \n#---#  \n|   |  \n|   #-#'),
         ((5, 2), '--#  \n  |  \n  #-#\n    |\n#---@\n     \n--#-#\n  |  \n#-#  '),
     ])
-    def test_get_map_display__character(self, coord, expected):
+    def test_get_map_display__scan__character(self, coord, expected):
         """
         Test showing smaller part of grid, showing @-character in the middle.
 
@@ -186,7 +200,11 @@ class TestMap2(TestCase):
         self.assertEqual(expected, mapstr)
 
     def test_extended_path_tracking__horizontal(self):
-        node = self.map.get_node_from_coord(4, 1)
+        """
+        Crossing multi-gridpoint links should be tracked properly.
+
+        """
+        node = self.map.get_node_from_coord((4, 1))
         self.assertEqual(
             node.xy_steps_in_direction,
             {'e': ['e'],
@@ -195,7 +213,11 @@ class TestMap2(TestCase):
         )
 
     def test_extended_path_tracking__vertical(self):
-        node = self.map.get_node_from_coord(2, 2)
+        """
+        Testing multi-gridpoint links in the vertical direction.
+
+        """
+        node = self.map.get_node_from_coord((2, 2))
         self.assertEqual(
             node.xy_steps_in_direction,
             {'n': ['n', 'n', 'n'],
@@ -204,3 +226,28 @@ class TestMap2(TestCase):
              'w': ['w']}
         )
 
+    @parameterized.expand([
+        ((0, 0), 2, None, '@'),  # outside of any known node
+        ((4, 5), 0, None, '@'),  # 0 distance
+        ((1, 0), 2, None,
+         '#-#-#  \n  |    \n  @-#-#'),
+        ((0, 5), 1, None, '@-#'),
+        ((0, 5), 4, None,
+         '@-#-#-#-#\n    |    \n    #---#\n    |    \n    |    \n    |    \n    #    '),
+        ((5, 1), 3, None, '  #      \n  |      \n#-#---#-@\n      |  \n    #-#  '),
+        ((2, 2), 2, None,
+         '    #      \n    |      \n    #---#  \n    |      \n    |      \n    |      \n'
+         '#-#-@-#---#\n    |      \n  #-#---#  '),
+        ((2, 2), 2, (5, 5),  # limit display size
+         '  |  \n  |  \n#-@-#\n  |  \n#-#--'),
+        ((2, 2), 4, (3, 3), ' | \n-@-\n | '),
+        ((2, 2), 4, (1, 1), '@')
+    ])
+    def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
+        """
+        Get sub-part of map with node-mode.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
+                                          max_size=max_size)
+        self.assertEqual(expected, mapstr)
