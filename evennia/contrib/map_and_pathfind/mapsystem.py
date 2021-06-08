@@ -76,7 +76,7 @@ See `./example_maps.py` for some empty grid areas to start from.
 from collections import defaultdict
 
 try:
-    from scipy.sparse.csgraph import dijkstra
+    from scipy.sparse.csgraph import dijkstra, breadth_first_order
     from scipy.sparse import csr_matrix
     from scipy import zeros
 except ImportError as err:
@@ -105,7 +105,7 @@ _MAPSCAN = {
     "s": (0, -1),
     "sw": (-1, -1),
     "w": (-1, 0),
-    "nw": (1, -1)
+    "nw": (-1, 1)
 }
 
 _BIG = 999999999999
@@ -392,6 +392,9 @@ class MapLink:
         # from evennia import set_trace;set_trace()
         end_direction = self.get_directions(start_direction, xygrid).get(start_direction)
         if not end_direction:
+            if _steps is None:
+                # is perfectly okay to not be linking to a node
+                return None, 0, None
             raise MapParserError(f"Link at ({self.x}, {self.y}) was connected to "
                                  f"from {start_direction}, but does not link that way.")
 
@@ -883,6 +886,10 @@ class Map:
         """
         startnode = self.get_node_from_coord(startcoord)
         endnode = self.get_node_from_coord(endcoord)
+
+        if not endnode:
+            # no node at given coordinate. No path is possible.
+            return [], []
 
         if self.pathfinding_routes is None:
             self._calculate_path_matrix()
