@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.test import Client, override_settings
 from django.urls import reverse
 from evennia.utils import class_from_module
+from evennia.utils.create import create_help_entry
 from evennia.utils.test_resources import EvenniaTest
 
 
@@ -142,9 +143,45 @@ class HelpListTest(EvenniaWebTest):
 class HelpDetailTest(EvenniaWebTest):
     url_name = "help-entry-detail"
 
+    def setUp(self):
+        super().setUp()
+        create_help_entry('unit test entry', 'unit test entry text', category="General")
+
     def get_kwargs(self):
         return {"category": slugify("general"),
-                "topic": slugify("test-key")}
+                "topic": slugify('unit test entry')}
+
+    def test_view(self):
+        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        self.assertEqual(response.context["entry_text"], 'unit test entry text')
+
+
+class HelpLockedDetailTest(EvenniaWebTest):
+    url_name = "help-entry-detail"
+
+    def setUp(self):
+        super(HelpLockedDetailTest, self).setUp()
+
+        # create a db entry with a lock
+        self.db_help_entry = create_help_entry('unit test locked topic', 'unit test locked entrytext',
+                          category="General", locks='read:perm(Developer)')
+
+    def get_kwargs(self):
+        return {"category": slugify("general"),
+                "topic": slugify('unit test locked topic')}
+
+    def test_locked_entry(self):
+        # request access to an entry for permission the account does not have
+        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        self.assertEqual(response.context["entry_text"], 'Failed to find entry.')
+
+    def test_lock_with_perm(self):
+        # log TestAccount in, grant permission required, read the entry
+        self.login()
+        self.account.permissions.add("Developer")
+        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        self.assertEqual(response.context["entry_text"], 'unit test locked entrytext')
+
 
 class CharacterCreateView(EvenniaWebTest):
     url_name = "character-create"
