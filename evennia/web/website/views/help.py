@@ -152,9 +152,6 @@ class HelpMixin():
 
     """
 
-    # -- Django constructs --
-    model = HelpEntry
-
     # -- Evennia constructs --
     page_title = "Help"
 
