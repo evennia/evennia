@@ -138,6 +138,110 @@ MAP5_DISPLAY = r"""
   #---#
 """.strip()
 
+MAP6 = r"""
+
++ 0 1 2
+
+2 #-#
+  | |
+1 #>#
+
+0 #>#
+
++ 0 1 2
+
+"""
+
+MAP6_DISPLAY = r"""
+#-#
+| |
+#>#
+
+#>#
+""".strip()
+
+MAP7 = r"""
+
+ + 0 1 2 3 4
+
+ 4 #-#-#-#
+     ^   |
+ 3   |   #>#
+     |   | |
+ 2   #-#-#-#
+     ^   v
+ 1   #---#-#
+     |   | |
+ 0 #-#>#-#<#
+
+ + 0 1 2 3 4
+
+"""
+
+MAP7_DISPLAY = r"""
+#-#-#-#
+  ^   |
+  |   #>#
+  |   | |
+  #-#-#-#
+  ^   v
+  #---#-#
+  |   | |
+#-#>#-#<#
+""".strip()
+
+
+MAP8 = r"""
++ 0 1 2
+
+2 #-#
+    |
+1 #-o-#
+    |
+0   #-#
+
++ 0 1 2
+
+"""
+
+MAP8_DISPLAY = r"""
+#-#
+  |
+#-o-#
+  |
+  #-#
+""".strip()
+
+
+MAP9 = r"""
++ 0 1 2 3 4 5
+
+4 #-#-o o o-o
+  |  \|/| | |
+3 #-o-o-# o-#
+  |  /|\    |
+2 o-o-#-#   o
+    | |    /
+1   #-o-#-o-#
+      |  /
+0 #---#-o
+
++ 0 1 2 3 4 5
+
+"""
+
+MAP9_DISPLAY = r"""
+#-#-o o o-o
+|  \|/| | |
+#-o-o-# o-#
+|  /|\    |
+o-o-#-#   o
+  | |    /
+  #-o-#-o-#
+    |  /
+#---#-o
+""".strip()
+
 
 class TestMap1(TestCase):
     """
@@ -377,7 +481,7 @@ class TestMap4(TestCase):
         """
         mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
                                           max_size=max_size)
-        print(repr(mapstr))
+        # print(repr(mapstr))
         self.assertEqual(expected, mapstr)
 
 class TestMap5(TestCase):
@@ -408,3 +512,136 @@ class TestMap5(TestCase):
         """
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
+
+
+class TestMap6(TestCase):
+    """
+    Test Map6 - Small map with one-way links
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP6})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP6_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((0, 0), (1, 0), ('e',)),  # cross one-way
+        ((1, 0), (0, 0), ()),  # blocked
+        ((0, 1), (1, 1), ('e',)),  # should still take shortest
+        ((1, 1), (0, 1), ('n', 'w', 's')),  # take long way around
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        Test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+
+class TestMap7(TestCase):
+    """
+    Test Map6 - Bigger map with one-way links in different directions
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP7})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP7_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((0, 0), (2, 0), ('e', 'e')),  # cross one-way
+        ((2, 0), (0, 0), ('e', 'n', 'w', 's', 'w')),  # blocked, long way around
+        ((4, 0), (3, 0), ('w',)),
+        ((3, 0), (4, 0), ('n', 'e', 's')),
+        ((1, 1), (1, 2), ('n',)),
+        ((1, 2), (1, 1), ('e', 'e', 's', 'w')),
+        ((3, 1), (1, 4), ('w', 'n', 'n')),
+        ((0, 4), (0, 0), ('e', 'e', 'e', 's', 's', 's', 'w', 's', 'w')),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        Test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+
+class TestMap8(TestCase):
+    """
+    Test Map6 - Small test of dynamic link node
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP8})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP8_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((1, 0), (1, 2), ('n', )),
+        ((1, 2), (1, 0), ('s', )),
+        ((0, 1), (2, 1), ('e', )),
+        ((2, 1), (0, 1), ('w', )),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertequal(expected_directions, tuple(directions))
+
+
+class TestMap9(TestCase):
+    """
+    Test Map6 - Small test of dynamic link node
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP9})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP9_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((2, 0), (2, 2), ('n',)),
+        ((0, 0), (5, 3), ('e', 'e')),
+        ((5, 1), (0, 3), ('w', 'w', 'n', 'w')),
+        ((1, 1), (2, 2), ('n', 'w', 's')),
+        ((5, 3), (5, 3), ()),
+        ((5, 3), (0, 4), ('s', 'n', 'w', 'n')),
+        ((1, 4), (3, 3), ('e', 'w', 'e')),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+    @parameterized.expand([
+        ((2, 2), 1, None, '  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    '
+         '|  \n    o  \n    |  \n    #  '),
+    ])
+    def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
+        """
+        Get sub-part of map with node-mode.
+
+        """
+        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
+                                          max_size=max_size)
+        print(repr(mapstr))
+        self.assertEqual(expected, mapstr)
