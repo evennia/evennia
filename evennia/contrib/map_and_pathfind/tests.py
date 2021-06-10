@@ -458,8 +458,8 @@ class TestMap3(TestCase):
 
     @parameterized.expand([
         ((2, 2), 2, None,
-         '      #  \n     /   \n  # /    \n  |/     \n  #     #\n   \\   / '
-         '\n  # @-#  \n  |/   \\ \n  #     #\n / \\     \n#   #    '),
+            '      #  \n     /   \n  # /    \n  |/     \n  #     #\n  |\\   / \n  # @-#  \n  '
+            '|/   \\ \n  #     #\n / \\     \n#   #    '),
         ((5, 2), 2, None, '  #  \n  |  \n  #  \n / \\ \n#   @\n \\ / \n  #  \n  |  \n  #  ')
     ])
     def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
@@ -631,5 +631,4 @@ class TestMap8(TestCase):
         """
         mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
                                           max_size=max_size)
-        print(repr(mapstr))
         self.assertEqual(expected, mapstr)
