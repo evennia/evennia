@@ -1,7 +1,15 @@
 r"""
+# Map system
+
+Evennia - Griatch 2021
+
 Implement mapping, with path searching.
 
 This builds a map graph based on an ASCII map-string with special, user-defined symbols.
+Each room (MapNode) can have exits (links) in 8 cardinal directions (north, northwest etc) as well
+as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 'w',
+'nw', 'u' and 'd'.
+
 
 ```python
     # in module passed to 'Map' class. It will either a dict
@@ -12,24 +20,24 @@ This builds a map graph based on an ASCII map-string with special, user-defined 
                            1
      + 0 1 2 3 4 5 6 7 8 9 0
 
-    10 #
-        \
-     9   #-#-#-#
-         |\    |
-     8   #-#-#-#-----#
-         |     |
-     7   #-#---#-#-#-#-#
-         |         |x|x|
-     6   o-#-#-#   #-#-#
+    10 #             #
+        \            d
+     9   #-#-#-#     |
+         |\    |     u
+     8   #-#-#-#-----#-----o
+         |     |           |
+     7   #-#---#-#-#-#-#   |
+         |         |x|x|   |
+     6   o-#-#-#   #-#-#-#-#
             \      |x|x|
-     5   o---#-#   #-#-#
-        /
-     4 #
-        \
-     3   #-#-#-#
-             | |
-     2       #-#-#-# #
-             ^
+     5   o---#-#<--#-#-#
+        /    |
+     4 #-----+-# #---#
+        \    | |  \ /
+     3   #-#-#-#   x   #
+             | |  / \ u
+     2       #-#-#---#
+             ^       d
      1       #-#     #
              |
      0 #-#---o
@@ -76,7 +84,7 @@ See `./example_maps.py` for some empty grid areas to start from.
 from collections import defaultdict
 
 try:
-    from scipy.sparse.csgraph import dijkstra, breadth_first_order
+    from scipy.sparse.csgraph import dijkstra
     from scipy.sparse import csr_matrix
     from scipy import zeros
 except ImportError as err:
@@ -111,27 +119,42 @@ _MAPSCAN = {
 _BIG = 999999999999
 
 
+# errors for Map system
+
 class MapError(RuntimeError):
     pass
 
 class MapParserError(MapError):
     pass
 
+# Nodes/Links
 
 class MapNode:
     """
-    This represents a 'room' node on the map. MapNodes are always located
-    on even x,y coordinates on the on-map xygrid and represents specific coordinates
-    on the in-game XYgrid.
+    This represents a 'room' node on the map. Note that the map system deals with two grids, the
+    finer `xygrid`, which is the per-character grid on the map, and the `XYgrid` which contains only
+    the even-integer coordinates and also represents in-game coordinates/rooms. MapNodes are always
+    located on even X,Y coordinates on the map grid and in-game.
+
+    Attributes on the node class:
+
+    - `symbol` (str) - The character to parse from the map into this node. By default this
+      is '#' and must be a single character, with the exception of `\\
+    - `display_symbol` (str or `None`) - This is what is used to visualize this node later. This
+      symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
+      character (be aware of encodings to different clients though) or, commonly, add color
+      tags around it. For further customization, the `.get_display_symbol` method receives
+      the full grid and can return a dynamically determined display symbol. If set to `None`,
+      the `symbol` is used.
 
     """
     # symbol used in map definition
     symbol = '#'
     # if printing this node should show another symbol. If set
     # to the empty string, use `symbol`.
-    display_symbol = ''
+    display_symbol = None
 
-    # set during generation, but is also used for identification of the node
+    # internal use. Set during generation, but is also used for identification of the node
     node_index = None
 
     def __init__(self, x, y, node_index):
@@ -142,7 +165,8 @@ class MapNode:
             x (int): Coordinate on xygrid.
             y (int): Coordinate on xygrid.
             node_index (int): This identifies this node with a running
-                index number required for pathfinding.
+                index number required for pathfinding. This is used
+                internally and should not be set manually.
 
         """
 
@@ -154,9 +178,6 @@ class MapNode:
         self.Y = y // 2
 
         self.node_index = node_index
-
-        if not self.display_symbol:
-            self.display_symbol = self.symbol
 
         # this indicates linkage in 8 cardinal directions on the string-map,
         # n,ne,e,se,s,sw,w,nw and link that to a node (always)
@@ -173,18 +194,25 @@ class MapNode:
         self.xy_steps_to_node = {}
 
     def __str__(self):
-        return f"<MapNode '{self.symbol}' {self.node_index} XY=({round(self.X)},{round(self.Y)})"
+        return f"<MapNode '{self.symbol}' {self.node_index} XY=({self.X},{self.Y})"
 
     def __repr__(self):
         return str(self)
 
-    def build_links(self, xygrid):
+    def scan_all_directions(self, xygrid):
         """
-        Start tracking links in all cardinal directions to tie this to another node. All
-        links are placed on the xygrid since they never have an in-game representation.
+        This is called by the map parser when this node is encountered. It tells the node
+        to scan in all directions and follow any found links to other nodes. Since there
+        could be multiple steps to reach another node, the system will iterate down each
+        path and store it once and for all.
 
         Args:
             xygrid (dict): A 2d dict-of-dicts with x,y coordinates as keys and nodes as values.
+
+        Notes:
+            This sets up all data needed for later use of this node in pathfinding and
+            other operations. The method can't run immediately when the node is created
+            since a complete parsed xygrid is required.
 
         """
         # we must use the xygrid coordinates
@@ -193,17 +221,15 @@ class MapNode:
         # scan in all directions for links
         for direction, (dx, dy) in _MAPSCAN.items():
 
-            # note that this is using the string-coordinate system, not the room-one,
-            # - there are two string coordinates (node + link) per room coordinate
-            # hence we can step in integer steps
             lx, ly = x + dx, y + dy
 
             if lx in xygrid and ly in xygrid[lx]:
                 link = xygrid[lx][ly]
-                # just because there is a link here, doesn't mean it's
-                # connected to this node. If so the `end_node` will be None.
 
+                # just because there is a link here, doesn't mean it has a
+                # connection in this direction. If so, the `end_node` will be None.
                 end_node, weight, steps = link.traverse(_REVERSE_DIRECTIONS[direction], xygrid)
+
                 if end_node:
                     # the link could be followed to an end node!
                     node_index = end_node.node_index
@@ -214,13 +240,14 @@ class MapNode:
                     self.xy_steps_to_node[direction] = steps
 
                     # used for building the shortest path
-                    cheapest = self.cheapest_to_node.get(node_index, ("", _BIG))[1]
+                    cheapest = self.cheapest_to_node.get(node_index, ("", [], _BIG))[2]
                     if weight < cheapest:
-                        self.cheapest_to_node[node_index] = (direction, weight)
+                        self.cheapest_to_node[node_index] = (direction, steps, weight)
 
     def linkweights(self, nnodes):
         """
-        Retrieve all the weights for the direct links to all other nodes.
+        Retrieve all the weights for the direct links to all other nodes. This is
+        used for the efficient generation of shortest-paths.
 
         Args:
             nnodes (int): The total number of nodes
@@ -238,26 +265,31 @@ class MapNode:
             link_graph[node_index] = weight
         return link_graph
 
-    def get_cheapest_link_to(self, node):
+    def get_display_symbol(self, xygrid, **kwargs):
         """
-        Get the cheapest path to a node (there may be several possible).
+        Hook to override for customizing how the display_symbol is determined.
 
         Args:
-            node (MapNode): The node to get to.
+            xygrid (dict): 2D dict with x,y coordinates as keys.
 
         Returns:
-            str: The direction (nw, se etc) to get to that node in the cheapest way.
+            str: The display-symbol to use. This must visually be a single character
+            but could have color markers, use a unicode font etc.
+
+        Notes:
+            By default, just setting .display_symbol is enough.
 
         """
-        return self.cheapest_to_node[node.node_index][0]
+        return self.symbol if self.display_symbol is None else self.display_symbol
 
 
 class MapLink:
     """
-    This represents a link between up to 8 nodes. A Link can be placed
-    on any location in the grid, but when on an integer XY position they
-    don't represent an actual in-game place but just a link between such
-    places (nodes).
+    This represents one or more links between an 'incoming diretion'
+    and an 'outgoing direction'. It's like a railway track between
+    MapNodes. A Link can be placed on any location in the grid, but even when
+    on an integer XY position they still don't represent an actual in-game place
+    but just a link between such places (the Nodes).
 
     Each link has a 'weight' >=1,  this indicates how 'slow'
     it is to traverse that link. This is used by the Dijkstra algorithm
@@ -265,10 +297,43 @@ class MapLink:
     for every link, but a locked door, terrain etc could increase this
     and have the shortest-path algorithm prefer to use another route.
 
+    Attributes on the link class:
+
+    - `symbol` (str) - The character to parse from the map into this node. This must be a single
+      character, with the exception of `\\`.
+    - `display_symbol` (str or None)  - This is what is used to visualize this node later. This symbol
+      must still only have a visual size of 1, but you could e.g. use some fancy unicode
+      character (be aware of encodings to different clients though) or, commonly, add color
+      tags around it. For further customization, the `.get_display_symbol` method receives
+      the full grid and can return a dynamically determined display symbol. If `None`, the
+      `symbol` is used.
+    - `default_weight` (int) - Each link direction covered by this link can have its seprate weight,
+      this is used if none is specified in a particular direction. This value must be >= 1,
+      and can be higher than 1 if a link should be less favored.
+    - `directions` (dict) - this specifies which link edge to which other link-edge this link
+      is connected; A link connecting the link's sw edge to its easted edge would be written
+      as `{'sw': 'e'}` and read 'connects from southwest to east'. Note that if you want the
+      link to go both ways, also the inverse (east to southwest) must also be added.
+    - `weights (dict)` This maps a link's start direction to a weight. So for the
+      `{'sw': 'e'}` link, a weight would be given as `{'sw': 2}`. If not given, a link will
+      use the `default_weight`.
+    - `average_long_link_weights` (bool): This applies to the *first* link out of a node only.
+      When tracing links to another node, multiple links could be involved, each with a weight.
+      So for a link chain with default weights, `#---#` would give a total weight of 3. With this
+      setting, the weight will be 3 / 3 = 1. That is, for evenly weighted links, the length
+      of the link doesn't matter.
+
     """
     # link setup
     symbol = "|"
-    display_symbol = ""
+    # if `None`, use .symbol
+    display_symbol = None
+    default_weight = 1
+    # This setting only applies if this is the *first* link in a chain of multiple links. Usually,
+    # when multiple links are used to tie together two nodes, the default is to average the weight
+    # across all links. With this disabled, the weights will be added and a long link will be
+    # considered 'longer' by the pathfinder.
+    average_long_link_weights = True
     # this indicates linkage start:end in 8 cardinal directions on the string-map,
     # n,ne,e,se,s,sw,w,nw. A link is described as {startpos:endpoit}, like connecting
     # the named corners with a line. If the inverse direction is also possible, it
@@ -281,12 +346,6 @@ class MapLink:
     # weight is a value > 0, smaller than _BIG. The get_weight method can be
     # customized to modify to return something else.
     weights = {}
-    default_weight = 1
-    # This setting only applies if this is the *first* link in a chain of multiple links. Usually,
-    # when multiple links are used to tie together two nodes, the default is to average the weight
-    # across all links. With this disabled, the weights will be added and a long link will be
-    # considered 'longer' by the pathfinder.
-    average_long_link_weights = True
 
     def __init__(self, x, y):
         """
@@ -299,14 +358,73 @@ class MapLink:
         """
         self.x = x
         self.y = y
-        if not self.display_symbol:
-            self.display_symbol = self.symbol
 
     def __str__(self):
-        return f"<LinkNode '{self.symbol}' XY=({round(self.x / 2)},{round(self.y / 2)})>"
+        return f"<LinkNode '{self.symbol}' XY=({self.x / 2:g},{self.y / 2:g})>"
 
     def __repr__(self):
         return str(self)
+
+    def traverse(self, start_direction, xygrid, _weight=0, _linklen=1, _steps=None):
+        """
+        Recursively traverse the links out of this LinkNode.
+
+        Args:
+            start_direction (str): The direction (n, ne etc) from which
+                this traversal originates for this link.
+            xygrid (dict): 2D dict with x,y coordinates as keys.
+        Kwargs:
+            _weight (int): Internal use.
+            _linklen (int): Internal use.
+            _steps (list): Internal use.
+
+        Returns:
+            tuple: The (node, weight, links) result of the traversal, where links
+                is a list of directions (n, ne etc) that describes how to to get
+                to the node on the grid. This includes the first direction.
+
+        Raises:
+            MapParserError: If a link lead to nowhere.
+
+        """
+        end_direction = self.get_direction(start_direction, xygrid)
+        if not end_direction:
+            if _steps is None:
+                # is perfectly okay to not be linking to a node
+                return None, 0, None
+            raise MapParserError(f"Link '{self.symbol}' at "
+                                 f"XY=({self.x / 2:g},{self.y / 2:g}) "
+                                 f"was connected to from the direction {start_direction}, but "
+                                 "is not set up to link in that direction.")
+
+        dx, dy = _MAPSCAN[end_direction]
+        end_x, end_y = self.x + dx, self.y + dy
+        try:
+            next_target = xygrid[end_x][end_y]
+        except KeyError:
+            raise MapParserError(f"Link '{self.symbol}' at "
+                                 f"XY=({self.x / 2:g},{self.y / 2, 1:g}) "
+                                 "points to empty space in the direction {end_direction}!")
+
+        _weight += self.get_weight(start_direction, xygrid, _weight)
+        if _steps is None:
+            _steps = []
+        _steps.append(self)
+
+        if hasattr(next_target, "node_index"):
+            # we reached a node, this is the end of the link.
+            # we average the weight across all traversed link segments.
+            return (
+                next_target,
+                _weight / max(1, _linklen) if self.average_long_link_weights else _weight,
+                _steps
+            )
+
+        else:
+            # we hit another link. Progress recursively.
+            return next_target.traverse(
+                _REVERSE_DIRECTIONS[end_direction],
+                xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
 
     def get_visually_connected(self, xygrid, directions=None):
         """
@@ -340,7 +458,24 @@ class MapLink:
                     links[direction] = node_or_link
         return links
 
-    def get_direction(self, start_direction, xygrid):
+    def get_display_symbol(self, xygrid, **kwargs):
+        """
+        Hook to override for customizing how the display_symbol is determined.
+
+        Args:
+            xygrid (dict): 2D dict with x,y coordinates as keys.
+
+        Returns:
+            str: The display-symbol to use. This must visually be a single character
+            but could have color markers, use a unicode font etc.
+
+        Notes:
+            By default, just setting .display_symbol is enough.
+
+        """
+        return self.symbol if self.display_symbol is None else self.display_symbol
+
+    def get_direction(self, start_direction, xygrid, **kwargs):
         """
         Hook to override for customizing how the directions are
         determined.
@@ -361,7 +496,7 @@ class MapLink:
         """
         return self.directions.get(start_direction)
 
-    def get_weight(self, start_direction, xygrid, current_weight):
+    def get_weight(self, start_direction, xygrid, current_weight, **kwargs):
         """
         Hook to override for customizing how the weights are determined.
 
@@ -377,131 +512,80 @@ class MapLink:
         """
         return self.weights.get(start_direction, self.default_weight)
 
-    def traverse(self, start_direction, xygrid, _weight=0, _linklen=1, _steps=None):
-        """
-        Recursively traverse the links out of this Linknode..
-
-        Args:
-            start_direction (str): The direction (n, ne etc) from which
-                this traversal originates for this link.
-            xygrid (dict): 2D dict with x,y coordinates as keys.
-        Kwargs:
-            _weight (int): Internal use.
-            _linklen (int): Internal use.
-            _steps (list): Internal use.
-
-        Returns:
-            tuple: The (node, weight, links) result of the traversal, where links
-                is a list of directions (n, ne etc) that describes how to to get
-                to the node on the grid. This includes the first direction.
-
-        Raises:
-            MapParserError: If a link lead to nowhere.
-
-        """
-        end_direction = self.get_direction(start_direction, xygrid)
-        if not end_direction:
-            if _steps is None:
-                # is perfectly okay to not be linking to a node
-                return None, 0, None
-            raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({round(self.x / 2)},{round(self.y / 2)}) "
-                                 f"was connected to from the direction {start_direction}, but "
-                                 "is not set up to link in that direction.")
-
-        dx, dy = _MAPSCAN[end_direction]
-        end_x, end_y = self.x + dx, self.y + dy
-        try:
-            next_target = xygrid[end_x][end_y]
-        except KeyError:
-            raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({round(self.x / 2)},{round(self.y / 2)}) "
-                                 "points to empty space in the direction {end_direction}!")
-
-        _weight += self.get_weight(start_direction, xygrid, _weight)
-        if _steps is None:
-            _steps = []
-        _steps.append(_REVERSE_DIRECTIONS[start_direction])
-
-        if hasattr(next_target, "node_index"):
-            # we reached a node, this is the end of the link.
-            # we average the weight across all traversed link segments.
-            return (
-                next_target,
-                _weight / max(1, _linklen) if self.average_long_link_weights else _weight,
-                _steps
-            )
-
-        else:
-            # we hit another link. Progress recursively.
-            return next_target.traverse(
-                _REVERSE_DIRECTIONS[end_direction],
-                xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
-
 
 # ----------------------------------
 # Default nodes and link classes
 
 class NSMapLink(MapLink):
+    """Two-way, North-South link"""
     symbol = "|"
     directions = {"s": "n", "n": "s"}
 
 
 class EWMapLink(MapLink):
+    """Two-way, East-West link"""
     symbol = "-"
     directions = {"e": "w", "w": "e"}
 
 
 class NESWMapLink(MapLink):
+    """Two-way, NorthWest-SouthWest link"""
     symbol = "/"
     directions = {"ne": "sw", "sw": "ne"}
 
 
 class SENWMapLink(MapLink):
+    """Two-way, SouthEast-NorthWest link"""
     symbol = "\\"
     directions = {"se": "nw", "nw": "se"}
 
 
-class CrossMapLink(MapLink):
-    symbol = "x"
-    directions = {"ne": "sw", "sw": "ne",
-                  "se": "nw", "nw": "se"}
-
-
 class PlusMapLink(MapLink):
+    """Two-way, crossing North-South and East-West links"""
     symbol = "+"
     directions = {"s": "n", "n": "s",
                   "e": "w", "w": "e"}
 
+class CrossMapLink(MapLink):
+    """Two-way, crossing NorthEast-SouthWest and SouthEast-NorthWest links"""
+    symbol = "x"
+    directions = {"ne": "sw", "sw": "ne",
+                  "se": "nw", "nw": "se"}
 
 class NSOneWayMapLink(MapLink):
+    """One-way North-South link"""
     symbol = "v"
     directions = {"n": "s"}
 
 
 class SNOneWayMapLink(MapLink):
+    """One-way South-North link"""
     symbol = "^"
     directions = {"s": "n"}
 
 
 class EWOneWayMapLink(MapLink):
+    """One-way East-West link"""
     symbol = "<"
     directions = {"e": "w"}
 
 
 class WEOneWayMapLink(MapLink):
+    """One-way West-East link"""
     symbol = ">"
     directions = {"w": "e"}
 
 
 class DynamicMapLink(MapLink):
     r"""
-    This can be used both on a node position and link position but does not represent a location
-    in-game, but is only intended to help link things together. The dynamic link has no visual
-    direction so we parse the visual surroundings in the map to see if it's obvious what is
-    connected to what. If there are links on carinally opposite sites, these are considered
-    pass-throughs. If determining this is not possible, or there is an uneven number of links, an
-    error is raised.
+    Link multiple links together, creating 'knees' and multi-crossings of links.
+    Remember that this is a link, so user will not 'stop' at it, even if placed on an XY
+    position!
+
+    The dynamic link has no visual direction so we parse the visual surroundings in the map to see
+    if it's obvious what is connected to what. If there are links on cardinally opposite sites,
+    these are considered pass-throughs. If determining this is not possible, or there is an uneven
+    number of links, an error is raised.
     ::
           /
         -o    - this is ok, there can only be one path
@@ -521,9 +605,14 @@ class DynamicMapLink(MapLink):
         /|
 
     """
+
     symbol = "o"
 
     def get_direction(self, start_direction, xygrid):
+        """
+        Dynamically determine the directions-dict based on the grid topology.
+
+        """
         # get all visually connected links
         if not hasattr(self, '_cached_directions'):
             # try to get from cache where possible
@@ -548,7 +637,7 @@ class DynamicMapLink(MapLink):
                     links = ", ".join(unhandled_links)
                     raise MapParserError(
                         f"Dynamic Link '{self.symbol}' at "
-                        f"XY=({round(self.x / 2)},{round(self.y / 2)}) cannot determine "
+                        f"XY=({self.x / 2:g},{self.y / 2:g}) cannot determine "
                         f"how to connect in/out directions {links}.")
 
                 directions[unhandled_links[0]] = unhandled_links[1]
@@ -707,10 +796,8 @@ class Map:
                 # keep stepping
                 for direction, end_node in start_node.links.items():
                     x, y = x0, y0
-                    for stepdirection in start_node.xy_steps_to_node[direction]:
-                        dx, dy = _MAPSCAN[stepdirection]
-
-                        x, y = x + dx, y + dy
+                    for link in start_node.xy_steps_to_node[direction]:
+                        x, y = link.x, link.y
                         points.append((x, y))
                         xmin, xmax = min(xmin, x), max(xmax, x)
                         ymin, ymax = min(ymin, y), max(ymax, y)
@@ -824,7 +911,7 @@ class Map:
                 mapnode_or_link_class = self.legend.get(char)
                 if not mapnode_or_link_class:
                     raise MapParserError(
-                        f"Symbol '{char}' on XY=({round(ix / 2)},{round(iy / 2)}) "
+                        f"Symbol '{char}' on XY=({ix / 2, 1:g},{iy / 2, 1:g}) "
                         "is not found in LEGEND."
                     )
                 if hasattr(mapnode_or_link_class, "node_index"):
@@ -833,7 +920,7 @@ class Map:
 
                     if not (even_iy and ix % 2 == 0):
                         raise MapParserError(
-                            f"Symbol '{char}' on XY=({round(ix / 2)},{round(iy / 2)}) marks a "
+                            f"Symbol '{char}' on XY=({ix / 2, 1:g},{iy / 2, 1:g}) marks a "
                             "MapNode but is located between integer (X,Y) positions (only "
                             "Links can be placed between coordinates)!")
 
@@ -853,13 +940,13 @@ class Map:
         # second pass: Here we loop over all nodes and have them connect to each other
         # via the detected linkages.
         for node in node_index_map.values():
-            node.build_links(xygrid)
+            node.scan_all_directions(xygrid)
 
         # build display map
         display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
         for ix, ydct in xygrid.items():
             for iy, node_or_link in ydct.items():
-                display_map[iy][ix] = node_or_link.display_symbol
+                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid)
 
         # store
         self.max_x, self.max_y = max_x, max_y
@@ -983,6 +1070,7 @@ class Map:
         pathfinding_routes = self.pathfinding_routes
         node_index_map = self.node_index_map
 
+        # from evennia import set_trace;set_trace()
         path = [endnode]
         directions = []
 
@@ -992,8 +1080,11 @@ class Map:
             # we are working backwards).
             inextnode = pathfinding_routes[istartnode, inextnode]
             nextnode = node_index_map[inextnode]
-            directions.append(nextnode.get_cheapest_link_to(path[-1]))
-            path.extend((directions[-1], nextnode))
+
+            cheapest_links_to = nextnode.cheapest_to_node[path[-1].node_index]
+
+            directions.append(cheapest_links_to[0])
+            path.extend(cheapest_links_to[1] + [nextnode])
 
         # we have the path - reverse to get the correct order
         path = path[::-1]
@@ -1003,7 +1094,7 @@ class Map:
 
     def get_visual_range(self, coord, dist=2, mode='nodes',
                          character='@',
-                         target=None, path_styler="|y{display_symbol}|n",
+                         target=None, target_path_style="|y{display_symbol}|n",
                          max_size=None,
                          return_str=True):
         """
@@ -1025,8 +1116,8 @@ class Map:
                 of the displayed map. The center node' symbol is shown if this is falsy.
             target (tuple, optional): A target XY coordinate to go to. The path to this
                 (or the beginning of said path, if outside of visual range) will be
-                marked according to `path_style`.
-            path_styler (str or callable, optional): This is use for marking the path
+                marked according to `target_path_style`.
+            target_path_style (str or callable, optional): This is use for marking the path
                 found when `path_to_coord` is given. If a string, it accepts a formatting marker
                 `display_symbol` which will be filled with the `display_symbol` of each node/link
                 the path passes through. This allows e.g. to color the path. If a callable, this
@@ -1102,7 +1193,7 @@ class Map:
             for (ix0, iy0) in points:
                 gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
 
-        elif mode == 'scans':
+        elif mode == 'scan':
             # scan-mode - dist measures individual grid points
 
             xmin, xmax = max(0, ix - dist), min(width, ix + dist + 1)
@@ -1116,27 +1207,37 @@ class Map:
         if character:
             gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
 
+        if target:
+            # stylize path to target
+
+            def _default_callable(node):
+                return target_path_style.format(display_symbol=node)
+
+            if callable(target_path_style):
+                _target_path_style = target_path_style
+            else:
+                _target_path_style = _default_callable
+
+            _, path = self.get_shortest_path(coord, target)
+
+            maxstep = dist if mode == 'nodes' else dist / 2
+            nsteps = 0
+            for node_or_link in path[1:]:
+                if hasattr(node_or_link, "node_index"):
+                    nsteps += 1
+                if nsteps >= maxstep:
+                    break
+                # don't decorate current (character?) location
+                ix, iy = node_or_link.x, node_or_link.y
+                if xmin <= ix <= xmax and ymin <= iy <= ymax:
+                    gridmap[iy - ymin][ix - xmin] = _target_path_style(node_or_link)
+
         if max_size:
             # crop grid to make sure it doesn't grow too far
             max_x, max_y = max_size
             xmin, xmax = max(0, ixc - max_x // 2), min(width, ixc + max_x // 2 + 1)
             ymin, ymax = max(0, iyc - max_y // 2), min(height, iyc + max_y // 2 + 1)
             gridmap = [line[xmin:xmax] for line in gridmap[ymin:ymax]]
-
-        if target:
-            # stylize path to target
-
-            def _path_styler(node):
-                return path_styler
-
-            if not callable(path_styler):
-                path_styler = _path_styler
-
-            path, _ = self.get_shortest_path(coord, target)
-            for node_or_link in path[1:]:
-                ix, iy = node_or_link.x, node_or_link.y
-                if xmin <= ix <= xmax and ymin <= iy <= ymax:
-                    gridmap[iy - ymin][ix - xmin] = path_styler(node_or_link)
 
         if return_str:
             # we must flip the y-axis before returning the string
