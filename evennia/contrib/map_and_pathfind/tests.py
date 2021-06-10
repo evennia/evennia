@@ -62,19 +62,7 @@ MAP2_DISPLAY = """
   #-#-#-#
 """.strip()
 
-MAP4 = r"""
-
- + 0 1
-
- 1 #-#
-   |\|
- 0 #-#
-
- + 0 1
-
-"""
-
-MAP4 = r"""
+MAP3 = r"""
 
    + 0 1 2 3 4 5
 
@@ -94,7 +82,7 @@ MAP4 = r"""
 
 """
 
-MAP4_DISPLAY = r"""
+MAP3_DISPLAY = r"""
 #-#---#   #
   |  / \ /
   # /   #
@@ -108,7 +96,7 @@ MAP4_DISPLAY = r"""
 #   #---#-#
 """.strip()
 
-MAP5 = r"""
+MAP4 = r"""
 
  + 0 1 2 3 4
 
@@ -126,7 +114,7 @@ MAP5 = r"""
 
 """
 
-MAP5_DISPLAY = r"""
+MAP4_DISPLAY = r"""
 #-# #---#
    x   /
   #-#-#
@@ -138,7 +126,7 @@ MAP5_DISPLAY = r"""
   #---#
 """.strip()
 
-MAP6 = r"""
+MAP5 = r"""
 
 + 0 1 2
 
@@ -152,7 +140,7 @@ MAP6 = r"""
 
 """
 
-MAP6_DISPLAY = r"""
+MAP5_DISPLAY = r"""
 #-#
 | |
 #>#
@@ -160,7 +148,7 @@ MAP6_DISPLAY = r"""
 #>#
 """.strip()
 
-MAP7 = r"""
+MAP6 = r"""
 
  + 0 1 2 3 4
 
@@ -178,7 +166,7 @@ MAP7 = r"""
 
 """
 
-MAP7_DISPLAY = r"""
+MAP6_DISPLAY = r"""
 #-#-#-#
   ^   |
   |   #>#
@@ -191,7 +179,7 @@ MAP7_DISPLAY = r"""
 """.strip()
 
 
-MAP8 = r"""
+MAP7 = r"""
 + 0 1 2
 
 2 #-#
@@ -204,7 +192,7 @@ MAP8 = r"""
 
 """
 
-MAP8_DISPLAY = r"""
+MAP7_DISPLAY = r"""
 #-#
   |
 #-o-#
@@ -213,7 +201,7 @@ MAP8_DISPLAY = r"""
 """.strip()
 
 
-MAP9 = r"""
+MAP8 = r"""
 + 0 1 2 3 4 5
 
 4 #-#-o o o-o
@@ -230,7 +218,7 @@ MAP9 = r"""
 
 """
 
-MAP9_DISPLAY = r"""
+MAP8_DISPLAY = r"""
 #-#-o o o-o
 |  \|/| | |
 #-o-o-# o-#
@@ -315,7 +303,7 @@ class TestMap1(TestCase):
         ((0, 1), 1, '@-#\n|  \n#  '),
         ((1, 0), 1, '  #\n  |\n#-@'),
         ((1, 1), 1, '#-@\n  |\n  #'),
-        ((0, 0), 2, ''),
+        ((0, 0), 2, '#-#\n| |\n@-#'),
 
     ])
     def test_get_map_display__nodes__character(self, coord, dist, expected):
@@ -387,7 +375,7 @@ class TestMap2(TestCase):
         """
         node = self.map.get_node_from_coord((4, 1))
         self.assertEqual(
-            node.xy_steps_in_direction,
+            node.xy_steps_to_node,
             {'e': ['e'],
              's': ['s'],
              'w': ['w', 'w', 'w']}
@@ -400,7 +388,7 @@ class TestMap2(TestCase):
         """
         node = self.map.get_node_from_coord((2, 2))
         self.assertEqual(
-            node.xy_steps_in_direction,
+            node.xy_steps_to_node,
             {'n': ['n', 'n', 'n'],
              'e': ['e'],
              's': ['s'],
@@ -434,18 +422,18 @@ class TestMap2(TestCase):
         self.assertEqual(expected, mapstr)
 
 
-class TestMap4(TestCase):
+class TestMap3(TestCase):
     """
-    Test Map4 - Map with diaginal links
+    Test Map3 - Map with diagonal links
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP4})
+        self.map = mapsystem.Map({"map": MAP3})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP4_DISPLAY, stripped_map)
+        self.assertEqual(MAP3_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((0, 0), (1, 0), ()),  # no node at (1, 0)!
@@ -472,7 +460,7 @@ class TestMap4(TestCase):
         ((2, 2), 2, None,
          '      #  \n     /   \n  # /    \n  |/     \n  #     #\n   \\   / '
          '\n  # @-#  \n  |/   \\ \n  #     #\n / \\     \n#   #    '),
-        ((5, 2), 2, None, '')
+        ((5, 2), 2, None, '  #  \n  |  \n  #  \n / \\ \n#   @\n \\ / \n  #  \n  |  \n  #  ')
     ])
     def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
         """
@@ -481,21 +469,21 @@ class TestMap4(TestCase):
         """
         mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
                                           max_size=max_size)
-        # print(repr(mapstr))
+        print(f"\n\n{expected}\n\n{mapstr}\n\n{repr(mapstr)}")
         self.assertEqual(expected, mapstr)
 
-class TestMap5(TestCase):
+class TestMap4(TestCase):
     """
-    Test Map5 - Map with + and x crossing links
+    Test Map4 - Map with + and x crossing links
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP5})
+        self.map = mapsystem.Map({"map": MAP4})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP5_DISPLAY, stripped_map)
+        self.assertEqual(MAP4_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((1, 0), (1, 2), ('n',)),  # cross + vertically
@@ -514,18 +502,18 @@ class TestMap5(TestCase):
         self.assertEqual(expected_directions, tuple(directions))
 
 
-class TestMap6(TestCase):
+class TestMap5(TestCase):
     """
-    Test Map6 - Small map with one-way links
+    Test Map5 - Small map with one-way links
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP6})
+        self.map = mapsystem.Map({"map": MAP5})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP6_DISPLAY, stripped_map)
+        self.assertEqual(MAP5_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((0, 0), (1, 0), ('e',)),  # cross one-way
@@ -542,18 +530,18 @@ class TestMap6(TestCase):
         self.assertEqual(expected_directions, tuple(directions))
 
 
-class TestMap7(TestCase):
+class TestMap6(TestCase):
     """
     Test Map6 - Bigger map with one-way links in different directions
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP7})
+        self.map = mapsystem.Map({"map": MAP6})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP7_DISPLAY, stripped_map)
+        self.assertEqual(MAP6_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((0, 0), (2, 0), ('e', 'e')),  # cross one-way
@@ -574,18 +562,18 @@ class TestMap7(TestCase):
         self.assertEqual(expected_directions, tuple(directions))
 
 
-class TestMap8(TestCase):
+class TestMap7(TestCase):
     """
-    Test Map6 - Small test of dynamic link node
+    Test Map7 - Small test of dynamic link node
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP8})
+        self.map = mapsystem.Map({"map": MAP7})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP8_DISPLAY, stripped_map)
+        self.assertEqual(MAP7_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((1, 0), (1, 2), ('n', )),
@@ -599,21 +587,21 @@ class TestMap8(TestCase):
 
         """
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
-        self.assertequal(expected_directions, tuple(directions))
+        self.assertEqual(expected_directions, tuple(directions))
 
 
-class TestMap9(TestCase):
+class TestMap8(TestCase):
     """
-    Test Map6 - Small test of dynamic link node
+    Test Map8 - Small test of dynamic link node
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP9})
+        self.map = mapsystem.Map({"map": MAP8})
 
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP9_DISPLAY, stripped_map)
+        self.assertEqual(MAP8_DISPLAY, stripped_map)
 
     @parameterized.expand([
         ((2, 0), (2, 2), ('n',)),
