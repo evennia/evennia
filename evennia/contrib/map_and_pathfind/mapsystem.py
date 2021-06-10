@@ -1001,28 +1001,42 @@ class Map:
 
         return directions, path
 
-    def get_map_display(self, coord, dist=2, mode='scan',
-                        character='@', max_size=None, return_str=True):
+    def get_visual_range(self, coord, dist=2, mode='nodes',
+                         character='@',
+                         target=None, path_styler="|y{display_symbol}|n",
+                         max_size=None,
+                         return_str=True):
         """
-        Display the map centered on a point and everything around it within a certain distance.
+        Get a part of the grid centered on a specific point and extended a certain number
+        of nodes or grid points in every direction.
 
         Args:
             coord (tuple): (X,Y) in-world coordinate location. If this is not the location
                 of a node on the grid, the `character` or the empty-space symbol (by default
                 an empty space) will be shown.
             dist (int, optional): Number of gridpoints distance to show. Which
-                grid to use depends on the setting of `only_nodes`.
+                grid to use depends on the setting of `only_nodes`. Set to `None` to
+                always show the entire grid.
             mode (str, optional): One of 'scan' or 'nodes'. In 'scan' mode, dist measure
                 number of xy grid points in all directions and doesn't care about if visible
                 nodes are reachable or not. If 'nodes', distance measure how many linked nodes
                 away from the center coordinate to display.
             character (str, optional): Place this symbol at the `coord` position
                 of the displayed map. The center node' symbol is shown if this is falsy.
+            target (tuple, optional): A target XY coordinate to go to. The path to this
+                (or the beginning of said path, if outside of visual range) will be
+                marked according to `path_style`.
+            path_styler (str or callable, optional): This is use for marking the path
+                found when `path_to_coord` is given. If a string, it accepts a formatting marker
+                `display_symbol` which will be filled with the `display_symbol` of each node/link
+                the path passes through. This allows e.g. to color the path. If a callable, this
+                will receive the MapNode or MapLink object for every step of the path and and
+                must return the suitable string to display at the position of the node/link.
             max_size (tuple, optional): A max `(width, height)` to crop the displayed
                 return to. Make both odd numbers to get a perfect center.
                 If unset, display-size can grow up to the full size of the grid.
-            return_str (bool, optional): Return result as an
-                already formatted string.
+            return_str (bool, optional): Return result as an already formatted string
+                or a 2D list.
 
         Returns:
             str or list: Depending on value of `return_str`. If a list,
@@ -1064,18 +1078,20 @@ class Map:
         width, height = self.max_x + 1, self.max_y + 1
         ix, iy = max(0, min(iX * 2, width)), max(0, min(iY * 2, height))
         display_map = self.display_map
+        xmin, xmax, ymin, ymax = 0, width - 1, 0, height - 1
 
-        if dist <= 0 or not self.get_node_from_coord(coord):
+        if dist is None:
+            # show the entire grid
+            gridmap = self.display_map
+            ixc, iyc = ix, iy
+
+        elif dist is None or dist <= 0 or not self.get_node_from_coord(coord):
             # There is no node at these coordinates. Show
             # nothing but ourselves or emptiness
             return character if character else self.empty_symbol
 
-        if mode == 'nodes':
+        elif mode == 'nodes':
             # dist measures only full, reachable nodes.
-            # this requires a series of shortest-path
-            # Steps from on the pre-calulcated grid.
-            # from evennia import set_trace;set_trace()
-
             points, xmin, xmax, ymin, ymax = self._get_topology_around_coord(coord, dist=dist)
 
             ixc, iyc = ix - xmin, iy - ymin
@@ -1086,83 +1102,41 @@ class Map:
             for (ix0, iy0) in points:
                 gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
 
-#             if not self.dist_matrix:
-#                 self._calculate_path_matrix()
-#
-#             xmin, ymin = width, height
-#             xmax, ymax = 0, 0
-#             # adjusted center of map section
-#             ixc, iyc = ix, iy
-#
-#             center_node = self.get_node_from_coord((iX, iY))
-#             if not center_node:
-#                 # there is nothing at this grid location
-#                 return character if character else ' '
-#
-#             # the points list coordinates on the xygrid to show.
-#             points = [(ix, iy)]
-#             node_index_map = self.node_index_map
-#
-#             # find all reachable nodes within a (weighted) distance of `dist`
-#             for inode, node_dist in enumerate(self.dist_matrix[center_node.node_index]):
-#
-#                 if node_dist > dist:
-#                     continue
-#
-#                 # we have a node within 'dist' from us, get, the route to it
-#                 node = node_index_map[inode]
-#                 _, path = self.get_shortest_path((iX, iY), (node.X, node.Y))
-#                 # follow directions to figure out which map coords to display
-#                 node0 = node
-#                 ix0, iy0 = ix, iy
-#                 for path_element in path:
-#                     # we don't need the start node since we know it already
-#                     if isinstance(path_element, str):
-#                         # a direction - this can lead to following
-#                         # a longer link-chain chain
-#                         for dstep in node0.xy_steps_to_noden[path_element]:
-#                             dx, dy = _MAPSCAN[dstep]
-#                             ix0, iy0 = ix0 + dx, iy0 + dy
-#                             points.append((ix0, iy0))
-#                             xmin, ymin = min(xmin, ix0), min(ymin, iy0)
-#                             xmax, ymax = max(xmax, ix0), max(ymax, iy0)
-#                     else:
-#                         # a Mapnode
-#                         node0 = path_element
-#                         ix0, iy0 = node0.x, node0.y
-#                         if (ix0, iy0) != (ix, iy):
-#                             points.append((ix0, iy0))
-#                         xmin, ymin = min(xmin, ix0), min(ymin, iy0)
-#                         xmax, ymax = max(xmax, ix0), max(ymax, iy0)
-#
-#             ixc, iyc = ix - xmin, iy - ymin
-#             # note - override width/height here since our grid is
-#             # now different from the original for future cropping
-#             width, height = xmax - xmin + 1, ymax - ymin + 1
-#             gridmap = [[" "] * width for _ in range(height)]
-#             for (ix0, iy0) in points:
-#                 gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
+        elif mode == 'scans':
+            # scan-mode - dist measures individual grid points
+
+            xmin, xmax = max(0, ix - dist), min(width, ix + dist + 1)
+            ymin, ymax = max(0, iy - dist), min(height, iy + dist + 1)
+            ixc, iyc = ix - xmin, iy - ymin
+            gridmap = [line[xmin:xmax] for line in display_map[ymin:ymax]]
 
         else:
-            # scan-mode (default) - dist measures individual grid points
-            if dist is None:
-                gridmap = self.display_map
-                ixc, iyc = ix, iy
-            else:
-                left, right = max(0, ix - dist), min(width, ix + dist + 1)
-                bottom, top = max(0, iy - dist), min(height, iy + dist + 1)
-                ixc, iyc = ix - left, iy - bottom
-                gridmap = [line[left:right] for line in display_map[bottom:top]]
-
+            raise MapError(f"Map.get_visual_range 'mode' was '{mode}' "
+                           "- it must be either 'scan' or 'nodes'.")
         if character:
             gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
 
         if max_size:
             # crop grid to make sure it doesn't grow too far
             max_x, max_y = max_size
-            left, right = max(0, ixc - max_x // 2), min(width, ixc + max_x // 2 + 1)
-            bottom, top = max(0, iyc - max_y // 2), min(height, iyc + max_y // 2 + 1)
-            gridmap = [line[left:right] for line in gridmap[bottom:top]]
+            xmin, xmax = max(0, ixc - max_x // 2), min(width, ixc + max_x // 2 + 1)
+            ymin, ymax = max(0, iyc - max_y // 2), min(height, iyc + max_y // 2 + 1)
+            gridmap = [line[xmin:xmax] for line in gridmap[ymin:ymax]]
+
+        if target:
+            # stylize path to target
+
+            def _path_styler(node):
+                return path_styler
+
+            if not callable(path_styler):
+                path_styler = _path_styler
+
+            path, _ = self.get_shortest_path(coord, target)
+            for node_or_link in path[1:]:
+                ix, iy = node_or_link.x, node_or_link.y
+                if xmin <= ix <= xmax and ymin <= iy <= ymax:
+                    gridmap[iy - ymin][ix - xmin] = path_styler(node_or_link)
 
         if return_str:
             # we must flip the y-axis before returning the string

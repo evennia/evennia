@@ -270,13 +270,13 @@ class TestMap1(TestCase):
         ((1, 1), "-#\n |", [["-", "#"], [" ", "|"]]),
 
     ])
-    def test_get_map_display(self, coord, expectstr, expectlst):
+    def test_get_visual_range(self, coord, expectstr, expectlst):
         """
         Test displaying a part of the map around a central point.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=1, character=None)
-        maplst = self.map.get_map_display(coord, dist=1, return_str=False, character=None)
+        mapstr = self.map.get_visual_range(coord, dist=1, character=None)
+        maplst = self.map.get_visual_range(coord, dist=1, return_str=False, character=None)
         self.assertEqual(expectstr, mapstr)
         self.assertEqual(expectlst, maplst[::-1])
 
@@ -287,14 +287,14 @@ class TestMap1(TestCase):
         ((1, 1), "-@\n |", [["-", "@"], [" ", "|"]]),
 
     ])
-    def test_get_map_display__character(self, coord, expectstr, expectlst):
+    def test_get_visual_range__character(self, coord, expectstr, expectlst):
         """
         Test displaying a part of the map around a central point, showing the
         character @-symbol in that spot.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=1, character='@')
-        maplst = self.map.get_map_display(coord, dist=1, return_str=False, character='@')
+        mapstr = self.map.get_visual_range(coord, dist=1, character='@')
+        maplst = self.map.get_visual_range(coord, dist=1, return_str=False, character='@')
         self.assertEqual(expectstr, mapstr)
         self.assertEqual(expectlst, maplst[::-1])  # flip y-axis to match print direction
 
@@ -306,12 +306,12 @@ class TestMap1(TestCase):
         ((0, 0), 2, '#-#\n| |\n@-#'),
 
     ])
-    def test_get_map_display__nodes__character(self, coord, dist, expected):
+    def test_get_visual_range__nodes__character(self, coord, dist, expected):
         """
         Get sub-part of map with node-mode.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@')
+        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@')
         self.assertEqual(expected, mapstr)
 
 class TestMap2(TestCase):
@@ -360,12 +360,12 @@ class TestMap2(TestCase):
         ((4, 5), '#-#-@  \n|   |  \n#---#  \n|   |  \n|   #-#'),
         ((5, 2), '--#  \n  |  \n  #-#\n    |\n#---@\n     \n--#-#\n  |  \n#-#  '),
     ])
-    def test_get_map_display__scan__character(self, coord, expected):
+    def test_get_visual_range__scan__character(self, coord, expected):
         """
         Test showing smaller part of grid, showing @-character in the middle.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=4, character='@')
+        mapstr = self.map.get_visual_range(coord, dist=4, character='@')
         self.assertEqual(expected, mapstr)
 
     def test_extended_path_tracking__horizontal(self):
@@ -412,13 +412,13 @@ class TestMap2(TestCase):
         ((2, 2), 4, (3, 3), ' | \n-@-\n | '),
         ((2, 2), 4, (1, 1), '@')
     ])
-    def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
+    def test_get_visual_range__nodes__character(self, coord, dist, max_size, expected):
         """
         Get sub-part of map with node-mode.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
-                                          max_size=max_size)
+        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
+                                           max_size=max_size)
         self.assertEqual(expected, mapstr)
 
 
@@ -462,13 +462,13 @@ class TestMap3(TestCase):
          '\n  # @-#  \n  |/   \\ \n  #     #\n / \\     \n#   #    '),
         ((5, 2), 2, None, '  #  \n  |  \n  #  \n / \\ \n#   @\n \\ / \n  #  \n  |  \n  #  ')
     ])
-    def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
+    def test_get_visual_range__nodes__character(self, coord, dist, max_size, expected):
         """
         Get sub-part of map with node-mode.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
-                                          max_size=max_size)
+        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
+                                           max_size=max_size)
         print(f"\n\n{expected}\n\n{mapstr}\n\n{repr(mapstr)}")
         self.assertEqual(expected, mapstr)
 
@@ -624,12 +624,12 @@ class TestMap8(TestCase):
         ((2, 2), 1, None, '  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    '
          '|  \n    o  \n    |  \n    #  '),
     ])
-    def test_get_map_display__nodes__character(self, coord, dist, max_size, expected):
+    def test_get_visual_range__nodes__character(self, coord, dist, max_size, expected):
         """
         Get sub-part of map with node-mode.
 
         """
-        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
-                                          max_size=max_size)
+        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
+                                           max_size=max_size)
         print(repr(mapstr))
         self.assertEqual(expected, mapstr)
