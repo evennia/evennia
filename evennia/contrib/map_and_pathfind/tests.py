@@ -458,8 +458,8 @@ class TestMap3(TestCase):
 
     @parameterized.expand([
         ((2, 2), 2, None,
-         '      #  \n     /   \n  # /    \n  |/     \n  #     #\n   \\   / '
-         '\n  # @-#  \n  |/   \\ \n  #     #\n / \\     \n#   #    '),
+            '      #  \n     /   \n  # /    \n  |/     \n  #     #\n  |\\   / \n  # @-#  \n  '
+            '|/   \\ \n  #     #\n / \\     \n#   #    '),
         ((5, 2), 2, None, '  #  \n  |  \n  #  \n / \\ \n#   @\n \\ / \n  #  \n  |  \n  #  ')
     ])
     def test_get_visual_range__nodes__character(self, coord, dist, max_size, expected):
@@ -629,7 +629,6 @@ class TestMap8(TestCase):
         Get sub-part of map with node-mode.
 
         """
-        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
-                                           max_size=max_size)
-        print(repr(mapstr))
+        mapstr = self.map.get_map_display(coord, dist=dist, mode='nodes', character='@',
+                                          max_size=max_size)
         self.assertEqual(expected, mapstr)
