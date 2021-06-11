@@ -5,6 +5,9 @@ from django.urls import reverse
 from evennia.utils import class_from_module
 from evennia.utils.create import create_help_entry
 from evennia.utils.test_resources import EvenniaTest
+from evennia.help import filehelp
+
+_FILE_HELP_ENTRIES = None
 
 
 class EvenniaWebTest(EvenniaTest):
@@ -140,20 +143,46 @@ class HelpListTest(EvenniaWebTest):
     url_name = "help"
 
 
+HELP_ENTRY_DICTS = [
+    {
+        "key": "unit test file entry",
+        "category": "General",
+        "text": "cache test file entry text"
+    }
+]
+
 class HelpDetailTest(EvenniaWebTest):
     url_name = "help-entry-detail"
 
     def setUp(self):
         super().setUp()
-        create_help_entry('unit test entry', 'unit test entry text', category="General")
+
+        # create a db help entry
+        create_help_entry('unit test db entry', 'unit test db entry text', category="General")
 
     def get_kwargs(self):
         return {"category": slugify("general"),
-                "topic": slugify('unit test entry')}
+                "topic": slugify('unit test db entry')}
 
     def test_view(self):
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
-        self.assertEqual(response.context["entry_text"], 'unit test entry text')
+        self.assertEqual(response.context["entry_text"], 'unit test db entry text')
+
+    def test_object_cache(self):
+        # clear file help entries, use local HELP_ENTRY_DICTS to recreate new entries
+        global _FILE_HELP_ENTRIES
+        if _FILE_HELP_ENTRIES is None:
+            from evennia.help.filehelp import FILE_HELP_ENTRIES as _FILE_HELP_ENTRIES
+        help_module = 'evennia.web.website.tests'
+        self.file_help_store = _FILE_HELP_ENTRIES.__init__(help_file_modules=[help_module])
+
+        # request access to an entry
+        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        self.assertEqual(response.context["entry_text"], 'unit test db entry text')
+        # request a second entry, verifing the cached object is not provided on a new topic request
+        entry_two_args = {"category": slugify("general"), "topic": slugify('unit test file entry')}
+        response = self.client.get(reverse(self.url_name, kwargs=entry_two_args), follow=True)
+        self.assertEqual(response.context["entry_text"], 'cache test file entry text')
 
 
 class HelpLockedDetailTest(EvenniaWebTest):
