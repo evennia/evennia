@@ -231,12 +231,37 @@ o-o-#-#   o
 """.strip()
 
 
+MAP9 = r"""
++ 0 1 2 3
+
+3 #-# #-#
+    d d |
+2   | | |
+    u | u
+1 #-#-#-#
+  u   d
+0 #u# #d#
+
++ 0 1 2 3
+
+"""
+
+MAP9_DISPLAY = r"""
+#-# #-#
+  d d |
+  | | |
+  u | u
+#-#-#-#
+u   d
+#u# #d#
+""".strip()
+
+
 class TestMap1(TestCase):
     """
     Test the Map class with a simple 4-node map
 
     """
-
     def setUp(self):
         self.map = mapsystem.Map({"map": MAP1})
 
@@ -657,3 +682,29 @@ class TestMap8(TestCase):
                                            character='@',
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
+
+
+class TestMap9(TestCase):
+    """
+    Test the Map class with a simple 4-node map
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP9})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP9_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((0, 0), (0, 1), ('u',)),
+        ((0, 0), (1, 0), ('u',)),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
