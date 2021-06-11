@@ -146,9 +146,14 @@ class MapNode:
       tags around it. For further customization, the `.get_display_symbol` method receives
       the full grid and can return a dynamically determined display symbol. If set to `None`,
       the `symbol` is used.
+    - `interrupt_path` (bool): If this is set, the shortest-path algorithm will include this
+      node as normally, but stop when reaching it, even if not having reached its target yet. This
+      is useful for marking 'points of interest' along a route, or places where you are not
+      expected to be able to continue without some further in-game action not covered by the map
+      (such as a guard or locked gate etc).
 
     """
-    # symbol used in map definition
+    # symbol used to identify this link on the map
     symbol = '#'
     # if printing this node should show another symbol. If set
     # to the empty string, use `symbol`.
@@ -159,8 +164,11 @@ class MapNode:
 
     # this should always be left True and avoids inifinite loops during querying.
     multilink = True
+    # this will interrupt a shortest-path step (useful for 'points' of interest, stop before
+    # a door etc).
+    interrupt_path = False
 
-    def __init__(self, x, y, node_index):
+    def __init__(self, x, y, node_index=0):
         """
         Initialize the mapnode.
 
@@ -195,6 +203,8 @@ class MapNode:
         # {startdirection: [direction, ...], ...}
         # where the directional path-lists also include the start-direction
         self.xy_steps_to_node = {}
+        # direction-names of the closest neighbors to the node
+        self.closest_neighbor_names = {}
 
     def __str__(self):
         return f"<MapNode '{self.symbol}' {self.node_index} XY=({self.X},{self.Y})"
@@ -235,6 +245,19 @@ class MapNode:
 
                 if end_node:
                     # the link could be followed to an end node!
+
+                    # check the actual direction-alias to use, since this may be
+                    # different than the xygrid cardinal directions. There must be
+                    # no duplicates out of this node or there will be a
+                    # multi-match error later!
+                    first_step_name = steps[0].direction_aliases.get(direction, direction)
+                    if first_step_name in self.closest_neighbor_names:
+                        raise MapParserError(
+                            f"MapNode '{self.symbol}' at XY=({self.X:g},{self.Y:g}) has more "
+                            f"than one outgoing direction '{first_step_name}'. All directions "
+                            "out of a node must be unique.")
+                    self.closest_neighbor_names[first_step_name] = direction
+
                     node_index = end_node.node_index
                     self.weights[node_index] = weight
                     self.links[direction] = end_node
@@ -247,8 +270,7 @@ class MapNode:
                     # shortest-route solver
                     shortest_route = self.shortest_route_to_node.get(node_index, ("", [], _BIG))[2]
                     if weight < shortest_route:
-                        self.shortest_route_to_node[node_index] = (
-                            steps[0].direction_aliases.get(direction, direction), steps, weight)
+                        self.shortest_route_to_node[node_index] = (first_step_name, steps, weight)
 
     def linkweights(self, nnodes):
         """
@@ -335,10 +357,12 @@ class MapLink:
     - `multilink` (bool): If set, this link accepts links from all directions. It will usually
       use a custom get_direction to determine what these are based on surrounding topology. This
       setting is necessary to avoid infinite loops when such multilinks are next to each other.
+    - `interrupt_path` (bool): If set, a shortest-path solution will include this link as normal,
+      but will stop short of actually moving past this link.
 
     """
-    # link setup
-    symbol = "|"
+    # symbol for identifying this link on the map
+    symbol = ""
     # if `None`, use .symbol
     display_symbol = None
     default_weight = 1
@@ -367,6 +391,9 @@ class MapLink:
     # this shortcuts neighbors trying to figure out if they can connect to this link
     # - if this is set, they always can (similarly as to a node)
     multilink = False
+    # this link does not block/reroute pathfinding, but makes the actual path always stop when
+    # trying to cross it.
+    interrupt_path = False
 
     def __init__(self, x, y):
         """
@@ -486,6 +513,9 @@ class MapLink:
         Args:
             xygrid (dict): 2D dict with x,y coordinates as keys.
 
+        Kwargs:
+            mapinstance (Map): The current Map instance.
+
         Returns:
             str: The display-symbol to use. This must visually be a single character
             but could have color markers, use a unicode font etc.
@@ -542,7 +572,7 @@ class SmartMapLink(MapLink):
     If two nodes are not found, it will link to any combination of links- or nodes as long as
     it can un-ambiguously determine which direction they lead.
 
-    Placing a limited link directly between two nodes/links will always be a two-way connection,
+    Placing a smart-link directly between two nodes/links will always be a two-way connection,
     whereas if it connects a node with another link, it will be a one-way connection in the
     direction of the link.
 
@@ -550,7 +580,12 @@ class SmartMapLink(MapLink):
     ::
 
         #
-        u     - moving up and down from the two nodes (two-way)
+        u     - moving up in BOTH directions will bring you to the other node (two-way)
+        #
+
+        #
+        d     - this better represents the 'real' up/down behavior.
+        u
         #
 
         #
@@ -558,13 +593,12 @@ class SmartMapLink(MapLink):
         u
         #
 
-        #
-        d     - (this would be equivalent to the first example but with a longer link)
-        u
+        #-#
+        u     - okay since the up-link prioritizes the nodes
         #
 
         #u#
-        u     - This is okay since they up-links will prefer connecting their nodes
+        u    - invalid since top-left node has two 'up' directions to go to
         #
 
         #     |
@@ -580,8 +614,7 @@ class SmartMapLink(MapLink):
 
         """
         # get all visually connected links
-        if not hasattr(self, '_cached_directions'):
-            # rebuild cache
+        if not self.directions:
             directions = {}
             neighbors = self.get_linked_neighbors(xygrid)
             nodes = [direction for direction, neighbor in neighbors.items()
@@ -601,8 +634,79 @@ class SmartMapLink(MapLink):
                     f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
                     f"{list(neighbors.keys())}.")
 
-            self._cached_directions = directions
-        return self._cached_directions.get(start_direction)
+            self.directions = directions
+        return self.directions.get(start_direction)
+
+
+class InvisibleSmartMapLink(SmartMapLink):
+    """
+    This is a smart maplink that does not show as such on the map - instead it will figure out
+    how it should look had it been one of the 'normal' cardinal-direction links and display
+    itself as that instead. This doesn't change its functionality, only the symbol shown
+    on the map display. This only works for cardinal-direction links.
+
+    It makes use of `display_symbol_aliases` mapping, which maps a sorted set of
+    `((start, end), (end, start))` (two-way) or `((start, end),)` (one-way) directions
+    to a symbol in the current map legend - this is the symbol alias to use. The matching
+    MapLink or MapNode will be initialized at the current position only for the purpose of getting
+    its display_symbol.
+
+    Example:
+        display_symbol_aliases = `{(('n', 's'), ('s', n')): '|', ...}`
+
+    If no `display_symbol_aliases` are given, the regular display_symbol is used.
+
+    """
+
+    # this allows for normal movement directions even if the invisible-node
+    # is marked with a different symbol.
+    direction_aliases = {
+        'n': 'n', 'ne': 'ne', 'e': 'e', 'se': 'se',
+        's': 's', 'sw': 'sw', 'w': 'w', 'nw': 'nw'
+    }
+
+    # replace current link position with what the smart links "should" look like
+    display_symbol_aliases = {
+        (('n', 's'), ('s', 'n')): '|',
+        (('n', 's'),): 'v',
+        (('s', 'n')): '^',
+        (('e', 'w'), ('w', 'e')): '-',
+        (('e', 'w'),): '>',
+        (('w', 'e'),): '<',
+        (('nw', 'se'), ('sw', 'ne')): '\\',
+        (('ne', 'sw'), ('sw', 'ne')): '/',
+    }
+
+    def get_display_symbol(self, xygrid, **kwargs):
+        """
+        The SmartMapLink already calculated the directions before this, so we
+        just need to figure out what to replace this with in order to make this 'invisible'
+
+        Depending on how we are connected, we figure out how the 'normal' link
+        should look and use that instead.
+
+        """
+        if not hasattr(self, "_cached_display_symbol"):
+            mapinstance = kwargs['mapinstance']
+
+            legend = mapinstance.legend
+            default_symbol = (
+                self.symbol if self.display_symbol is None else self.display_symbol)
+            self._cached_display_symbol = default_symbol
+
+            dirtuple = tuple((key, self.directions[key])
+                             for key in sorted(self.directions.keys()))
+
+            replacement_symbol = self.display_symbol_aliases.get(dirtuple, default_symbol)
+
+            if replacement_symbol != self.symbol:
+                node_or_link_class = legend.get(replacement_symbol)
+                if node_or_link_class:
+                    # initiate class in the current location and run get_display_symbol
+                    # to get what it would show.
+                    self._cached_display_symbol = node_or_link_class(
+                        self.x, self.y).get_display_symbol(xygrid, **kwargs)
+        return self._cached_display_symbol
 
 
 class SmartRerouterMapLink(MapLink):
@@ -645,8 +749,7 @@ class SmartRerouterMapLink(MapLink):
 
         """
         # get all visually connected links
-        if not hasattr(self, '_cached_directions'):
-            # try to get from cache where possible
+        if not self.directions:
             directions = {}
             unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
 
@@ -674,13 +777,23 @@ class SmartRerouterMapLink(MapLink):
                 directions[unhandled_links[0]] = unhandled_links[1]
                 directions[unhandled_links[1]] = unhandled_links[0]
 
-            self._cached_directions = directions
+            self.directions = directions
 
-        return self._cached_directions.get(start_direction)
+        return self.directions.get(start_direction)
 
 
 # ----------------------------------
 # Default nodes and link classes
+
+class BasicMapNode(MapNode):
+    """Basic map Node"""
+    symbol = "#"
+
+class InterruptMapNode(MapNode):
+    """A point of interest, where pathfinder will stop"""
+    symbol = "i"
+    display_symbol = "#"
+    interrupt_path = True
 
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
@@ -744,14 +857,35 @@ class WEOneWayMapLink(MapLink):
 class UpMapLink(SmartMapLink):
     """Up direction. Note that this still uses the xygrid!"""
     symbol = 'u'
+
     # all movement over this link is 'up', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
 
-
 class DownMapLink(UpMapLink):
     """Works exactly like `UpMapLink` but for the 'down' direction."""
     symbol = 'd'
+    # all movement over this link is 'down', regardless of where on the xygrid we move.
+    direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
+                         's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+
+
+class InterruptMapLink(InvisibleSmartMapLink):
+    """A (still passable) link that causes the pathfinder to stop before crossing."""
+    symbol = "i"
+    interrupt_path = True
+
+
+class BlockedMapLink(InvisibleSmartMapLink):
+    """
+    A high-weight (but still passable) link that causes the shortest-path algorithm to consider this
+    a blocked path. The block will not show up in the map display, paths will just never use this
+    link.
+
+    """
+    symbol = 'b'
+    weights = {'n': _BIG, 'ne': _BIG, 'e': _BIG, 'se': _BIG,
+               's': _BIG, 'sw': _BIG, 'w': _BIG, 'nw': _BIG}
 
 
 class RouterMapLink(SmartRerouterMapLink):
@@ -762,7 +896,8 @@ class RouterMapLink(SmartRerouterMapLink):
 # these are all symbols used for x,y coordinate spots
 # at (0,1) etc.
 DEFAULT_LEGEND = {
-    "#": MapNode,
+    "#": BasicMapNode,
+    "I": InterruptMapNode,
     "|": NSMapLink,
     "-": EWMapLink,
     "/": NESWMapLink,
@@ -776,6 +911,8 @@ DEFAULT_LEGEND = {
     "o": RouterMapLink,
     "u": UpMapLink,
     "d": DownMapLink,
+    "b": BlockedMapLink,
+    "i": InterruptMapLink,
 }
 
 # --------------------------------------------
@@ -973,7 +1110,6 @@ class Map:
                                  "symbols marking the upper- and bottom-left corners of the "
                                  "grid area.")
 
-        # from evennia import set_trace;set_trace()
         # find the the position (in the string as a whole) of the top-left corner-marker
         maplines = mapstring.split("\n")
         topleft_marker_x, topleft_marker_y = -1, -1
@@ -1059,7 +1195,7 @@ class Map:
         display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
         for ix, ydct in xygrid.items():
             for iy, node_or_link in ydct.items():
-                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid)
+                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid, mapinstance=self)
 
         # store
         self.max_x, self.max_y = max_x, max_y
@@ -1183,7 +1319,6 @@ class Map:
         pathfinding_routes = self.pathfinding_routes
         node_index_map = self.node_index_map
 
-        # from evennia import set_trace;set_trace()
         path = [endnode]
         directions = []
 
@@ -1193,15 +1328,23 @@ class Map:
             # we are working backwards).
             inextnode = pathfinding_routes[istartnode, inextnode]
             nextnode = node_index_map[inextnode]
-
             shortest_route_to = nextnode.shortest_route_to_node[path[-1].node_index]
 
             directions.append(shortest_route_to[0])
-            path.extend(shortest_route_to[1] + [nextnode])
+            path.extend(shortest_route_to[1][::-1] + [nextnode])
+
+            if any(1 for step in shortest_route_to[1] if step.interrupt_path):
+                # detected an interrupt in linkage - discard what we have so far
+                directions = []
+                path = [nextnode]
+
+            if nextnode.interrupt_path and nextnode is not startnode:
+                directions = []
+                path = [nextnode]
 
         # we have the path - reverse to get the correct order
-        path = path[::-1]
         directions = directions[::-1]
+        path = path[::-1]
 
         return directions, path
 

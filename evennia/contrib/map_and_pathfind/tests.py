@@ -234,26 +234,58 @@ o-o-#-#   o
 MAP9 = r"""
 + 0 1 2 3
 
-3 #-# #-#
-    d d |
+3 #-#-#-#
+    d d d
 2   | | |
-    u | u
-1 #-#-#-#
+    u u u
+1 #-# #-#
   u   d
-0 #u# #d#
+0 #d# #u#
 
 + 0 1 2 3
 
 """
 
 MAP9_DISPLAY = r"""
-#-# #-#
-  d d |
-  | | |
-  u | u
 #-#-#-#
+  d d d
+  | | |
+  u u u
+#-# #-#
 u   d
-#u# #d#
+#d# #u#
+""".strip()
+
+
+MAP10 = r"""
+
+ + 0 1 2 3
+
+ 4 #---#-#
+      b  |
+ 3 #i#---#
+   |/|
+ 2 # #-I-#
+     |
+ 1 #-#b#-#
+   | |   b
+ 0 #b#-#-#
+
+ + 0 1 2 3
+
+"""
+
+# note that I,i,b are invisible
+MAP10_DISPLAY = r"""
+#---#-#
+   /  |
+#-#---#
+|/|
+# #-#-#
+  |
+#-#-#-#
+| |   |
+#-#-#-#
 """.strip()
 
 
@@ -686,7 +718,7 @@ class TestMap8(TestCase):
 
 class TestMap9(TestCase):
     """
-    Test the Map class with a simple 4-node map
+    Test Map9 - a map with up/down links.
 
     """
     def setUp(self):
@@ -699,7 +731,9 @@ class TestMap9(TestCase):
 
     @parameterized.expand([
         ((0, 0), (0, 1), ('u',)),
-        ((0, 0), (1, 0), ('u',)),
+        ((0, 0), (1, 0), ('d',)),
+        ((1, 0), (2, 1), ('d', 'u', 'e', 'u', 'e', 'd')),
+        ((2, 1), (0, 1), ('u', 'w', 'd', 'w')),
     ])
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
         """
@@ -708,3 +742,54 @@ class TestMap9(TestCase):
         """
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
+
+
+class TestMap10(TestCase):
+    """
+    Test Map10 - a map with blocked- and interrupt links/nodes. These are
+    'invisible' nodes and won't show up in the map display.
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP10})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP10_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((0, 0), (1, 0), ('n', 'e', 's')),
+        ((3, 0), (3, 1), ()),  # the blockage hinders this
+        ((1, 3), (0, 4), ('e', 'n', 'w', 'w')),
+        ((0, 1), (3, 2), ('e', 'n', 'e')),  # path interrupted by I node
+        ((0, 1), (0, 3), ('e', 'n', 'n')),  # path interrupted by i link
+        ((1, 3), (0, 3), ()),
+        ((3, 2), (2, 2), ('w',)),
+        ((3, 2), (1, 2), ('w',)),
+        ((3, 3), (0, 3), ('w',)),
+        ((2, 2), (3, 2), ('e',)),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+    @parameterized.expand([
+        ((2, 2), (3, 2), ('e', ), ((2, 2), (2.5, 2), (3, 2))),
+        ((3, 3), (0, 3), ('w', ), ((3, 3), (2.5, 3.0), (2.0, 3.0), (1.5, 3.0), (1, 3))),
+    ])
+    def test_paths(self, startcoord, endcoord, expected_directions, expected_path):
+        """
+        Test path locations.
+
+        """
+        directions, path = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+        strpositions = [(step.X, step.Y) for step in path]
+        self.assertEqual(expected_path, tuple(strpositions))
+
+
