@@ -157,6 +157,9 @@ class MapNode:
     # internal use. Set during generation, but is also used for identification of the node
     node_index = None
 
+    # this should always be left True and avoids inifinite loops during querying.
+    multilink = True
+
     def __init__(self, x, y, node_index):
         """
         Initialize the mapnode.
@@ -185,7 +188,7 @@ class MapNode:
         # this maps
         self.weights = {}
         # lowest direction to a given neighbor
-        self.cheapest_to_node = {}
+        self.shortest_route_to_node = {}
         # maps the directions (on the xygrid NOT on XYgrid!) taken if stepping
         # out from this node in a  given direction until you get to the end node.
         # This catches  eventual longer link chains that would otherwise be lost
@@ -239,10 +242,13 @@ class MapNode:
                     # links tied together until getting to the node
                     self.xy_steps_to_node[direction] = steps
 
-                    # used for building the shortest path
-                    cheapest = self.cheapest_to_node.get(node_index, ("", [], _BIG))[2]
-                    if weight < cheapest:
-                        self.cheapest_to_node[node_index] = (direction, steps, weight)
+                    # used for building the shortest path. Note that we store the
+                    # aliased link directions here, for quick display by the
+                    # shortest-route solver
+                    shortest_route = self.shortest_route_to_node.get(node_index, ("", [], _BIG))[2]
+                    if weight < shortest_route:
+                        self.shortest_route_to_node[node_index] = (
+                            steps[0].direction_aliases.get(direction, direction), steps, weight)
 
     def linkweights(self, nnodes):
         """
@@ -301,8 +307,8 @@ class MapLink:
 
     - `symbol` (str) - The character to parse from the map into this node. This must be a single
       character, with the exception of `\\`.
-    - `display_symbol` (str or None)  - This is what is used to visualize this node later. This symbol
-      must still only have a visual size of 1, but you could e.g. use some fancy unicode
+    - `display_symbol` (str or None)  - This is what is used to visualize this node later. This
+      symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
       character (be aware of encodings to different clients though) or, commonly, add color
       tags around it. For further customization, the `.get_display_symbol` method receives
       the full grid and can return a dynamically determined display symbol. If `None`, the
@@ -322,6 +328,13 @@ class MapLink:
       So for a link chain with default weights, `#---#` would give a total weight of 3. With this
       setting, the weight will be 3 / 3 = 1. That is, for evenly weighted links, the length
       of the link doesn't matter.
+    - `direction_aliases` (dict): When displaying a direction during pathfinding, one may want
+      to display a different 'direction' than the cardinal on-map one. For example 'up' may be
+      visualized on the map as a 'n' movement, but the found path over this link should show
+      as 'u'. In that case, the alias would be `{'n': 'u'}`.
+    - `multilink` (bool): If set, this link accepts links from all directions. It will usually
+      use a custom get_direction to determine what these are based on surrounding topology. This
+      setting is necessary to avoid infinite loops when such multilinks are next to each other.
 
     """
     # link setup
@@ -341,11 +354,19 @@ class MapLink:
     # as {"s": "n", "n": "s"}. The get_direction method can be customized to
     # return something else.
     directions = {}
-    # this is required for pathfinding. Each weight is defined as {startpos:weight}, where
+    # for displaying the directions during pathfinding, you may want to show a different
+    # direction than the cardinal one. For example, 'up' may be 'n' on the map, but
+    # the direction when moving should be 'u'. This would be a alias {'n': 'u'}.
+    direction_aliases = {}
+    # this is required for pathfinding and contains cardinal directions (n, ne etc) only.
+    # Each weight is defined as {startpos:weight}, where
     # the startpos is the direction of the cell (n,ne etc) where the link *starts*. The
     # weight is a value > 0, smaller than _BIG. The get_weight method can be
     # customized to modify to return something else.
     weights = {}
+    # this shortcuts neighbors trying to figure out if they can connect to this link
+    # - if this is set, they always can (similarly as to a node)
+    multilink = False
 
     def __init__(self, x, y):
         """
@@ -359,8 +380,11 @@ class MapLink:
         self.x = x
         self.y = y
 
+        self.X = x / 2
+        self.Y = y / 2
+
     def __str__(self):
-        return f"<LinkNode '{self.symbol}' XY=({self.x / 2:g},{self.y / 2:g})>"
+        return f"<LinkNode '{self.symbol}' XY=({self.X:g},{self.Y:g})>"
 
     def __repr__(self):
         return str(self)
@@ -393,7 +417,7 @@ class MapLink:
                 # is perfectly okay to not be linking to a node
                 return None, 0, None
             raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({self.x / 2:g},{self.y / 2:g}) "
+                                 f"XY=({self.X:g},{self.Y:g}) "
                                  f"was connected to from the direction {start_direction}, but "
                                  "is not set up to link in that direction.")
 
@@ -403,7 +427,7 @@ class MapLink:
             next_target = xygrid[end_x][end_y]
         except KeyError:
             raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({self.x / 2:g},{self.y / 2, 1:g}) "
+                                 f"XY=({self.X:g},{self.Y:g}) "
                                  "points to empty space in the direction {end_direction}!")
 
         _weight += self.get_weight(start_direction, xygrid, _weight)
@@ -426,25 +450,22 @@ class MapLink:
                 _REVERSE_DIRECTIONS[end_direction],
                 xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
 
-    def get_visually_connected(self, xygrid, directions=None):
+    def get_linked_neighbors(self, xygrid, directions=None):
         """
         A helper to get all directions to which there appears to be a
         visual link/node. This does not trace the length of the link and check weights etc.
 
         Args:
-            link (MapLink): Currently active link.
             xygrid (dict): 2D dict with x,y coordinates as keys.
-            directions (list, optional): The directions (n, ne etc) to check
-                visual connection to.
+            directions (list, optional): Only scan in these directions.
 
         Returns:
             dict: Mapping {direction: node_or_link} wherever such was found.
 
         """
-        # if (self.x, self.y) == (4, 8):
-        #     from evennia import set_trace;set_trace()
         if not directions:
-            directions = _REVERSE_DIRECTIONS
+            directions = _REVERSE_DIRECTIONS.keys()
+
         links = {}
         for direction in directions:
             dx, dy = _MAPSCAN[direction]
@@ -453,7 +474,7 @@ class MapLink:
                 # there is is something there, we need to check if it is either
                 # a map node or a link connecting in our direction
                 node_or_link = xygrid[end_x][end_y]
-                if (hasattr(node_or_link, "node_index")
+                if (node_or_link.multilink
                         or node_or_link.get_direction(direction, xygrid)):
                     links[direction] = node_or_link
         return links
@@ -519,7 +540,7 @@ class MapLink:
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
     symbol = "|"
-    directions = {"s": "n", "n": "s"}
+    directions = {"n": "s", "s": "n"}
 
 
 class EWMapLink(MapLink):
@@ -532,7 +553,6 @@ class NESWMapLink(MapLink):
     """Two-way, NorthWest-SouthWest link"""
     symbol = "/"
     directions = {"ne": "sw", "sw": "ne"}
-
 
 class SENWMapLink(MapLink):
     """Two-way, SouthEast-NorthWest link"""
@@ -576,11 +596,84 @@ class WEOneWayMapLink(MapLink):
     directions = {"w": "e"}
 
 
+class UpMapLink(MapLink):
+    """
+    Upward-direction. This still uses the xy-grid to fake another level! An up-link can
+    only one two node neighbors (otherwise an error will be raised). If both neighbors are Nodes,
+    then the link will be two way, otherwise it'll be one-way. For clarity, up-down
+    is often shown s-n on the map, but it can be addded in any direction.
+    ::
+
+        #
+        u     - moving up and down from the two nodes (two-way)
+        #
+
+        #
+        |     - one-way up from the lower node to the upper
+        u
+        #
+
+        #
+        d     - (this would be equivalent to the first example but with a longer link)
+        u
+        #
+
+        #u#
+        u     - Ok the two up-links don't consider each other
+        #
+
+        #
+        u#    - invalid.
+        #
+
+    """
+    symbol = 'u'
+    multilink = True
+    # all movement over this link is 'up', regardless of where on the xygrid we move.
+    direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
+                         's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+
+    def get_direction(self, start_direction, xygrid):
+        """
+        Figure out the direction from a specific source direction based on grid topology.
+
+        """
+        # get all visually connected links
+        if not hasattr(self, '_cached_directions'):
+            # rebuild cache
+            directions = {}
+            neighbors = self.get_linked_neighbors(xygrid)
+            nodes = [direction for direction, neighbor in neighbors.items()
+                     if hasattr(neighbor, 'node_index')]
+
+            if len(nodes) == 2:
+                # prefer link to these two nodes
+                for direction in nodes:
+                    directions[direction] = _REVERSE_DIRECTIONS[direction]
+            elif len(neighbors) - len(nodes) == 1:
+                for direction in neighbors:
+                    directions[direction] = _REVERSE_DIRECTIONS[direction]
+            else:
+                raise MapParserError(
+                    f"MapLink '{self.symbol}' at "
+                    f"XY=({self.X:g},{self.Y:g}) must have exactly two connections - either "
+                    f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
+                    f"{list(neighbors.keys())}.")
+
+            self._cached_directions = directions
+        return self._cached_directions.get(start_direction)
+
+
+class DownMapLink(UpMapLink):
+    """Works exactly like `UpMapLink` but for the 'down' direction."""
+    symbol = 'd'
+
+
 class DynamicMapLink(MapLink):
     r"""
-    Link multiple links together, creating 'knees' and multi-crossings of links.
-    Remember that this is a link, so user will not 'stop' at it, even if placed on an XY
-    position!
+    Link multiple links together, creating 'knees' and multi-crossings of links. All such
+    links are two-way. Remember that this is still a link, so user will not 'stop' at it, even if
+    placed on an XY position!
 
     The dynamic link has no visual direction so we parse the visual surroundings in the map to see
     if it's obvious what is connected to what. If there are links on cardinally opposite sites,
@@ -588,36 +681,37 @@ class DynamicMapLink(MapLink):
     number of links, an error is raised.
     ::
           /
-        -o    - this is ok, there can only be one path
+        -o    - this is ok, there can only be one path, e-ne
 
          |
-        -o-   - this will be assumed to be two links
+        -o-   - equivalent to '+', one n-s and one w-e link crossing
          |
 
         \|/
         -o-   - all are passing straight through
         /|\
 
-        -o-   - w-e pass, other is sw-s
+        -o-   - w-e pass straight through, other link is sw-s
         /|
 
-        -o    - invalid
+        -o    - invalid; impossible to know which input goes to which output
         /|
 
     """
 
     symbol = "o"
+    multilink = True
 
     def get_direction(self, start_direction, xygrid):
         """
-        Dynamically determine the directions-dict based on the grid topology.
+        Dynamically determine the direction based on a source direction and grid topology.
 
         """
         # get all visually connected links
         if not hasattr(self, '_cached_directions'):
             # try to get from cache where possible
             directions = {}
-            unhandled_links = list(self.get_visually_connected(xygrid).keys())
+            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
 
             # get all straight lines (n-s, sw-ne etc) we can trace through
             # the dynamic link and remove them from the unhandled_links list
@@ -636,8 +730,8 @@ class DynamicMapLink(MapLink):
                 if n_unhandled != 2:
                     links = ", ".join(unhandled_links)
                     raise MapParserError(
-                        f"Dynamic Link '{self.symbol}' at "
-                        f"XY=({self.x / 2:g},{self.y / 2:g}) cannot determine "
+                        f"MapLink '{self.symbol}' at "
+                        f"XY=({self.X:g},{self.Y:g}) cannot determine "
                         f"how to connect in/out directions {links}.")
 
                 directions[unhandled_links[0]] = unhandled_links[1]
@@ -663,6 +757,8 @@ DEFAULT_LEGEND = {
     "<": EWOneWayMapLink,
     ">": WEOneWayMapLink,
     "o": DynamicMapLink,
+    "u": UpMapLink,
+    "d": DownMapLink,
 }
 
 # --------------------------------------------
@@ -911,7 +1007,7 @@ class Map:
                 mapnode_or_link_class = self.legend.get(char)
                 if not mapnode_or_link_class:
                     raise MapParserError(
-                        f"Symbol '{char}' on XY=({ix / 2, 1:g},{iy / 2, 1:g}) "
+                        f"Symbol '{char}' on XY=({ix / 2:g},{iy / 2:g}) "
                         "is not found in LEGEND."
                     )
                 if hasattr(mapnode_or_link_class, "node_index"):
@@ -920,7 +1016,7 @@ class Map:
 
                     if not (even_iy and ix % 2 == 0):
                         raise MapParserError(
-                            f"Symbol '{char}' on XY=({ix / 2, 1:g},{iy / 2, 1:g}) marks a "
+                            f"Symbol '{char}' on XY=({ix / 2:g},{iy / 2:g}) marks a "
                             "MapNode but is located between integer (X,Y) positions (only "
                             "Links can be placed between coordinates)!")
 
@@ -1081,10 +1177,10 @@ class Map:
             inextnode = pathfinding_routes[istartnode, inextnode]
             nextnode = node_index_map[inextnode]
 
-            cheapest_links_to = nextnode.cheapest_to_node[path[-1].node_index]
+            shortest_route_to = nextnode.shortest_route_to_node[path[-1].node_index]
 
-            directions.append(cheapest_links_to[0])
-            path.extend(cheapest_links_to[1] + [nextnode])
+            directions.append(shortest_route_to[0])
+            path.extend(shortest_route_to[1] + [nextnode])
 
         # we have the path - reverse to get the correct order
         path = path[::-1]
