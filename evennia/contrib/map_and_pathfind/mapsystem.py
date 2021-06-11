@@ -534,6 +534,151 @@ class MapLink:
         return self.weights.get(start_direction, self.default_weight)
 
 
+class SmartMapLink(MapLink):
+    """
+    A 'smart' link withot visible direction, but which uses its topological surroundings
+    to figure out how it connects. A limited link will prefer to connect two Nodes directly and
+    if there are more than two nodes directly neighboring, it will raise an MapParserError.
+    If two nodes are not found, it will link to any combination of links- or nodes as long as
+    it can un-ambiguously determine which direction they lead.
+
+    Placing a limited link directly between two nodes/links will always be a two-way connection,
+    whereas if it connects a node with another link, it will be a one-way connection in the
+    direction of the link.
+
+    Example with the up-down directions:
+    ::
+
+        #
+        u     - moving up and down from the two nodes (two-way)
+        #
+
+        #
+        |     - one-way up from the lower node to the upper
+        u
+        #
+
+        #
+        d     - (this would be equivalent to the first example but with a longer link)
+        u
+        #
+
+        #u#
+        u     - This is okay since they up-links will prefer connecting their nodes
+        #
+
+        #     |
+        u# or u-   - invalid.
+        #     |
+
+    """
+    multilink = True
+
+    def get_direction(self, start_direction, xygrid):
+        """
+        Figure out the direction from a specific source direction based on grid topology.
+
+        """
+        # get all visually connected links
+        if not hasattr(self, '_cached_directions'):
+            # rebuild cache
+            directions = {}
+            neighbors = self.get_linked_neighbors(xygrid)
+            nodes = [direction for direction, neighbor in neighbors.items()
+                     if hasattr(neighbor, 'node_index')]
+
+            if len(nodes) == 2:
+                # prefer link to these two nodes
+                for direction in nodes:
+                    directions[direction] = _REVERSE_DIRECTIONS[direction]
+            elif len(neighbors) - len(nodes) == 1:
+                for direction in neighbors:
+                    directions[direction] = _REVERSE_DIRECTIONS[direction]
+            else:
+                raise MapParserError(
+                    f"MapLink '{self.symbol}' at "
+                    f"XY=({self.X:g},{self.Y:g}) must have exactly two connections - either "
+                    f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
+                    f"{list(neighbors.keys())}.")
+
+            self._cached_directions = directions
+        return self._cached_directions.get(start_direction)
+
+
+class SmartRerouterMapLink(MapLink):
+    r"""
+    A 'smart' link without visible direction, but which uses its topological surroundings
+    to figure out how it connects. The rerouter can only be connected to with other links, not
+    by nodes. All such links are two-way. It can be used to create 'knees' and multi-crossings
+    of links. Remember that this is still a link, so user will not 'stop' at it, even if
+    placed on an XY position!
+
+    If there are links on cardinally opposite sites, these are considered pass-throughs, and
+    If determining the path of a set of input/output directions this is not possible, or there is an
+    uneven number of links, an `MapParserError` is raised.
+
+    Example with the RedirectLink:
+    ::
+          /
+        -o    - this is ok, there can only be one path, e-ne
+
+         |
+        -o-   - equivalent to '+', one n-s and one w-e link crossing
+         |
+
+        \|/
+        -o-   - all are passing straight through
+        /|\
+
+        -o-   - w-e pass straight through, other link is sw-s
+        /|
+
+        -o    - invalid; impossible to know which input goes to which output
+        /|
+
+    """
+    multilink = True
+
+    def get_direction(self, start_direction, xygrid):
+        """
+        Dynamically determine the direction based on a source direction and grid topology.
+
+        """
+        # get all visually connected links
+        if not hasattr(self, '_cached_directions'):
+            # try to get from cache where possible
+            directions = {}
+            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
+
+            # get all straight lines (n-s, sw-ne etc) we can trace through
+            # the dynamic link and remove them from the unhandled_links list
+            unhandled_links_copy = unhandled_links.copy()
+            for direction in unhandled_links_copy:
+                if _REVERSE_DIRECTIONS[direction] in unhandled_links_copy:
+                    directions[direction] = _REVERSE_DIRECTIONS[
+                        unhandled_links.pop(unhandled_links.index(direction))]
+
+            # check if we have any non-cross-through paths left to handle
+            n_unhandled = len(unhandled_links)
+            if n_unhandled:
+                # still remaining unhandled links. If there's not exactly
+                # one 'incoming' and one 'outgoing' we can't figure out
+                # where to go in a non-ambiguous way.
+                if n_unhandled != 2:
+                    links = ", ".join(unhandled_links)
+                    raise MapParserError(
+                        f"MapLink '{self.symbol}' at "
+                        f"XY=({self.X:g},{self.Y:g}) cannot determine "
+                        f"how to connect in/out directions {links}.")
+
+                directions[unhandled_links[0]] = unhandled_links[1]
+                directions[unhandled_links[1]] = unhandled_links[0]
+
+            self._cached_directions = directions
+
+        return self._cached_directions.get(start_direction)
+
+
 # ----------------------------------
 # Default nodes and link classes
 
@@ -596,72 +741,12 @@ class WEOneWayMapLink(MapLink):
     directions = {"w": "e"}
 
 
-class UpMapLink(MapLink):
-    """
-    Upward-direction. This still uses the xy-grid to fake another level! An up-link can
-    only one two node neighbors (otherwise an error will be raised). If both neighbors are Nodes,
-    then the link will be two way, otherwise it'll be one-way. For clarity, up-down
-    is often shown s-n on the map, but it can be addded in any direction.
-    ::
-
-        #
-        u     - moving up and down from the two nodes (two-way)
-        #
-
-        #
-        |     - one-way up from the lower node to the upper
-        u
-        #
-
-        #
-        d     - (this would be equivalent to the first example but with a longer link)
-        u
-        #
-
-        #u#
-        u     - Ok the two up-links don't consider each other
-        #
-
-        #
-        u#    - invalid.
-        #
-
-    """
+class UpMapLink(SmartMapLink):
+    """Up direction. Note that this still uses the xygrid!"""
     symbol = 'u'
-    multilink = True
     # all movement over this link is 'up', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
-
-    def get_direction(self, start_direction, xygrid):
-        """
-        Figure out the direction from a specific source direction based on grid topology.
-
-        """
-        # get all visually connected links
-        if not hasattr(self, '_cached_directions'):
-            # rebuild cache
-            directions = {}
-            neighbors = self.get_linked_neighbors(xygrid)
-            nodes = [direction for direction, neighbor in neighbors.items()
-                     if hasattr(neighbor, 'node_index')]
-
-            if len(nodes) == 2:
-                # prefer link to these two nodes
-                for direction in nodes:
-                    directions[direction] = _REVERSE_DIRECTIONS[direction]
-            elif len(neighbors) - len(nodes) == 1:
-                for direction in neighbors:
-                    directions[direction] = _REVERSE_DIRECTIONS[direction]
-            else:
-                raise MapParserError(
-                    f"MapLink '{self.symbol}' at "
-                    f"XY=({self.X:g},{self.Y:g}) must have exactly two connections - either "
-                    f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
-                    f"{list(neighbors.keys())}.")
-
-            self._cached_directions = directions
-        return self._cached_directions.get(start_direction)
 
 
 class DownMapLink(UpMapLink):
@@ -669,77 +754,9 @@ class DownMapLink(UpMapLink):
     symbol = 'd'
 
 
-class DynamicMapLink(MapLink):
-    r"""
-    Link multiple links together, creating 'knees' and multi-crossings of links. All such
-    links are two-way. Remember that this is still a link, so user will not 'stop' at it, even if
-    placed on an XY position!
-
-    The dynamic link has no visual direction so we parse the visual surroundings in the map to see
-    if it's obvious what is connected to what. If there are links on cardinally opposite sites,
-    these are considered pass-throughs. If determining this is not possible, or there is an uneven
-    number of links, an error is raised.
-    ::
-          /
-        -o    - this is ok, there can only be one path, e-ne
-
-         |
-        -o-   - equivalent to '+', one n-s and one w-e link crossing
-         |
-
-        \|/
-        -o-   - all are passing straight through
-        /|\
-
-        -o-   - w-e pass straight through, other link is sw-s
-        /|
-
-        -o    - invalid; impossible to know which input goes to which output
-        /|
-
-    """
-
+class RouterMapLink(SmartRerouterMapLink):
+    """Connects multiple links to build knees, pass-throughs etc."""
     symbol = "o"
-    multilink = True
-
-    def get_direction(self, start_direction, xygrid):
-        """
-        Dynamically determine the direction based on a source direction and grid topology.
-
-        """
-        # get all visually connected links
-        if not hasattr(self, '_cached_directions'):
-            # try to get from cache where possible
-            directions = {}
-            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
-
-            # get all straight lines (n-s, sw-ne etc) we can trace through
-            # the dynamic link and remove them from the unhandled_links list
-            unhandled_links_copy = unhandled_links.copy()
-            for direction in unhandled_links_copy:
-                if _REVERSE_DIRECTIONS[direction] in unhandled_links_copy:
-                    directions[direction] = _REVERSE_DIRECTIONS[
-                        unhandled_links.pop(unhandled_links.index(direction))]
-
-            # check if we have any non-cross-through paths left to handle
-            n_unhandled = len(unhandled_links)
-            if n_unhandled:
-                # still remaining unhandled links. If there's not exactly
-                # one 'incoming' and one 'outgoing' we can't figure out
-                # where to go in a non-ambiguous way.
-                if n_unhandled != 2:
-                    links = ", ".join(unhandled_links)
-                    raise MapParserError(
-                        f"MapLink '{self.symbol}' at "
-                        f"XY=({self.X:g},{self.Y:g}) cannot determine "
-                        f"how to connect in/out directions {links}.")
-
-                directions[unhandled_links[0]] = unhandled_links[1]
-                directions[unhandled_links[1]] = unhandled_links[0]
-
-            self._cached_directions = directions
-
-        return self._cached_directions.get(start_direction)
 
 
 # these are all symbols used for x,y coordinate spots
@@ -756,7 +773,7 @@ DEFAULT_LEGEND = {
     "^": SNOneWayMapLink,
     "<": EWOneWayMapLink,
     ">": WEOneWayMapLink,
-    "o": DynamicMapLink,
+    "o": RouterMapLink,
     "u": UpMapLink,
     "d": DownMapLink,
 }
