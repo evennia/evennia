@@ -283,6 +283,10 @@ class HelpDetailView(HelpMixin, DetailView):
             entry (HelpEntry, FileHelpEntry or Command): HelpEntry requested in the URL.
 
         """
+
+        if hasattr(self, 'obj'):
+            return getattr(self, 'obj', None)
+
         # Get the queryset for the help entries the user can access
         if not queryset:
             queryset = self.get_queryset()
@@ -309,5 +313,8 @@ class HelpDetailView(HelpMixin, DetailView):
             return HttpResponseBadRequest(
                 f"No ({category}/{topic})s found matching the query."
             )
+        else:
+            # cache the object if one was found
+            self.obj = obj
 
         return obj
