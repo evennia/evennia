@@ -20,8 +20,8 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
                            1
      + 0 1 2 3 4 5 6 7 8 9 0
 
-    10 #             #
-        \            d
+    10 #   # # #     #
+        \  I I I     d
      9   #-#-#-#     |
          |\    |     u
      8   #-#-#-#-----#-----o
@@ -34,7 +34,7 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
         /    |
      4 #-----+-# #---#
         \    | |  \ /
-     3   #-#-#-#   x   #
+     3   #b#-#-#   x   #
              | |  / \ u
      2       #-#-#---#
              ^       d
@@ -93,6 +93,8 @@ except ImportError as err:
         "the SciPy package. Install with `pip install scipy'.")
 from evennia.utils.utils import variable_from_module, mod_import
 
+_BIG = 999999999999
+
 
 _REVERSE_DIRECTIONS = {
     "n": "s",
@@ -102,7 +104,7 @@ _REVERSE_DIRECTIONS = {
     "s": "n",
     "sw": "ne",
     "w": "e",
-    "nw": "se"
+    "nw": "se",
 }
 
 _MAPSCAN = {
@@ -113,16 +115,22 @@ _MAPSCAN = {
     "s": (0, -1),
     "sw": (-1, -1),
     "w": (-1, 0),
-    "nw": (-1, 1)
+    "nw": (-1, 1),
 }
-
-_BIG = 999999999999
-
 
 # errors for Map system
 
 class MapError(RuntimeError):
-    pass
+
+    def __init__(self, error="", node_or_link=None):
+        prefix = ""
+        if node_or_link:
+            prefix = (f"{node_or_link.__class__.__name__} '{node_or_link.symbol}' "
+                      f"at XY=({node_or_link.X:g},{node_or_link.Y:g}) ")
+        self.node_or_link = node_or_link
+        self.message = f"{prefix}{error}"
+        super().__init__(self.message)
+
 
 class MapParserError(MapError):
     pass
@@ -253,9 +261,8 @@ class MapNode:
                     first_step_name = steps[0].direction_aliases.get(direction, direction)
                     if first_step_name in self.closest_neighbor_names:
                         raise MapParserError(
-                            f"MapNode '{self.symbol}' at XY=({self.X:g},{self.Y:g}) has more "
-                            f"than one outgoing direction '{first_step_name}'. All directions "
-                            "out of a node must be unique.")
+                            f"has more than one outgoing direction '{first_step_name}'. "
+                            "All directions out of a node must be unique.", self)
                     self.closest_neighbor_names[first_step_name] = direction
 
                     node_index = end_node.node_index
@@ -441,21 +448,25 @@ class MapLink:
         end_direction = self.get_direction(start_direction, xygrid)
         if not end_direction:
             if _steps is None:
-                # is perfectly okay to not be linking to a node
+                # is perfectly okay to not be linking back on the first step (to a node)
                 return None, 0, None
-            raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({self.X:g},{self.Y:g}) "
-                                 f"was connected to from the direction {start_direction}, but "
-                                 "is not set up to link in that direction.")
+            raise MapParserError(
+                f"was connected to from the direction {start_direction}, but "
+                "is not set up to link in that direction.", self)
 
-        dx, dy = _MAPSCAN[end_direction]
+        # note that if `get_direction` returns an unknown direction, this will be equivalent
+        # to pointing to an empty location, which makes sense
+        dx, dy = _MAPSCAN.get(end_direction, (_BIG, _BIG))
         end_x, end_y = self.x + dx, self.y + dy
         try:
             next_target = xygrid[end_x][end_y]
         except KeyError:
-            raise MapParserError(f"Link '{self.symbol}' at "
-                                 f"XY=({self.X:g},{self.Y:g}) "
-                                 "points to empty space in the direction {end_direction}!")
+            # check if we have some special action up our sleeve
+            next_target = self.at_empty_target(end_direction, xygrid)
+
+        if not next_target:
+            raise MapParserError(
+                f"points to empty space in the direction {end_direction}!", self)
 
         _weight += self.get_weight(start_direction, xygrid, _weight)
         if _steps is None:
@@ -470,11 +481,10 @@ class MapLink:
                 _weight / max(1, _linklen) if self.average_long_link_weights else _weight,
                 _steps
             )
-
         else:
             # we hit another link. Progress recursively.
             return next_target.traverse(
-                _REVERSE_DIRECTIONS[end_direction],
+                _REVERSE_DIRECTIONS.get(end_direction, end_direction),
                 xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
 
     def get_linked_neighbors(self, xygrid, directions=None):
@@ -506,25 +516,26 @@ class MapLink:
                     links[direction] = node_or_link
         return links
 
-    def get_display_symbol(self, xygrid, **kwargs):
+    def at_empty_target(self, start_direction, end_direction, xygrid):
         """
-        Hook to override for customizing how the display_symbol is determined.
+        This is called by `.traverse` when it finds this link pointing to nowhere.
 
         Args:
+            start_direction (str): The direction (n, ne etc) from which
+                this traversal originates for this link.
+            end_direction (str): The direction found from `get_direction` earlier.
             xygrid (dict): 2D dict with x,y coordinates as keys.
 
-        Kwargs:
-            mapinstance (Map): The current Map instance.
-
         Returns:
-            str: The display-symbol to use. This must visually be a single character
-            but could have color markers, use a unicode font etc.
+            MapNode, MapLink or None: The next target to go to from here. `None` if this
+            is an error that should be reported.
 
         Notes:
-            By default, just setting .display_symbol is enough.
+            This is usually a mapping error (returning `None`) but may have practical use, such as
+            teleporting or transitioning to another map.
 
         """
-        return self.symbol if self.display_symbol is None else self.display_symbol
+        return None
 
     def get_direction(self, start_direction, xygrid, **kwargs):
         """
@@ -563,14 +574,210 @@ class MapLink:
         """
         return self.weights.get(start_direction, self.default_weight)
 
+    def get_display_symbol(self, xygrid, **kwargs):
+        """
+        Hook to override for customizing how the display_symbol is determined.
+        This is called after all other hooks, at map visualization.
+
+        Args:
+            xygrid (dict): 2D dict with x,y coordinates as keys.
+
+        Kwargs:
+            mapinstance (Map): The current Map instance.
+
+        Returns:
+            str: The display-symbol to use. This must visually be a single character
+            but could have color markers, use a unicode font etc.
+
+        Notes:
+            By default, just setting .display_symbol is enough.
+
+        """
+        return self.symbol if self.display_symbol is None else self.display_symbol
+
+class SmartRerouterMapLink(MapLink):
+    r"""
+    A 'smart' link without visible direction, but which uses its topological surroundings
+    to figure out how it connects. All such links are two-way. It can be used to create 'knees' and
+    multi-crossings of links. Remember that this is still a link, so user will not 'stop' at it,
+    even if placed on an XY position!
+
+    If there are links on cardinally opposite sites, these are considered pass-throughs, and
+    If determining the path of a set of input/output directions this is not possible, or there is an
+    uneven number of links, an `MapParserError` is raised.
+
+    Example with the RedirectLink:
+    ::
+          /
+        -o    - this is ok, there can only be one path, e-ne
+
+         |
+        -o-   - equivalent to '+', one n-s and one w-e link crossing
+         |
+
+        \|/
+        -o-   - all are passing straight through
+        /|\
+
+        -o-   - w-e pass straight through, other link is sw-s
+        /|
+
+        -o    - invalid; impossible to know which input goes to which output
+        /|
+
+    """
+    multilink = True
+
+    def get_direction(self, start_direction, xygrid):
+        """
+        Dynamically determine the direction based on a source direction and grid topology.
+
+        """
+        # get all visually connected links
+        if not self.directions:
+            directions = {}
+            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
+
+            # get all straight lines (n-s, sw-ne etc) we can trace through
+            # the dynamic link and remove them from the unhandled_links list
+            unhandled_links_copy = unhandled_links.copy()
+            for direction in unhandled_links_copy:
+                if _REVERSE_DIRECTIONS[direction] in unhandled_links_copy:
+                    directions[direction] = _REVERSE_DIRECTIONS[
+                        unhandled_links.pop(unhandled_links.index(direction))]
+
+            # check if we have any non-cross-through paths left to handle
+            n_unhandled = len(unhandled_links)
+            if n_unhandled:
+                # still remaining unhandled links. If there's not exactly
+                # one 'incoming' and one 'outgoing' we can't figure out
+                # where to go in a non-ambiguous way.
+                if n_unhandled != 2:
+                    links = ", ".join(unhandled_links)
+                    raise MapParserError(
+                        f"cannot determine how to connect in/out directions {links}.", self)
+
+                directions[unhandled_links[0]] = unhandled_links[1]
+                directions[unhandled_links[1]] = unhandled_links[0]
+
+            self.directions = directions
+
+        return self.directions.get(start_direction)
+
+class TeleporterMapLink(MapLink):
+    """
+    The teleport link works by connecting to nowhere - and will then continue
+    on another teleport link with the same symbol elsewhere on the map. The teleport
+    must connect in only one direction, and only to another Link.
+
+    For this to work, there must be exactly one other teleport with the same `.symbol` on the map.
+    The two teleports will always operate as two-way connections, but by making the 'out-link' on
+    one side one-way, the effect will be that of a one-way teleport.
+
+    Example:
+    ::
+
+          t #
+         /  |   -  moving ne from the left node will bring the user to the rightmost node
+       -#   t      as if the two teleporters were connected (two way).
+
+       -#-t t># - one-way teleport from left to right.
+
+       #t       - invalid, may only connect to another link
+
+       #-t-#    - invalid, only one connected link is allowed.
+
+    """
+    symbol = 't'
+    # usually invisible
+    display_symbol = ' '
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.paired_teleporter = None
+
+    def at_empty_target(self, start_direction, xygrid):
+        """
+        Called during traversal, when finding an unknown direction out of the link (same as
+        targeting a link at an empty spot on the grid). This will also search for
+        a unique, matching teleport to send to.
+
+        Args:
+            start_direction (str): The direction (n, ne etc) from which this traversal originates
+                for this link.
+            xygrid (dict): 2D dict with x,y coordinates as keys.
+
+        Returns:
+            TeleporterMapLink: The paired teleporter.
+
+        Raises:
+            MapParserError: We raise this explicitly rather than returning `None` if we don't find
+                another teleport. This avoids us getting the default (and in this case confusing)
+                'pointing to an empty space' error we'd get if returning `None`.
+
+        """
+        if not self.paired_teleporter:
+            # scan for another teleporter
+            symbol = self.symbol
+            found_teleporters = []
+            for iy, line in xygrid.items():
+                for ix, node_or_link in xygrid[iy].items():
+                    if node_or_link.symbol == symbol and node_or_link is not self:
+                        found_teleporters.append(node_or_link)
+
+            if not found_teleporters:
+                raise MapParserError("found no matching teleporter to link to.", self)
+            if len(found_teleporters) > 1:
+                raise MapParserError(
+                    "found too many matching teleporters (must be exactly one more): "
+                    f"{found_teleporters}", self)
+
+            other_teleporter = found_teleporters[0]
+            # link the two so we don't need to scan again for the other one
+            self.paired_teleporter = other_teleporter
+            other_teleporter.paired_teleporter = self
+
+        return self.paired_teleporter
+
+    def get_direction(self, start_direction, xygrid):
+        """
+        Figure out the connected link and paired teleport.
+
+        """
+        if not self.directions:
+            neighbors = self.get_linked_neighbors(xygrid)
+
+            if len(neighbors) != 1:
+                raise MapParserError("must have exactly one link connected to it.", self)
+            direction, link = next(iter(neighbors.items()))
+            if hasattr(link, 'node_index'):
+                raise MapParserError("can only connect to a Link. Found {link} in "
+                                     "direction {direction}.", self)
+            # the string 'teleport' will not be understood by the traverser, leading to
+            # this being interpreted as an empty target and the `at_empty_target`
+            # hook firing when trying to traverse this link.
+            if start_direction == 'teleport':
+                # called while traversing another teleport
+                # - we must make sure we can always access/leave the teleport.
+                self.directions = {"teleport": direction,
+                                   direction: "teleport"}
+            else:
+                # called while traversing a normal link
+                self.directions = {start_direction: "teleport",
+                                   "teleport": direction}
+
+        return self.directions.get(start_direction)
+
 
 class SmartMapLink(MapLink):
     """
     A 'smart' link withot visible direction, but which uses its topological surroundings
-    to figure out how it connects. A limited link will prefer to connect two Nodes directly and
-    if there are more than two nodes directly neighboring, it will raise an MapParserError.
-    If two nodes are not found, it will link to any combination of links- or nodes as long as
-    it can un-ambiguously determine which direction they lead.
+    to figure out how it connects. Unlike the `SmartRerouterMapLink`, this link type is
+    also a 'direction' of its own and can thus connect directly to nodes. It can only describe
+    one transition and will prefer connecting two nodes if there are other possibilities. If the
+    linking is unclear or there are more than two nodes directly neighboring, a MapParserError will
+    be raised.  If two nodes are not found, it will link to any combination of links- or nodes as
+    long as it can un-ambiguously determine which direction they lead.
 
     Placing a smart-link directly between two nodes/links will always be a two-way connection,
     whereas if it connects a node with another link, it will be a one-way connection in the
@@ -629,10 +836,9 @@ class SmartMapLink(MapLink):
                     directions[direction] = _REVERSE_DIRECTIONS[direction]
             else:
                 raise MapParserError(
-                    f"MapLink '{self.symbol}' at "
-                    f"XY=({self.X:g},{self.Y:g}) must have exactly two connections - either "
+                    f"must have exactly two connections - either "
                     f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
-                    f"{list(neighbors.keys())}.")
+                    f"{list(neighbors.keys())}.", self)
 
             self.directions = directions
         return self.directions.get(start_direction)
@@ -707,79 +913,6 @@ class InvisibleSmartMapLink(SmartMapLink):
                     self._cached_display_symbol = node_or_link_class(
                         self.x, self.y).get_display_symbol(xygrid, **kwargs)
         return self._cached_display_symbol
-
-
-class SmartRerouterMapLink(MapLink):
-    r"""
-    A 'smart' link without visible direction, but which uses its topological surroundings
-    to figure out how it connects. The rerouter can only be connected to with other links, not
-    by nodes. All such links are two-way. It can be used to create 'knees' and multi-crossings
-    of links. Remember that this is still a link, so user will not 'stop' at it, even if
-    placed on an XY position!
-
-    If there are links on cardinally opposite sites, these are considered pass-throughs, and
-    If determining the path of a set of input/output directions this is not possible, or there is an
-    uneven number of links, an `MapParserError` is raised.
-
-    Example with the RedirectLink:
-    ::
-          /
-        -o    - this is ok, there can only be one path, e-ne
-
-         |
-        -o-   - equivalent to '+', one n-s and one w-e link crossing
-         |
-
-        \|/
-        -o-   - all are passing straight through
-        /|\
-
-        -o-   - w-e pass straight through, other link is sw-s
-        /|
-
-        -o    - invalid; impossible to know which input goes to which output
-        /|
-
-    """
-    multilink = True
-
-    def get_direction(self, start_direction, xygrid):
-        """
-        Dynamically determine the direction based on a source direction and grid topology.
-
-        """
-        # get all visually connected links
-        if not self.directions:
-            directions = {}
-            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
-
-            # get all straight lines (n-s, sw-ne etc) we can trace through
-            # the dynamic link and remove them from the unhandled_links list
-            unhandled_links_copy = unhandled_links.copy()
-            for direction in unhandled_links_copy:
-                if _REVERSE_DIRECTIONS[direction] in unhandled_links_copy:
-                    directions[direction] = _REVERSE_DIRECTIONS[
-                        unhandled_links.pop(unhandled_links.index(direction))]
-
-            # check if we have any non-cross-through paths left to handle
-            n_unhandled = len(unhandled_links)
-            if n_unhandled:
-                # still remaining unhandled links. If there's not exactly
-                # one 'incoming' and one 'outgoing' we can't figure out
-                # where to go in a non-ambiguous way.
-                if n_unhandled != 2:
-                    links = ", ".join(unhandled_links)
-                    raise MapParserError(
-                        f"MapLink '{self.symbol}' at "
-                        f"XY=({self.X:g},{self.Y:g}) cannot determine "
-                        f"how to connect in/out directions {links}.")
-
-                directions[unhandled_links[0]] = unhandled_links[1]
-                directions[unhandled_links[1]] = unhandled_links[0]
-
-            self.directions = directions
-
-        return self.directions.get(start_direction)
 
 
 # ----------------------------------
@@ -913,6 +1046,7 @@ DEFAULT_LEGEND = {
     "d": DownMapLink,
     "b": BlockedMapLink,
     "i": InterruptMapLink,
+    't': TeleporterMapLink,
 }
 
 # --------------------------------------------
@@ -1106,9 +1240,10 @@ class Map:
 
         mapstring = self.mapstring
         if mapstring.count(mapcorner_symbol) < 2:
-            raise MapParserError(f"The mapstring must have at least two '{mapcorner_symbol}' "
-                                 "symbols marking the upper- and bottom-left corners of the "
-                                 "grid area.")
+            raise MapParserError(
+                f"The mapstring must have at least two '{mapcorner_symbol}' "
+                "symbols marking the upper- and bottom-left corners of the "
+                "grid area.")
 
         # find the the position (in the string as a whole) of the top-left corner-marker
         maplines = mapstring.split("\n")
@@ -1184,8 +1319,9 @@ class Map:
 
                 else:
                     # we have a link at this xygrid position (this is ok everywhere)
-                    xygrid[ix][iy] = mapnode_or_link_class(x=ix, y=iy)
+                    xygrid[ix][iy] = mapnode_or_link_class(ix, iy)
 
+        # from evennia import set_trace;set_trace()
         # second pass: Here we loop over all nodes and have them connect to each other
         # via the detected linkages.
         for node in node_index_map.values():
@@ -1299,6 +1435,8 @@ class Map:
             the full path including the start- and end-node.
 
         """
+        # from evennia import set_trace;set_trace()
+
         startnode = self.get_node_from_coord(startcoord)
         endnode = self.get_node_from_coord(endcoord)
 
