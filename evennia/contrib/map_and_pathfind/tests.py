@@ -289,6 +289,30 @@ MAP10_DISPLAY = r"""
 """.strip()
 
 
+MAP11 = r"""
+
++ 0 1 2 3
+
+2 #-#
+   \
+1   t t
+       \
+0     #-#
+
++ 0 1 2 3
+
+"""
+
+
+MAP11_DISPLAY = r"""
+#-#
+ \
+
+     \
+    #-#
+""".strip()
+
+
 class TestMap1(TestCase):
     """
     Test the Map class with a simple 4-node map
@@ -793,3 +817,59 @@ class TestMap10(TestCase):
         self.assertEqual(expected_path, tuple(strpositions))
 
 
+class TestMap11(TestCase):
+    """
+    Test Map11 - a map teleporter links.
+
+    """
+    def setUp(self):
+        self.map = mapsystem.Map({"map": MAP11})
+
+    def test_str_output(self):
+        """Check the display_map"""
+        stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
+        self.assertEqual(MAP11_DISPLAY, stripped_map)
+
+    @parameterized.expand([
+        ((2, 0), (1, 2), ('e', 'nw', 'e')),
+        ((1, 2), (2, 0), ('w', 'se', 'w')),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+    @parameterized.expand([
+        ((3, 0), (0, 2), ('nw', ),
+         ((3, 0), (2.5, 0.5), (2.0, 1.0), (1.0, 1.0), (0.5, 1.5), (0, 2))),
+        ((0, 2), (3, 0), ('se', ),
+         ((0, 2), (0.5, 1.5), (1.0, 1.0), (2.0, 1.0), (2.5, 0.5), (3, 0))),
+    ])
+    def test_paths(self, startcoord, endcoord, expected_directions, expected_path):
+        """
+        Test path locations.
+
+        """
+        directions, path = self.map.get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+        strpositions = [(step.X, step.Y) for step in path]
+        self.assertEqual(expected_path, tuple(strpositions))
+
+    @parameterized.expand([
+        ((2, 0), (1, 2), 3, None, '..#    \n .     \n  . .  \n     . \n    @..'),
+        ((1, 2), (2, 0), 3, None, '..@    \n .     \n  . .  \n     . \n    #..'),
+
+    ])
+    def test_get_visual_range_with_path(self, coord, target, dist, max_size, expected):
+        """
+        Get visual range with a path-to-target marked.
+
+        """
+        mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes',
+                                           target=target, target_path_style=".",
+                                           character='@',
+                                           max_size=max_size)
+        self.assertEqual(expected, mapstr)
