@@ -2,7 +2,8 @@
  *
  * Evennia Webclient text2html component
  *
- * This provides a library to render Evennia's Msg() ANSI, |-coded text into usable HTML
+ * This is used in conjunction with the main evennia.js library, which
+ * handles all the communication with the Server.
  *
  */
 
@@ -12,12 +13,14 @@
 var text2html = (function () {
     "use strict"
 
+    let asciiESC = String.fromCharCode(27); // string literal for ASCII ESC bytes
+
     let foreground = "color-102"; // state tracker for foreground css
     let background = "";          // state tracker for background css
     let underline  = "";          // state tracker for underlines css
 
-    let pipecodes = /^(\|\[?[0-5][0-5][0-5])|(\|\[?=[a-z])|(\|[![]?[unrgybmcwxhRGYBMCWXH_/>*^-])/;
-    // example         ^|000               or  ^|=a       or ^|_
+    let pipecodes = /^(\|\[?[0-5][0-5][0-5])|(\|\[[0-9][0-9]?m)|(\|\[?=[a-z])|(\|[![]?[unrgybmcwxhRGYBMCWXH_/>*^-])/;
+    // example         ^|000                or ^|[22m         or  ^|=a      or ^|_
 
     let csslookup = {
         "|n": "normal",
@@ -105,17 +108,27 @@ var text2html = (function () {
         "|[=x": "bgcolor-254",
         "|[=y": "bgcolor-255",
         "|[=z": "bgcolor-231",
+        // not sure what these nexts ones are actually supposed to map to
+        "|[0m": "normal",
+        "|[1m": "normal",
+        "|[22m": "normal",
+        "|[36m": "color-006",
+        "|[37m": "color-015",
     }
 
+    function ascii (l) {
+        let a = new String(l); // force string
+        return a.charCodeAt(0);
+    }
 
     // dumb convert any leading or trailing spaces/tabs to &nbsp; sequences
     var handleSpaces = function (text) {
-        // TODO should probably get smart about not-replacing single spaces inside "normal" text
+        // TODO should probably get smart about replacing spaces inside "normal" text
         return text.replace( /\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace( / /g, "&nbsp;");
     }
 
 
-    // javascript doesn't have a native sprintf-like function for pretty printing numbers
+    // javascript doesn't have a native sprintf-like function
     function zfill(string, size) {
         while (string.length < size) string = "0" + string;
         return string;
@@ -126,9 +139,21 @@ var text2html = (function () {
     //   return the css (if any) and text remainder
     var pipe2css = function(pipecode) {
         let regx = "";
-        let css = null;
+        let css = "color-102";
 
-        regx = /^(\|\[?[nrgybmcwxhRGYBMCWX])|(\|\[?=[a-z])/;
+        regx = /^(\|\[?[nrgybmcwxhRGYBMCWX])/;
+        css = pipecode.match( regx );
+        if( css != null ) {
+            return csslookup[ css[1] ];
+        }
+
+        regx = /^(\|\[?=[a-z])/;
+        css = pipecode.match( regx );
+        if( css != null ) {
+            return csslookup[ css[1] ];
+        }
+
+        regx = /^(\|\[[0-9][0-9]?m)/;
         css = pipecode.match( regx );
         if( css != null ) {
             return csslookup[ css[1] ];
@@ -146,30 +171,19 @@ var text2html = (function () {
             return "underline";
         }
 
-        regx = /^(\|[hH])/;
-        css = pipecode.match( regx );
-        if( css != null ) {
-            return ""; // TODO ignoring highlight/unhighlight, probably just another tracked state
-        }
-
-        regx = /^\|([0-9][0-9][0-9])/;
+        regx = /^\|([0-5][0-5][0-5])/;
         css = pipecode.match( regx );
         if( css != null ) {
             return "color-" + zfill( (parseInt(css[1], 6) + 16).toString(), 3);
         }
 
-        regx = /^\|\[([0-9][0-9][0-9])/;
+        regx = /^\|\[([0-5][0-5][0-5])/;
         css = pipecode.match( regx );
         if( css != null ) {
             return "bgcolor-" + zfill( (parseInt(css[1], 6) + 16).toString(), 3);
         }
 
-        regx = /^\|[_/>*^-]/; // TODO what to do with ugly codes:  |_  |/  |>  |*  |^  and  |-
-        if( css != null ) {
-            return "";        // ignored for now
-        }
-
-        return ""; // TODO This "defaults" (probably) bogus sequences like |!c, or |[>
+        return css;
     }
 
 
@@ -185,8 +199,12 @@ var text2html = (function () {
     }
 
 
-    // track stateful CSS
+    // track stateful CSS 
     var trackCSS = function (css) {
+        if( (typeof css !== 'string') && ! (css instanceof String) ) {
+            css = "";
+        }
+
         if( css.startsWith( "color-" ) ) {
             foreground = css;
         }
@@ -212,11 +230,23 @@ var text2html = (function () {
     /*
      *
      */
-    var parseMsg = function (text) {
+    var parse2HTML = function (text) {
         let html = "";
         foreground = "color-102"; // state tracker for foreground css
         background = "";          // state tracker for background css
         underline  = "";          // state tracker for underlines css
+
+        // HACK: parse TELNET ASCII byte-by-byte, convert ESC's to |'s -- serverside "raw" bug?
+        //       Bug is further proven out by the fact that |'s don't come through as doubles.
+        let chars = text.split(''); // to characters
+        console.log( "raw: " + chars );
+        for( let n=0; n<chars.length; n++ ) {
+            if( ascii(chars[n]) === 27 ) {
+                chars[n] = '|';
+            }
+        }
+        text = chars.join(''); // from characters
+        console.log( "raw2: " + text );
 
         let strings = text.split( /(\n|\|[\/])/ ); // newline or pipe-slash
         for( let x=0; x<strings.length; x++ ) {
@@ -261,6 +291,17 @@ var text2html = (function () {
         }
 
         return html;
+    }
+
+    // torture test function
+    var dolphin = function () {
+        return parse2HTML( window.dolphin );
+    }
+
+    var parseMsg = function (text) {
+        // toggle the dolphin test by uncommenting the dolphin line and commenting out the default
+        return parse2HTML( text );
+        // return parse2HTML( window.dolphin ) + parse2HTML( text );
     }
 
     return {
