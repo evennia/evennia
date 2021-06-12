@@ -134,7 +134,6 @@ else:
                 GAME_DIR = gpath
                 break
         os.chdir(os.pardir)
-
 # Place to put log files, how often to rotate the log and how big each log file
 # may become before rotating.
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
@@ -152,6 +151,10 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
 CHANNEL_LOG_NUM_TAIL_LINES = 20
 # Max size (in bytes) of channel log files before they rotate
 CHANNEL_LOG_ROTATE_SIZE = 1000000
+# Unused by default, but used by e.g. the MapSystem contrib. A place for storing
+# semi-permanent data and avoid it being rebuilt over and over. It is created
+# on-demand only.
+CACHE_DIR = os.path.join(GAME_DIR, "server", ".cache")
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = "UTC"
