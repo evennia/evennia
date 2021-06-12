@@ -668,7 +668,7 @@ class TeleporterMapLink(MapLink):
     """
     The teleport link works by connecting to nowhere - and will then continue
     on another teleport link with the same symbol elsewhere on the map. The teleport
-    must connect in only one direction, and only to another Link.
+    symbol must connect to only one other link (not to a node).
 
     For this to work, there must be exactly one other teleport with the same `.symbol` on the map.
     The two teleports will always operate as two-way connections, but by making the 'out-link' on
@@ -683,14 +683,15 @@ class TeleporterMapLink(MapLink):
 
        -#-t t># - one-way teleport from left to right.
 
-       #t       - invalid, may only connect to another link
+       -#t       - invalid, may only connect to another link
 
-       #-t-#    - invalid, only one connected link is allowed.
+       -#-t-#    - invalid, only one connected link is allowed.
 
     """
     symbol = 't'
     # usually invisible
     display_symbol = ' '
+    direction_name = 'teleport'
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -756,17 +757,76 @@ class TeleporterMapLink(MapLink):
             # the string 'teleport' will not be understood by the traverser, leading to
             # this being interpreted as an empty target and the `at_empty_target`
             # hook firing when trying to traverse this link.
-            if start_direction == 'teleport':
+            direction_name = self.direction_name
+            if start_direction == direction_name:
                 # called while traversing another teleport
                 # - we must make sure we can always access/leave the teleport.
-                self.directions = {"teleport": direction,
-                                   direction: "teleport"}
+                self.directions = {direction_name: direction,
+                                   direction: direction_name}
             else:
                 # called while traversing a normal link
-                self.directions = {start_direction: "teleport",
-                                   "teleport": direction}
+                self.directions = {start_direction: direction_name,
+                                   direction_name: direction}
 
         return self.directions.get(start_direction)
+
+
+class MapTransitionLink(TeleporterMapLink):
+    """
+    This link teleports the user to another map and lets them continue moving
+    from there. Like the TeleporterMapLink, the map-transition symbol must connect to only one other
+    link (not directly to a node).
+
+    The other map will be scanned for a matching `.symbol` that must also be a MapTransitionLink.
+    The link is always two-way, but the link connecting to the transition can be one-way to create
+    a one-way transition. Make new links with different symbols (like A, B, C, ...) to link
+    multiple maps together.
+
+    Note that unlike for teleports, pathfinding will *not* work across the map-transition.
+
+    Examples:
+    ::
+
+        map1    map2
+
+           T
+          /     T-#    - movement to the transition-link will continue on the other map.
+        -#
+
+           T
+          /
+        -#      T>#    - one-way link from map1 to map2
+
+        -#t       - invalid, may only connect to another link
+
+        -#-t-#    - invalid, only one connected link is allowed.
+
+    """
+    symbol = 'T'
+    display_symbol = ' '
+    direction_name = 'transition'
+    interrupt_path = True
+
+    map1_name = 'map'
+    map2_name = 'map'
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.map1 = None
+        self.map2 = None
+
+    def at_empty_target(self, start_direction, end_direction, xygrid):
+        """
+        This is called by .traverse when it finds this link pointing to nowhere.
+
+        Args:
+            start_direction (str): The direction (n, ne etc) from which
+                this traversal originates for this link.
+            end_direction (str): The direction found from `get_direction` earlier.
+            xygrid (dict): 2D dict with x,y coordinates as keys.
+
+        """
+        # TODO - this needs some higher-level handler to work.
 
 
 class SmartMapLink(MapLink):
@@ -1008,7 +1068,6 @@ class InterruptMapLink(InvisibleSmartMapLink):
     symbol = "i"
     interrupt_path = True
 
-
 class BlockedMapLink(InvisibleSmartMapLink):
     """
     A high-weight (but still passable) link that causes the shortest-path algorithm to consider this
@@ -1047,6 +1106,7 @@ DEFAULT_LEGEND = {
     "b": BlockedMapLink,
     "i": InterruptMapLink,
     't': TeleporterMapLink,
+    'T': MapTransitionLink,
 }
 
 # --------------------------------------------
@@ -1097,7 +1157,7 @@ class Map:
     # we normally only accept one single character for the legend key
     legend_key_exceptions = ("\\")
 
-    def __init__(self, map_module_or_dict):
+    def __init__(self, map_module_or_dict, name="map"):
         """
         Initialize the map parser by feeding it the map.
 
@@ -1105,6 +1165,9 @@ class Map:
             map_module_or_dict (str, module or dict): Path or module pointing to a map. If a dict,
                 this should be a dict with a key 'map' and optionally a 'legend'
                 dicts to specify the map structure.
+            name (str, optional): Unique identifier for this map. Needed if the game uses
+                more than one map. Used when referencing this map during map transitions,
+                baking of pathfinding matrices etc.
 
         Notes:
             The map deals with two sets of coorinate systems:
@@ -1321,7 +1384,6 @@ class Map:
                     # we have a link at this xygrid position (this is ok everywhere)
                     xygrid[ix][iy] = mapnode_or_link_class(ix, iy)
 
-        # from evennia import set_trace;set_trace()
         # second pass: Here we loop over all nodes and have them connect to each other
         # via the detected linkages.
         for node in node_index_map.values():
@@ -1435,8 +1497,6 @@ class Map:
             the full path including the start- and end-node.
 
         """
-        # from evennia import set_trace;set_trace()
-
         startnode = self.get_node_from_coord(startcoord)
         endnode = self.get_node_from_coord(endcoord)
 
