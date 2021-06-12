@@ -4,10 +4,11 @@ Tests for the Mapsystem
 
 """
 
+from time import time
+from random import randint
 from unittest import TestCase
 from parameterized import parameterized
 from . import mapsystem
-
 
 MAP1 = """
 
@@ -873,3 +874,112 @@ class TestMap11(TestCase):
                                            character='@',
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
+
+
+class TestMapStressTest(TestCase):
+    """
+    Performance test of map patfinder and visualizer.
+
+    #-#-#-#-#....
+    |x|x|x|x|
+    #-#-#-#-#
+    |x|x|x|x|
+    #-#-#-#-#
+    |x|x|x|x|
+    #-#-#-#-#
+    ...
+
+    This should be a good stress-testing scenario because most each internal node has a maxiumum
+    number of connections and options to consider.
+
+    """
+
+    def _get_grid(self, Xsize, Ysize):
+        edge = f"+ {' ' * Xsize * 2}"
+        l1 = f"\n  {'#-' * Xsize}#"
+        l2 = f"\n  {'|x' * Xsize}|"
+
+        return f"{edge}\n{(l1 + l2) * Ysize}{l1}\n\n{edge}"
+
+    @parameterized.expand([
+        ((10, 10), 0.01),
+        ((100, 100), 1),
+    ])
+    def test_grid_creation(self, gridsize, max_time):
+        """
+        Test of grid-creataion performance for Nx, Ny grid.
+
+        """
+        Xmax, Ymax = gridsize
+        grid = self._get_grid(Xmax, Ymax)
+        # print(f"\n\n{grid}\n")
+        t0 = time()
+        mapsystem.Map({'map': grid})
+        t1 = time()
+        self.assertLess(t1 - t0, max_time, f"Map creation of ({Xmax}x{Ymax}) grid slower "
+                        f"than expected {max_time}s.")
+
+    @parameterized.expand([
+        ((10, 10), 10**-4),
+        ((20, 20), 10**-4),
+    ])
+    def test_grid_pathfind(self, gridsize, max_time):
+        """
+        Test pathfinding performance for Nx, Ny grid.
+
+        """
+        Xmax, Ymax = gridsize
+        grid = self._get_grid(Xmax, Ymax)
+        mapobj = mapsystem.Map({'map': grid})
+
+        t0 = time()
+        mapobj._calculate_path_matrix()
+        t1 = time()
+        # print(f"pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s")
+
+        # get the maximum distance and 9 other random points in the grid
+        start_end_points = [((0, 0), (Xmax-1, Ymax-1))]
+        for _ in range(9):
+            start_end_points.append(((randint(0, Xmax), randint(0, Ymax)),
+                                     (randint(0, Xmax), randint(0, Ymax))))
+
+        t0 = time()
+        for startcoord, endcoord in start_end_points:
+            mapobj.get_shortest_path(startcoord, endcoord)
+        t1 = time()
+        self.assertLess((t1 - t0) / 10, max_time, f"Pathfinding for ({Xmax}x{Ymax}) grid slower "
+                        f"than expected {max_time}s.")
+
+    @parameterized.expand([
+        ((10, 10), 4, 0.01),
+        ((20, 20), 4, 0.01),
+    ])
+    def test_grid_visibility(self, gridsize, dist, max_time):
+        """
+        Test grid visualization performance for Nx, Ny grid for
+        different visibility distances.
+
+        """
+        Xmax, Ymax = gridsize
+        grid = self._get_grid(Xmax, Ymax)
+        mapobj = mapsystem.Map({'map': grid})
+
+        t0 = time()
+        mapobj._calculate_path_matrix()
+        t1 = time()
+        # print(f"pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s")
+
+        # get random center points in grid and a range of targets to visualize the
+        # path to
+        start_end_points = [((0, 0), (Xmax-1, Ymax-1))]  # include max distance
+        for _ in range(9):
+            start_end_points.append(((randint(0, Xmax), randint(0, Ymax)),
+                                    (randint(0, Xmax), randint(0, Ymax))))
+
+        t0 = time()
+        for coord, target in start_end_points:
+            mapobj.get_visual_range(coord, dist=dist, mode='nodes', character='@', target=target)
+        t1 = time()
+        self.assertLess((t1 - t0) / 10, max_time,
+                        f"Visual Range calculation for ({Xmax}x{Ymax}) grid "
+                        f"slower than expected {max_time}s.")
