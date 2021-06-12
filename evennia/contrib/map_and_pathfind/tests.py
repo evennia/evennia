@@ -320,7 +320,7 @@ class TestMap1(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP1})
+        self.map = mapsystem.Map({"map": MAP1}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -404,7 +404,7 @@ class TestMap2(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP2})
+        self.map = mapsystem.Map({"map": MAP2}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -514,7 +514,7 @@ class TestMap3(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP3})
+        self.map = mapsystem.Map({"map": MAP3}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -563,7 +563,7 @@ class TestMap4(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP4})
+        self.map = mapsystem.Map({"map": MAP4}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -593,7 +593,7 @@ class TestMap5(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP5})
+        self.map = mapsystem.Map({"map": MAP5}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -621,7 +621,7 @@ class TestMap6(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP6})
+        self.map = mapsystem.Map({"map": MAP6}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -653,7 +653,7 @@ class TestMap7(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP7})
+        self.map = mapsystem.Map({"map": MAP7}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -681,7 +681,7 @@ class TestMap8(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP8})
+        self.map = mapsystem.Map({"map": MAP8}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -747,7 +747,7 @@ class TestMap9(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP9})
+        self.map = mapsystem.Map({"map": MAP9}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -776,7 +776,7 @@ class TestMap10(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP10})
+        self.map = mapsystem.Map({"map": MAP10}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -824,7 +824,7 @@ class TestMap11(TestCase):
 
     """
     def setUp(self):
-        self.map = mapsystem.Map({"map": MAP11})
+        self.map = mapsystem.Map({"map": MAP11}, name="testmap")
 
     def test_str_output(self):
         """Check the display_map"""
@@ -914,14 +914,14 @@ class TestMapStressTest(TestCase):
         grid = self._get_grid(Xmax, Ymax)
         # print(f"\n\n{grid}\n")
         t0 = time()
-        mapsystem.Map({'map': grid})
+        mapsystem.Map({'map': grid}, name="testmap")
         t1 = time()
         self.assertLess(t1 - t0, max_time, f"Map creation of ({Xmax}x{Ymax}) grid slower "
                         f"than expected {max_time}s.")
 
     @parameterized.expand([
-        ((10, 10), 10**-4),
-        ((20, 20), 10**-4),
+        ((10, 10), 10**-3),
+        ((20, 20), 10**-3),
     ])
     def test_grid_pathfind(self, gridsize, max_time):
         """
@@ -930,7 +930,7 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = mapsystem.Map({'map': grid})
+        mapobj = mapsystem.Map({'map': grid}, name="testmap")
 
         t0 = time()
         mapobj._calculate_path_matrix()
@@ -962,7 +962,7 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = mapsystem.Map({'map': grid})
+        mapobj = mapsystem.Map({'map': grid}, name="testmap")
 
         t0 = time()
         mapobj._calculate_path_matrix()
@@ -978,8 +978,11 @@ class TestMapStressTest(TestCase):
 
         t0 = time()
         for coord, target in start_end_points:
-            mapobj.get_visual_range(coord, dist=dist, mode='nodes', character='@', target=target)
+            mapobj.get_visual_range(coord, dist=dist, mode='nodes',
+                                    character='@', target=target)
         t1 = time()
         self.assertLess((t1 - t0) / 10, max_time,
                         f"Visual Range calculation for ({Xmax}x{Ymax}) grid "
                         f"slower than expected {max_time}s.")
+
+

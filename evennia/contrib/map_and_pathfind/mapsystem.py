@@ -81,7 +81,10 @@ See `./example_maps.py` for some empty grid areas to start from.
 
 ----
 """
+import pickle
 from collections import defaultdict
+from os import mkdir
+from os.path import isdir, isfile, join as pathjoin
 
 try:
     from scipy.sparse.csgraph import dijkstra
@@ -91,7 +94,11 @@ except ImportError as err:
     raise ImportError(
         f"{err}\nThe MapSystem contrib requires "
         "the SciPy package. Install with `pip install scipy'.")
+from django.conf import settings
 from evennia.utils.utils import variable_from_module, mod_import
+from evennia.utils import logger
+
+_CACHE_DIR = settings.CACHE_DIR
 
 _BIG = 999999999999
 
@@ -1180,6 +1187,10 @@ class Map:
                   Y = y // 2
 
         """
+        self.name = name
+
+        mapstring = ""
+
         # store so we can reload
         self.map_module_or_dict = map_module_or_dict
 
@@ -1196,6 +1207,12 @@ class Map:
         self.node_index_map = None
         self.dist_matrix = None
         self.pathfinding_routes = None
+
+        self.pathfinder_baked_filename = None
+        if name:
+            if not isdir(_CACHE_DIR):
+                mkdir(_CACHE_DIR)
+            self.pathfinder_baked_filename = pathjoin(_CACHE_DIR, f"{name}.P")
 
         # load data and parse it
         self.reload()
@@ -1262,13 +1279,32 @@ class Map:
 
     def _calculate_path_matrix(self):
         """
-        Solve the pathfinding problem using Dijkstra's algorithm.
+        Solve the pathfinding problem using Dijkstra's algorithm. This will try to
+        load the solution from disk if possible.
 
         """
-        nnodes = len(self.node_index_map)
+        if self.pathfinder_baked_filename and isfile(self.pathfinder_baked_filename):
+            # check if the solution for this grid was already solved previously.
 
-        pathfinding_graph = zeros((nnodes, nnodes))
+            mapstr, dist_matrix, pathfinding_routes = "", None, None
+            with open(self.pathfinder_baked_filename, 'rb') as fil:
+                try:
+                    mapstr, dist_matrix, pathfinding_routes = pickle.load(fil)
+                except Exception:
+                    logger.log_trace()
+            if (mapstr == self.mapstring
+                    and dist_matrix is not None
+                    and pathfinding_routes is not None):
+                # this is important - it means the map hasn't changed so
+                # we can re-use the stored data!
+                self.dist_matrix = dist_matrix
+                self.pathfinding_routes = pathfinding_routes
+                return
+
         # build a matrix representing the map graph, with 0s as impassable areas
+
+        nnodes = len(self.node_index_map)
+        pathfinding_graph = zeros((nnodes, nnodes))
         for inode, node in self.node_index_map.items():
             pathfinding_graph[inode, :] = node.linkweights(nnodes)
 
@@ -1279,6 +1315,12 @@ class Map:
         self.dist_matrix, self.pathfinding_routes = dijkstra(
             pathfinding_matrix, directed=True,
             return_predecessors=True, limit=self.max_pathfinding_length)
+
+        if self.pathfinder_baked_filename:
+            # try to cache the results
+            with open(self.pathfinder_baked_filename, 'wb') as fil:
+                pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
+                            fil, protocol=4)
 
     def _parse(self):
         """
@@ -1665,7 +1707,8 @@ class Map:
             # stylize path to target
 
             def _default_callable(node):
-                return target_path_style.format(display_symbol=node)
+                return target_path_style.format(
+                    display_symbol=node.get_display_symbol(self.xygrid))
 
             if callable(target_path_style):
                 _target_path_style = target_path_style
