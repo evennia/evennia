@@ -50,8 +50,8 @@ TutorialClimbable
 Obelisk
 LightSource
 CrumblingWall
-TutorialWeapon
-TutorialWeaponRack</p>
+Weapon
+WeaponRack</p>
 <dl class="py class">
 <dt id="evennia.contrib.tutorial_world.objects.TutorialObject">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.objects.</code><code class="sig-name descname">TutorialObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialObject" title="Permalink to this definition">¶</a></dt>
@@ -132,11 +132,6 @@ Attribute “readable_text” on the object and displays that.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdRead.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdRead.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdRead.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'tutorialworld', 'key': 'read', 'tags': '', 'text': '\n    Usage:\n      read [obj]\n\n    Read some text of a readable object.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdRead.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -234,11 +229,6 @@ Attribute and add the readable cmdset.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdClimb.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdClimb.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdClimb.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'tutorialworld', 'key': 'climb', 'tags': '', 'text': '\n    Climb an object\n\n    Usage:\n      climb &lt;object&gt;\n\n    This allows you to climb.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdClimb.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -386,11 +376,6 @@ to sit on a “lightable” object, we operate only on self.obj.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:holds()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdLight.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdLight.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'light burn', 'category': 'tutorialworld', 'key': 'on', 'tags': '', 'text': '\n    Creates light where there was none. Something to burn.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdLight.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -492,7 +477,7 @@ shift green root up/down</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['pull', 'push', 'move', 'shiftroot']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['shiftroot', 'push', 'move', 'pull']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -524,11 +509,6 @@ yellow/green - horizontal roots</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:locattr(is_lit)'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pull push move shiftroot', 'category': 'tutorialworld', 'key': 'shift', 'tags': '', 'text': '\n    Shifts roots around.\n\n    Usage:\n      shift blue root left/right\n      shift red root left/right\n      shift yellow root up/down\n      shift green root up/down\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -567,11 +547,6 @@ yellow/green - horizontal roots</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdPressButton.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:objattr(button_exposed) and objlocattr(is_lit)'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdPressButton.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'push button press button button', 'category': 'tutorialworld', 'key': 'press', 'tags': '', 'text': '\n    Presses a button.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -715,7 +690,7 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdAttack.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['chop', 'kill', 'stab', 'thrust', 'parry', 'defend', 'slash', 'hit', 'bash', 'pierce', 'fight']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['defend', 'thrust', 'fight', 'hit', 'kill', 'chop', 'pierce', 'parry', 'slash', 'bash', 'stab']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -739,11 +714,6 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdAttack.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chop kill stab thrust parry defend slash hit bash pierce fight', 'category': 'tutorialworld', 'key': 'attack', 'tags': '', 'text': '\n    Attack the enemy. Commands:\n\n      stab &lt;enemy&gt;\n      slash &lt;enemy&gt;\n      parry\n\n    stab - (thrust) makes a lot of damage but is harder to hit with.\n    slash - is easier to land, but does not make as much damage.\n    parry - forgoes your attack but will make you harder to hit on next\n            enemy attack.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -765,8 +735,8 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.objects.</code><code class="sig-name descname">TutorialWeapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.objects.</code><code class="sig-name descname">Weapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#Weapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject</span></code></a></p>
 <p>This defines a bladed weapon.</p>
 <dl>
@@ -779,38 +749,38 @@ damage - base damage given (modified by hit success and</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.at_object_creation">
-<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeapon.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#Weapon.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at first creation of the object</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeapon.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.reset" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#Weapon.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>When reset, the weapon is simply deleted, unless it has a place
 to return to.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.objects.TutorialWeapon'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.path" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.objects.Weapon'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeapon.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'TutorialWeapon'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeapon.typename" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.Weapon.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'Weapon'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.Weapon.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -856,11 +826,6 @@ itself handle all messages.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdGetWeapon.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.CmdGetWeapon.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'tutorialworld', 'key': 'get weapon', 'tags': '', 'text': '\n    Usage:\n      get weapon\n\n    This will try to obtain a weapon from the container.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdGetWeapon.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -887,8 +852,8 @@ itself handle all messages.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.objects.</code><code class="sig-name descname">TutorialWeaponRack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeaponRack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.objects.</code><code class="sig-name descname">WeaponRack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#WeaponRack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject</span></code></a></p>
 <p>This object represents a weapon store. When people use the
 “get weapon” command on this rack, it will produce one
@@ -906,14 +871,14 @@ grab another one.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.at_object_creation">
-<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeaponRack.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#WeaponRack.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>called at creation</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.produce_weapon">
-<code class="sig-name descname">produce_weapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#TutorialWeaponRack.produce_weapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.produce_weapon" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.produce_weapon">
+<code class="sig-name descname">produce_weapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/objects.html#WeaponRack.produce_weapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.produce_weapon" title="Permalink to this definition">¶</a></dt>
 <dd><p>This will produce a new weapon from the rack,
 assuming the caller hasn’t already gotten one. When
 doing so, the caller will get Tagged with the id
@@ -922,25 +887,25 @@ pulling weapons from it indefinitely.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.objects.TutorialWeaponRack'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.path" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.objects.WeaponRack'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.contrib.tutorial_world.objects.TutorialWeaponRack.typename">
-<code class="sig-name descname">typename</code><em class="property"> = 'TutorialWeaponRack'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.TutorialWeaponRack.typename" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorial_world.objects.WeaponRack.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'WeaponRack'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.WeaponRack.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -989,6 +954,7 @@ pulling weapons from it indefinitely.</p>
   <li><a href="../../1.0-dev/api/evennia.contrib.tutorial_world.objects.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.tutorial_world.objects.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.suppress_ga</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -38,57 +37,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.server.portal.suppress_ga">
-<span id="evennia-server-portal-suppress-ga"></span><h1>evennia.server.portal.suppress_ga<a class="headerlink" href="#module-evennia.server.portal.suppress_ga" title="Permalink to this headline">¶</a></h1>
-<p>SUPPRESS-GO-AHEAD</p>
-<p>This supports suppressing or activating Evennia
-the GO-AHEAD telnet operation after every server reply.
-If the client sends no explicit DONT SUPRESS GO-AHEAD,
-Evennia will default to supressing it since many clients
-will fail to use it and has no knowledge of this standard.</p>
-<p>It is set as the NOGOAHEAD protocol_flag option.</p>
-<p><a class="reference external" href="http://www.faqs.org/rfcs/rfc858.html">http://www.faqs.org/rfcs/rfc858.html</a></p>
-<dl class="py class">
-<dt id="evennia.server.portal.suppress_ga.SuppressGA">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.suppress_ga.</code><code class="sig-name descname">SuppressGA</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/suppress_ga.html#SuppressGA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.suppress_ga.SuppressGA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet
-protocol to set it up.</p>
-<dl class="py method">
-<dt id="evennia.server.portal.suppress_ga.SuppressGA.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/suppress_ga.html#SuppressGA.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.suppress_ga.SuppressGA.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize suppression of GO-AHEADs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>protocol</strong> (<em>Protocol</em>) – The active protocol instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga">
-<code class="sig-name descname">wont_suppress_ga</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/suppress_ga.html#SuppressGA.wont_suppress_ga"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when client requests to not suppress GA.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>option</strong> (<em>Option</em>) – Not used.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga">
-<code class="sig-name descname">will_suppress_ga</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/suppress_ga.html#SuppressGA.will_suppress_ga"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga" title="Permalink to this definition">¶</a></dt>
-<dd><p>Client will suppress GA</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>option</strong> (<em>Option</em>) – Not used.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-server-portal-suppress-ga">
+<h1>evennia.server.portal.suppress_ga<a class="headerlink" href="#evennia-server-portal-suppress-ga" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -134,6 +84,7 @@ protocol to set it up.</p>
   <li><a href="../../0.9.5/api/evennia.server.portal.suppress_ga.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -150,7 +101,6 @@ protocol to set it up.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.suppress_ga</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

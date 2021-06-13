@@ -48,6 +48,7 @@
 
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span><span class="p">,</span> <span class="n">maybeDeferred</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
@@ -57,11 +58,21 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DefaultScript&quot;</span><span class="p">,</span> <span class="s2">&quot;DoNothing&quot;</span><span class="p">,</span> <span class="s2">&quot;Store&quot;</span><span class="p">]</span>
 
 
+<span class="n">FLUSHING_INSTANCES</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether we&#39;re in the process of flushing scripts from the cache</span>
+<span class="n">SCRIPT_FLUSH_TIMERS</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># stores timers for scripts that are currently being flushed</span>
+
+
+<span class="k">def</span> <span class="nf">restart_scripts_after_flush</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;After instances are flushed, validate scripts so they&#39;re not dead for a long period of time&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">FLUSHING_INSTANCES</span>
+    <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="n">FLUSHING_INSTANCES</span> <span class="o">=</span> <span class="kc">False</span>
+
+
 <span class="k">class</span> <span class="nc">ExtendedLoopingCall</span><span class="p">(</span><span class="n">LoopingCall</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Custom child of LoopingCall that can start at a delay different than</span>
-<span class="sd">    `self.interval` and self.count=0. This allows it to support pausing</span>
-<span class="sd">    by resuming at a later period.</span>
+<span class="sd">    LoopingCall that can start at a delay different</span>
+<span class="sd">    than `self.interval`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -79,10 +90,10 @@
 <span class="sd">            interval (int): Repeat interval in seconds.</span>
 <span class="sd">            now (bool, optional): Whether to start immediately or after</span>
 <span class="sd">                `start_delay` seconds.</span>
-<span class="sd">            start_delay (int, optional): This only applies is `now=False`. It gives</span>
-<span class="sd">                number of seconds to wait before starting. If `None`, use</span>
-<span class="sd">                `interval` as this value instead. Internally, this is used as a</span>
-<span class="sd">                way to start with a variable start time after a pause.</span>
+<span class="sd">            start_delay (int): The number of seconds before starting.</span>
+<span class="sd">                If None, wait interval seconds. Only valid if `now` is `False`.</span>
+<span class="sd">                It is used as a way to start with a variable start time</span>
+<span class="sd">                after a pause.</span>
 <span class="sd">            count_start (int): Number of repeats to start at. The  count</span>
 <span class="sd">                goes up every time the system repeats. This is used to</span>
 <span class="sd">                implement something repeating `N` number of times etc.</span>
@@ -161,7 +172,7 @@
 <span class="sd">        of start_delay into account.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            int or None: The time in seconds until the next call. This</span>
+<span class="sd">            next (int or None): The time in seconds until the next call. This</span>
 <span class="sd">                takes `start_delay` into account. Returns `None` if</span>
 <span class="sd">                the task is not running.</span>
 
@@ -169,15 +180,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">total_runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span>
             <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>
-            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_runtime</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_runtime</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">ScriptBase</span><span class="p">(</span><span class="n">ScriptDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for scripts. Don&#39;t inherit from this, inherit from the</span>
 <span class="sd">    class `DefaultScript` below instead.</span>
-
-<span class="sd">    This handles the timer-component of the Script.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -189,176 +198,36 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_start_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If we&#39;re flushing this object, make sure the LoopingCall is gone too.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_idmapper_flush</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">ret</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># TODO - restart anew ?</span>
-        <span class="k">return</span> <span class="n">ret</span>
-
-    <span class="k">def</span> <span class="nf">_start_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_restart</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">auto_unpause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start/Unpause task runner, optionally with new values. If given, this will</span>
-<span class="sd">        update the Script&#39;s fields.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            interval (int): How often to tick the task, in seconds. If this is &lt;= 0,</span>
-<span class="sd">                no task will start and properties will not be updated on the Script.</span>
-<span class="sd">            start_delay (int): If the start should be delayed.</span>
-<span class="sd">            repeats (int): How many repeats. 0 for infinite repeats.</span>
-<span class="sd">            force_restart (bool): If set, always create a new task running even if an</span>
-<span class="sd">                old one already was running. Otherwise this will only happen if</span>
-<span class="sd">                new script properties were passed.</span>
-<span class="sd">            auto_unpause (bool): This is an automatic unpaused (used e.g by Evennia after</span>
-<span class="sd">                a reload) and should not un-pause manually paused Script timers.</span>
-<span class="sd">        Note:</span>
-<span class="sd">            If setting the `start-delay` of a *paused* Script, the Script will</span>
-<span class="sd">            restart exactly after that new start-delay, ignoring the time it</span>
-<span class="sd">            was paused at. If only changing the `interval`, the Script will</span>
-<span class="sd">            come out of pause comparing the time it spent in the *old* interval</span>
-<span class="sd">            with the *new* interval in order to determine when next to fire.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            - Script previously had an interval of 10s and was paused 5s into that interval.</span>
-<span class="sd">              Script is now restarted with a 20s interval. It will next fire after 15s.</span>
-<span class="sd">            - Same Script is restarted with a 3s interval. It will fire immediately.</span>
+<span class="sd">        Start task runner.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># script object already deleted from db - don&#39;t start a new timer</span>
-            <span class="k">raise</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">DoesNotExist</span>
-
-        <span class="c1"># handle setting/updating fields</span>
-        <span class="n">update_fields</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">old_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span>
-        <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">=</span> <span class="n">interval</span>
-            <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_interval&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">start_delay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span> <span class="o">=</span> <span class="n">start_delay</span>
-            <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_start_delay&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">repeats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_repeats</span> <span class="o">=</span> <span class="n">repeats</span>
-            <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_repeats&quot;</span><span class="p">)</span>
-
-        <span class="c1"># validate interval</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_is_active</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_is_active&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># no point in starting a task with no interval.</span>
-            <span class="k">return</span>
-
-        <span class="n">restart</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">update_fields</span><span class="p">)</span> <span class="ow">or</span> <span class="n">force_restart</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">restart</span><span class="p">:</span>
-                <span class="c1"># a change needed/forced; stop/remove old task</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># task alreaady running and no changes needed</span>
-                <span class="k">return</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span>
-            <span class="c1"># we should have a fresh task after this point</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">ExtendedLoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_step_task</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unpause_task</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span>
-                           <span class="n">auto_unpause</span><span class="o">=</span><span class="n">auto_unpause</span><span class="p">,</span>
-                           <span class="n">old_interval</span><span class="o">=</span><span class="n">old_interval</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-            <span class="c1"># if not unpausing started it, start script anew with the new values</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_pause_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auto_pause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pause task where it is, saving the current status.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            auto_pause (str):</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span><span class="p">:</span>
-            <span class="c1"># only allow pause if not already paused</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
-            <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">callcount</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manually_paused</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">auto_pause</span>
-                <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-                    <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="kc">None</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">at_pause</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="n">auto_pause</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_unpause_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_unpause</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">old_interval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Unpause task from paused status. This is used for auto-paused tasks, such</span>
-<span class="sd">        as tasks paused on a server reload.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            interval (int): How often to tick the task, in seconds.</span>
-<span class="sd">            start_delay (int): If the start should be delayed.</span>
-<span class="sd">            auto_unpause (bool): If set, this will only unpause scripts that were unpaused</span>
-<span class="sd">                automatically (useful during a system reload/shutdown).</span>
-<span class="sd">            old_interval (int): The old Script interval (or current one if nothing changed). Used</span>
-<span class="sd">                to recalculate the unpause startup interval.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">paused_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span>
-        <span class="k">if</span> <span class="n">paused_time</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">auto_unpause</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manually_paused</span><span class="p">:</span>
-                <span class="c1"># this was manually paused.</span>
-                <span class="k">return</span>
-
-            <span class="c1"># task was paused. This will use the new values as needed.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span><span class="p">:</span>
+            <span class="c1"># the script was paused; restarting</span>
             <span class="n">callcount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span> <span class="ow">or</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="n">start_delay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># adjust start-delay based on how far we were into previous interval</span>
-                <span class="n">start_delay</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">old_interval</span> <span class="o">-</span> <span class="n">paused_time</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">start_delay</span> <span class="o">=</span> <span class="n">paused_time</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">ExtendedLoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_step_task</span><span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">count_start</span><span class="o">=</span><span class="n">callcount</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span><span class="p">,</span> <span class="n">count_start</span><span class="o">=</span><span class="n">callcount</span>
             <span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manually_paused</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_repeats</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="c1"># starting script anew</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_stop_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_stop_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Stop task runner and delete the task.</span>
+<span class="sd">        Stop task runner</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
         <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_is_active</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="c1"># make sure this is not confused as a paused script</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manually_paused</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_is_active&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_step_errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -367,8 +236,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="n">estring</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-            <span class="s2">&quot;Script </span><span class="si">{key}</span><span class="s2">(#</span><span class="si">{dbid}</span><span class="s2">) of type &#39;</span><span class="si">{name}</span><span class="s2">&#39;: at_repeat() error &#39;</span><span class="si">{err}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">dbid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">cname</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()))</span>
+            <span class="s2">&quot;Script </span><span class="si">%(key)s</span><span class="s2">(#</span><span class="si">%(dbid)s</span><span class="s2">) of type &#39;</span><span class="si">%(cname)s</span><span class="s2">&#39;: at_repeat() error &#39;</span><span class="si">%(err)s</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;dbid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="s2">&quot;cname&quot;</span><span class="p">:</span> <span class="n">cname</span><span class="p">,</span> <span class="s2">&quot;err&quot;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">estring</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -411,7 +280,12 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="c1"># Access methods / hooks</span>
+    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should be overridden in child.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -473,185 +347,12 @@
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;nattributes&quot;</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;autostart&quot;</span><span class="p">):</span>
-                <span class="c1"># autostart the script</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">(</span><span class="n">force_restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;autostart&quot;</span><span class="p">):</span>
+                <span class="c1"># don&#39;t auto-start the script</span>
+                <span class="k">return</span>
 
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete the Script. Makes sure to stop any timer tasks first.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_script_delete</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Should be overridden in child.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when script is deleted, after at_stop.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If returning False, `at_repeat` will not be called and timer will stop</span>
-<span class="sd">        updating.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="kc">True</span>
-
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called repeatedly every `interval` seconds, once `.start()` has</span>
-<span class="sd">        been called on the Script at least once.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start/Unpause timer component, optionally with new values. If given,</span>
-<span class="sd">        this will update the Script&#39;s fields. This will start `at_repeat` being</span>
-<span class="sd">        called every `interval` seconds.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            interval (int): How often to fire `at_repeat` in seconds.</span>
-<span class="sd">            start_delay (int): If the start of ticking should be delayed.</span>
-<span class="sd">            repeats (int): How many repeats. 0 for infinite repeats.</span>
-<span class="sd">            **kwargs: Optional (default unused) kwargs passed on into the `at_start` hook.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            If setting the `start-delay` of a *paused* Script, the Script will</span>
-<span class="sd">            restart exactly after that new start-delay, ignoring the time it</span>
-<span class="sd">            was paused at. If only changing the `interval`, the Script will</span>
-<span class="sd">            come out of pause comparing the time it spent in the *old* interval</span>
-<span class="sd">            with the *new* interval in order to determine when next to fire.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            - Script previously had an interval of 10s and was paused 5s into that interval.</span>
-<span class="sd">              Script is now restarted with a 20s interval. It will next fire after 15s.</span>
-<span class="sd">            - Same Script is restarted with a 3s interval. It will fire immediately.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="c1"># legacy alias</span>
-    <span class="n">update</span> <span class="o">=</span> <span class="n">start</span>
-
-    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Stop the Script&#39;s timer component. This will not delete the Sctipt,</span>
-<span class="sd">        just stop the regular firing of `at_repeat`. Running `.start()` will</span>
-<span class="sd">        start the timer anew, optionally with new settings..</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Optional (default unused) kwargs passed on into the `at_stop` hook.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Manually the Script&#39;s timer component manually.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Optional (default unused) kwargs passed on into the `at_pause` hook.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Manually unpause a Paused Script.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Optional (default unused) kwargs passed on into the `at_start` hook.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unpause_task</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">time_until_next_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get time until the script fires it `at_repeat` hook again.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int or None: Time in seconds until the script runs again.</span>
-<span class="sd">                If not a timed script, return `None`.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This hook is not used in any way by the script&#39;s stepping</span>
-<span class="sd">            system; it&#39;s only here for the user to be able to check in</span>
-<span class="sd">            on their scripts and when they will next be run.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
-        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">()))</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="k">pass</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">remaining_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the number of returning repeats for limited Scripts.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int or None: The number of repeats remaining until the Script</span>
-<span class="sd">                stops. Returns `None` if it has unlimited repeats.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
-        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_repeats</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">callcount</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">reset_callcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reset the count of the number of calls done.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (int, optional): The repeat value to reset to. Default</span>
-<span class="sd">                is to set it all the way back to 0.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This is only useful if repeats != 0.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
-        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">callcount</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fire a premature triggering of the script callback. This</span>
-<span class="sd">        will reset the timer and count down repeats as if the script</span>
-<span class="sd">        had fired normally.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
-        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span>
+        <span class="c1"># auto-start script (default)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="DefaultScript"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript">[docs]</a><span class="k">class</span> <span class="nc">DefaultScript</span><span class="p">(</span><span class="n">ScriptBase</span><span class="p">):</span>
@@ -698,20 +399,287 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.is_valid"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultScript.time_until_next_repeat"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.time_until_next_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">time_until_next_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Is called to check if the script&#39;s timer is valid to run at this time.</span>
-<span class="sd">        Should return a boolean. If False, the timer will be stopped.</span>
+<span class="sd">        Get time until the script fires it `at_repeat` hook again.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            next (int): Time in seconds until the script runs again.</span>
+<span class="sd">                If not a timed script, return `None`.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This hook is not used in any way by the script&#39;s stepping</span>
+<span class="sd">            system; it&#39;s only here for the user to be able to check in</span>
+<span class="sd">            on their scripts and when they will next be run.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
+        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">()))</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DefaultScript.remaining_repeats"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.remaining_repeats">[docs]</a>    <span class="k">def</span> <span class="nf">remaining_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of returning repeats for limited Scripts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            remaining (int or `None`): The number of repeats</span>
+<span class="sd">                remaining until the Script stops. Returns `None`</span>
+<span class="sd">                if it has unlimited repeats.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
+        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_repeats</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">callcount</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DefaultScript.at_idmapper_flush"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_idmapper_flush">[docs]</a>    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If we&#39;re flushing this object, make sure the LoopingCall is gone too&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">at_idmapper_flush</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+
+                <span class="k">global</span> <span class="n">FLUSHING_INSTANCES</span>
+                <span class="c1"># store the current timers for the _task and stop it to avoid duplicates after cache flush</span>
+                <span class="n">paused_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">()</span>
+                <span class="n">callcount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">callcount</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+                <span class="n">SCRIPT_FLUSH_TIMERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">paused_time</span><span class="p">,</span> <span class="n">callcount</span><span class="p">)</span>
+                <span class="c1"># here we ensure that the restart call only happens once, not once per script</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">FLUSHING_INSTANCES</span><span class="p">:</span>
+                    <span class="n">FLUSHING_INSTANCES</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">restart_scripts_after_flush</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">traceback</span>
+
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="DefaultScript.start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_restart</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called every time the script is started (for persistent</span>
+<span class="sd">        scripts, this is usually once every server start)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force_restart (bool, optional): Normally an already</span>
+<span class="sd">                started script will not be started again. if</span>
+<span class="sd">                `force_restart=True`, the script will always restart</span>
+<span class="sd">                the script, regardless of if it has started before.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (int): 0 or 1 depending on if the script successfully</span>
+<span class="sd">                started or not. Used in counting.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_restart</span><span class="p">:</span>
+            <span class="c1"># The script is already running, but make sure we have a _task if</span>
+            <span class="c1"># this is after a cache flush</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">ExtendedLoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_step_task</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">start_delay</span><span class="p">,</span> <span class="n">callcount</span> <span class="o">=</span> <span class="n">SCRIPT_FLUSH_TIMERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">SCRIPT_FLUSH_TIMERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                    <span class="n">now</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">now</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span>
+                    <span class="n">start_delay</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">callcount</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">count_start</span><span class="o">=</span><span class="n">callcount</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="c1"># check so the scripted object is valid and initalized</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># this means the object is not initialized.</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># try to restart a paused script</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpause</span><span class="p">(</span><span class="n">manual_unpause</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="c1"># manually paused.</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># start the script from scratch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="DefaultScript.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kill</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to stop the script from running.  This also deletes the</span>
+<span class="sd">        script.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kill (bool, optional): - Stop the script without</span>
+<span class="sd">                calling any relevant script hooks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (int): 0 if the script failed to stop, 1 otherwise.</span>
+<span class="sd">                Used in counting.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kill</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="DefaultScript.pause"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This stops a running script and stores its active state.</span>
+<span class="sd">        It WILL NOT call the `at_stop()` hook.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manual_pause</span> <span class="o">=</span> <span class="n">manual_pause</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span><span class="p">:</span>
+            <span class="c1"># only allow pause if not already paused</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
+            <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">callcount</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DefaultScript.unpause"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_unpause</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restart a paused script. This WILL call the `at_start()` hook.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            manual_unpause (bool, optional): This is False if unpause is</span>
+<span class="sd">                called by the server reload/reset mechanism.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (bool): True if unpause was triggered, False otherwise.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If trying to automatically resart this script</span>
+<span class="sd">                (usually after a reset/reload), but it was manually paused,</span>
+<span class="sd">                and so should not the auto-unpaused.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">manual_unpause</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manual_pause</span><span class="p">:</span>
+            <span class="c1"># if this script was paused manually (by a direct call of pause),</span>
+            <span class="c1"># it cannot be automatically unpaused (e.g. by a @reload)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
+        <span class="c1"># Ensure that the script is fully unpaused, so that future calls</span>
+        <span class="c1"># to unpause do not raise a RuntimeError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manual_pause</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span><span class="p">:</span>
+            <span class="c1"># only unpause if previously paused</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultScript.restart"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restarts an already existing/running Script from the</span>
+<span class="sd">        beginning, optionally using different settings. This will</span>
+<span class="sd">        first call the stop hooks, and then the start hooks again.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int, optional): Allows for changing the interval</span>
+<span class="sd">                of the Script. Given in seconds.  if `None`, will use the already stored interval.</span>
+<span class="sd">            repeats (int, optional): The number of repeats. If unset, will</span>
+<span class="sd">                use the previous setting.</span>
+<span class="sd">            start_delay (bool, optional): If we should wait `interval` seconds</span>
+<span class="sd">                before starting or not. If `None`, re-use the previous setting.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># remove all pause flags</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manual_pause</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_callcount</span>
+        <span class="c1"># set new flags and start over</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="k">if</span> <span class="n">repeats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repeats</span> <span class="o">=</span> <span class="n">repeats</span>
+        <span class="k">if</span> <span class="n">start_delay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="n">start_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DefaultScript.reset_callcount"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.reset_callcount">[docs]</a>    <span class="k">def</span> <span class="nf">reset_callcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the count of the number of calls done.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (int, optional): The repeat value to reset to. Default</span>
+<span class="sd">                is to set it all the way back to 0.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is only useful if repeats != 0.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
+        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">callcount</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DefaultScript.force_repeat"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.force_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">force_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fire a premature triggering of the script callback. This</span>
+<span class="sd">        will reset the timer and count down repeats as if the script</span>
+<span class="sd">        had fired normally.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
+        <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DefaultScript.is_valid"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is called to check if the script is valid to run at this time.</span>
+<span class="sd">        Should return a boolean. The method is assumed to collect all</span>
+<span class="sd">        needed information from its related self.obj.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_deleted</span></div>
 
 <div class="viewcode-block" id="DefaultScript.at_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called whenever the script timer is started, which for persistent</span>
-<span class="sd">        timed scripts is at least once every server start. It will also be</span>
-<span class="sd">        called when starting again after a pause (including after a</span>
-<span class="sd">        server reload).</span>
+<span class="sd">        Called whenever the script is started, which for persistent</span>
+<span class="sd">        scripts is at least once every server start. It will also be</span>
+<span class="sd">        called when starting again after a pause (such as after a</span>
+<span class="sd">        server reload)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
@@ -731,34 +699,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultScript.at_pause"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_pause">[docs]</a>    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when this script&#39;s timer pauses.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            manual_pause (bool): If set, pausing was done by a direct call. The</span>
-<span class="sd">                non-manual pause indicates the script was paused as part of</span>
-<span class="sd">                the server reload.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
 <div class="viewcode-block" id="DefaultScript.at_stop"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called whenever when it&#39;s time for this script&#39;s timer to stop (either</span>
-<span class="sd">        because is_valid returned False, it ran out of iterations or it was manuallys</span>
-<span class="sd">        stopped.</span>
+<span class="sd">        Called whenever when it&#39;s time for this script to stop (either</span>
+<span class="sd">        because is_valid returned False or it runs out of iterations)</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Args</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="DefaultScript.at_script_delete"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when the Script is deleted, after at_stop().</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -776,15 +724,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever the server is shutting down fully</span>
 <span class="sd">        (i.e. not for a restart).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="DefaultScript.at_server_start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This hook is called after the server has started. It can be used to add</span>
-<span class="sd">        post-startup setup for Scripts without a timer component (for which at_start</span>
-<span class="sd">        could be used).</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
@@ -852,6 +791,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="scripts.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

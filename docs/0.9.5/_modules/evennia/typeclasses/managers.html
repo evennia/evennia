@@ -75,12 +75,14 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return Attribute objects by key, by category, by value, by strvalue, by</span>
-<span class="sd">        object (it is stored on) or with a combination of those criteria.</span>
+<span class="sd">        Return Attribute objects by key, by category, by value, by</span>
+<span class="sd">        `strvalue`, by object (it is stored on) or with a combination of</span>
+<span class="sd">        those criteria.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            key (str, optional): The attribute&#39;s key to search for</span>
-<span class="sd">            category (str, optional): The category of the attribute(s) to search for.</span>
+<span class="sd">            key (str, optional): The attribute&#39;s key to search for.</span>
+<span class="sd">            category (str, optional): The category of the attribute(s)</span>
+<span class="sd">                to search for.</span>
 <span class="sd">            value (str, optional): The attribute value to search for.</span>
 <span class="sd">                Note that this is not a very efficient operation since it</span>
 <span class="sd">                will query for a pickled entity. Mutually exclusive to</span>
@@ -91,13 +93,13 @@
 <span class="sd">                precedence if given.</span>
 <span class="sd">            obj (Object, optional): On which object the Attribute to</span>
 <span class="sd">                search for is.</span>
-<span class="sd">            attrype (str, optional): An attribute-type to search for.</span>
+<span class="sd">            attrtype (str, optional): An attribute-type to search for.</span>
 <span class="sd">                By default this is either `None` (normal Attributes) or</span>
 <span class="sd">                `&quot;nick&quot;`.</span>
-<span class="sd">            **kwargs (any): Currently unused. Reserved for future use.</span>
+<span class="sd">            kwargs (any): Currently unused. Reserved for future use.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            list: The matching Attributes.</span>
+<span class="sd">            attributes (list): The matching Attributes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -215,7 +217,7 @@
 <span class="sd">                to search for.</span>
 <span class="sd">            obj (Object, optional): On which object the Tag to</span>
 <span class="sd">                search for is.</span>
-<span class="sd">            tagtype (str, optional): One of `None` (normal tags),</span>
+<span class="sd">            tagtype (str, optional): One of None (normal tags),</span>
 <span class="sd">                &quot;alias&quot; or &quot;permission&quot;</span>
 <span class="sd">            global_search (bool, optional): Include all possible tags,</span>
 <span class="sd">                not just tags on this object</span>
@@ -618,7 +620,7 @@
                 <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="p">(</span><span class="n">parent</span> <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">parents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">)):</span>
                     <span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__exact</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="c1"># actually query the database</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">TypeclassManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
@@ -636,21 +638,13 @@
 <span class="sd">        Search by supplying a string with optional extra search criteria to aid the query.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (str): A search criteria that accepts extra search criteria on the following</span>
-<span class="sd">            forms:</span>
+<span class="sd">            query (str): A search criteria that accepts extra search criteria on the</span>
 
-<span class="sd">                [key|alias|#dbref...]</span>
-<span class="sd">                [tag==&lt;tagstr&gt;[:category]...]</span>
-<span class="sd">                [attr==&lt;key&gt;:&lt;value&gt;:category...]</span>
-
-<span class="sd">            All three can be combined in the same query, separated by spaces.</span>
-
+<span class="sd">                following forms: [key|alias|#dbref...] [tag==&lt;tagstr&gt;[:category]...] [attr==&lt;key&gt;:&lt;value&gt;:category...]</span>
+<span class="sd">                                          &quot;                !=             &quot;               !=      &quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            matches (queryset): A queryset result matching all queries exactly. If wanting to use</span>
-<span class="sd">                spaces or ==, != in tags or attributes, enclose them in quotes.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            house = smart_search(&quot;key=foo alias=bar tag=house:building tag=magic attr=color:red&quot;)</span>
+<span class="sd">            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or</span>
+<span class="sd">            ==, != in tags or attributes, enclose them in quotes.</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            The flexibility of this method is limited by the input line format. Tag/attribute</span>
@@ -931,6 +925,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="managers.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

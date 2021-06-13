@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.filehelp</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -38,168 +37,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.help.filehelp">
-<span id="evennia-help-filehelp"></span><h1>evennia.help.filehelp<a class="headerlink" href="#module-evennia.help.filehelp" title="Permalink to this headline">¶</a></h1>
-<p>The filehelp-system allows for defining help files outside of the game. These
-will be treated as non-command help entries and displayed in the same way as
-help entries created using the <strong>sethelp</strong> default command. After changing an
-entry on-disk you need to reload the server to have the change show in-game.</p>
-<p>An filehelp file is a regular python module with dicts representing each help
-entry. If a list <strong>HELP_ENTRY_DICTS</strong> is found in the module, this should be a list of
-dicts.  Otherwise <em>all</em> top-level dicts in the module will be assumed to be a
-help-entry dict.</p>
-<p>Each help-entry dict is on the form</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>   <span class="c1"># optional, otherwise settings.DEFAULT_HELP_CATEGORY</span>
- <span class="s1">&#39;aliases&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">list</span><span class="o">&gt;</span><span class="p">,</span>   <span class="c1"># optional</span>
- <span class="s1">&#39;locks&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">}</span>      <span class="c1"># optional, use access-type &#39;view&#39;. Default is view:all()</span>
-</pre></div>
-</div>
-<p>The <strong>text**</strong> should be formatted on the same form as other help entry-texts and
-can contain <strong>**# subtopics**</strong> as normal.</p>
-<p>New help-entry modules are added to the system by providing the python-path to
-the module to <strong>settings.FILE_HELP_ENTRY_MODULES</strong>. Note that if same-key entries are
-added, entries in latter modules will override that of earlier ones. Use
-<strong>settings.DEFAULT_HELP_CATEGORY**</strong> to customize what category is used if
-not set explicitly.</p>
-<p>An example of the contents of a module:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help_entry1</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The Gods&quot;</span><span class="p">,</span>   <span class="c1"># case-insensitive, also partial-matching (&#39;gods&#39;) works</span>
-    <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;pantheon&#39;</span><span class="p">,</span> <span class="s1">&#39;religion&#39;</span><span class="p">],</span>
-    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;Lore&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;view:all()&quot;</span><span class="p">,</span>   <span class="c1"># this is optional unless restricting access</span>
-    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">        The gods formed the world ...</span>
-
-<span class="s1">        # Subtopics</span>
-
-<span class="s1">        ## Pantheon</span>
-
-<span class="s1">        ...</span>
-
-<span class="s1">        ### God of love</span>
-
-<span class="s1">        ...</span>
-
-<span class="s1">        ### God of war</span>
-
-<span class="s1">        ...</span>
-
-<span class="s1">    &#39;&#39;&#39;</span>
-<span class="p">}</span>
-
-
-<span class="n">HELP_ENTRY_DICTS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">help_entry1</span><span class="p">,</span>
-    <span class="o">...</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-<hr class="docutils" />
-<dl class="py class">
-<dt id="evennia.help.filehelp.FileHelpEntry">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.help.filehelp.</code><code class="sig-name descname">FileHelpEntry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">help_category</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">entrytext</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">lock_storage</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Represents a help entry read from file. This mimics the api of the
-database-bound HelpEntry so that they can be used interchangeably in the
-help command.</p>
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.key">
-<code class="sig-name descname">key</code><em class="property">: str</em><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.aliases">
-<code class="sig-name descname">aliases</code><em class="property">: list</em><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.help_category">
-<code class="sig-name descname">help_category</code><em class="property">: str</em><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.entrytext">
-<code class="sig-name descname">entrytext</code><em class="property">: str</em><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.entrytext" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property">: str</em><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpEntry.search_index_entry">
-<em class="property">property </em><code class="sig-name descname">search_index_entry</code><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property for easily retaining a search index entry for this object.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.help.filehelp.FileHelpEntry.locks">
-<code class="sig-name descname">locks</code><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpEntry.locks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.locks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpEntry.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'view'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines if another object has permission to access this help entry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>accessing_obj</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity trying to access this one.</p></li>
-<li><p><strong>access_type</strong> (<em>str</em>) – type of access sought.</p></li>
-<li><p><strong>default</strong> (<em>bool</em>) – What to return if no lock of <strong>access_type</strong> was found.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpEntry.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">help_category</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">entrytext</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">lock_storage</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#evennia.help.filehelp.FileHelpEntry.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.help.filehelp.FileHelpStorageHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.help.filehelp.</code><code class="sig-name descname">FileHelpStorageHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">help_file_modules</span><span class="o">=</span><span class="default_value">['world.help_entries']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpStorageHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpStorageHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This reads and stores help entries for quick access. By default
-it reads modules from <strong>settings.FILE_HELP_ENTRY_MODULES</strong>.</p>
-<p>Note that this is not meant to any searching/lookup - that is all handled
-by the help command.</p>
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpStorageHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">help_file_modules</span><span class="o">=</span><span class="default_value">['world.help_entries']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpStorageHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpStorageHandler.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the storage.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpStorageHandler.load">
-<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpStorageHandler.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpStorageHandler.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load/reload file-based help-entries from file.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.filehelp.FileHelpStorageHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_dict</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/filehelp.html#FileHelpStorageHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.filehelp.FileHelpStorageHandler.all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all help entries.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>return_dict</strong> (<em>bool</em>) – Return a dict <strong>**{key: FileHelpEntry,…}**</strong>. Otherwise,
-return a list of <strong>**FileHelpEntry</strong>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>dict or list</em> – Depending on the setting of <strong>**return_dict**</strong>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-help-filehelp">
+<h1>evennia.help.filehelp<a class="headerlink" href="#evennia-help-filehelp" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -245,6 +84,7 @@ return a list of <strong>**FileHelpEntry</strong>.</p>
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -261,7 +101,6 @@ return a list of <strong>**FileHelpEntry</strong>.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.filehelp</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

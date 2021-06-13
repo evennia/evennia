@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -40,41 +39,186 @@
             
   <section id="module-evennia.prototypes.protfuncs">
 <span id="evennia-prototypes-protfuncs"></span><h1>evennia.prototypes.protfuncs<a class="headerlink" href="#module-evennia.prototypes.protfuncs" title="Permalink to this headline">¶</a></h1>
-<p>Protfuncs are FuncParser-callables that can be embedded in a prototype to
-provide custom logic without having access to Python. The protfunc is parsed at
-the time of spawning, using the creating object’s session as input. If the
-protfunc returns a non-string, this is what will be added to the prototype.</p>
+<p>Protfuncs are function-strings embedded in a prototype and allows for a builder to create a
+prototype with custom logics without having access to Python. The Protfunc is parsed using the
+inlinefunc parser but is fired at the moment the spawning happens, using the creating object’s
+session as input.</p>
 <p>In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</p>
 <blockquote>
 <div><p>{ …</p>
-<p>“key”: “$funcname(args, kwargs)”</p>
+<p>“key”: “$funcname(arg1, arg2, …)”</p>
 <p>…  }</p>
 </div></blockquote>
-<p>Available protfuncs are either all callables in one of the modules of <strong>settings.PROT_FUNC_MODULES</strong>
-or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</p>
+<p>and multiple functions can be nested (no keyword args are supported). The result will be used as the
+value for that prototype key for that individual spawn.</p>
+<p>Available protfuncs are callables in one of the modules of <strong>settings.PROT_FUNC_MODULES</strong>. They
+are specified as functions</p>
 <blockquote>
 <div><p>def funcname (<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
 </div></blockquote>
-<p>At spawn-time the spawner passes the following extra kwargs into each callable (in addition to
-what is added in the call itself):</p>
+<p>where <a href="#id5"><span class="problematic" id="id6">*</span></a>args are the arguments given in the prototype, and <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs are inserted by Evennia:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>session (Session): The Session of the entity spawning using this prototype.</p></li>
 <li><p>prototype (dict): The dict this protfunc is a part of.</p></li>
 <li><p>current_key (str): The active key this value belongs to in the prototype.</p></li>
+<li><dl class="simple">
+<dt>testing (bool): This is set if this function is called as part of the prototype validation; if</dt><dd><p>set, the protfunc should take care not to perform any persistent actions, such as operate on
+objects or add things to the database.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 <p>Any traceback raised by this function will be handled at the time of spawning and abort the spawn
 before any object is created/updated. It must otherwise return the value to store for the specified
 prototype key (this value must be possible to serialize in an Attribute).</p>
 <dl class="py function">
-<dt id="evennia.prototypes.protfuncs.protfunc_callable_protkey">
-<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">protfunc_callable_protkey</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#protfunc_callable_protkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.protfunc_callable_protkey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage: $protkey(keyname)
+<dt id="evennia.prototypes.protfuncs.base_random">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">base_random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.prototypes.protfuncs.base_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>random() -&gt; x in the interval [0, 1).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.random">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $random()
+Returns a random value in the interval [0, 1)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.randint">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">randint</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#randint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.randint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $randint(start, end)
+Returns random integer in interval [start, end]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.left_justify">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">left_justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#left_justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.left_justify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $left_justify(&lt;text&gt;)
+Returns &lt;text&gt; left-justified.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.right_justify">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">right_justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#right_justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.right_justify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $right_justify(&lt;text&gt;)
+Returns &lt;text&gt; right-justified across screen width.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.center_justify">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">center_justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#center_justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.center_justify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $center_justify(&lt;text&gt;)
+Returns &lt;text&gt; centered in screen width.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.choice">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">choice</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $choice(val, val, val, …)
+Returns one of the values randomly</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.full_justify">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">full_justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#full_justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.full_justify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $full_justify(&lt;text&gt;)
+Returns &lt;text&gt; filling up screen width by adding extra space.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.protkey">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">protkey</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#protkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.protkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $protkey(&lt;key&gt;)
 Returns the value of another key in this prototoype. Will raise an error if</p>
 <blockquote>
 <div><p>the key is not found in this prototype.</p>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.add">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $add(val1, val2)
+Returns the result of val1 + val2. Values must be</p>
+<blockquote>
+<div><p>valid simple Python structures possible to add,
+such as numbers, lists etc.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.sub">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $del(val1, val2)
+Returns the value of val1 - val2. Values must be</p>
+<blockquote>
+<div><p>valid simple Python structures possible to
+subtract.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.mult">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">mult</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#mult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.mult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $mul(val1, val2)
+Returns the value of val1 * val2. The values must be</p>
+<blockquote>
+<div><p>valid simple Python structures possible to
+multiply, like strings and/or numbers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.div">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">div</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#div"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.div" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $div(val1, val2)
+Returns the value of val1 / val2. Values must be numbers and</p>
+<blockquote>
+<div><p>the result is always a float.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.toint">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">toint</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#toint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.toint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $toint(&lt;number&gt;)
+Returns &lt;number&gt; as an integer.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.eval">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage $eval(&lt;expression&gt;)
+Returns evaluation of a simple Python expression. The string may <em>only</em> consist of the following</p>
+<blockquote>
+<div><p>Python literal structures: strings, numbers, tuples, lists, dicts, booleans,
+and None. The strings can also contain #dbrefs. Escape embedded protfuncs as $$protfunc(..)
+- those will then be evaluated <em>after</em> $eval.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.obj">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage $obj(&lt;query&gt;)
+Returns one Object searched globally by key, alias or #dbref. Error if more than one.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.objlist">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">objlist</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#objlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.objlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage $objlist(&lt;query&gt;)
+Returns list with one or more Objects searched globally by key, alias or #dbref.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.dbref">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">dbref</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#dbref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.dbref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage $dbref(&lt;#dbref&gt;)
+Validate that a #dbref input is valid.</p>
 </dd></dl>
 
 </section>
@@ -122,6 +266,7 @@ Returns the value of another key in this prototoype. Will raise an error if</p>
   <li><a href="../../0.9.5/api/evennia.prototypes.protfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -138,7 +283,6 @@ Returns the value of another key in this prototoype. Will raise an error if</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

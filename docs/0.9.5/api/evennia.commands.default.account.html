@@ -99,11 +99,6 @@ method. Otherwise all text will be returned to all connected sessions.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdOOCLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look while out-of-character\n\n    Usage:\n      look\n\n    Look in the ooc state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -158,11 +153,6 @@ as you the account have access right to puppet it.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdIC.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdIC.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'puppet', 'category': 'general', 'key': 'ic', 'tags': '', 'text': '\n    control an object you have permission to puppet\n\n    Usage:\n      ic &lt;character&gt;\n\n    Go in-character (IC) as a given Character.\n\n    This will attempt to &quot;become&quot; a different object assuming you have\n    the right to do so. Note that it\'s the ACCOUNT character that puppets\n    characters/objects and which needs to have the correct permission!\n\n    You cannot become an object that is already controlled by another\n    account. In principle &lt;character&gt; can be any in-game object as long\n    as you the account have access right to puppet it.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdIC.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -212,11 +202,6 @@ as you the account have access right to puppet it.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOC.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdOOC.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unpuppet', 'category': 'general', 'key': 'ooc', 'tags': '', 'text': '\n    stop puppeting and go ooc\n\n    Usage:\n      ooc\n\n    Go out-of-character (OOC).\n\n    This will leave your current character and put you in a incorporeal OOC state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOC.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -263,11 +248,6 @@ as you the account have access right to puppet it.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdPassword.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.account.CmdPassword.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdPassword.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'password', 'tags': '', 'text': '\n    change your password\n\n    Usage:\n      password &lt;old password&gt; = &lt;new password&gt;\n\n    Changes your password. Make sure to pick a safe one.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdPassword.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -326,11 +306,6 @@ game. Use the /all switch to disconnect from all sessions.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuit.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdQuit.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'quit', 'tags': '', 'text': '\n    quit the game\n\n    Usage:\n      quit\n\n    Switch:\n      all - disconnect all connected sessions\n\n    Gracefully disconnect your current session from the\n    game. Use the /all switch to disconnect from all sessions.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -380,11 +355,6 @@ if you want.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdCharCreate.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.account.CmdCharCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdCharCreate.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'charcreate', 'tags': '', 'text': '\n    create a new character\n\n    Usage:\n      charcreate &lt;charname&gt; [= desc]\n\n    Create a new character, optionally giving it a description. You\n    may use upper-case letters in the name - you will nevertheless\n    always be able to access your character using lower-case letters\n    if you want.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdCharCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -445,11 +415,6 @@ later connecting with a client with different capabilities.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdOption.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdOption.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'options', 'category': 'general', 'key': 'option', 'tags': '', 'text': '\n    Set an account option\n\n    Usage:\n      option[/save] [name = value]\n\n    Switches:\n      save - Save the current option settings for future logins.\n      clear - Clear the saved options.\n\n    This command allows for viewing and setting client interface\n    settings. Note that saved options may not be able to be used if\n    later connecting with a client with different capabilities.\n\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOption.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -496,11 +461,6 @@ later connecting with a client with different capabilities.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdSessions.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdSessions.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdSessions.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'sessions', 'tags': '', 'text': '\n    check your connected session(s)\n\n    Usage:\n      sessions\n\n    Lists the sessions currently connected to your account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdSessions.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -553,11 +513,6 @@ also for those with all permissions.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdWho.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdWho.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'doing', 'category': 'general', 'key': 'who', 'tags': '', 'text': '\n    list who is currently online\n\n    Usage:\n      who\n      doing\n\n    Shows who is currently online. Doing is an alias that limits info\n    also for those with all permissions.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdWho.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -566,7 +521,7 @@ also for those with all permissions.</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>testing which colors your client support</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>color ansi | xterm256</p>
+<dt>Usage:</dt><dd><p>color ansi||xterm256</p>
 </dd>
 </dl>
 <p>Prints a color map along with in-mud color codes to use to produce
@@ -637,11 +592,6 @@ Takes a table of columns [[val,val,…],[val,val,…],…]</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdColorTest.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'color', 'tags': '', 'text': '\n    testing which colors your client support\n\n    Usage:\n      color ansi | xterm256\n\n    Prints a color map along with in-mud color codes to use to produce\n    them.  It also tests what is supported in your client. Choices are\n    16-color ansi (supported in most muds) or the 256-color xterm256\n    standard. No checking is done to determine your client supports\n    color - if not you will see rubbish appear.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdColorTest.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -697,11 +647,6 @@ Use the unquell command to revert back to normal operation.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuell.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdQuell.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unquell', 'category': 'general', 'key': 'quell', 'tags': '', 'text': &quot;\n    use character's permissions instead of account's\n\n    Usage:\n      quell\n      unquell\n\n    Normally the permission level of the Account is used when puppeting a\n    Character/Object to determine access. This command will switch the lock\n    system to make use of the puppeted Object's permissions instead. This is\n    useful mainly for testing.\n    Hierarchical permission quelling only work downwards, thus an Account cannot\n    use a higher-permission Character to escalate their permission level.\n    Use the unquell command to revert back to normal operation.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuell.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -743,11 +688,6 @@ Use the unquell command to revert back to normal operation.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.account.CmdCharDelete.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.account.CmdCharDelete.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdCharDelete.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'chardelete', 'tags': '', 'text': '\n    delete a character - this cannot be undone!\n\n    Usage:\n        chardelete &lt;charname&gt;\n\n    Permanently deletes one of your characters.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdCharDelete.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -807,11 +747,6 @@ to all the variables defined therein.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.account.CmdStyle.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.account.CmdStyle.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'style', 'tags': '', 'text': '\n    In-game style options\n\n    Usage:\n      style\n      style &lt;option&gt; = &lt;value&gt;\n\n    Configure stylings for in-game display elements like table borders, help\n    entriest etc. Use without arguments to see all available options.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdStyle.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </section>
@@ -858,6 +793,7 @@ to all the variables defined therein.</p>
   <li><a href="../../1.0-dev/api/evennia.commands.default.account.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.default.account.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

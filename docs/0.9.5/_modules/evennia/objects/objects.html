@@ -45,27 +45,34 @@
 <span class="sd">These are the (default) starting points for all in-game visible</span>
 <span class="sd">entities.</span>
 
-<span class="sd">This is the v1.0 develop version (for ref in doc building).</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">ModelAttributeBackend</span><span class="p">,</span> <span class="n">NickHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">funcparser</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">class_from_module</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span>
-                                 <span class="n">list_to_string</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span>
-                                 <span class="n">variable_from_module</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">command</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span>
+    <span class="n">lazy_property</span><span class="p">,</span>
+    <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">is_iter</span><span class="p">,</span>
+    <span class="n">list_to_string</span><span class="p">,</span>
+    <span class="n">to_str</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_INFLECT</span> <span class="o">=</span> <span class="n">inflect</span><span class="o">.</span><span class="n">engine</span><span class="p">()</span>
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
@@ -79,19 +86,11 @@
 <span class="c1"># the sessid_max is based on the length of the db_sessid csv field (excluding commas)</span>
 <span class="n">_SESSID_MAX</span> <span class="o">=</span> <span class="mi">16</span> <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
 
-<span class="n">_MSG_CONTENTS_PARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_you</span><span class="p">,</span>
-        <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_You</span><span class="p">,</span>
-        <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_conjugate</span>
-    <span class="p">}</span>
-<span class="p">)</span>
 
-
-<div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Handles the get/setting of the sessid comma-separated integer field</span>
-
+<span class="sd">    Handles the get/setting of the sessid</span>
+<span class="sd">    comma-separated integer field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ObjectSessionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -149,7 +148,7 @@
             <span class="p">]</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="c1"># this happens only if our cache has gone out of sync with the SessionHandler.</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="o">=</span><span class="n">sessid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sessions</span></div>
 
@@ -248,9 +247,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Used for sorting / filtering in inventories / room contents.</span>
-    <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,)</span>
-
     <span class="c1"># lockstring of newly created objects, for easy overloading.</span>
     <span class="c1"># Will be formatted with the appropriate attributes.</span>
     <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
@@ -269,7 +265,7 @@
 
 <div class="viewcode-block" id="DefaultObject.nicks"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.nicks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">nicks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">NickHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">NickHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.sessions"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.sessions">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -304,7 +300,7 @@
             <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DefaultObject.contents_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_get">[docs]</a>    <span class="k">def</span> <span class="nf">contents_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.contents_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_get">[docs]</a>    <span class="k">def</span> <span class="nf">contents_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the contents of this object, i.e. all</span>
 <span class="sd">        objects that has this object set as its location.</span>
@@ -313,18 +309,17 @@
 <span class="sd">        Args:</span>
 <span class="sd">            exclude (Object): Object to exclude from returned</span>
 <span class="sd">                contents list</span>
-<span class="sd">            content_type (str): A content_type to filter by. None for no</span>
-<span class="sd">                filtering.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            contents (list): List of contents of this Object.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            Also available as the `contents` property, minus exclusion</span>
-<span class="sd">            and filtering.</span>
+<span class="sd">            Also available as the `contents` property.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">)</span></div>
+        <span class="n">con</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="c1"># print &quot;contents_get:&quot;, self, con, id(self), calledby()  # DEBUG</span>
+        <span class="k">return</span> <span class="n">con</span></div>
 
 <div class="viewcode-block" id="DefaultObject.contents_set"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_set">[docs]</a>    <span class="k">def</span> <span class="nf">contents_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="s2">&quot;You cannot replace this property&quot;</span>
@@ -340,7 +335,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all exits from this object, i.e. all objects at this</span>
 <span class="sd">        location having the property destination != `None`.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">exi</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span><span class="p">]</span>
 
@@ -387,7 +381,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            singular (str): The singular form to display.</span>
 <span class="sd">            plural (str): The determined plural form of the key, including the count.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plural_category</span> <span class="o">=</span> <span class="s2">&quot;plural_key&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
@@ -422,7 +415,6 @@
         <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">stacked</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an Object matching a search string/condition</span>
@@ -451,9 +443,7 @@
 <span class="sd">                to search. Note that this is used to query the *contents* of a</span>
 <span class="sd">                location and will not match for the location itself -</span>
 <span class="sd">                if you want that, don&#39;t set this or use `candidates` to specify</span>
-<span class="sd">                exactly which objects should be searched. If this nor candidates are</span>
-<span class="sd">                given, candidates will include caller&#39;s inventory, current location and</span>
-<span class="sd">                all objects in the current location.</span>
+<span class="sd">                exactly which objects should be searched.</span>
 <span class="sd">            attribute_name (str): Define which property to search. If set, no</span>
 <span class="sd">                key+alias search will be performed. This can be used</span>
 <span class="sd">                to search database fields (db_ will be automatically</span>
@@ -481,19 +471,10 @@
 <span class="sd">                will be treated like a normal string. If `None` (default), the ability to query by</span>
 <span class="sd">                #dbref is turned on if `self` has the permission &#39;Builder&#39; and is turned off</span>
 <span class="sd">                otherwise.</span>
-<span class="sd">            stacked (int, optional): If &gt; 0, multimatches will be analyzed to determine if they</span>
-<span class="sd">                only contains identical objects; these are then assumed &#39;stacked&#39; and no multi-match</span>
-<span class="sd">                error will be generated, instead `stacked` number of matches will be returned. If</span>
-<span class="sd">                `stacked` is larger than number of matches, returns that number of matches. If</span>
-<span class="sd">                the found stack is a mix of objects, return None and handle the multi-match</span>
-<span class="sd">                error depending on the value of `quiet`.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Object: If finding a match an `quiet=False`</span>
-<span class="sd">            None: If not finding a unique match and `quiet=False`.</span>
-<span class="sd">            list: With 0, 1 or more matching objects if `quiet=True`</span>
-<span class="sd">            list: With 2 or more matching objects if `stacked` is a positive integer and</span>
-<span class="sd">                the matched stack has only object-copies.</span>
+<span class="sd">            match (Object, None or list): will return an Object/None if `quiet=False`,</span>
+<span class="sd">                otherwise it will return a list of 0, 1 or more matches.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            To find Accounts, use eg. `evennia.account_search`. If</span>
@@ -561,29 +542,8 @@
             <span class="n">use_dbref</span><span class="o">=</span><span class="n">use_dbref</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">nresults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">stacked</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nresults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># handle stacks, disable multimatch errors</span>
-            <span class="n">nstack</span> <span class="o">=</span> <span class="n">nresults</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
-                <span class="c1"># we re-run exact match agains one of the matches to</span>
-                <span class="c1"># make sure we were not catching partial matches not belonging</span>
-                <span class="c1"># to the stack</span>
-                <span class="n">nstack</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
-                    <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                    <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">candidates</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
-                    <span class="n">typeclasses</span><span class="o">=</span><span class="p">[</span><span class="n">typeclass</span><span class="p">]</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="kc">None</span>
-                <span class="p">))</span>
-            <span class="k">if</span> <span class="n">nstack</span> <span class="o">==</span> <span class="n">nresults</span><span class="p">:</span>
-                <span class="c1"># a valid stack, return multiple results</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)[:</span><span class="n">stacked</span><span class="p">]</span>
-
         <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
-            <span class="c1"># don&#39;t auto-handle error messaging</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-
-        <span class="c1"># handle error messages</span>
         <span class="k">return</span> <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span>
             <span class="n">results</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -743,7 +703,6 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            Keyword arguments will be passed to the function for all objects.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
         <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
@@ -760,94 +719,64 @@
 <span class="sd">            text (str or tuple): Message to send. If a tuple, this should be</span>
 <span class="sd">                on the valid OOB outmessage form `(message, {kwargs})`,</span>
 <span class="sd">                where kwargs are optional data passed to the `text`</span>
-<span class="sd">                outputfunc. The message will be parsed for `{key}` formatting and</span>
-<span class="sd">                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.</span>
-<span class="sd">                The `key` is taken from the `mapping` kwarg {&quot;key&quot;: object, ...}`.</span>
-<span class="sd">                The `mapping[key].get_display_name(looker=recipient)` will be called</span>
-<span class="sd">                for that key for every recipient of the string.</span>
+<span class="sd">                outputfunc.</span>
 <span class="sd">            exclude (list, optional): A list of objects not to send to.</span>
 <span class="sd">            from_obj (Object, optional): An object designated as the</span>
 <span class="sd">                &quot;sender&quot; of the message. See `DefaultObject.msg()` for</span>
 <span class="sd">                more info.</span>
 <span class="sd">            mapping (dict, optional): A mapping of formatting keys</span>
-<span class="sd">                `{&quot;key&quot;:&lt;object&gt;, &quot;key2&quot;:&lt;object2&gt;,...}.</span>
-<span class="sd">                The keys must either match `{key}` or `$You(key)/$you(key)` markers</span>
-<span class="sd">                in the `text` string. If `&lt;object&gt;` doesn&#39;t have a `get_display_name`</span>
-<span class="sd">                method, it will be returned as a string. If not set, a key `you` will</span>
-<span class="sd">                be auto-added to point to `from_obj` if given, otherwise to `self`.</span>
-<span class="sd">            **kwargs: Keyword arguments will be passed on to `obj.msg()` for all</span>
-<span class="sd">                messaged objects.</span>
+<span class="sd">                `{&quot;key&quot;:&lt;object&gt;, &quot;key2&quot;:&lt;object2&gt;,...}. The keys</span>
+<span class="sd">                must match `{key}` markers in the `text` if this is a string or</span>
+<span class="sd">                in the internal `message` if `text` is a tuple. These</span>
+<span class="sd">                formatting statements will be</span>
+<span class="sd">                replaced by the return of `&lt;object&gt;.get_display_name(looker)`</span>
+<span class="sd">                for every looker in contents that receives the</span>
+<span class="sd">                message. This allows for every object to potentially</span>
+<span class="sd">                get its own customized string.</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            Keyword arguments will be passed on to `obj.msg()` for all</span>
+<span class="sd">            messaged objects.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            For &#39;actor-stance&#39; reporting (You say/Name says), use the</span>
-<span class="sd">            `$You()/$you()/$You(key)` and `$conj(verb)` (verb-conjugation)</span>
-<span class="sd">            inline callables. This will use the respective `get_display_name()`</span>
-<span class="sd">            for all onlookers except for `from_obj or self`, which will become</span>
-<span class="sd">            &#39;You/you&#39;. If you use `$You/you(key)`, the key must be in `mapping`.</span>
+<span class="sd">            The `mapping` argument is required if `message` contains</span>
+<span class="sd">            {}-style format syntax. The keys of `mapping` should match</span>
+<span class="sd">            named format tokens, and its values will have their</span>
+<span class="sd">            `get_display_name()` function called for  each object in</span>
+<span class="sd">            the room before substitution. If an item in the mapping does</span>
+<span class="sd">            not have `get_display_name()`, its string value will be used.</span>
 
-<span class="sd">            For &#39;director-stance&#39; reporting (Name says/Name says), use {key}</span>
-<span class="sd">            syntax directly. For both `{key}` and `You/you(key)`,</span>
-<span class="sd">            `mapping[key].get_display_name(looker=recipient)` may be called</span>
-<span class="sd">            depending on who the recipient is.</span>
+<span class="sd">        Example:</span>
+<span class="sd">            Say Char is a Character object and Npc is an NPC object:</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">            char.location.msg_contents(</span>
+<span class="sd">                &quot;{attacker} kicks {defender}&quot;,</span>
+<span class="sd">                mapping=dict(attacker=char, defender=npc), exclude=(char, npc))</span>
 
-<span class="sd">            Let&#39;s assume</span>
-<span class="sd">            - `player1.key -&gt; &quot;Player1&quot;`,</span>
-<span class="sd">              `player1.get_display_name(looker=player2) -&gt; &quot;The First girl&quot;`</span>
-<span class="sd">            - `player2.key -&gt; &quot;Player2&quot;`,</span>
-<span class="sd">              `player2.get_display_name(looker=player1) -&gt; &quot;The Second girl&quot;`</span>
-
-<span class="sd">            Actor-stance:</span>
-<span class="sd">            ::</span>
-
-<span class="sd">                char.location.msg_contents(</span>
-<span class="sd">                    &quot;$You() $conj(attack) $you(defender).&quot;,</span>
-<span class="sd">                    mapping={&quot;defender&quot;: player2})</span>
-
-<span class="sd">            - player1 will see `You attack The Second girl.`</span>
-<span class="sd">            - player2 will see &#39;The First girl attacks you.&#39;</span>
-
-<span class="sd">            Director-stance:</span>
-<span class="sd">            ::</span>
-
-<span class="sd">                char.location.msg_contents(</span>
-<span class="sd">                    &quot;{attacker} attacks {defender}.&quot;,</span>
-<span class="sd">                    mapping={&quot;attacker:player1, &quot;defender&quot;:player2})</span>
-
-<span class="sd">            - player1 will see: &#39;Player1 attacks The Second girl.&#39;</span>
-<span class="sd">            - player2 will see: &#39;The First girl attacks Player2&#39;</span>
+<span class="sd">            This will result in everyone in the room seeing &#39;Char kicks NPC&#39;</span>
+<span class="sd">            where everyone may potentially see different results for Char and Npc</span>
+<span class="sd">            depending on the results of `char.get_display_name(looker)` and</span>
+<span class="sd">            `npc.get_display_name(looker)` for each particular onlooker</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># we also accept an outcommand on the form (message, {kwargs})</span>
         <span class="n">is_outcmd</span> <span class="o">=</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">inmessage</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_outcmd</span> <span class="k">else</span> <span class="n">text</span>
         <span class="n">outkwargs</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_outcmd</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="n">you</span> <span class="o">=</span> <span class="n">from_obj</span> <span class="ow">or</span> <span class="bp">self</span>
-
-        <span class="k">if</span> <span class="s1">&#39;you&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
-            <span class="n">mapping</span><span class="p">[</span><span class="n">you</span><span class="p">]</span> <span class="o">=</span> <span class="n">you</span>
 
         <span class="n">contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
         <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
             <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
-
-            <span class="c1"># actor-stance replacements</span>
-            <span class="n">inmessage</span> <span class="o">=</span> <span class="n">_MSG_CONTENTS_PARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-                <span class="n">inmessage</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">caller</span><span class="o">=</span><span class="n">you</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
-
-            <span class="c1"># director-stance replacements</span>
-            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="o">**</span><span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
-                   <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                   <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-
-            <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">outmessage</span><span class="p">,</span> <span class="n">outkwargs</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="n">substitutions</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">t</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">}</span>
+                <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">substitutions</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">outmessage</span><span class="p">,</span> <span class="n">outkwargs</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.move_to"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to">[docs]</a>    <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -909,7 +838,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">err</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">err</span><span class="p">))</span>
             <span class="k">return</span>
 
-        <span class="n">errtxt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t perform move (</span><span class="si">{err}</span><span class="s2">). Contact an admin.&quot;</span><span class="p">)</span>
+        <span class="n">errtxt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t perform move (&#39;</span><span class="si">%s</span><span class="s2">&#39;). Contact an admin.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">emit_to_obj</span><span class="p">:</span>
             <span class="n">emit_to_obj</span> <span class="o">=</span> <span class="bp">self</span>
 
@@ -928,10 +857,10 @@
         <span class="c1"># Before the move, call eventual pre-commands.</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_before_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_before_move()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Save the old location</span>
@@ -940,9 +869,9 @@
         <span class="c1"># Call hook on source location</span>
         <span class="k">if</span> <span class="n">move_hooks</span> <span class="ow">and</span> <span class="n">source_location</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">source_location</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">source_location</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_object_leave()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_leave()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
@@ -950,14 +879,14 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">announce_move_from</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_announce_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_announce_move()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Perform move</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">destination</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;location change&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+            <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;location change&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
@@ -965,25 +894,25 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">announce_move_to</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;announce_move_to()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;announce_move_to()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="c1"># Perform eventual extra commands on the receiving location</span>
             <span class="c1"># (the object has already arrived at this point)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">destination</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_object_receive()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_object_receive()&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Execute eventual extra commands on this object after moving it</span>
         <span class="c1"># (usually calling &#39;look&#39;)</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_after_move&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span> <span class="o">%</span> <span class="s2">&quot;at_after_move&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -991,7 +920,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Destroys all of the exits and any exits pointing to this</span>
 <span class="sd">        object as a destination.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">out_exit</span> <span class="ow">in</span> <span class="p">[</span><span class="n">exi</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">db_destination</span><span class="p">]:</span>
             <span class="n">out_exit</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
@@ -1002,7 +930,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves all objects (accounts/things) to their home location or</span>
 <span class="sd">        to default home.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Gather up everything that thinks this is its location.</span>
         <span class="n">default_home_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">))</span>
@@ -1012,8 +939,8 @@
                 <span class="c1"># we are deleting default home!</span>
                 <span class="n">default_home</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find default home &#39;(#</span><span class="si">{dbid}</span><span class="s2">)&#39;.&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbid</span><span class="o">=</span><span class="n">default_home_id</span><span class="p">))</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not find default home &#39;(#</span><span class="si">%d</span><span class="s2">)&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="n">default_home_id</span><span class="p">)</span>
             <span class="n">default_home</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
@@ -1025,17 +952,18 @@
 
             <span class="c1"># If for some reason it&#39;s still None...</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">home</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Missing default home, &#39;</span><span class="si">%s</span><span class="s2">(#</span><span class="si">%d</span><span class="s2">)&#39; &quot;</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;now has a null location.&quot;</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Something went wrong! You are dumped into nowhere. Contact an admin.&quot;</span><span class="p">))</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;Missing default home - &#39;</span><span class="si">{name}</span><span class="s2">(#</span><span class="si">{dbid}</span><span class="s2">)&#39; now &quot;</span>
-                               <span class="s2">&quot;has a null location.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dbid</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">home</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Your current location has ceased to exist,&quot;</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; moving you to (#</span><span class="si">{dbid}</span><span class="s2">).&quot;</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbid</span><span class="o">=</span><span class="n">home</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; moving you to </span><span class="si">%s</span><span class="s2">(#</span><span class="si">%d</span><span class="s2">).&quot;</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">home</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">home</span><span class="o">.</span><span class="n">dbid</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Famous last words: The account should never see this.</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;This place should not exist ... contact an admin.&quot;</span>
@@ -1142,8 +1070,8 @@
 
 <div class="viewcode-block" id="DefaultObject.at_object_post_copy"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_copy">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_post_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called by DefaultObject.copy(). Meant to be overloaded. In case there&#39;s extra data not</span>
-<span class="sd">        covered by .copy(), this can be used to deal with it.</span>
+<span class="sd">        Called by DefaultObject.copy(). Meant to be overloaded. In case there&#39;s extra data not covered by</span>
+<span class="sd">        .copy(), this can be used to deal with it.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            new_obj (Object): The new Copy of this object.</span>
@@ -1191,7 +1119,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">_ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
         <span class="c1"># Destroy any exits to and from this room, if any</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_exits</span><span class="p">()</span>
@@ -1584,8 +1512,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">source_location</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
             <span class="c1"># This was created from nowhere and added to an account&#39;s</span>
             <span class="c1"># inventory; it&#39;s probably the result of a create command.</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You now have </span><span class="si">{name}</span><span class="s2"> in your possession.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">))</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You now have </span><span class="si">%s</span><span class="s2"> in your possession.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -1593,9 +1520,9 @@
             <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="n">msg</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{object}</span><span class="s2"> arrives to </span><span class="si">{destination}</span><span class="s2"> from </span><span class="si">{origin}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{object}</span><span class="s2"> arrives to </span><span class="si">{destination}</span><span class="s2"> from </span><span class="si">{origin}</span><span class="s2">.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{object}</span><span class="s2"> arrives to </span><span class="si">{destination}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{object}</span><span class="s2"> arrives to </span><span class="si">{destination}</span><span class="s2">.&quot;</span>
 
         <span class="n">origin</span> <span class="o">=</span> <span class="n">source_location</span>
         <span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
@@ -1778,26 +1705,20 @@
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="c1"># Helper method to determine if objects are visible to the looker.</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)]</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">looker</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
         <span class="c1"># get and identify all objects</span>
-        <span class="n">exits_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">))</span>
-        <span class="n">users_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">))</span>
-        <span class="n">things_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">))</span>
-
-        <span class="n">things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">things_list</span><span class="p">:</span>
-            <span class="n">things</span><span class="p">[</span><span class="n">thing</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
-        <span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">]</span>
-        <span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">exits_list</span><span class="p">]</span>
-
+        <span class="n">visible</span> <span class="o">=</span> <span class="p">(</span><span class="n">con</span> <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">con</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">con</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
+        <span class="n">exits</span><span class="p">,</span> <span class="n">users</span><span class="p">,</span> <span class="n">things</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
+                <span class="n">exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">con</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
+                <span class="n">users</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># things can be pluralized</span>
+                <span class="n">things</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
         <span class="c1"># get description, build string</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
@@ -2002,8 +1923,7 @@
 <span class="sd">                a say. This is sent by the whisper command by default.</span>
 <span class="sd">                Other verbal commands could use this hook in similar</span>
 <span class="sd">                ways.</span>
-<span class="sd">            receivers (Object or iterable): If set, this is the target or targets for the</span>
-<span class="sd">                say/whisper.</span>
+<span class="sd">            receivers (Object or iterable): If set, this is the target or targets for the say/whisper.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            message (str): The (possibly modified) text to be spoken.</span>
@@ -2034,8 +1954,8 @@
 <span class="sd">            msg_self (bool or str, optional): If boolean True, echo `message` to self. If a string,</span>
 <span class="sd">                return that message. If False or unset, don&#39;t echo to self.</span>
 <span class="sd">            msg_location (str, optional): The message to echo to self&#39;s location.</span>
-<span class="sd">            receivers (Object or iterable, optional): An eventual receiver or receivers of the</span>
-<span class="sd">                message (by default only used by whispers).</span>
+<span class="sd">            receivers (Object or iterable, optional): An eventual receiver or receivers of the message</span>
+<span class="sd">                (by default only used by whispers).</span>
 <span class="sd">            msg_receivers(str): Specific message to pass to the receiver(s). This will parsed</span>
 <span class="sd">                with the {receiver} placeholder replaced with the given receiver.</span>
 <span class="sd">        Keyword Args:</span>
@@ -2070,7 +1990,8 @@
             <span class="n">msg_type</span> <span class="o">=</span> <span class="s2">&quot;whisper&quot;</span>
             <span class="n">msg_self</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">&#39;</span><span class="si">{self}</span><span class="s1"> whisper to </span><span class="si">{all_receivers}</span><span class="s1">, &quot;|n</span><span class="si">{speech}</span><span class="s1">|n&quot;&#39;</span>
-                <span class="k">if</span> <span class="n">msg_self</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">msg_self</span>
+                <span class="k">if</span> <span class="n">msg_self</span> <span class="ow">is</span> <span class="kc">True</span>
+                <span class="k">else</span> <span class="n">msg_self</span>
             <span class="p">)</span>
             <span class="n">msg_receivers</span> <span class="o">=</span> <span class="n">msg_receivers</span> <span class="ow">or</span> <span class="s1">&#39;</span><span class="si">{object}</span><span class="s1"> whispers: &quot;|n</span><span class="si">{speech}</span><span class="s1">|n&quot;&#39;</span>
             <span class="n">msg_location</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2157,9 +2078,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Tuple of types used for indexing inventory contents. Characters generally wouldn&#39;t be in</span>
-    <span class="c1"># anyone&#39;s inventory, but this also governs displays in room contents.</span>
-    <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,)</span>
     <span class="c1"># lockstring of newly created rooms, for easy overloading.</span>
     <span class="c1"># Will be formatted with the appropriate attributes.</span>
     <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
@@ -2199,13 +2117,6 @@
         <span class="c1"># If no typeclass supplied, use this class</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
 
-        <span class="c1"># Normalize to latin characters and validate, if necessary, the supplied key</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">normalize_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate_name</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Invalid character name.&quot;</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span>
-
         <span class="c1"># Set the supplied key as the name of the intended object</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
 
@@ -2222,7 +2133,7 @@
             <span class="c1"># Check to make sure account does not have too many chars</span>
             <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span><span class="p">:</span>
-                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;There are too many characters associated with this account.&quot;</span><span class="p">))</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;There are too many characters associated with this account.&quot;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span>
 
             <span class="c1"># Create the Character</span>
@@ -2238,8 +2149,7 @@
 
             <span class="c1"># Add locks</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
-                <span class="c1"># Allow only the character itself and the creator account to puppet this character</span>
-                <span class="c1"># (and Developers).</span>
+                <span class="c1"># Allow only the character itself and the creator account to puppet this character (and Developers).</span>
                 <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;character_id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
                 <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;character_id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
@@ -2248,46 +2158,13 @@
 
             <span class="c1"># If no description is set, set a default description</span>
             <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a character.&quot;</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;This is a character.&quot;</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while creating object &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> object.&quot;</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">%s</span><span class="s2">&#39; object.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
-
-<div class="viewcode-block" id="DefaultCharacter.normalize_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.normalize_name">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">normalize_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Normalize the character name prior to creating. Note that this should be refactored to</span>
-<span class="sd">        support i18n for non-latin scripts, but as we (currently) have no bug reports requesting</span>
-<span class="sd">        better support of non-latin character sets, requiring character names to be latinified is an</span>
-<span class="sd">        acceptable option.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str) : The name of the character</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            latin_name (str) : A valid name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">latinify</span>
-
-        <span class="n">latin_name</span> <span class="o">=</span> <span class="n">latinify</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">latin_name</span></div>
-
-<div class="viewcode-block" id="DefaultCharacter.validate_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.validate_name">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">validate_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Validate the character name prior to creating. Overload this function to add custom validators</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str) : The name of the character</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            valid (bool) : True if character creation should continue; False if it should fail</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Default validator does not perform any operations</span></div>
 
 <div class="viewcode-block" id="DefaultCharacter.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2320,7 +2197,6 @@
 <span class="sd">        Args:</span>
 <span class="sd">            account (Account): This is the connecting account.</span>
 <span class="sd">            session (Session): Session controlling the connection.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -2334,8 +2210,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>  <span class="c1"># save location again to be sure.</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">{obj}</span><span class="s2"> has no location and no home is set.|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span>
-                <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+                <span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2"> has no location and no home is set.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
             <span class="p">)</span>  <span class="c1"># Note to set home.</span></div>
 
 <div class="viewcode-block" id="DefaultCharacter.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2353,12 +2228,11 @@
 <span class="sd">            puppeting this Object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You become |c</span><span class="si">{name}</span><span class="s2">|n.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You become |c</span><span class="si">%s</span><span class="s2">|n.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">}),</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">from_obj</span><span class="p">):</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> has entered the game.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">)),</span>
-                    <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has entered the game.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">for_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -2381,8 +2255,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
 
                 <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">from_obj</span><span class="p">):</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> has left the game.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">)),</span>
-                            <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">)</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has left the game.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">for_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
@@ -2393,7 +2266,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the idle time of the least idle session in seconds. If</span>
 <span class="sd">        no sessions are connected it returns nothing.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">idle</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">cmd_last_visible</span> <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
         <span class="k">if</span> <span class="n">idle</span><span class="p">:</span>
@@ -2405,7 +2277,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the maximum connection time of all connected sessions</span>
 <span class="sd">        in seconds. Returns nothing if there are no sessions.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">conn</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">conn_time</span> <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
         <span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
@@ -2422,10 +2293,6 @@
 <span class="sd">    This is the base room object. It&#39;s just like any Object except its</span>
 <span class="sd">    location is always `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># A tuple of strings used for indexing this object inside an inventory.</span>
-    <span class="c1"># Generally, a room isn&#39;t expected to HAVE a location, but maybe in some games?</span>
-    <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;room&quot;</span><span class="p">,)</span>
 
     <span class="c1"># lockstring of newly created rooms, for easy overloading.</span>
     <span class="c1"># Will be formatted with the {id} of the creating object.</span>
@@ -2499,7 +2366,7 @@
 
             <span class="c1"># If no description is set, set a default description</span>
             <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is a room.&quot;</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;This is a room.&quot;</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">%s</span><span class="s2">&#39; object.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
@@ -2561,9 +2428,7 @@
 <span class="sd">                overriding the call (unused by default).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A string with identifying information to disambiguate the command, conventionally with a</span>
-<span class="sd">            preceding space.</span>
-
+<span class="sd">            A string with identifying information to disambiguate the command, conventionally with a preceding space.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot; (exit to </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
@@ -2587,7 +2452,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,)</span>
     <span class="n">exit_command</span> <span class="o">=</span> <span class="n">ExitCommand</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">101</span>
 
@@ -2705,7 +2569,7 @@
 
             <span class="c1"># If no description is set, set a default description</span>
             <span class="k">if</span> <span class="n">description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is an exit.&quot;</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;This is an exit.&quot;</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">%s</span><span class="s2">&#39; object.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
@@ -2802,7 +2666,7 @@
 <span class="sd">            read for an error string instead.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You cannot go there.&quot;</span><span class="p">))</span></div></div>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot go there.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -2839,6 +2703,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="objects.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

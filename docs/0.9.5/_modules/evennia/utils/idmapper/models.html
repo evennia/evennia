@@ -104,8 +104,7 @@
             <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SharedMemoryModelBase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">instance_key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_cache_key</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># depending on the arguments, we might not be able to infer the PK, so in that case we</span>
-        <span class="c1"># create a new instance</span>
+        <span class="c1"># depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance</span>
         <span class="k">if</span> <span class="n">instance_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">new_instance</span><span class="p">()</span>
         <span class="n">cached_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_cached_instance</span><span class="p">(</span><span class="n">instance_key</span><span class="p">)</span>
@@ -196,9 +195,9 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
-                        <span class="c1"># we also allow setting using dbrefs, if so we try to load the matching</span>
-                        <span class="c1"># object. (we assume the object is of the same type as the class holding</span>
-                        <span class="c1"># the field, if not a custom handler must be used for that field)</span>
+                        <span class="c1"># we also allow setting using dbrefs, if so we try to load the matching object.</span>
+                        <span class="c1"># (we assume the object is of the same type as the class holding the field, if</span>
+                        <span class="c1"># not a custom handler must be used for that field)</span>
                         <span class="n">dbid</span> <span class="o">=</span> <span class="n">dbref</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">dbid</span><span class="p">:</span>
                             <span class="n">model</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_meta&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">model</span>
@@ -308,24 +307,21 @@
             <span class="n">pk</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pk</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk</span>
-        <span class="c1"># get the index of the pk in the class fields. this should be calculated *once*, but isn&#39;t</span>
-        <span class="c1"># atm</span>
+        <span class="c1"># get the index of the pk in the class fields. this should be calculated *once*, but isn&#39;t atm</span>
         <span class="n">pk_position</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">pk_position</span><span class="p">:</span>
             <span class="c1"># if it&#39;s in the args, we can get it easily by index</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">pk_position</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">pk</span><span class="o">.</span><span class="n">attname</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="c1"># retrieve the pk value. Note that we use attname instead of name, to handle the case</span>
-            <span class="c1"># where the pk is a a ForeignKey.</span>
+            <span class="c1"># retrieve the pk value. Note that we use attname instead of name, to handle the case where the pk is a</span>
+            <span class="c1"># a ForeignKey.</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">pk</span><span class="o">.</span><span class="n">attname</span> <span class="ow">and</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="c1"># ok we couldn&#39;t find the value, but maybe it&#39;s a FK and we can find the corresponding</span>
-            <span class="c1"># object instead</span>
+            <span class="c1"># ok we couldn&#39;t find the value, but maybe it&#39;s a FK and we can find the corresponding object instead</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
-            <span class="c1"># if the pk value happens to be a model instance (which can happen wich a FK), we&#39;d</span>
-            <span class="c1"># rather use its own pk as the key</span>
+            <span class="c1"># if the pk value happens to be a model instance (which can happen wich a FK), we&#39;d rather use its own pk as the key</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span>
 
@@ -752,6 +748,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

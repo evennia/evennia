@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.scripthandler</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -90,11 +89,15 @@
                     <span class="n">next_repeat</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="n">next_repeat</span> <span class="o">=</span> <span class="s2">&quot;?&quot;</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">{key}</span><span class="s2">&#39; (</span><span class="si">{next_repeat}</span><span class="s2">/</span><span class="si">{interval}</span><span class="s2">, </span><span class="si">{repeats}</span><span class="s2"> repeats): </span><span class="si">{desc}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">key</span><span class="o">=</span><span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">next_repeat</span><span class="o">=</span><span class="n">next_repeat</span><span class="p">,</span>
-                <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
-                <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">%(key)s</span><span class="s2">&#39; (</span><span class="si">%(next_repeat)s</span><span class="s2">/</span><span class="si">%(interval)s</span><span class="s2">, </span><span class="si">%(repeats)s</span><span class="s2"> repeats): </span><span class="si">%(desc)s</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="o">%</span> <span class="p">{</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;next_repeat&quot;</span><span class="p">:</span> <span class="n">next_repeat</span><span class="p">,</span>
+                <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">interval</span><span class="p">,</span>
+                <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="n">repeats</span><span class="p">,</span>
+                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ScriptHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -146,8 +149,7 @@
         <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">num</span></div>
 
 <div class="viewcode-block" id="ScriptHandler.get"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -182,8 +184,7 @@
             <span class="p">]</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">delscripts</span><span class="p">:</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">num</span></div>
 
     <span class="c1"># alias to delete</span>
@@ -194,7 +195,22 @@
 <span class="sd">        Get all scripts stored in this handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScriptHandler.validate"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs a validation on this object&#39;s scripts only.  This should</span>
+<span class="sd">        be called regularly to crank the wheels.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            init_mode (str, optional): - This is used during server</span>
+<span class="sd">                upstart and can have three values:</span>
+<span class="sd">                - `False` (no init mode). Called during run.</span>
+<span class="sd">                - `&quot;reset&quot;` - server reboot. Kill non-persistent scripts</span>
+<span class="sd">                - `&quot;reload&quot;` - server reload. Keep non-persistent scripts.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="n">init_mode</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -232,6 +248,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -250,7 +267,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.scripthandler</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

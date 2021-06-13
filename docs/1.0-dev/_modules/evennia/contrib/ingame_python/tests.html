@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -90,7 +89,7 @@
         <span class="sd">&quot;&quot;&quot;Stop the event handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
 
@@ -312,11 +311,11 @@
         <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">db_typeclass_path</span><span class="o">=</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.TimeEventScript&quot;</span>
         <span class="p">):</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
@@ -491,7 +490,7 @@
         <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
 
@@ -620,6 +619,7 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -638,7 +638,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

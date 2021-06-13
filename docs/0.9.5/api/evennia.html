@@ -45,6 +45,7 @@
 <ul class="simple">
 <li><p>evennia.ANSIString</p></li>
 <li><p>evennia.AccountDB</p></li>
+<li><p>evennia.CHANNEL_HANDLER</p></li>
 <li><p>evennia.ChannelDB</p></li>
 <li><p>evennia.CmdSet</p></li>
 <li><p>evennia.Command</p></li>
@@ -240,10 +241,7 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
 <li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.bodyfunctions.html">evennia.contrib.tutorial_examples.bodyfunctions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.cmdset_red_button.html">evennia.contrib.tutorial_examples.cmdset_red_button</a></li>
 <li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.example_batch_code.html">evennia.contrib.tutorial_examples.example_batch_code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button.html">evennia.contrib.tutorial_examples.red_button</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button.html#technical">Technical</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button.html">evennia.contrib.tutorial_examples.red_button</a></li>
 <li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button_scripts.html">evennia.contrib.tutorial_examples.red_button_scripts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.tests.html">evennia.contrib.tutorial_examples.tests</a></li>
 </ul>
@@ -264,7 +262,10 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="evennia.locks.html">evennia.locks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.locks.lockfuncs.html">evennia.locks.lockfuncs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.locks.lockfuncs.html">evennia.locks.lockfuncs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.locks.lockfuncs.html#mux-name-affects-effect">MUX Name:      Affects:        Effect:</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.locks.lockhandler.html">evennia.locks.lockhandler</a></li>
 </ul>
 </li>
@@ -361,19 +362,10 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="evennia.utils.html">evennia.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.ansi.html">evennia.utils.ansi</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.ansi.html#markup">Markup</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.utils.ansi.html">evennia.utils.ansi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.utils.batchprocessors.html">evennia.utils.batchprocessors</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-command-processor-file-syntax">Batch-command processor file syntax</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.batchprocessors.html#example-of-batch-ev-file">Example of batch.ev file:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-code-processor-file-syntax">Batch-code processor file syntax</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.batchprocessors.html#example-batch-py-file">Example batch.py file</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-command-processor-file-syntax">Batch-Command processor file syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-code-processor-file-syntax">Batch-Code processor file syntax</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="evennia.utils.containers.html">evennia.utils.containers</a></li>
@@ -479,6 +471,7 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
   <li><a href="../../1.0-dev/api/evennia.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

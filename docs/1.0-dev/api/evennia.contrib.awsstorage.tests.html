@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -38,225 +37,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.awsstorage.tests">
-<span id="evennia-contrib-awsstorage-tests"></span><h1>evennia.contrib.awsstorage.tests<a class="headerlink" href="#module-evennia.contrib.awsstorage.tests" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3TestCase">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.awsstorage.tests.</code><code class="sig-name descname">S3Boto3TestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3TestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3TestCase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3TestCase.setUp">
-<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3TestCase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3TestCase.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook method for setting up the test fixture before exercising it.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.awsstorage.tests.</code><code class="sig-name descname">S3Boto3StorageTests</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.awsstorage.tests.S3Boto3TestCase" title="evennia.contrib.awsstorage.tests.S3Boto3TestCase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.awsstorage.tests.S3Boto3TestCase</span></code></a></p>
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name">
-<code class="sig-name descname">test_clean_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_clean_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the base case of _clean_name</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_normalize">
-<code class="sig-name descname">test_clean_name_normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_clean_name_normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_normalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the normalization of _clean_name</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_trailing_slash">
-<code class="sig-name descname">test_clean_name_trailing_slash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_clean_name_trailing_slash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_trailing_slash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the _clean_name when the path has a trailing slash</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_windows">
-<code class="sig-name descname">test_clean_name_windows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_clean_name_windows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_clean_name_windows" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the _clean_name when the path has a trailing slash</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_pickle_with_bucket">
-<code class="sig-name descname">test_pickle_with_bucket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_pickle_with_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_pickle_with_bucket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that the storage can be pickled with a bucket attached</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_pickle_without_bucket">
-<code class="sig-name descname">test_pickle_without_bucket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_pickle_without_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_pickle_without_bucket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that the storage can be pickled, without a bucket instance</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_url_slashes">
-<code class="sig-name descname">test_storage_url_slashes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_url_slashes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_url_slashes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test URL generation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save">
-<code class="sig-name descname">test_storage_save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving a file</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_with_acl">
-<code class="sig-name descname">test_storage_save_with_acl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_save_with_acl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_with_acl" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving a file with user defined ACL.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_content_type">
-<code class="sig-name descname">test_content_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_content_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_content_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving a file with a None content type.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzipped">
-<code class="sig-name descname">test_storage_save_gzipped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_save_gzipped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzipped" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving a gzipped file</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip">
-<code class="sig-name descname">test_storage_save_gzip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_save_gzip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving a file with gzip enabled.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip_twice">
-<code class="sig-name descname">test_storage_save_gzip_twice</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_save_gzip_twice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip_twice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test saving the same file content twice with gzip enabled.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_compress_content_len">
-<code class="sig-name descname">test_compress_content_len</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_compress_content_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_compress_content_len" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that file returned by _compress_content() is readable.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_write">
-<code class="sig-name descname">test_storage_open_write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_open_write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test opening a file in write mode</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_write">
-<code class="sig-name descname">test_storage_open_no_write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_open_no_write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test opening file in write mode and closing without writing.</p>
-<p>A file should be created as by obj.put(…).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_overwrite_existing">
-<code class="sig-name descname">test_storage_open_no_overwrite_existing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_open_no_overwrite_existing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_overwrite_existing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test opening an existing file in write mode and closing without writing.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_write_beyond_buffer_size">
-<code class="sig-name descname">test_storage_write_beyond_buffer_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_write_beyond_buffer_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_write_beyond_buffer_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test writing content that exceeds the buffer size</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_auto_creating_bucket">
-<code class="sig-name descname">test_auto_creating_bucket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_auto_creating_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_auto_creating_bucket" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_auto_creating_bucket_with_acl">
-<code class="sig-name descname">test_auto_creating_bucket_with_acl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_auto_creating_bucket_with_acl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_auto_creating_bucket_with_acl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists">
-<code class="sig-name descname">test_storage_exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_false">
-<code class="sig-name descname">test_storage_exists_false</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_exists_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_false" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_doesnt_create_bucket">
-<code class="sig-name descname">test_storage_exists_doesnt_create_bucket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_exists_doesnt_create_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_doesnt_create_bucket" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_delete">
-<code class="sig-name descname">test_storage_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_delete" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_listdir_base">
-<code class="sig-name descname">test_storage_listdir_base</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_listdir_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_listdir_base" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_listdir_subdir">
-<code class="sig-name descname">test_storage_listdir_subdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_listdir_subdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_listdir_subdir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_size">
-<code class="sig-name descname">test_storage_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_mtime">
-<code class="sig-name descname">test_storage_mtime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_mtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_mtime" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_url">
-<code class="sig-name descname">test_storage_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_storage_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_storage_url" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_generated_url_is_encoded">
-<code class="sig-name descname">test_generated_url_is_encoded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_generated_url_is_encoded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_generated_url_is_encoded" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_special_characters">
-<code class="sig-name descname">test_special_characters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_special_characters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_special_characters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_strip_signing_parameters">
-<code class="sig-name descname">test_strip_signing_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_strip_signing_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_strip_signing_parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_connection_threading">
-<code class="sig-name descname">test_connection_threading</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_connection_threading"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_connection_threading" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_location_leading_slash">
-<code class="sig-name descname">test_location_leading_slash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_location_leading_slash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_location_leading_slash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_override_class_variable">
-<code class="sig-name descname">test_override_class_variable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_override_class_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_override_class_variable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_override_init_argument">
-<code class="sig-name descname">test_override_init_argument</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/awsstorage/tests.html#S3Boto3StorageTests.test_override_init_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.awsstorage.tests.S3Boto3StorageTests.test_override_init_argument" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-contrib-awsstorage-tests">
+<h1>evennia.contrib.awsstorage.tests<a class="headerlink" href="#evennia-contrib-awsstorage-tests" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -302,6 +84,7 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -318,7 +101,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

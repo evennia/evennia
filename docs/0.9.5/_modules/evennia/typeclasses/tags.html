@@ -94,7 +94,7 @@
         <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tag identifier&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tag category&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tag category&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="n">db_data</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="s2">&quot;data&quot;</span><span class="p">,</span>
@@ -116,7 +116,7 @@
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Tag&quot;</span>
         <span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_model&quot;</span><span class="p">),)</span>
@@ -166,10 +166,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">_query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all tags for this object.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;Get all tags for this objects&quot;</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
             <span class="s2">&quot;tag__db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
@@ -181,10 +178,7 @@
         <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_fullcache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Cache all tags of this object.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;Cache all tags of this object&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_all</span><span class="p">()</span>
@@ -324,7 +318,6 @@
 <div class="viewcode-block" id="TagHandler.reset_cache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.reset_cache">[docs]</a>    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset the cache from the outside.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
@@ -366,40 +359,6 @@
             <span class="p">)</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tagobj</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setcache</span><span class="p">(</span><span class="n">tagstr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">tagobj</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TagHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks if the given Tag (or list of Tags) exists on the object.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            tag (str or iterable): The Tag key or tags to check for.</span>
-<span class="sd">                If `None`, search by category.</span>
-<span class="sd">            category (str, optional): Limit the check to Tags with this</span>
-<span class="sd">                category (note, that `None` is the default category).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            has_tag (bool or list): If the Tag exists on this object or not.</span>
-<span class="sd">             If `tag` was given as an iterable then the return is a list of booleans.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If neither `tag` nor `category` is given.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">tag_str</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
-                <span class="n">tag_str</span> <span class="o">=</span> <span class="n">tag_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getcache</span><span class="p">(</span><span class="n">tag_str</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">category</span><span class="p">:</span>
-            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getcache</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either tag or category must be provided.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">return_list</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ret</span>
-
-        <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span></div>
 
 <div class="viewcode-block" id="TagHandler.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tagobj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -531,9 +490,8 @@
 <span class="sd">        Batch-add tags from a list of tuples.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            *args (tuple or str): Each argument should be a `tagstr` keys or tuple</span>
-<span class="sd">                `(keystr, category)` or `(keystr, category, data)`. It&#39;s possible to mix input</span>
-<span class="sd">                types.</span>
+<span class="sd">            *args (tuple or str): Each argument should be a `tagstr` keys or tuple `(keystr, category)` or</span>
+<span class="sd">                `(keystr, category, data)`. It&#39;s possible to mix input types.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This will generate a mimimal number of self.add calls,</span>
@@ -613,6 +571,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="tags.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

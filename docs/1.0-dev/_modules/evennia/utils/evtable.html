@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evtable</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -41,25 +40,21 @@
             
   <h1>Source code for evennia.utils.evtable</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This is an advanced ASCII table creator. It was inspired by Prettytable</span>
-<span class="sd">(https://code.google.com/p/prettytable/) but shares no code and is considerably</span>
-<span class="sd">more advanced, supporting auto-balancing of incomplete tables and ANSI colors among</span>
-<span class="sd">other things.</span>
+<span class="sd">This is an advanced ASCII table creator. It was inspired by</span>
+<span class="sd">[prettytable](https://code.google.com/p/prettytable/) but shares no code.</span>
 
 <span class="sd">Example usage:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">  from evennia.utils import evtable</span>
+<span class="sd">    from evennia.utils import evtable</span>
 
-<span class="sd">  table = evtable.EvTable(&quot;Heading1&quot;, &quot;Heading2&quot;,</span>
+<span class="sd">    table = evtable.EvTable(&quot;Heading1&quot;, &quot;Heading2&quot;,</span>
 <span class="sd">                  table=[[1,2,3],[4,5,6],[7,8,9]], border=&quot;cells&quot;)</span>
-<span class="sd">  table.add_column(&quot;This is long data&quot;, &quot;This is even longer data&quot;)</span>
-<span class="sd">  table.add_row(&quot;This is a single row&quot;)</span>
-<span class="sd">  print table</span>
-<span class="sd">```</span>
+<span class="sd">    table.add_column(&quot;This is long data&quot;, &quot;This is even longer data&quot;)</span>
+<span class="sd">    table.add_row(&quot;This is a single row&quot;)</span>
+<span class="sd">    print table</span>
 
 <span class="sd">Result:</span>
-
 <span class="sd">::</span>
 
 <span class="sd">    +----------------------+----------+---+--------------------------+</span>
@@ -76,15 +71,13 @@
 
 <span class="sd">As seen, the table will automatically expand with empty cells to make</span>
 <span class="sd">the table symmetric. Tables can be restricted to a given width:</span>
+<span class="sd">::</span>
 
-<span class="sd">```python</span>
-<span class="sd">  table.reformat(width=50, align=&quot;l&quot;)</span>
-<span class="sd">```</span>
+<span class="sd">    table.reformat(width=50, align=&quot;l&quot;)</span>
 
 <span class="sd">(We could just have added these keywords to the table creation call)</span>
 
 <span class="sd">This yields the following result:</span>
-
 <span class="sd">::</span>
 
 <span class="sd">    +-----------+------------+-----------+-----------+</span>
@@ -105,21 +98,16 @@
 <span class="sd">    | row       |            |           |           |</span>
 <span class="sd">    +-----------+------------+-----------+-----------+</span>
 
-
 <span class="sd">Table-columns can be individually formatted. Note that if an</span>
 <span class="sd">individual column is set with a specific width, table auto-balancing</span>
 <span class="sd">will not affect this column (this may lead to the full table being too</span>
 <span class="sd">wide, so be careful mixing fixed-width columns with auto- balancing).</span>
 <span class="sd">Here we change the width and alignment of the column at index 3</span>
 <span class="sd">(Python starts from 0):</span>
-
-<span class="sd">```python</span>
-
-<span class="sd">table.reformat_column(3, width=30, align=&quot;r&quot;)</span>
-<span class="sd">print table</span>
-<span class="sd">```</span>
-
 <span class="sd">::</span>
+
+<span class="sd">    table.reformat_column(3, width=30, align=&quot;r&quot;)</span>
+<span class="sd">    print table</span>
 
 <span class="sd">    +-----------+-------+-----+-----------------------------+---------+</span>
 <span class="sd">    | Heading1  | Headi |     |                             |         |</span>
@@ -143,14 +131,15 @@
 <span class="sd">vertically. This will lead to text contents being cropped. Each cell</span>
 <span class="sd">can only shrink to a minimum width and height of 1.</span>
 
-<span class="sd">`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured</span>
-<span class="sd">string types.</span>
+<span class="sd">`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)</span>
+<span class="sd">for supporting ANSI-coloured string types.</span>
 
-<span class="sd">When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be</span>
-<span class="sd">put at the end of each wrapped line. This means that the colour of a wrapped</span>
-<span class="sd">cell will not &quot;bleed&quot;, but it also means that eventual colour outside the table</span>
-<span class="sd">will not transfer &quot;across&quot; a table, you need to re-set the color to have it</span>
-<span class="sd">appear on both sides of the table string.</span>
+<span class="sd">When a cell is auto-wrapped across multiple lines, ANSI-reset</span>
+<span class="sd">sequences will be put at the end of each wrapped line. This means that</span>
+<span class="sd">the colour of a wrapped cell will not &quot;bleed&quot;, but it also means that</span>
+<span class="sd">eventual colour outside the table will not transfer &quot;across&quot; a table,</span>
+<span class="sd">you need to re-set the color to have it appear on both sides of the</span>
+<span class="sd">table string.</span>
 
 <span class="sd">----</span>
 
@@ -281,12 +270,12 @@
                 <span class="k">del</span> <span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
-                <span class="n">ln</span> <span class="o">=</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
                 <span class="c1"># Can at least squeeze this chunk onto the current line.</span>
-                <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">ln</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
                     <span class="n">cur_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
-                    <span class="n">cur_len</span> <span class="o">+=</span> <span class="n">ln</span>
+                    <span class="n">cur_len</span> <span class="o">+=</span> <span class="n">l</span>
 
                 <span class="c1"># Nope, this line is full.</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -304,10 +293,10 @@
             <span class="c1"># Convert current line back to a string and store it in list</span>
             <span class="c1"># of all lines (return value).</span>
             <span class="k">if</span> <span class="n">cur_line</span><span class="p">:</span>
-                <span class="n">ln</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">cur_line</span><span class="p">:</span>  <span class="c1"># ANSI fix</span>
-                    <span class="n">ln</span> <span class="o">+=</span> <span class="n">w</span>  <span class="c1">#</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="n">ln</span><span class="p">)</span>
+                    <span class="n">l</span> <span class="o">+=</span> <span class="n">w</span>  <span class="c1">#</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">lines</span></div>
 
 
@@ -1141,9 +1130,8 @@
 <span class="sd">            height (int, optional): Fixed height of table. Defaults to being unset. Width is</span>
 <span class="sd">                still given precedence. If given, table cells will crop text rather</span>
 <span class="sd">                than expand vertically.</span>
-<span class="sd">            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as</span>
-<span class="sd">                even width as possible. This often looks best also for mixed-length tables. Default</span>
-<span class="sd">                is `False`.</span>
+<span class="sd">            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as even width as</span>
+<span class="sd">                     possible. This often looks best also for mixed-length tables. Default is `False`.</span>
 <span class="sd">            maxwidth (int, optional):  This will set a maximum width</span>
 <span class="sd">                of the table while allowing it to be smaller. Only if it grows wider than this</span>
 <span class="sd">                size will it be resized by expanding horizontally (or crop `height` is given).</span>
@@ -1390,8 +1378,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrowmax</span>
 
-        <span class="c1"># add borders - these add to the width/height, so we must do this before calculating</span>
-        <span class="c1"># width/height</span>
+        <span class="c1"># add borders - these add to the width/height, so we must do this before calculating width/height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_borders</span><span class="p">()</span>
 
         <span class="c1"># equalize widths within each column</span>
@@ -1478,8 +1465,7 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">raise</span>
 
-        <span class="c1"># equalize heights for each row (we must do this here, since it may have changed to fit new</span>
-        <span class="c1"># widths)</span>
+        <span class="c1"># equalize heights for each row (we must do this here, since it may have changed to fit new widths)</span>
         <span class="n">cheights</span> <span class="o">=</span> <span class="p">[</span>
             <span class="nb">max</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worktable</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrowmax</span><span class="p">)</span>
@@ -1840,6 +1826,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -1858,7 +1845,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.evtable</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

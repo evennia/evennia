@@ -119,6 +119,7 @@
         <span class="n">helptext</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> (Write &#39;give up&#39; if you want to abandon your quest.)&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">helptext</span><span class="p">)</span></div></div>
 
+
 <span class="c1"># for the @detail command we inherit from MuxCommand, since</span>
 <span class="c1"># we want to make use of MuxCommand&#39;s pre-parsing of &#39;=&#39; in the</span>
 <span class="c1"># argument.</span>
@@ -243,22 +244,26 @@
         <span class="n">looking_at_obj</span><span class="o">.</span><span class="n">at_desc</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">return</span></div></div>
 
+
 <div class="viewcode-block" id="CmdTutorialGiveUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp">[docs]</a><span class="k">class</span> <span class="nc">CmdTutorialGiveUp</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give up the tutorial-world quest and return to Limbo, the start room of the</span>
 <span class="sd">    server.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give up&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;abort&#39;</span><span class="p">]</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;abort&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="CmdTutorialGiveUp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">outro_room</span> <span class="o">=</span> <span class="n">OutroRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">outro_room</span><span class="p">:</span>
             <span class="n">outro_room</span> <span class="o">=</span> <span class="n">outro_room</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That didn&#39;t work (seems like a bug). &quot;</span>
-                            <span class="s2">&quot;Try to use the |wteleport|n command instead.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;That didn&#39;t work (seems like a bug). &quot;</span>
+                <span class="s2">&quot;Try to use the |wteleport|n command instead.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">outro_room</span><span class="p">)</span></div></div>
@@ -426,6 +431,7 @@
 <span class="c1">#</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
+
 <div class="viewcode-block" id="CmdEvenniaIntro"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdEvenniaIntro">[docs]</a><span class="k">class</span> <span class="nc">CmdEvenniaIntro</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the Evennia intro wizard.</span>
@@ -434,10 +440,12 @@
 <span class="sd">        intro</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;intro&quot;</span>
 
 <div class="viewcode-block" id="CmdEvenniaIntro.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdEvenniaIntro.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">.intro_menu</span> <span class="kn">import</span> <span class="n">init_menu</span>
+
         <span class="c1"># quell also superusers</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
@@ -492,6 +500,7 @@
             <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Auto-quelling while in tutorial-world)&quot;</span><span class="p">)</span></div></div>
+
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
@@ -1206,7 +1215,6 @@
 <div class="viewcode-block" id="OutroRoom.at_object_leave"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.OutroRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;unquell&quot;</span><span class="p">)</span></div></div>
-
 </pre></div>
 
             <div class="clearer"></div>
@@ -1243,6 +1251,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="rooms.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

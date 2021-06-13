@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.utils</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -38,110 +37,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.help.utils">
-<span id="evennia-help-utils"></span><h1>evennia.help.utils<a class="headerlink" href="#module-evennia.help.utils" title="Permalink to this headline">¶</a></h1>
-<p>Resources for indexing help entries and for splitting help entries into
-sub-categories.</p>
-<p>This is used primarily by the default <strong>help</strong> command.</p>
-<dl class="py function">
-<dt id="evennia.help.utils.help_search_with_index">
-<code class="sig-prename descclassname">evennia.help.utils.</code><code class="sig-name descname">help_search_with_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">candidate_entries</span></em>, <em class="sig-param"><span class="n">suggestion_maxnum</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">fields</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/utils.html#help_search_with_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.utils.help_search_with_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lunr-powered fast index search and suggestion wrapper. See <a class="reference external" href="https://lunrjs.com/">https://lunrjs.com/</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<em>str</em>) – The query to search for.</p></li>
-<li><p><strong>candidate_entries</strong> (<em>list</em>) – This is the body of possible entities to search. Each
-must have a property <strong>.search_index_entry</strong> that returns a dict with all
-keys in the <strong>fields</strong> arg.</p></li>
-<li><p><strong>suggestion_maxnum</strong> (<em>int</em>) – How many matches to allow at most in a multi-match.</p></li>
-<li><p><strong>fields</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of Lunr field mappings
-<strong>**{“field_name”: str, “boost”: int}**</strong>. See the Lunr documentation
-for more details. The field name must exist in the dicts returned
-by <strong>.search_index_entry</strong> of the candidates. If not given, a default setup
-is used, prefering keys &gt; aliases &gt; category &gt; tags.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>tuple</em> –</p>
-<dl class="simple">
-<dt>A tuple (matches, suggestions), each a list, where the <strong>suggestion_maxnum</strong> limits</dt><dd><p>how many suggestions are included.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.help.utils.parse_entry_for_subcategories">
-<code class="sig-prename descclassname">evennia.help.utils.</code><code class="sig-name descname">parse_entry_for_subcategories</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/utils.html#parse_entry_for_subcategories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.utils.parse_entry_for_subcategories" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse a command docstring for special sub-category blocks:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>entry</strong> (<em>str</em>) – A help entry to parse</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>dict</em> –</p>
-<dl class="simple">
-<dt>The dict is a mapping that splits the entry into subcategories. This</dt><dd><p>will always hold a key <strong>None</strong> for the main help entry and
-zero or more keys holding the subcategories. Each is itself
-a dict with a key <strong>None</strong> for the main text of that subcategory
-followed by any sub-sub-categories down to a max-depth of 5.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Main topic text</span>
-
-<span class="sd"># SUBTOPICS</span>
-
-<span class="sd">## foo</span>
-
-<span class="sd">A subcategory of the main entry, accessible as **help topic foo**</span>
-<span class="sd">(or using /, like **help topic/foo**)</span>
-
-<span class="sd">## bar</span>
-
-<span class="sd">Another subcategory, accessed as **help topic bar**</span>
-<span class="sd">(or **help topic/bar**)</span>
-
-<span class="sd">### moo</span>
-
-<span class="sd">A subcategory of bar, accessed as **help bar moo**</span>
-<span class="sd">(or **help bar/moo**)</span>
-
-<span class="sd">#### dum</span>
-
-<span class="sd">A subcategory of moo, accessed **help bar moo dum**</span>
-<span class="sd">(or **help bar/moo/dum**)</span>
-
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<p>This will result in this returned entry structure:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;Main topic text&quot;</span><span class="p">:</span>
-   <span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;main topic/foo text&quot;</span>
-   <span class="p">},</span>
-   <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;Main topic/bar text&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;moo&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;topic/bar/moo text&quot;</span>
-            <span class="s2">&quot;dum&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;topic/bar/moo/dum text&quot;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-   <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd></dl>
-
+  <section id="evennia-help-utils">
+<h1>evennia.help.utils<a class="headerlink" href="#evennia-help-utils" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -187,6 +84,7 @@ followed by any sub-sub-categories down to a max-depth of 5.</p>
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -203,7 +101,6 @@ followed by any sub-sub-categories down to a max-depth of 5.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.utils</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

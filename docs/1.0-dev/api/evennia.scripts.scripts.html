@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.scripts</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -72,19 +71,181 @@ errors (list): A list of errors in string form, if any.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.time_until_next_repeat">
+<code class="sig-name descname">time_until_next_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.time_until_next_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.time_until_next_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get time until the script fires it <strong>at_repeat</strong> hook again.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>next (int)</em> –</p>
+<dl class="simple">
+<dt>Time in seconds until the script runs again.</dt><dd><p>If not a timed script, return <strong>None</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This hook is not used in any way by the script’s stepping
+system; it’s only here for the user to be able to check in
+on their scripts and when they will next be run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.remaining_repeats">
+<code class="sig-name descname">remaining_repeats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.remaining_repeats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.remaining_repeats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of returning repeats for limited Scripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>remaining (int or <strong>None</strong>) –</p>
+<dl class="simple">
+<dt>The number of repeats</dt><dd><p>remaining until the Script stops. Returns <strong>None</strong>
+if it has unlimited repeats.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.at_idmapper_flush">
+<code class="sig-name descname">at_idmapper_flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_idmapper_flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_idmapper_flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>If we’re flushing this object, make sure the LoopingCall is gone too</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force_restart</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called every time the script is started (for persistent
+scripts, this is usually once every server start)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>force_restart</strong> (<em>bool</em><em>, </em><em>optional</em>) – Normally an already
+started script will not be started again. if
+<strong>force_restart=True</strong>, the script will always restart
+the script, regardless of if it has started before.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (int)</em> –</p>
+<dl class="simple">
+<dt>0 or 1 depending on if the script successfully</dt><dd><p>started or not. Used in counting.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kill</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called to stop the script from running.  This also deletes the
+script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kill</strong> (<em>bool</em><em>, </em><em>optional</em>) – <ul class="simple">
+<li><p>Stop the script without</p></li>
+</ul>
+<p>calling any relevant script hooks.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (int)</em> –</p>
+<dl class="simple">
+<dt>0 if the script failed to stop, 1 otherwise.</dt><dd><p>Used in counting.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.pause">
+<code class="sig-name descname">pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manual_pause</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>This stops a running script and stores its active state.
+It WILL NOT call the <strong>at_stop()</strong> hook.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.unpause">
+<code class="sig-name descname">unpause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manual_unpause</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.unpause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.unpause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart a paused script. This WILL call the <strong>at_start()</strong> hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>manual_unpause</strong> (<em>bool</em><em>, </em><em>optional</em>) – This is False if unpause is
+called by the server reload/reset mechanism.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (bool)</em> – True if unpause was triggered, False otherwise.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If trying to automatically resart this script
+(usually after a reset/reload), but it was manually paused,
+and so should not the auto-unpaused.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.restart">
+<code class="sig-name descname">restart</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">repeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_delay</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restarts an already existing/running Script from the
+beginning, optionally using different settings. This will
+first call the stop hooks, and then the start hooks again.
+:param interval: Allows for changing the interval</p>
+<blockquote>
+<div><p>of the Script. Given in seconds.  if <strong>None</strong>, will use the already stored interval.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repeats</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of repeats. If unset, will
+use the previous setting.</p></li>
+<li><p><strong>start_delay</strong> (<em>bool</em><em>, </em><em>optional</em>) – If we should wait <strong>interval</strong> seconds
+before starting or not. If <strong>None</strong>, re-use the previous setting.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.reset_callcount">
+<code class="sig-name descname">reset_callcount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.reset_callcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.reset_callcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the count of the number of calls done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em><em>, </em><em>optional</em>) – The repeat value to reset to. Default
+is to set it all the way back to 0.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is only useful if repeats != 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripts.DefaultScript.force_repeat">
+<code class="sig-name descname">force_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.force_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.force_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire a premature triggering of the script callback. This
+will reset the timer and count down repeats as if the script
+had fired normally.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.scripts.scripts.DefaultScript.is_valid">
 <code class="sig-name descname">is_valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.is_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is called to check if the script’s timer is valid to run at this time.
-Should return a boolean. If False, the timer will be stopped.</p>
+<dd><p>Is called to check if the script is valid to run at this time.
+Should return a boolean. The method is assumed to collect all
+needed information from its related self.obj.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.scripts.scripts.DefaultScript.at_start">
 <code class="sig-name descname">at_start</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called whenever the script timer is started, which for persistent
-timed scripts is at least once every server start. It will also be
-called when starting again after a pause (including after a
-server reload).</p>
+<dd><p>Called whenever the script is started, which for persistent
+scripts is at least once every server start. It will also be
+called when starting again after a pause (such as after a
+server reload)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
@@ -106,36 +267,17 @@ overriding the call (unused by default).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.scripts.scripts.DefaultScript.at_pause">
-<code class="sig-name descname">at_pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manual_pause</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_pause" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when this script’s timer pauses.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>manual_pause</strong> (<em>bool</em>) – If set, pausing was done by a direct call. The
-non-manual pause indicates the script was paused as part of
-the server reload.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.scripts.scripts.DefaultScript.at_stop">
 <code class="sig-name descname">at_stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called whenever when it’s time for this script’s timer to stop (either
-because is_valid returned False, it ran out of iterations or it was manuallys
-stopped.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p>
+<dd><p>Called whenever when it’s time for this script to stop (either
+because is_valid returned False or it runs out of iterations)</p>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs (dict): Arbitrary, optional arguments for users</dt><dd><p>overriding the call (unused by default).</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.scripts.scripts.DefaultScript.at_script_delete">
-<code class="sig-name descname">at_script_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_script_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_script_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when the Script is deleted, after at_stop().</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -152,14 +294,6 @@ to do it.</p>
 <code class="sig-name descname">at_server_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_server_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_server_shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called whenever the server is shutting down fully
 (i.e. not for a restart).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.scripts.scripts.DefaultScript.at_server_start">
-<code class="sig-name descname">at_server_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_server_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_server_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>This hook is called after the server has started. It can be used to add
-post-startup setup for Scripts without a timer component (for which at_start
-could be used).</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -301,6 +435,7 @@ could be used).</p>
   <li><a href="../../0.9.5/api/evennia.scripts.scripts.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -317,7 +452,6 @@ could be used).</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.scripts.scripts</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

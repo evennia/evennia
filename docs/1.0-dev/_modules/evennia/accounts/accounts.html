@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -41,7 +40,7 @@
             
   <h1>Source code for evennia.accounts.accounts</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Typeclass for Account objects.</span>
+<span class="sd">Typeclass for Account objects</span>
 
 <span class="sd">Note that this object is primarily intended to</span>
 <span class="sd">store OOC information, not game info! This</span>
@@ -73,7 +72,7 @@
     <span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickHandler</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
@@ -81,7 +80,7 @@
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,)</span>
 
 <span class="n">_SESSIONS</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -90,17 +89,14 @@
 <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span>
 <span class="n">_CMDSET_ACCOUNT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_ACCOUNT</span>
 <span class="n">_MUDINFO_CHANNEL</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_CONNECT_CHANNEL</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_CMDHANDLER</span> <span class="o">=</span> <span class="kc">None</span>
-
 
 <span class="c1"># Create throttles for too many account-creations and login attempts</span>
 <span class="n">CREATION_THROTTLE</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;creation&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_LIMIT</span><span class="p">,</span>
-    <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_TIMEOUT</span>
+    <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CREATION_THROTTLE_TIMEOUT</span>
 <span class="p">)</span>
 <span class="n">LOGIN_THROTTLE</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_TIMEOUT</span>
+    <span class="n">limit</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_LIMIT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_THROTTLE_TIMEOUT</span>
 <span class="p">)</span>
 
 
@@ -244,7 +240,7 @@
 
 <div class="viewcode-block" id="DefaultAccount.nicks"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.nicks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">nicks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">NickHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">NickHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.sessions"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.sessions">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -277,21 +273,6 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">objs</span>
-
-<div class="viewcode-block" id="DefaultAccount.get_display_name"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is used by channels and other OOC communications methods to give a</span>
-<span class="sd">        custom display of this account&#39;s input.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            looker (Account): The one that will see this name.</span>
-<span class="sd">            **kwargs: Unused by default, can be used to pass game-specific data.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: The name, possibly modified.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span></div>
 
     <span class="c1"># session-related methods</span>
 
@@ -335,11 +316,11 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Session not found&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">(</span><span class="n">session</span><span class="p">)</span> <span class="o">==</span> <span class="n">obj</span><span class="p">:</span>
             <span class="c1"># already puppeting this object</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already puppeting this object.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You are already puppeting this object.&quot;</span><span class="p">))</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">):</span>
             <span class="c1"># no access</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{obj.key}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{key}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="c1"># object already puppeted</span>
@@ -355,8 +336,8 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">txt1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Taking over |c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n from another of your sessions.&quot;</span>
                         <span class="n">txt2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n|R is now acted from another of your sessions.|n&quot;</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt2</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">txt1</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">txt2</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
             <span class="k">elif</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
                 <span class="c1"># controlled by another account</span>
@@ -378,6 +359,8 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">session</span><span class="o">.</span><span class="n">puid</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
         <span class="n">session</span><span class="o">.</span><span class="n">puppet</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="c1"># validate/start persistent scripts on object</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
         <span class="c1"># re-cache locks to make sure superuser bypass is updated</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">cache_lock_bypass</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -586,7 +569,7 @@
 
             <span class="c1"># Update throttle</span>
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
-                <span class="n">LOGIN_THROTTLE</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Too many authentication failures.&quot;</span><span class="p">))</span>
+                <span class="n">LOGIN_THROTTLE</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="s2">&quot;Too many authentication failures.&quot;</span><span class="p">)</span>
 
             <span class="c1"># Try to call post-failure hook</span>
             <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -701,9 +684,8 @@
 <span class="sd">            password (str): Password to set.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            This is called by Django also when logging in; it should not be mixed up with</span>
-<span class="sd">            validation, since that would mean old passwords in the database (pre validation checks)</span>
-<span class="sd">            could get invalidated.</span>
+<span class="sd">            This is called by Django also when logging in; it should not be mixed up with validation, since that</span>
+<span class="sd">            would mean old passwords in the database (pre validation checks) could get invalidated.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
@@ -842,10 +824,12 @@
                 <span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account Created: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> (IP: </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
 
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;There was an error creating the Account. &quot;</span>
-                      <span class="s2">&quot;If this problem persists, contact an admin.&quot;</span><span class="p">))</span>
+                    <span class="n">_</span><span class="p">(</span>
+                        <span class="s2">&quot;There was an error creating the Account. If this problem persists, contact an admin.&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
                 <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
 
@@ -861,7 +845,7 @@
             <span class="c1"># join the new account to the public channel</span>
             <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;New account &#39;</span><span class="si">{account.key}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;New account &#39;</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
@@ -1003,89 +987,6 @@
         <span class="k">return</span> <span class="n">_CMDHANDLER</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">callertype</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
-
-    <span class="c1"># channel receive hooks</span>
-
-<div class="viewcode-block" id="DefaultAccount.at_pre_channel_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_pre_channel_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_channel_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called by the Channel just before passing a message into `channel_msg`.</span>
-<span class="sd">        This allows for tweak messages per-user and also to abort the</span>
-<span class="sd">        receive on the receiver-level.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            message (str): The message sent to the channel.</span>
-<span class="sd">            channel (Channel): The sending channel.</span>
-<span class="sd">            senders (list, optional): Accounts or Objects acting as senders.</span>
-<span class="sd">                For most normal messages, there is only a single sender. If</span>
-<span class="sd">                there are no senders, this may be a broadcasting message.</span>
-<span class="sd">            **kwargs: These are additional keywords passed into `channel_msg`.</span>
-<span class="sd">                If `no_prefix=True` or `emit=True` are passed, the channel</span>
-<span class="sd">                prefix will not be added (`[channelname]: ` by default)</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str or None: Allows for customizing the message for this recipient.</span>
-<span class="sd">                If returning `None` (or `False`) message-receiving is aborted.</span>
-<span class="sd">                The returning string will be passed into `self.channel_msg`.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This support posing/emotes by starting channel-send with : or ;.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">senders</span><span class="p">:</span>
-            <span class="n">sender_string</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sender</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">senders</span><span class="p">)</span>
-            <span class="n">message_lstrip</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">message_lstrip</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)):</span>
-                <span class="c1"># this is a pose, should show as e.g. &quot;User1 smiles to channel&quot;</span>
-                <span class="n">spacing</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">message_lstrip</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender_string</span><span class="si">}{</span><span class="n">spacing</span><span class="si">}{</span><span class="n">message_lstrip</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># normal message</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender_string</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_prefix&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emit&quot;</span><span class="p">):</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">channel_prefix</span><span class="p">()</span> <span class="o">+</span> <span class="n">message</span>
-
-        <span class="k">return</span> <span class="n">message</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.channel_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.channel_msg">[docs]</a>    <span class="k">def</span> <span class="nf">channel_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This performs the actions of receiving a message to an un-muted</span>
-<span class="sd">        channel.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            message (str): The message sent to the channel.</span>
-<span class="sd">            channel (Channel): The sending channel.</span>
-<span class="sd">            senders (list, optional): Accounts or Objects acting as senders.</span>
-<span class="sd">                For most normal messages, there is only a single sender. If</span>
-<span class="sd">                there are no senders, this may be a broadcasting message or</span>
-<span class="sd">                similar.</span>
-<span class="sd">            **kwargs: These are additional keywords originally passed into</span>
-<span class="sd">                `Channel.msg`.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            Before this, `Channel.at_pre_channel_msg` will fire, which offers a way</span>
-<span class="sd">            to customize the message for the receiver on the channel-level.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;from_channel&quot;</span><span class="p">:</span> <span class="n">channel</span><span class="o">.</span><span class="n">id</span><span class="p">}),</span>
-                 <span class="n">from_obj</span><span class="o">=</span><span class="n">senders</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;from_channel&quot;</span><span class="p">:</span> <span class="n">channel</span><span class="o">.</span><span class="n">id</span><span class="p">})</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.at_post_channel_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_channel_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_channel_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called by `self.channel_msg` after message was received.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            message (str): The message sent to the channel.</span>
-<span class="sd">            channel (Channel): The sending channel.</span>
-<span class="sd">            senders (list, optional): Accounts or Objects acting as senders.</span>
-<span class="sd">                For most normal messages, there is only a single sender. If</span>
-<span class="sd">                there are no senders, this may be a broadcasting message.</span>
-<span class="sd">            **kwargs: These are additional keywords passed into `channel_msg`.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-    <span class="c1"># search method</span>
 
 <div class="viewcode-block" id="DefaultAccount.search"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1394,42 +1295,30 @@
 
     <span class="k">def</span> <span class="nf">_send_to_connect_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method for loading and sending to the comm channel dedicated to</span>
-<span class="sd">        connection messages. This will also be sent to the mudinfo channel.</span>
+<span class="sd">        Helper method for loading and sending to the comm channel</span>
+<span class="sd">        dedicated to connection messages.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            message (str): A message to send to the connect channel.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_MUDINFO_CHANNEL</span><span class="p">,</span> <span class="n">_CONNECT_CHANNEL</span>
-        <span class="k">if</span> <span class="n">_MUDINFO_CHANNEL</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">_MUDINFO_CHANNEL</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">db_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
-                <span class="k">except</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">_MUDINFO</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">_CONNECT_CHANNEL</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">_CONNECT_CHANNEL</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">db_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
-                <span class="k">except</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">_CONNECT_CHANNEL</span> <span class="o">=</span> <span class="kc">False</span>
-
+        <span class="k">global</span> <span class="n">_MUDINFO_CHANNEL</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_MUDINFO_CHANNEL</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_MUDINFO_CHANNEL</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])[</span>
+                    <span class="mi">0</span>
+                <span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">USE_TZ</span><span class="p">:</span>
             <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localtime</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">now</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02i</span><span class="s2">-</span><span class="si">%02i</span><span class="s2">-</span><span class="si">%02i</span><span class="s2">(</span><span class="si">%02i</span><span class="s2">:</span><span class="si">%02i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_MUDINFO_CHANNEL</span><span class="p">:</span>
-            <span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_CONNECT_CHANNEL</span><span class="p">:</span>
-            <span class="n">_CONNECT_CHANNEL</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">tempmsg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">_MUDINFO_CHANNEL</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DefaultAccount.at_post_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1616,7 +1505,7 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;return_appearance&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">target</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> has no in-game appearance.&quot;</span>
+                <span class="k">return</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{target}</span><span class="s2"> has no in-game appearance.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># list of targets - make list to disconnect from db</span>
             <span class="n">characters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tar</span> <span class="k">for</span> <span class="n">tar</span> <span class="ow">in</span> <span class="n">target</span> <span class="k">if</span> <span class="n">tar</span><span class="p">)</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="p">[]</span>
@@ -1659,18 +1548,19 @@
             <span class="k">if</span> <span class="n">is_su</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">charmax</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">characters</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> You don&#39;t have any characters yet. See |whelp charcreate|n for &quot;</span>
-                        <span class="s2">&quot;creating one.&quot;</span>
+                        <span class="n">_</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> You don&#39;t have any characters yet. See |whelp @charcreate|n for creating one.&quot;</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wcharcreate &lt;name&gt; [=description]|n - create new character&quot;</span><span class="p">)</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |w@charcreate &lt;name&gt; [=description]|n - create new character&quot;</span><span class="p">)</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wchardelete &lt;name&gt;|n - delete a character (cannot be undone!)&quot;</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |w@chardelete &lt;name&gt;|n - delete a character (cannot be undone!)&quot;</span>
                     <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">characters</span><span class="p">:</span>
                 <span class="n">string_s_ending</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wic &lt;character&gt;|n - enter the game (|wooc|n to get back here)&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |w@ic &lt;character&gt;|n - enter the game (|w@ooc|n to get back here)&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">is_su</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Available character</span><span class="si">{</span><span class="n">string_s_ending</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span><span class="si">}</span><span class="s2">/unlimited):&quot;</span>
@@ -1692,12 +1582,11 @@
                             <span class="n">sid</span> <span class="o">=</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span> <span class="ow">and</span> <span class="n">sessions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
                             <span class="k">if</span> <span class="n">sess</span> <span class="ow">and</span> <span class="n">sid</span><span class="p">:</span>
                                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |G</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;(played by you in session </span><span class="si">{</span><span class="n">sid</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |G</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] (played by you in session </span><span class="si">{</span><span class="n">sid</span><span class="si">}</span><span class="s2">)&quot;</span>
+                                <span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |R</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
-                                    <span class="s2">&quot;(played by someone else)&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |R</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] (played by someone else)&quot;</span>
                                 <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># character is &quot;free to puppet&quot;</span>
@@ -1706,23 +1595,21 @@
             <span class="k">return</span> <span class="n">look_string</span></div></div>
 
 
-<div class="viewcode-block" id="DefaultGuest"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest">[docs]</a><span class="k">class</span> <span class="nc">DefaultGuest</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DefaultGuest</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used for guest logins. Unlike Accounts, Guests and</span>
 <span class="sd">    their characters are deleted after disconnection.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DefaultGuest.create"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Forwards request to cls.authenticate(); returns a DefaultGuest object</span>
 <span class="sd">        if one is available for use.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DefaultGuest.authenticate"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.authenticate">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets or creates a Guest account object.</span>
@@ -1786,7 +1673,7 @@
 
                 <span class="k">return</span> <span class="n">account</span><span class="p">,</span> <span class="n">errors</span>
 
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># We are in the middle between logged in and -not, so we have</span>
             <span class="c1"># to handle tracebacks ourselves at this point. If we don&#39;t,</span>
             <span class="c1"># we won&#39;t see any errors at all.</span>
@@ -1794,9 +1681,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
 
-        <span class="k">return</span> <span class="n">account</span><span class="p">,</span> <span class="n">errors</span></div>
+        <span class="k">return</span> <span class="n">account</span><span class="p">,</span> <span class="n">errors</span>
 
-<div class="viewcode-block" id="DefaultGuest.at_post_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_post_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In theory, guests only have one character regardless of which</span>
 <span class="sd">        MULTISESSION_MODE we&#39;re in. They don&#39;t get a choice.</span>
@@ -1808,9 +1695,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_to_connect_channel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">{key}</span><span class="s2"> connected|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DefaultGuest.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We repeat the functionality of `at_disconnect()` here just to</span>
 <span class="sd">        be on the safe side.</span>
@@ -1819,9 +1706,9 @@
         <span class="n">characters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
         <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
-                <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+                <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
-<div class="viewcode-block" id="DefaultGuest.at_post_disconnect"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_post_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_post_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once having disconnected, destroy the guest&#39;s characters and</span>
 
@@ -1835,7 +1722,7 @@
         <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 </pre></div>
 
             <div class="clearer"></div>
@@ -1873,6 +1760,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -1891,7 +1779,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

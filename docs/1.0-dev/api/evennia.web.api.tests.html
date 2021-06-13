@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.api.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -38,74 +37,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.web.api.tests">
-<span id="evennia-web-api-tests"></span><h1>evennia.web.api.tests<a class="headerlink" href="#module-evennia.web.api.tests" title="Permalink to this headline">¶</a></h1>
-<p>Tests for the REST API.</p>
-<dl class="py class">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.api.tests.</code><code class="sig-name descname">TestEvenniaRESTApi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
-<dl class="py attribute">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.client_class">
-<code class="sig-name descname">client_class</code><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.client_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.test.APIClient</span></code></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.maxDiff">
-<code class="sig-name descname">maxDiff</code><em class="property"> = None</em><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.maxDiff" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.setUp">
-<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up testing environment</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.tearDown">
-<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.tearDown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.get_view_details">
-<code class="sig-name descname">get_view_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.get_view_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.get_view_details" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper function for generating list of named tuples</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_retrieve">
-<code class="sig-name descname">test_retrieve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_retrieve" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_update">
-<code class="sig-name descname">test_update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_delete">
-<code class="sig-name descname">test_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_delete" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_list">
-<code class="sig-name descname">test_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_create">
-<code class="sig-name descname">test_create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_create" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.api.tests.TestEvenniaRESTApi.test_set_attribute">
-<code class="sig-name descname">test_set_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/api/tests.html#TestEvenniaRESTApi.test_set_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.tests.TestEvenniaRESTApi.test_set_attribute" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-web-api-tests">
+<h1>evennia.web.api.tests<a class="headerlink" href="#evennia-web-api-tests" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -151,6 +84,7 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -167,7 +101,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.api.tests</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
