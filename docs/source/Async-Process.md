@@ -98,16 +98,16 @@ An example of making an asynchronous call from inside a [Command](./Commands) de
     class CmdAsync(Command):
 
        key = "asynccommand"
-    
+
        def func(self):
-           
+
            def long_running_function():
                #[... lots of time-consuming code  ...]
                return final_value
-           
+
            def at_return_function(r):
                self.caller.msg("The final value is %s" % r)
-    
+
            def at_err_function(e):
                self.caller.msg("There was an error: %s" % e)
 
@@ -150,8 +150,7 @@ Wait 10 seconds and 'Test!' should be echoed back to you.
 
 ## The @interactive decorator
 
-As of Evennia 0.9, the `@interactive` [decorator](https://realpython.com/primer-on-python-
-decorators/)
+As of Evennia 0.9, the `@interactive` [decorator](https://realpython.com/primer-on-python-decorators/)
 is available. This makes any function or method possible to 'pause' and/or await player input
 in an interactive way.
 
@@ -160,7 +159,7 @@ in an interactive way.
 
     @interactive
     def myfunc(caller):
-        
+
       while True:
           caller.msg("Getting ready to wait ...")
           yield(5)

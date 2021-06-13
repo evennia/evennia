@@ -90,7 +90,7 @@ monsters and other NPCs. You can [read more about it here](./Objects#subclasses-
 similar to Rails for the Ruby language. It is one of Evennia's central library dependencies (the
 other one is [Twisted](./Glossary#twisted)). Evennia uses Django for two main things - to map all
 database operations to Python and for structuring our web site.
- 
+
 Through Django, we can work with any supported database (SQlite3, Postgres, MySQL ...) using generic
 Python instead of database-specific SQL: A database table is represented in Django as a Python class
 (called a *model*). An Python instance of such a class represents a row in that table.
@@ -204,8 +204,7 @@ infrastructure. Git itself is a separate project.
 
 ### _object_
 
-In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-
-oriented_programming)), an `object` is what we call the instance of a *class*. But one of Evennia's
+In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-oriented_programming)), an `object` is what we call the instance of a *class*. But one of Evennia's
 core [typeclasses](./Glossary#typeclasss) is also called "Object". To separate these in the docs we
 try to use `object` to refer to the general term and capitalized `Object` when we refer to the
 typeclass.
@@ -246,8 +245,7 @@ not have to be.
 ### _property_
 
 A _property_ is a general term used for properties on any Python object. The term also sometimes
-refers to the `property` built-in function of Python ([read more here](https://www.python-
-course.eu/python3_properties.php)). Note the distinction between properties,
+refers to the `property` built-in function of Python ([read more here](https://www.python-course.eu/python3_properties.php)). Note the distinction between properties,
 [fields](./Glossary#field) and [Attributes](./Glossary#attribute).
 
 ### _repository_

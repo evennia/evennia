@@ -237,8 +237,7 @@ entities you can loop over in a for-loop. Attribute-saving supports the followin
 * [Dicts](https://docs.python.org/2/tutorial/datastructures.html#dictionaries), like `{1:2,
 "test":<dbobj>]`.
 * [Sets](https://docs.python.org/2/tutorial/datastructures.html#sets), like `{1,2,"test",<dbobj>}`.
-* [collections.OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDi
-ct), like `OrderedDict((1,2), ("test", <dbobj>))`.
+* [collections.OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict), like `OrderedDict((1,2), ("test", <dbobj>))`.
 * [collections.Deque](https://docs.python.org/2/library/collections.html#collections.deque), like
 `deque((1,2,"test",<dbobj>))`.
 * *Nestings* of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each
