@@ -1,5 +1,6 @@
 from django.test import TestCase
 from mock import Mock, patch, mock_open
+from anything import Something
 from .dummyrunner_settings import (
     c_creates_button,
     c_creates_obj,
@@ -29,8 +30,8 @@ class TestDummyrunnerSettings(TestCase):
         self.client.cid = 1
         self.client.counter = Mock(return_value=1)
         self.client.gid = "20171025161153-1"
-        self.client.name = "Dummy-%s" % self.client.gid
-        self.client.password = "password-%s" % self.client.gid
+        self.client.name = "Dummy_%s" % self.client.gid
+        self.client.password = Something,
         self.client.start_room = "testing_room_start_%s" % self.client.gid
         self.client.objs = []
         self.client.exits = []
@@ -43,28 +44,25 @@ class TestDummyrunnerSettings(TestCase):
         self.assertEqual(
             c_login(self.client),
             (
-                "create %s %s" % (self.client.name, self.client.password),
-                "connect %s %s" % (self.client.name, self.client.password),
-                "@dig %s" % self.client.start_room,
-                "@teleport %s" % self.client.start_room,
-                "@dig testing_room_1 = exit_1, exit_1",
+                Something,  # create
+                Something,  # connect
+                "dig %s" % self.client.start_room,
+                "teleport %s" % self.client.start_room,
+                "py from evennia.server.profiling.dummyrunner import DummyRunnerCmdSet;"
+                "self.cmdset.add(DummyRunnerCmdSet, persistent=False)"
             ),
         )
 
     def test_c_login_no_dig(self):
-        self.assertEqual(
-            c_login_nodig(self.client),
-            (
-                "create %s %s" % (self.client.name, self.client.password),
-                "connect %s %s" % (self.client.name, self.client.password),
-            ),
-        )
+        cmd1, cmd2 = c_login_nodig(self.client)
+        self.assertTrue(cmd1.startswith("create " + self.client.name + " "))
+        self.assertTrue(cmd2.startswith("connect " + self.client.name + " "))
 
     def test_c_logout(self):
-        self.assertEqual(c_logout(self.client), "@quit")
+        self.assertEqual(c_logout(self.client), ("quit",))
 
     def perception_method_tests(self, func, verb, alone_suffix=""):
-        self.assertEqual(func(self.client), "%s%s" % (verb, alone_suffix))
+        self.assertEqual(func(self.client), ("%s%s" % (verb, alone_suffix),))
         self.client.exits = ["exit1", "exit2"]
         self.assertEqual(func(self.client), ["%s exit1" % verb, "%s exit2" % verb])
         self.client.objs = ["foo", "bar"]
@@ -83,11 +81,11 @@ class TestDummyrunnerSettings(TestCase):
     def test_c_help(self):
         self.assertEqual(
             c_help(self.client),
-            ("help", "help @teleport", "help look", "help @tunnel", "help @dig"),
+            ("help", "dummyrunner_echo_response"),
         )
 
     def test_c_digs(self):
-        self.assertEqual(c_digs(self.client), ("@dig/tel testing_room_1 = exit_1, exit_1"))
+        self.assertEqual(c_digs(self.client), ("dig/tel testing_room_1 = exit_1, exit_1", ))
         self.assertEqual(self.client.exits, ["exit_1", "exit_1"])
         self.clear_client_lists()
 
@@ -96,10 +94,10 @@ class TestDummyrunnerSettings(TestCase):
         self.assertEqual(
             c_creates_obj(self.client),
             (
-                "@create %s" % objname,
-                '@desc %s = "this is a test object' % objname,
-                "@set %s/testattr = this is a test attribute value." % objname,
-                "@set %s/testattr2 = this is a second test attribute." % objname,
+                "create %s" % objname,
+                'desc %s = "this is a test object' % objname,
+                "set %s/testattr = this is a test attribute value." % objname,
+                "set %s/testattr2 = this is a second test attribute." % objname,
             ),
         )
         self.assertEqual(self.client.objs, [objname])
@@ -110,7 +108,7 @@ class TestDummyrunnerSettings(TestCase):
         typeclass_name = "contrib.tutorial_examples.red_button.RedButton"
         self.assertEqual(
             c_creates_button(self.client),
-            ("@create %s:%s" % (objname, typeclass_name), "@desc %s = test red button!" % objname),
+            ("create %s:%s" % (objname, typeclass_name), "desc %s = test red button!" % objname),
         )
         self.assertEqual(self.client.objs, [objname])
         self.clear_client_lists()
@@ -119,25 +117,23 @@ class TestDummyrunnerSettings(TestCase):
         self.assertEqual(
             c_socialize(self.client),
             (
-                "ooc Hello!",
-                "ooc Testing ...",
-                "ooc Testing ... times 2",
+                "pub Hello!",
                 "say Yo!",
                 "emote stands looking around.",
             ),
         )
 
     def test_c_moves(self):
-        self.assertEqual(c_moves(self.client), "look")
+        self.assertEqual(c_moves(self.client), ("look",))
         self.client.exits = ["south", "north"]
         self.assertEqual(c_moves(self.client), ["south", "north"])
         self.clear_client_lists()
 
     def test_c_move_n(self):
-        self.assertEqual(c_moves_n(self.client), "north")
+        self.assertEqual(c_moves_n(self.client), ("north",))
 
     def test_c_move_s(self):
-        self.assertEqual(c_moves_s(self.client), "south")
+        self.assertEqual(c_moves_s(self.client), ("south",))
 
 
 class TestMemPlot(TestCase):
