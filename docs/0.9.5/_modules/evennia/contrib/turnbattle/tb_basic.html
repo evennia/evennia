@@ -221,10 +221,10 @@
 <div class="viewcode-block" id="at_defeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_basic.html#evennia.contrib.turnbattle.tb_basic.at_defeat">[docs]</a><span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="n">defeated</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Announces the defeat of a fighter in combat.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        defeated (obj): Fighter that&#39;s been defeated.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Notes:</span>
 <span class="sd">        All this does is announce a defeat message by default, but if you</span>
 <span class="sd">        want anything else to happen to defeated fighters (like putting them</span>
@@ -523,7 +523,6 @@
         <span class="k">if</span> <span class="n">disengage_check</span><span class="p">:</span>  <span class="c1"># All characters have disengaged</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;All fighters have disengaged! Combat is over!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
         <span class="c1"># Check to see if only one character is left standing. If so, end combat.</span>
@@ -539,7 +538,6 @@
                     <span class="n">LastStanding</span> <span class="o">=</span> <span class="n">fighter</span>  <span class="c1"># Pick the one fighter left with HP remaining</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Only </span><span class="si">%s</span><span class="s2"> remains! Combat is over!&quot;</span> <span class="o">%</span> <span class="n">LastStanding</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
         <span class="c1"># Cycle to the next turn.</span>
@@ -857,6 +855,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="tb_basic.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

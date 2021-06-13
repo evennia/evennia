@@ -340,8 +340,7 @@ div.code-block-caption {
 }
 
 .versionchanged {
-  background-color: #b7e6e8;
-  padding-left: 10px;
+  background-color: #f7f7f7;
 }
 
 .deprecated {
@@ -397,16 +396,6 @@ code.descname {
 .exception {
   background-color: #fff9f9;
   padding: 5px;
-}
-
-/* The develop-branch warning header */
-
-.develop {
-  background-color: #ffe4e4;
-  align-content: center;
-  width: auto;
-  text-align: center;
-  letter-spacing: 15px;
 }
 
 

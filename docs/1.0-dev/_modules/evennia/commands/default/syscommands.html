@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -69,6 +68,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_NOINPUT</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_NOMATCH</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_MULTIMATCH</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_CHANNEL</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -145,6 +145,53 @@
         <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span>
         <span class="c1"># at_search_result will itself msg the multimatch options to the caller.</span>
         <span class="n">at_search_result</span><span class="p">([</span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div></div>
+
+
+<span class="c1"># Command called when the command given at the command line</span>
+<span class="c1"># was identified as a channel name, like there existing a</span>
+<span class="c1"># channel named &#39;ooc&#39; and the user wrote</span>
+<span class="c1">#  &gt; ooc Hello!</span>
+
+
+<div class="viewcode-block" id="SystemSendToChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel">[docs]</a><span class="k">class</span> <span class="nc">SystemSendToChannel</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a special command that the cmdhandler calls</span>
+<span class="sd">    when it detects that the command given matches</span>
+<span class="sd">    an existing Channel object key (or alias).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_CHANNEL</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="SystemSendToChannel.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">channelname</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">channelname</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SystemSendToChannel.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new message and send it to channel, using</span>
+<span class="sd">        the already formatted input.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">channelkey</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Say what?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">channelkey</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Channel &#39;</span><span class="si">%s</span><span class="s2">&#39; not found.&quot;</span> <span class="o">%</span> <span class="n">channelkey</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not connected to channel &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="n">channelkey</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not permitted to send to channel &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="n">channelkey</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">] </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">msgobj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="n">channel</span><span class="p">])</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -182,6 +229,7 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -200,7 +248,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

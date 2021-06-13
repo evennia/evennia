@@ -319,7 +319,7 @@ to preserve a continuous chat history for channel log files.</p>
 
 <dl class="py method">
 <dt id="evennia.utils.logger.EvenniaLogFile.rotate">
-<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_lines_to_append</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.rotate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.rotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotates our log file and appends some number of lines from
 the previous log to the start of the new one.</p>
 </dd></dl>
@@ -328,31 +328,21 @@ the previous log to the start of the new one.</p>
 <dt id="evennia.utils.logger.EvenniaLogFile.seek">
 <code class="sig-name descname">seek</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.seek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.seek" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience method for accessing our _file attribute’s seek method,
-which is used in tail_log_function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – Same args as file.seek</p></li>
-<li><p><strong>**kwargs</strong> – Same kwargs as file.seek</p></li>
-</ul>
-</dd>
-</dl>
+which is used in tail_log_function.
+:param *args: Same args as file.seek
+:param **kwargs: Same kwargs as file.seek</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.utils.logger.EvenniaLogFile.readlines">
 <code class="sig-name descname">readlines</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.readlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.readlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience method for accessing our _file attribute’s readlines method,
-which is used in tail_log_function.</p>
+which is used in tail_log_function.
+:param *args: same args as file.readlines
+:param **kwargs: same kwargs as file.readlines</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – same args as file.readlines</p></li>
-<li><p><strong>**kwargs</strong> – same kwargs as file.readlines</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>lines (list)</em> – lines from our _file attribute.</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>lines (list)</em> – lines from our _file attribute.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -370,36 +360,6 @@ which is used in tail_log_function.</p>
 <li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Defaults to ‘game.log’. All logs
 will appear in the logs directory and log entries will start
 on new lines following datetime info.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_file_exists">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_file_exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'game.log'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_file_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_file_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine if a log-file already exists.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The filename (within the log-dir).</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>bool</em> – If the log file exists or not.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.rotate_log_file">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">rotate_log_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'game.log'</span></em>, <em class="sig-param"><span class="n">num_lines_to_append</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#rotate_log_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.rotate_log_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Force-rotate a log-file, without</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – The log file, located in settings.LOG_DIR.</p></li>
-<li><p><strong>num_lines_to_append</strong> (<em>int</em><em>, </em><em>optional</em>) – Include N number of
-lines from previous file in new one. If <strong>None</strong>, use default.
-Set to 0 to include no lines.</p></li>
 </ul>
 </dd>
 </dl>
@@ -479,6 +439,7 @@ all if the file is shorter than nlines.</p>
   <li><a href="../../1.0-dev/api/evennia.utils.logger.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.logger.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

@@ -56,7 +56,7 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">DeferredList</span><span class="p">,</span> <span class="n">Deferred</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
 <span class="c1"># delayed import</span>
 <span class="n">_LOGGER</span> <span class="o">=</span> <span class="kc">None</span>
@@ -134,10 +134,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_logger</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Delay import of logger until absolutely necessary</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="s2">&quot;Delay import of logger until absolutely necessary&quot;</span>
     <span class="k">global</span> <span class="n">_LOGGER</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGGER</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">_LOGGER</span>
@@ -146,10 +143,7 @@
 
 <span class="nd">@wraps</span>
 <span class="k">def</span> <span class="nf">catch_traceback</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper decorator</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="s2">&quot;Helper decorator&quot;</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -400,7 +394,6 @@
 <div class="viewcode-block" id="AMPMultiConnectionProtocol.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle non-AMP messages, such as HTTP communication.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(&quot;dataReceived: {}&quot;.format(data))</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">NUL</span><span class="p">:</span>
@@ -461,7 +454,6 @@
 <span class="sd">        that is irrelevant. If a true connection error happens, the</span>
 <span class="sd">        portal will continuously try to reconnect, showing the problem</span>
 <span class="sd">        that way.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(&quot;ConnectionLost: {}: {}&quot;.format(self, reason))</span>
         <span class="k">try</span><span class="p">:</span>
@@ -471,20 +463,20 @@
 
     <span class="c1"># Error handling</span>
 
-<div class="viewcode-block" id="AMPMultiConnectionProtocol.errback"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.errback">[docs]</a>    <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.errback"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.errback">[docs]</a>    <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Error callback.</span>
 <span class="sd">        Handles errors to avoid dropping connections on server tracebacks.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            err (Failure): Deferred error instance.</span>
+<span class="sd">            e (Failure): Deferred error instance.</span>
 <span class="sd">            info (str): Error string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">err</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
         <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
             <span class="s2">&quot;AMP Error from </span><span class="si">{info}</span><span class="s2">: </span><span class="si">{trcbck}</span><span class="s2"> </span><span class="si">{err}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">trcbck</span><span class="o">=</span><span class="n">err</span><span class="o">.</span><span class="n">getTraceback</span><span class="p">(),</span> <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()</span>
+                <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">trcbck</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">getTraceback</span><span class="p">(),</span> <span class="n">err</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -623,6 +615,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="amp.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

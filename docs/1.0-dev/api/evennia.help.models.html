@@ -30,7 +30,6 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -106,8 +105,8 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.help.models.HelpEntry.db_date_created">
-<code class="sig-name descname">db_date_created</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_date_created" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.help.models.HelpEntry.db_staff_only">
+<code class="sig-name descname">db_staff_only</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_staff_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -134,28 +133,11 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="evennia.help.models.HelpEntry.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines if another object has permission to access this help entry.</p>
-<dl class="simple">
-<dt>Accesses used by default:</dt><dd><p>‘read’ - read the help entry itself.
-‘view’ - see help entry in help index.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>accessing_obj</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity trying to access this one.</p></li>
-<li><p><strong>access_type</strong> (<em>str</em>) – type of access sought.</p></li>
-<li><p><strong>default</strong> (<em>bool</em>) – What to return if no lock of <strong>access_type</strong> was found.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.models.HelpEntry.search_index_entry">
-<em class="property">property </em><code class="sig-name descname">search_index_entry</code><a class="headerlink" href="#evennia.help.models.HelpEntry.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property for easily retaining a search index entry for this object.</p>
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if another object has permission to access.
+accessing_obj - object trying to access this one
+access_type - type of access sought
+default - what to return if no lock of access_type was found</p>
 </dd></dl>
 
 <dl class="py method">
@@ -179,10 +161,8 @@ instances of this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-create’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/create/&#39;</span><span class="p">,</span> <span class="n">ChargenView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-create&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’characters/create/’, ChargenView.as_view(), name=’character-create’)</p>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -204,11 +184,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-detail’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’characters/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/$’,</p>
+<blockquote>
+<div><p>CharDetailView.as_view(), name=’character-detail’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -230,11 +210,11 @@ object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-update’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;</span><span class="p">,</span>
-    <span class="n">CharUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-update&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’characters/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/change/$’,</p>
+<blockquote>
+<div><p>CharUpdateView.as_view(), name=’character-update’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -255,11 +235,11 @@ responsibility.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-detail’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-delete&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’characters/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$’,</p>
+<blockquote>
+<div><p>CharDeleteView.as_view(), name=’character-delete’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -281,11 +261,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘character-detail’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’characters/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/$’,</p>
+<blockquote>
+<div><p>CharDetailView.as_view(), name=’character-detail’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -311,26 +291,10 @@ responsibility.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.help.models.HelpEntry.date_created">
-<em class="property">property </em><code class="sig-name descname">date_created</code><a class="headerlink" href="#evennia.help.models.HelpEntry.date_created" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for getting database field <strong>db_date_created</strong>.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.entrytext">
 <em class="property">property </em><code class="sig-name descname">entrytext</code><a class="headerlink" href="#evennia.help.models.HelpEntry.entrytext" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_entrytext</strong>.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.models.HelpEntry.get_next_by_db_date_created">
-<code class="sig-name descname">get_next_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_next_by_db_date_created" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.help.models.HelpEntry.get_previous_by_db_date_created">
-<code class="sig-name descname">get_previous_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_previous_by_db_date_created" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.help.models.HelpEntry.help_category">
@@ -361,6 +325,12 @@ object the first time, the query is executed.</p>
 <dt id="evennia.help.models.HelpEntry.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.help.models.HelpEntry'</em><a class="headerlink" href="#evennia.help.models.HelpEntry.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.help.models.HelpEntry.staff_only">
+<em class="property">property </em><code class="sig-name descname">staff_only</code><a class="headerlink" href="#evennia.help.models.HelpEntry.staff_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_staff_only</strong>.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.typename">
@@ -414,6 +384,7 @@ object the first time, the query is executed.</p>
   <li><a href="../../0.9.5/api/evennia.help.models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -430,7 +401,6 @@ object the first time, the query is executed.</p>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.comms.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -58,7 +57,6 @@
 <span class="sd">Channels are central objects that act as targets for Msgs. Accounts can</span>
 <span class="sd">connect to channels by use of a ChannelConnect object (this object is</span>
 <span class="sd">necessary to easily be able to delete connections on the fly).</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
@@ -76,6 +74,8 @@
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 <span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
+
+<span class="n">_CHANNELHANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -96,16 +96,17 @@
 <span class="sd">    - db_sender_accounts: Account senders</span>
 <span class="sd">    - db_sender_objects: Object senders</span>
 <span class="sd">    - db_sender_scripts: Script senders</span>
-<span class="sd">    - db_sender_external: External sender (defined as string name)</span>
+<span class="sd">    - db_sender_external: External senders (defined as string names)</span>
 <span class="sd">    - db_receivers_accounts: Receiving accounts</span>
 <span class="sd">    - db_receivers_objects: Receiving objects</span>
 <span class="sd">    - db_receivers_scripts: Receiveing scripts</span>
-<span class="sd">    - db_receiver_external: External sender (defined as string name)</span>
+<span class="sd">    - db_receivers_channels: Receiving channels</span>
 <span class="sd">    - db_header: Header text</span>
 <span class="sd">    - db_message: The actual message text</span>
 <span class="sd">    - db_date_created: time message was created / sent</span>
 <span class="sd">    - db_hide_from_sender: bool if message should be hidden from sender</span>
 <span class="sd">    - db_hide_from_receivers: list of receiver objects to hide message from</span>
+<span class="sd">    - db_hide_from_channels: list of channels objects to hide message from</span>
 <span class="sd">    - db_lock_storage: Internal storage of lock strings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -117,11 +118,14 @@
     <span class="c1"># These databse fields are all set using their corresponding properties,</span>
     <span class="c1"># named same as the field, but withtout the db_* prefix.</span>
 
+    <span class="c1"># Sender is either an account, an object or an external sender, like</span>
+    <span class="c1"># an IRC channel; normally there is only one, but if co-modification of</span>
+    <span class="c1"># a message is allowed, there may be more than one &quot;author&quot;</span>
     <span class="n">db_sender_accounts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;sender_account_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Senders (Accounts)&quot;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;sender(account)&quot;</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -129,14 +133,14 @@
         <span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;sender_object_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Senders (Objects)&quot;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;sender(object)&quot;</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_sender_scripts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;scripts.ScriptDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;sender_script_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Senders (Scripts)&quot;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;sender(script)&quot;</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_sender_external</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
@@ -145,15 +149,16 @@
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external sender, for use with senders &quot;</span>
-                  <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;identifier for external sender, for example a sender over an &quot;</span>
+        <span class="s2">&quot;IRC connection (i.e. someone who doesn&#39;t have an exixtence in-game).&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-
+    <span class="c1"># The destination objects of this message. Stored as a</span>
+    <span class="c1"># comma-separated string of object dbrefs. Can be defined along</span>
+    <span class="c1"># with channels below.</span>
     <span class="n">db_receivers_accounts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;receiver_account_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Receivers (Accounts)&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;account receivers&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -161,25 +166,16 @@
         <span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;receiver_object_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Receivers (Objects)&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;object receivers&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_receivers_scripts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;scripts.ScriptDB&quot;</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;receiver_script_set&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Receivers (Scripts)&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;script_receivers&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="n">db_receiver_external</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="s2">&quot;external receiver&quot;</span><span class="p">,</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
-        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external receiver, for use with recievers &quot;</span>
-                  <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+    <span class="n">db_receivers_channels</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="s2">&quot;ChannelDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;channel_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;channel recievers&quot;</span>
     <span class="p">)</span>
 
     <span class="c1"># header could be used for meta-info about the message if your system needs</span>
@@ -196,7 +192,7 @@
         <span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;access locks on this message.&quot;</span>
     <span class="p">)</span>
 
-    <span class="c1"># these can be used to filter/hide a given message from supplied objects/accounts</span>
+    <span class="c1"># these can be used to filter/hide a given message from supplied objects/accounts/channels</span>
     <span class="n">db_hide_from_accounts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;hide_from_accounts_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -204,17 +200,23 @@
     <span class="n">db_hide_from_objects</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;hide_from_objects_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
+    <span class="n">db_hide_from_channels</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="s2">&quot;ChannelDB&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;hide_from_channels_set&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
     <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Tag</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this message. Tags are simple string markers to &quot;</span>
-        <span class="s2">&quot;identify, group and alias messages.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this message. Tags are simple string markers to identify, group and alias messages.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Database manager</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">managers</span><span class="o">.</span><span class="n">MsgManager</span><span class="p">()</span>
     <span class="n">_is_deleted</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Msg.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.Msg.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">SharedMemoryModel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_senders</span> <span class="o">=</span> <span class="p">[]</span></div>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
@@ -236,27 +238,27 @@
     <span class="c1"># value = self.attr and del self.attr respectively (where self</span>
     <span class="c1"># is the object in question).</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">senders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Getter. Allows for value = self.senders&quot;</span>
+    <span class="c1"># sender property (wraps db_sender_*)</span>
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__senders_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Getter. Allows for value = self.sender&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_sender_accounts</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_sender_objects</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_sender_scripts</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_senders</span>
         <span class="p">)</span>
 
-    <span class="nd">@senders</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">senders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="p">):</span>
+    <span class="c1"># @sender.setter</span>
+    <span class="k">def</span> <span class="nf">__senders_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="p">):</span>
         <span class="s2">&quot;Setter. Allows for self.sender = value&quot;</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="o">=</span> <span class="n">senders</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sender_external&quot;</span><span class="p">])</span>
-            <span class="k">return</span>
-
         <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senders</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">sender</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="o">=</span> <span class="n">sender</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">extra_senders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sender_external&quot;</span><span class="p">])</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;__dbclass__&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This is a not a typeclassed object!&quot;</span><span class="p">)</span>
@@ -268,14 +270,17 @@
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
 
-    <span class="nd">@senders</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">senders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># @sender.deleter</span>
+    <span class="k">def</span> <span class="nf">__senders_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Deleter. Clears all senders&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_accounts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_scripts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_senders</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">senders</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__senders_get</span><span class="p">,</span> <span class="n">__senders_set</span><span class="p">,</span> <span class="n">__senders_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Msg.remove_sender"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.Msg.remove_sender">[docs]</a>    <span class="k">def</span> <span class="nf">remove_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -283,17 +288,14 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            senders (Account, Object, str or list): Senders to remove.</span>
-<span class="sd">                If a string, removes the external sender.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sender_external&quot;</span><span class="p">])</span>
-            <span class="k">return</span>
-
         <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senders</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">sender</span><span class="p">:</span>
                 <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_external</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sender_external&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;__dbclass__&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This is a not a typeclassed object!&quot;</span><span class="p">)</span>
             <span class="n">clsname</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -304,33 +306,26 @@
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_accounts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># receivers property</span>
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__receivers_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for value = self.receivers.</span>
-<span class="sd">        Returns four lists of receivers: accounts, objects, scripts and</span>
-<span class="sd">            external_receivers.</span>
-
+<span class="sd">        Returns four lists of receivers: accounts, objects, scripts and channels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_accounts</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_objects</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_scripts</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="p">)</span>
 
-    <span class="nd">@receivers</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
+    <span class="c1"># @receivers.setter</span>
+    <span class="k">def</span> <span class="nf">__receivers_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setter. Allows for self.receivers = value.  This appends a new receiver</span>
-<span class="sd">        to the message. If a string, replaces an external receiver.</span>
-
+<span class="sd">        Setter. Allows for self.receivers = value.</span>
+<span class="sd">        This appends a new receiver to the message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">receivers</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span> <span class="o">=</span> <span class="n">receivers</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;db_receiver_external&#39;</span><span class="p">])</span>
-            <span class="k">return</span>
-
         <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">receiver</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -343,34 +338,32 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_accounts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
 
-    <span class="nd">@receivers</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># @receivers.deleter</span>
+    <span class="k">def</span> <span class="nf">__receivers_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Deleter. Clears all receivers&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_accounts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_scripts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">receivers</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__receivers_get</span><span class="p">,</span> <span class="n">__receivers_set</span><span class="p">,</span> <span class="n">__receivers_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Msg.remove_receiver"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.Msg.remove_receiver">[docs]</a>    <span class="k">def</span> <span class="nf">remove_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receivers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove a single receiver, a list of receivers, or a single extral receiver.</span>
+<span class="sd">        Remove a single receiver or a list of receivers.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            receivers (Account, Object, Script, list or str): Receiver</span>
-<span class="sd">                to remove. A string removes the external receiver.</span>
+<span class="sd">            receivers (Account, Object, Script, Channel or list): Receiver to remove.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">receivers</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="s2">&quot;db_receiver_external&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
         <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">receiver</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;__dbclass__&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;__dbclass__&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This is a not a typeclassed object!&quot;</span><span class="p">)</span>
             <span class="n">clsname</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="k">if</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ObjectDB&quot;</span><span class="p">:</span>
@@ -378,26 +371,47 @@
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_accounts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_scripts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_scripts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hide_from</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># channels property</span>
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__channels_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Getter. Allows for value = self.channels. Returns a list of channels.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># @channels.setter</span>
+    <span class="k">def</span> <span class="nf">__channels_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter. Allows for self.channels = value.</span>
+<span class="sd">        Requires a channel to be added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="c1"># @channels.deleter</span>
+    <span class="k">def</span> <span class="nf">__channels_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Deleter. Allows for del self.channels&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_receivers_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">channels</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__channels_get</span><span class="p">,</span> <span class="n">__channels_set</span><span class="p">,</span> <span class="n">__channels_del</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__hide_from_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for value = self.hide_from.</span>
-<span class="sd">        Returns two lists of accounts and objects.</span>
-
+<span class="sd">        Returns 3 lists of accounts, objects and channels</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_accounts</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_channels</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
         <span class="p">)</span>
 
-    <span class="nd">@hide_from</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">hide_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hiders</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setter. Allows for self.hide_from = value. Will append to hiders.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="c1"># @hide_from_sender.setter</span>
+    <span class="k">def</span> <span class="nf">__hide_from_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hiders</span><span class="p">):</span>
+        <span class="s2">&quot;Setter. Allows for self.hide_from = value. Will append to hiders&quot;</span>
         <span class="k">for</span> <span class="n">hider</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">hiders</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">hider</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -408,28 +422,31 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_accounts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hider</span><span class="o">.</span><span class="n">__dbclass__</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ObjectDB&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_objects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hider</span><span class="o">.</span><span class="n">__dbclass__</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hider</span><span class="o">.</span><span class="n">__dbclass__</span><span class="p">)</span>
 
-    <span class="nd">@hide_from</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">hide_from</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Deleter. Allows for del self.hide_from_senders</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="c1"># @hide_from_sender.deleter</span>
+    <span class="k">def</span> <span class="nf">__hide_from_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Deleter. Allows for del self.hide_from_senders&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_accounts</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_hide_from_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">hide_from</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__hide_from_get</span><span class="p">,</span> <span class="n">__hide_from_set</span><span class="p">,</span> <span class="n">__hide_from_del</span><span class="p">)</span>
 
     <span class="c1">#</span>
     <span class="c1"># Msg class methods</span>
     <span class="c1">#</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This handles what is shown when e.g. printing the message.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;This handles what is shown when e.g. printing the message&quot;</span>
         <span class="n">senders</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">senders</span><span class="p">)</span>
-        <span class="n">receivers</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span>
+
+        <span class="n">receivers</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">]</span>
+            <span class="o">+</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">receivers</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-&gt;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Msg.access"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.Msg.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -457,8 +474,9 @@
 
 <div class="viewcode-block" id="TempMsg"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.TempMsg">[docs]</a><span class="k">class</span> <span class="nc">TempMsg</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a non-persistent object for sending temporary messages that will not be stored.  It</span>
-<span class="sd">    mimics the &quot;real&quot; Msg object, but doesn&#39;t require sender to be given.</span>
+<span class="sd">    This is a non-persistent object for sending temporary messages</span>
+<span class="sd">    that will not be stored.  It mimics the &quot;real&quot; Msg object, but</span>
+<span class="sd">    doesn&#39;t require sender to be given.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -466,6 +484,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">message</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">header</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -477,16 +496,18 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            senders (any or list, optional): Senders of the message.</span>
-<span class="sd">            receivers (Account, Object, Script or list, optional): Receivers of this message.</span>
+<span class="sd">            receivers (Account, Object, Channel or list, optional): Receivers of this message.</span>
+<span class="sd">            channels  (Channel or list, optional): Channels to send to.</span>
 <span class="sd">            message (str, optional): Message to send.</span>
 <span class="sd">            header (str, optional): Header of message.</span>
 <span class="sd">            type (str, optional): Message class, if any.</span>
 <span class="sd">            lockstring (str, optional): Lock for the message.</span>
-<span class="sd">            hide_from (Account, Object, or list, optional): Entities to hide this message from.</span>
+<span class="sd">            hide_from (Account, Object, Channel or list, optional): Entities to hide this message from.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">senders</span> <span class="o">=</span> <span class="n">senders</span> <span class="ow">and</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receivers</span> <span class="ow">and</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channels</span> <span class="ow">and</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
@@ -501,10 +522,11 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This handles what is shown when e.g. printing the message.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">senders</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">senders</span><span class="p">)</span>
-        <span class="n">receivers</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span>
+        <span class="n">receivers</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">receivers</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-&gt;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span>
 
 <div class="viewcode-block" id="TempMsg.remove_sender"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.TempMsg.remove_sender">[docs]</a>    <span class="k">def</span> <span class="nf">remove_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">):</span>
@@ -526,8 +548,7 @@
 <span class="sd">        Remove a receiver or a list of receivers</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            receiver (Object, Account, Script, str or list): Receivers to remove.</span>
-
+<span class="sd">            receiver (Object, Account, Channel, str or list): Receivers to remove.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receiver</span><span class="p">):</span>
@@ -564,7 +585,6 @@
 <span class="sd">    This handler manages subscriptions to the</span>
 <span class="sd">    channel and hides away which type of entity is</span>
 <span class="sd">    subscribing (Account or Object)</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -624,6 +644,9 @@
 <span class="sd">                no hooks will be called.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_CHANNELHANDLER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELHANDLER</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNELHANDLER</span>
         <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">subscriber</span><span class="p">:</span>
                 <span class="n">clsname</span> <span class="o">=</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -632,6 +655,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
+                <span class="n">_CHANNELHANDLER</span><span class="o">.</span><span class="n">_cached_cmdsets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
@@ -643,6 +667,9 @@
 <span class="sd">                entities to un-subscribe from the channel.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_CHANNELHANDLER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNELHANDLER</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNELHANDLER</span>
         <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">subscriber</span><span class="p">:</span>
                 <span class="n">clsname</span> <span class="o">=</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -651,6 +678,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ObjectDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                <span class="n">_CHANNELHANDLER</span><span class="o">.</span><span class="n">_cached_cmdsets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -686,8 +714,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
                     <span class="k">continue</span>
             <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
-                <span class="c1"># a subscribed object has already been deleted. Mark that we need a recache and</span>
-                <span class="c1"># ignore it</span>
+                <span class="c1"># a subscribed object has already been deleted. Mark that we need a recache and ignore it</span>
                 <span class="n">recache_needed</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">continue</span>
             <span class="n">subs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -741,7 +768,7 @@
     <span class="n">__defaultclasspath__</span> <span class="o">=</span> <span class="s2">&quot;evennia.comms.comms.DefaultChannel&quot;</span>
     <span class="n">__applabel__</span> <span class="o">=</span> <span class="s2">&quot;comms&quot;</span>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Channel&quot;</span>
         <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Channels&quot;</span>
@@ -790,6 +817,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -808,7 +836,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.comms.models</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

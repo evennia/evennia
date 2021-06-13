@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.forms</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -70,7 +69,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Call parent function</span>
-        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EvenniaForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
 
         <span class="c1"># Escape all values provided by user</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">escape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -252,6 +251,7 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -270,7 +270,6 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.forms</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

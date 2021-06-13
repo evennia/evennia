@@ -48,7 +48,7 @@
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">get_and_merge_cmdsets</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">funcparser</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">inherits_from</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
@@ -63,10 +63,9 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">inlinefunc_raw</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
-
-<span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
@@ -2164,8 +2163,7 @@
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="s2">&quot;prototype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-                <span class="n">modified</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
-                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">],</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+                <span class="n">modified</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="p">])</span>
                 <span class="n">prototype_success</span> <span class="o">=</span> <span class="n">modified</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_success</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">%s</span><span class="s2"> failed to apply.&quot;</span> <span class="o">%</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
@@ -2423,16 +2421,12 @@
 <span class="sd">            value (any): Attribute value.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_FUNCPARSER</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_FUNCPARSER</span><span class="p">:</span>
-            <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;No such attribute was found.&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">crop</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">_FUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">escape</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">inlinefunc_raw</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">] = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2558,17 +2552,20 @@
             <span class="n">locks_string</span> <span class="o">=</span> <span class="s2">&quot; Default&quot;</span>
         <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locks_string</span>
         <span class="c1"># cmdsets</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">current_cmdset</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">):</span>
             <span class="c1"># all() returns a &#39;stack&#39;, so make a copy to sort.</span>
 
             <span class="k">def</span> <span class="nf">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
                 <span class="sd">&quot;&quot;&quot;helper for cmdset-option display&quot;&quot;&quot;</span>
+
                 <span class="k">def</span> <span class="nf">_truefalse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
                     <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: T&quot;</span>
                     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">: F&quot;</span>
+
                 <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">_truefalse</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">opt</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
@@ -2585,7 +2582,8 @@
                     <span class="k">continue</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">stored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored</span><span class="p">)</span>
 
             <span class="c1"># this gets all components of the currently merged set</span>
@@ -2623,13 +2621,15 @@
             <span class="c1"># the resulting merged cmdset</span>
             <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">)</span>
             <span class="n">merged</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">current_cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">]</span>
 
             <span class="c1"># the merge stack</span>
             <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span><span class="p">:</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
                 <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2"> prio </span><span class="si">{</span><span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
 
             <span class="c1"># list the commands available to this object</span>
@@ -2777,6 +2777,9 @@
                     <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span>
                     <span class="n">objct</span> <span class="o">=</span> <span class="n">obj</span>
 
+                <span class="c1"># this is usually handled when a command runs, but when we examine</span>
+                <span class="c1"># we may have leftover inherited cmdsets directly after a move etc.</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                 <span class="c1"># using callback to print results whenever function returns.</span>
                 <span class="n">get_and_merge_cmdsets</span><span class="p">(</span>
                     <span class="n">obj</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">objct</span><span class="p">,</span> <span class="n">mergemode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span>
@@ -3106,7 +3109,7 @@
 <span class="sd">    attach a script to an object</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      addscript[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</span>
+<span class="sd">      script[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</span>
 
 <span class="sd">    Switches:</span>
 <span class="sd">      start - start all non-running scripts on object, or a given script only</span>
@@ -3121,8 +3124,8 @@
 <span class="sd">    the object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;addscript&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;attachscript&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;script&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;addscript&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(script) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -3167,6 +3170,7 @@
                         <span class="o">%</span> <span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
                     <span class="p">)</span>
                     <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># rhs exists</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="c1"># adding a new script, and starting it</span>
@@ -3505,7 +3509,7 @@
                         <span class="s2">&quot;Python structures are allowed. </span><span class="se">\n</span><span class="s2">Make sure to use correct &quot;</span>
                         <span class="s2">&quot;Python syntax. Remember especially to put quotes around all &quot;</span>
                         <span class="s2">&quot;strings inside lists and dicts.|n For more advanced uses, embed &quot;</span>
-                        <span class="s2">&quot;funcparser callables ($funcs) in the strings.&quot;</span>
+                        <span class="s2">&quot;inlinefuncs in the strings.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Expected </span><span class="si">{}</span><span class="s2">, got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expect</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">prototype</span><span class="p">))</span>
@@ -3601,7 +3605,7 @@
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">n_updated</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
-                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">existing_objects</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                    <span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">existing_objects</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
@@ -3853,7 +3857,7 @@
 
         <span class="c1"># proceed to spawning</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Spawned </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">))</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">noloc</span><span class="p">:</span>
                     <span class="c1"># we don&#39;t hardcode the location in the prototype (unless the user</span>
@@ -3898,6 +3902,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="building.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

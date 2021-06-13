@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.objects.manager</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -44,6 +43,7 @@
 <span class="sd">Custom manager for Objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="kn">import</span> <span class="n">exceptions</span>
@@ -195,8 +195,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            attribute_name (str): Attribute key to search for.</span>
-<span class="sd">            attribute_value (any):  Attribute value to search for. This can also be database</span>
-<span class="sd">                objects.</span>
+<span class="sd">            attribute_value (any):  Attribute value to search for. This can also be database objects.</span>
 <span class="sd">            candidates (list, optional): Candidate objects to limit search to.</span>
 <span class="sd">            typeclasses (list, optional): Python pats to restrict matches with.</span>
 
@@ -633,7 +632,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the db_sessid field of all objects having also the</span>
 <span class="sd">        db_account field set.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sessid__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">db_sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
@@ -677,6 +675,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -695,7 +694,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.objects.manager</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

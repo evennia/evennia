@@ -67,83 +67,13 @@ change which actions by adding a path to</p>
 </div></blockquote>
 <p>in your settings. See utils.dummyrunner_actions.py
 for instructions on how to define this module.</p>
-<dl class="py class">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">CmdDummyRunnerEchoResponse</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#CmdDummyRunnerEchoResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
-<p>Dummyrunner command measuring the round-about response time
-from sending to receiving a result.</p>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>dummyrunner_echo_response &lt;timestamp&gt;</p>
-</dd>
-<dt>Responds with</dt><dd><p>dummyrunner_echo_response:&lt;timestamp&gt;,&lt;current_time&gt;</p>
-</dd>
-</dl>
-<p>The dummyrunner will send this and then compare the send time
-with the receive time on both ends.</p>
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.key">
-<code class="sig-name descname">key</code><em class="property"> = 'dummyrunner_echo_response'</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#CmdDummyRunnerEchoResponse.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the actual executing part of the command.  It is
-called directly after self.parse(). See the docstring of this
-module for which object properties are available (beyond those
-set in self.parse())</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'dummyrunner_echo_response', 'tags': '', 'text': '\n    Dummyrunner command measuring the round-about response time\n    from sending to receiving a result.\n\n    Usage:\n        dummyrunner_echo_response &lt;timestamp&gt;\n\n    Responds with\n        dummyrunner_echo_response:&lt;timestamp&gt;,&lt;current_time&gt;\n\n    The dummyrunner will send this and then compare the send time\n    with the receive time on both ends.\n\n    '}</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.server.profiling.dummyrunner.DummyRunnerCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">DummyRunnerCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyRunnerCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
-<p>Dummyrunner injected cmdset.</p>
-<dl class="py method">
-<dt id="evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.at_cmdset_creation">
-<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyRunnerCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook method - this should be overloaded in the inheriting
-class, and should take care of populating the cmdset by use of
-self.add().</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.server.profiling.dummyrunner.DummyRunnerCmdSet'</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt id="evennia.server.profiling.dummyrunner.idcounter">
 <code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">idcounter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#idcounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.idcounter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes unique ids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str</em> – A globally unique id.</p>
+<dd class="field-odd"><p><em>count (int)</em> – A globally unique counter.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -180,11 +110,6 @@ self.add().</p>
 <p>Handles connection to a running Evennia server,
 mimicking a real account by sending commands on
 a timer.</p>
-<dl class="py method">
-<dt id="evennia.server.profiling.dummyrunner.DummyClient.report">
-<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">clientkey</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.report" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt id="evennia.server.profiling.dummyrunner.DummyClient.connectionMade">
 <code class="sig-name descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.connectionMade" title="Permalink to this definition">¶</a></dt>
@@ -255,27 +180,12 @@ all “intelligence” of the dummy client.</p>
 <dl class="py class">
 <dt id="evennia.server.profiling.dummyrunner.DummyFactory">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">DummyFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ReconnectingClientFactory</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ClientFactory</span></code></p>
 <dl class="py attribute">
 <dt id="evennia.server.profiling.dummyrunner.DummyFactory.protocol">
 <code class="sig-name descname">protocol</code><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.protocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#evennia.server.profiling.dummyrunner.DummyClient" title="evennia.server.profiling.dummyrunner.DummyClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DummyClient</span></code></a></p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.DummyFactory.initialDelay">
-<code class="sig-name descname">initialDelay</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.initialDelay" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.DummyFactory.maxDelay">
-<code class="sig-name descname">maxDelay</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.maxDelay" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.server.profiling.dummyrunner.DummyFactory.noisy">
-<code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.noisy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.server.profiling.dummyrunner.DummyFactory.__init__">
@@ -340,6 +250,7 @@ all “intelligence” of the dummy client.</p>
   <li><a href="../../1.0-dev/api/evennia.server.profiling.dummyrunner.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.server.profiling.dummyrunner.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

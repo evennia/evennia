@@ -42,64 +42,18 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ANSI - Gives colour to text.</span>
 
-<span class="sd">Use the codes defined in the *ANSIParser* class to apply colour to text. The</span>
-<span class="sd">`parse_ansi` function in this module parses text for markup and `strip_ansi`</span>
-<span class="sd">removes it.</span>
+<span class="sd">Use the codes defined in ANSIPARSER in your text to apply colour to text</span>
+<span class="sd">according to the ANSI standard.</span>
 
-<span class="sd">You should usually not need to call `parse_ansi` explicitly; it is run by</span>
-<span class="sd">Evennia just before returning data to/from the user. Alternative markup is</span>
-<span class="sd">possible by overriding the parser class (see also contrib/ for deprecated</span>
-<span class="sd">markup schemes).</span>
-
-
-<span class="sd">Supported standards:</span>
-
-<span class="sd">- ANSI 8 bright and 8 dark fg (foreground) colors</span>
-<span class="sd">- ANSI 8 dark bg (background) colors</span>
-<span class="sd">- &#39;ANSI&#39; 8 bright bg colors &#39;faked&#39; with xterm256 (bright bg not included in ANSI standard)</span>
-<span class="sd">- Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors</span>
-
-<span class="sd">## Markup</span>
-
-<span class="sd">ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color).</span>
-<span class="sd">Capital letters indicate the &#39;dark&#39; variant.</span>
-
-<span class="sd">- `|r` fg bright red</span>
-<span class="sd">- `|R` fg dark red</span>
-<span class="sd">- `|[r` bg bright red</span>
-<span class="sd">- `|[R` bg dark red</span>
-<span class="sd">- `|[R|g` bg dark red, fg bright green</span>
+<span class="sd">Examples:</span>
 
 <span class="sd">```python</span>
 <span class="sd">&quot;This is |rRed text|n and this is normal again.&quot;</span>
-
 <span class="sd">```</span>
 
-<span class="sd">Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:</span>
-
-<span class="sd">- `|500` fg bright red</span>
-<span class="sd">- `|050` fg bright green</span>
-<span class="sd">- `|005` fg bright blue</span>
-<span class="sd">- `|110` fg dark brown</span>
-<span class="sd">- `|425` fg pink</span>
-<span class="sd">- `|[431` bg orange</span>
-
-<span class="sd">Xterm256 greyscale:</span>
-
-<span class="sd">- `|=a` fg black</span>
-<span class="sd">- `|=g` fg dark grey</span>
-<span class="sd">- `|=o` fg middle grey</span>
-<span class="sd">- `|=v` fg bright grey</span>
-<span class="sd">- `|=z` fg white</span>
-<span class="sd">- `|[=r` bg middle grey</span>
-
-<span class="sd">```python</span>
-<span class="sd">&quot;This is |500Red text|n and this is normal again.&quot;</span>
-<span class="sd">&quot;This is |[=jText on dark grey background&quot;</span>
-
-<span class="sd">```</span>
-
-<span class="sd">----</span>
+<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly; it is run by</span>
+<span class="sd">Evennia just before returning data to/from the user. Depreciated example forms</span>
+<span class="sd">are available by extending the ansi mapping.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -167,11 +121,9 @@
 
 <div class="viewcode-block" id="ANSIParser"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser">[docs]</a><span class="k">class</span> <span class="nc">ANSIParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class that parses ANSI markup</span>
-<span class="sd">    to ANSI command sequences</span>
+<span class="sd">    A class that parses ANSI markup to ANSI command sequences.</span>
 
-<span class="sd">    We also allow to escape colour codes</span>
-<span class="sd">    by prepending with an extra `|`.</span>
+<span class="sd">    We also allow to escape colour codes by prepending with an extra `|`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -378,9 +330,8 @@
                 <span class="n">colval</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">+</span> <span class="p">(</span><span class="n">red</span> <span class="o">*</span> <span class="mi">36</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">green</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="n">blue</span>
 
             <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[</span><span class="si">%s</span><span class="s2">8;5;</span><span class="si">%s</span><span class="s2">m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">background</span><span class="p">),</span> <span class="n">colval</span><span class="p">)</span>
-            <span class="c1"># replaced since some clients (like Potato) does not accept codes with leading zeroes,</span>
-            <span class="c1"># see issue #1024.</span>
-            <span class="c1"># return &quot;\033[%s8;5;%s%s%sm&quot; % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)  # noqa</span>
+            <span class="c1"># replaced since some clients (like Potato) does not accept codes with leading zeroes, see issue #1024.</span>
+            <span class="c1"># return &quot;\033[%s8;5;%s%s%sm&quot; % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># xterm256 not supported, convert the rgb value to ansi instead</span>
@@ -771,8 +722,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># A compiled Regex for the format mini-language:</span>
-    <span class="c1"># https://docs.python.org/3/library/string.html#formatspec</span>
+    <span class="c1"># A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec</span>
     <span class="n">re_format</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
         <span class="sa">r</span><span class="s2">&quot;(?i)(?P&lt;just&gt;(?P&lt;fill&gt;.)?(?P&lt;align&gt;\&lt;|\&gt;|\=|\^))?(?P&lt;sign&gt;\+|\-| )?(?P&lt;alt&gt;\#)?&quot;</span>
         <span class="sa">r</span><span class="s2">&quot;(?P&lt;zero&gt;0)?(?P&lt;width&gt;\d+)?(?P&lt;grouping&gt;\_|\,)?(?:\.(?P&lt;precision&gt;\d+))?&quot;</span>
@@ -845,14 +795,12 @@
 <span class="sd">        Current features supported: fill, align, width.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            format_spec (str): The format specification passed by f-string or str.format(). This is</span>
-<span class="sd">            a string such as &quot;0&lt;30&quot; which would mean &quot;left justify to 30, filling with zeros&quot;.</span>
-<span class="sd">            The full specification can be found at</span>
-<span class="sd">            https://docs.python.org/3/library/string.html#formatspec</span>
+<span class="sd">            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as</span>
+<span class="sd">                &quot;0&lt;30&quot; which would mean &quot;left justify to 30, filling with zeros&quot;. The full specification can be found</span>
+<span class="sd">                at https://docs.python.org/3/library/string.html#formatspec</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ansi_str (str): The formatted ANSIString&#39;s .raw() form, for display.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># This calls the compiled regex stored on ANSIString&#39;s class to analyze the format spec.</span>
         <span class="c1"># It returns a dictionary.</span>
@@ -1112,7 +1060,7 @@
         <span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">parent_result</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">current_index</span><span class="p">:</span> <span class="n">current_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)],)</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">current_index</span> <span class="p">:</span> <span class="n">current_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)],)</span>
             <span class="n">current_index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -1232,7 +1180,7 @@
             <span class="n">start</span> <span class="o">=</span> <span class="nb">next</span> <span class="o">+</span> <span class="n">bylen</span>
             <span class="n">maxsplit</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># NB. if it&#39;s already &lt; 0, it stays &lt; 0</span>
 
-        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">start</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)])</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)])</span>
         <span class="k">if</span> <span class="n">drop_spaces</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">res</span></div>
@@ -1275,7 +1223,7 @@
             <span class="k">if</span> <span class="nb">next</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="c1"># Get character codes after the index as well.</span>
-            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="nb">next</span> <span class="o">+</span> <span class="n">bylen</span><span class="p">:</span> <span class="n">end</span><span class="p">])</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="nb">next</span> <span class="o">+</span> <span class="n">bylen</span> <span class="p">:</span> <span class="n">end</span><span class="p">])</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">next</span>
             <span class="n">maxsplit</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># NB. if it&#39;s already &lt; 0, it stays &lt; 0</span>
 
@@ -1329,7 +1277,7 @@
                 <span class="n">ic</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="n">ir2</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="n">rstripped</span> <span class="o">=</span> <span class="n">rstripped</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span> <span class="p">:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ANSIString.lstrip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.lstrip">[docs]</a>    <span class="k">def</span> <span class="nf">lstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1448,7 +1396,7 @@
             <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">prefix</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-        <span class="n">postfix</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">postfix</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_clean_string</span> <span class="o">*</span> <span class="n">amount</span>
         <span class="n">code_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">))]</span>
         <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -1545,6 +1493,7 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="ansi.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

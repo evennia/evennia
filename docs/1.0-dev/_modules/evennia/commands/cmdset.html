@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -400,14 +399,18 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">perm</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permanent</span> <span class="k">else</span> <span class="s2">&quot;non-perm&quot;</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">])</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">options</span><span class="p">)</span> <span class="k">if</span> <span class="n">options</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;CmdSet </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">perm</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">&gt;: &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)]))</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;CmdSet </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mergetype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">perm</span><span class="si">}</span><span class="s2">, prio </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="si">}{</span><span class="n">options</span><span class="si">}</span><span class="s2">&gt;: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)])</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -519,8 +522,7 @@
         <span class="c1"># This is used for diagnosis.</span>
         <span class="n">cmdset_c</span><span class="o">.</span><span class="n">actual_mergetype</span> <span class="o">=</span> <span class="n">mergetype</span>
 
-        <span class="c1"># print &quot;__add__ for %s (prio %i)  called with %s (prio %i).&quot; % (self.key, self.priority,</span>
-        <span class="c1"># cmdset_a.key, cmdset_a.priority)</span>
+        <span class="c1"># print &quot;__add__ for %s (prio %i)  called with %s (prio %i).&quot; % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)</span>
 
         <span class="c1"># return the system commands to the cmdset</span>
         <span class="n">cmdset_c</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sys_commands</span><span class="p">,</span> <span class="n">allow_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -713,7 +715,6 @@
 <span class="sd">        Hook method - this should be overloaded in the inheriting</span>
 <span class="sd">        class, and should take care of populating the cmdset by use of</span>
 <span class="sd">        self.add().</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>
@@ -753,6 +754,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -771,7 +773,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

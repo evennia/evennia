@@ -46,48 +46,9 @@
 <dd><p>Bases: <a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.ChannelDB" title="evennia.comms.models.ChannelDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.comms.models.ChannelDB</span></code></a></p>
 <p>This is the base class for all Channel Comms. Inherit from this to
 create different types of communication channels.</p>
-<dl class="simple">
-<dt>Class-level variables:</dt><dd><ul class="simple">
-<li><p><strong>send_to_online_only</strong> (bool, default True) - if set, will only try to
-send to subscribers that are actually active. This is a useful optimization.</p></li>
-<li><p><strong>log_file</strong> (str, default <strong>“channel_{channelname}.log”</strong>). This is the
-log file to which the channel history will be saved. The <strong>{channelname}</strong> tag
-will be replaced by the key of the Channel. If an Attribute ‘log_file’
-is set, this will be used instead. If this is None and no Attribute is found,
-no history will be saved.</p></li>
-<li><p><strong>channel_prefix_string</strong> (str, default <strong>“[{channelname} ]”</strong>) - this is used
-as a simple template to get the channel prefix with <strong>.channel_prefix()</strong>.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="evennia.comms.comms.DefaultChannel.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.comms.managers.ChannelManager object&gt;</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.objects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.comms.DefaultChannel.send_to_online_only">
-<code class="sig-name descname">send_to_online_only</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.send_to_online_only" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.comms.DefaultChannel.log_file">
-<code class="sig-name descname">log_file</code><em class="property"> = 'channel_{channelname}.log'</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.log_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.comms.DefaultChannel.channel_prefix_string">
-<code class="sig-name descname">channel_prefix_string</code><em class="property"> = '[{channelname}] '</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.channel_prefix_string" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.comms.DefaultChannel.channel_msg_nick_pattern">
-<code class="sig-name descname">channel_msg_nick_pattern</code><em class="property"> = '{alias}\\s*?|{alias}\\s+?(?P&lt;arg1&gt;.+?)'</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.channel_msg_nick_pattern" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.comms.DefaultChannel.channel_msg_nick_replacement">
-<code class="sig-name descname">channel_msg_nick_replacement</code><em class="property"> = 'channel {channelname} = $1'</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.channel_msg_nick_replacement" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -107,34 +68,6 @@ the hooks called by this method.</p>
 <dt id="evennia.comms.comms.DefaultChannel.at_channel_creation">
 <code class="sig-name descname">at_channel_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.at_channel_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.at_channel_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once, when the channel is first created.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.get_log_filename">
-<code class="sig-name descname">get_log_filename</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.get_log_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.get_log_filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>File name to use for channel log.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>str</em> –</p>
-<dl class="simple">
-<dt>The filename to use (this is always assumed to be inside</dt><dd><p>settings.LOG_DIR)</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.set_log_filename">
-<code class="sig-name descname">set_log_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.set_log_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.set_log_filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a custom log filename.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The filename to set. This is a path starting from
-inside the settings.LOG_DIR location.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -168,11 +101,6 @@ to this channel.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.banlist">
-<em class="property">property </em><code class="sig-name descname">banlist</code><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.banlist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="evennia.comms.comms.DefaultChannel.wholist">
 <em class="property">property </em><code class="sig-name descname">wholist</code><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.wholist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -191,22 +119,14 @@ but may use channel commands.</p>
 overriding the call (unused by default).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool</em> –</p>
-<dl class="simple">
-<dt>True if muting was successful, False if we were already</dt><dd><p>muted.</p>
-</dd>
-</dl>
-</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.comms.comms.DefaultChannel.unmute">
 <code class="sig-name descname">unmute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subscriber</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.unmute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.unmute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes an entity from the list of muted subscribers.  A muted subscriber
-will no longer see channel messages, but may use channel commands.</p>
+<dd><p>Removes an entity to the list of muted subscribers.  A muted subscriber will no longer see channel messages,
+but may use channel commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -214,65 +134,6 @@ will no longer see channel messages, but may use channel commands.</p>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool</em> –</p>
-<dl class="simple">
-<dt>True if unmuting was successful, False if we were already</dt><dd><p>unmuted.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.ban">
-<code class="sig-name descname">ban</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.ban"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.ban" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ban a given user from connecting to the channel. This will not stop
-users already connected, so the user must be booted for this to take
-effect.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity to unmute. This need not
-be a subscriber.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool</em> –</p>
-<dl class="simple">
-<dt>True if banning was successful, False if target was already</dt><dd><p>banned.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.unban">
-<code class="sig-name descname">unban</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.unban"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.unban" title="Permalink to this definition">¶</a></dt>
-<dd><p>Un-Ban a given user. This will not reconnect them - they will still
-have to reconnect and set up aliases anew.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity to unmute. This need not
-be a subscriber.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool</em> –</p>
-<dl class="simple">
-<dt>True if unbanning was successful, False if target was not</dt><dd><p>previously banned.</p>
-</dd>
-</dl>
-</p>
 </dd>
 </dl>
 </dd></dl>
@@ -349,7 +210,7 @@ overriding the call (unused by default).</p></li>
 
 <dl class="py method">
 <dt id="evennia.comms.comms.DefaultChannel.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">creator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Channel with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_channel() function.</p>
@@ -357,8 +218,7 @@ specified or extended.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – This must be unique.</p></li>
-<li><p><strong>creator</strong> (<em>Account</em><em> or </em><em>Object</em>) – Entity to associate with this channel
-(used for tracking)</p></li>
+<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -382,92 +242,88 @@ errors (list): A list of errors in string form, if any.</p>
 <dl class="py method">
 <dt id="evennia.comms.comms.DefaultChannel.delete">
 <code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deletes channel.</p>
+<dd><p>Deletes channel while also cleaning up channelhandler.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.channel_prefix">
-<code class="sig-name descname">channel_prefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.channel_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.channel_prefix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook method. How the channel should prefix itself for users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>str</em> – The channel prefix.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.add_user_channel_alias">
-<code class="sig-name descname">add_user_channel_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">alias</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.add_user_channel_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.add_user_channel_alias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a personal user-alias for this channel to a given subscriber.</p>
+<dt id="evennia.comms.comms.DefaultChannel.message_transform">
+<code class="sig-name descname">message_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sender_strings</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">external</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.message_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.message_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the formatted string sent to listeners on a channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>user</strong> (<em>Object</em><em> or </em><em>Account</em>) – The one to alias this channel.</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – The desired alias.</p></li>
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a>) – Message object to send.</p></li>
+<li><p><strong>emit</strong> (<em>bool</em><em>, </em><em>optional</em>) – In emit mode the message is not associated
+with a specific sender name.</p></li>
+<li><p><strong>prefix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Prefix <strong>msg</strong> with a text given by <strong>self.channel_prefix</strong>.</p></li>
+<li><p><strong>sender_strings</strong> (<em>list</em><em>, </em><em>optional</em>) – Used by bots etc, one string per external sender.</p></li>
+<li><p><strong>external</strong> (<em>bool</em><em>, </em><em>optional</em>) – If this is an external sender or not.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is tightly coupled to the default <strong>channel</strong> command. If you
-change that, you need to change this as well.</p>
-<p>We add two nicks - one is a plain <strong>alias -&gt; channel.key</strong> that
-users need to be able to reference this channel easily. The other
-is a templated nick to easily be able to send messages to the
-channel without needing to give the full <strong>channel</strong> command. The
-structure of this nick is given by <strong>self.channel_msg_nick_pattern</strong>
-and <strong>self.channel_msg_nick_replacement</strong>. By default it maps
-<strong>alias &lt;msg&gt; -&gt; channel &lt;channelname&gt; = &lt;msg&gt;</strong>, so that you can
-for example just write <strong>pub Hello</strong> to send a message.</p>
-<p>The alias created is <strong>alias $1 -&gt; channel channel = $1</strong>, to allow
-for sending to channel using the main channel command.</p>
-</div>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.remove_user_channel_alias">
-<em class="property">classmethod </em><code class="sig-name descname">remove_user_channel_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">alias</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.remove_user_channel_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.remove_user_channel_alias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a personal channel alias from a user.</p>
+<dt id="evennia.comms.comms.DefaultChannel.distribute_message">
+<code class="sig-name descname">distribute_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">online</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.distribute_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.distribute_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for grabbing all listeners that a message should be
+sent to on this channel, and sending them a message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>user</strong> (<em>Object</em><em> or </em><em>Account</em>) – The user to remove an alias from.</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – The alias to remove.</p></li>
-<li><p><strong>**kwargs</strong> – Unused by default. Can be used to pass extra variables
-into a custom implementation.</p></li>
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – Message to distribute.</p></li>
+<li><p><strong>online</strong> (<em>bool</em>) – Only send to receivers who are actually online
+(not currently used):</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The channel-alias actually consists of two aliases - one
-channel-based one for searching channels with the alias and one
-inputline one for doing the ‘channelalias msg’ - call.</p>
-<p>This is a classmethod because it doesn’t actually operate on the
-channel instance.</p>
-<p>It sits on the channel because the nick structure for this is
-pretty complex and needs to be located in a central place (rather
-on, say, the channel command).</p>
+<p>This is also where logging happens, if enabled.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.at_pre_msg">
-<code class="sig-name descname">at_pre_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.at_pre_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.at_pre_msg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called before the starting of sending the message to a receiver. This
-is called before any hooks on the receiver itself. If this returns
-None/False, the sending will be aborted.</p>
+<dt id="evennia.comms.comms.DefaultChannel.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sender_strings</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">online</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">external</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the given message to all accounts connected to channel. Note that
+no permission-checking is done here; it is assumed to have been
+done before calling this method. The optional keywords are not used if
+persistent is False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
-<li><p><strong>**kwargs</strong> (<em>any</em>) – Keywords passed on from <strong>.msg</strong>. This includes
-<strong>senders</strong>.</p></li>
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em>, </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a><em> or </em><em>str</em>) – If a Msg/TempMsg, the remaining
+keywords will be ignored (since the Msg/TempMsg object already
+has all the data). If a string, this will either be sent as-is
+(if persistent=False) or it will be used together with <strong>header</strong>
+and <strong>senders</strong> keywords to create a Msg instance on the fly.</p></li>
+<li><p><strong>header</strong> (<em>str</em><em>, </em><em>optional</em>) – A header for building the message.</p></li>
+<li><p><strong>senders</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Optional if persistent=False, used
+to build senders for the message.</p></li>
+<li><p><strong>sender_strings</strong> (<em>list</em><em>, </em><em>optional</em>) – Name strings of senders. Used for external
+connections where the sender is not an account or object.
+When this is defined, external will be assumed. The list will be
+filtered so each sender-string only occurs once.</p></li>
+<li><p><strong>keep_log</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – This allows to temporarily change the logging status of
+this channel message. If <strong>None</strong>, the Channel’s <strong>keep_log</strong> Attribute will
+be used. If <strong>True</strong> or <strong>False</strong>, that logging status will be used for this
+message only (note that for unlogged channels, a <strong>True</strong> value here will
+create a new log file only for this message).</p></li>
+<li><p><strong>online</strong> (<em>bool</em><em>, </em><em>optional</em>) – online. Otherwise, messages all accounts connected. This can
+make things faster, but may not trigger listeners on accounts
+that are offline.</p></li>
+<li><p><strong>emit</strong> (<em>bool</em><em>, </em><em>optional</em>) – not to be directly associated with a name.</p></li>
+<li><p><strong>external</strong> (<em>bool</em><em>, </em><em>optional</em>) – Treat this message as being
+agnostic of its sender.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>str, False or None</em> –</p>
+<dd class="field-even"><p><p><em>success (bool)</em> –</p>
 <dl class="simple">
-<dt>Any custom changes made to the message. If</dt><dd><p>falsy, no message will be sent.</p>
+<dt>Returns <strong>True</strong> if message sending was</dt><dd><p>successful, <strong>False</strong> otherwise.</p>
 </dd>
 </dl>
 </p>
@@ -476,50 +332,127 @@ None/False, the sending will be aborted.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.msg">
-<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bypass_mute</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.msg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send message to channel, causing it to be distributed to all non-muted
-subscribed users of that channel.</p>
+<dt id="evennia.comms.comms.DefaultChannel.tempmsg">
+<code class="sig-name descname">tempmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.tempmsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.tempmsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for sending non-persistent messages.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
-<li><p><strong>senders</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – If not given, there is
-no way to associate one or more senders with the message (like
-a broadcast message or similar).</p></li>
-<li><p><strong>bypass_mute</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, always send, regardless of
-individual mute-state of subscriber. This can be used for
-global announcements or warnings/alerts.</p></li>
-<li><p><strong>**kwargs</strong> (<em>any</em>) – This will be passed on to all hooks. Use <strong>no_prefix</strong>
-to exclude the channel prefix.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Message to send.</p></li>
+<li><p><strong>header</strong> (<em>str</em><em>, </em><em>optional</em>) – Header of message to send.</p></li>
+<li><p><strong>senders</strong> (<em>Object</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Senders of message to send.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The call hook calling sequence is:</p>
-<ul class="simple">
-<li><p><strong>msg = channel.at_pre_msg(message, **kwargs)</strong> (aborts for all if return None)</p></li>
-<li><p><strong>msg = receiver.at_pre_channel_msg(msg, channel, **kwargs)</strong> (aborts for receiver if return None)</p></li>
-<li><p><strong>receiver.at_channel_msg(msg, channel, **kwargs)</strong></p></li>
-<li><p><strong>receiver.at_post_channel_msg(msg, channel, **kwargs)**</strong></p></li>
-</ul>
-<p>Called after all receivers are processed:
-- <strong>channel.at_post_all_msg(message, **kwargs)</strong></p>
-<p>(where the senders/bypass_mute are embedded into <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs for
-later access in hooks)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.at_post_msg">
-<code class="sig-name descname">at_post_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.at_post_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.at_post_msg" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called after sending to <em>all</em> valid recipients. It is normally
-used for logging/channel history.</p>
+<dt id="evennia.comms.comms.DefaultChannel.channel_prefix">
+<code class="sig-name descname">channel_prefix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.channel_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.channel_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. How the channel should prefix itself for users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<em>str</em>) – The message sent.</p></li>
-<li><p><strong>**kwargs</strong> (<em>any</em>) – Keywords passed on from <strong>msg</strong>, including <strong>senders</strong>.</p></li>
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Prefix text</p></li>
+<li><p><strong>emit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Switches to emit mode, which usually
+means to not prefix the channel’s info.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>prefix (str)</em> – The created channel prefix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.format_senders">
+<code class="sig-name descname">format_senders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_senders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_senders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. Function used to format a list of sender names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>senders</strong> (<em>list</em>) – Sender object names.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>formatted_list (str)</em> – The list of names formatted appropriately.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function exists separately so that external sources
+can use it to format source names in the same manner as
+normal object/account names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.pose_transform">
+<code class="sig-name descname">pose_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">sender_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.pose_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.pose_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. Detects if the sender is posing, and modifies the
+message accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – The message to analyze for a pose.</p></li>
+<li><p><strong>sender_string</strong> (<em>str</em>) – The name of the sender/poser.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>string (str)</em> –</p>
+<dl class="simple">
+<dt>A message that combines the <strong>sender_string</strong></dt><dd><p>component with <strong>msg</strong> in different ways depending on if a
+pose was performed or not (this must be analyzed by the
+hook).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.format_external">
+<code class="sig-name descname">format_external</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">senders</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_external"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_external" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. Used for formatting external messages. This is
+needed as a separate operation because the senders of external
+messages may not be in-game objects/accounts, and so cannot
+have things like custom user preferences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – The message to send.</p></li>
+<li><p><strong>senders</strong> (<em>list</em>) – Strings, one per sender.</p></li>
+<li><p><strong>emit</strong> (<em>bool</em><em>, </em><em>optional</em>) – A sender-agnostic message or not.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>transformed (str)</em> – A formatted string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.format_message">
+<code class="sig-name descname">format_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. Formats a message body for display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msgobj</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – The message object to send.</p></li>
+<li><p><strong>emit</strong> (<em>bool</em><em>, </em><em>optional</em>) – The message is agnostic of senders.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>transformed (str)</em> – The formatted message.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -556,8 +489,6 @@ overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>By default this adds the needed channel nicks to the joiner.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -587,6 +518,41 @@ overriding the call (unused by default).</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>leaver</strong> (<em>object</em>) – The leaving object.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.pre_send_message">
+<code class="sig-name descname">pre_send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.pre_send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.pre_send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method.  Runs before a message is sent to the channel and
+should return the message object, after any transformations.
+If the message is to be discarded, return a false value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – Message to send.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (Msg, TempMsg or bool)</em> – If False, abort send.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.comms.DefaultChannel.post_send_message">
+<code class="sig-name descname">post_send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.post_send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.post_send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method. Run after a message is sent to the channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><em>Msg</em></a><em> or </em><a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><em>TempMsg</em></a>) – Message sent.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>
@@ -648,11 +614,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-detail’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">ChannelDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-detail&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’channels/(?P&lt;slug&gt;[wd-]+)/$’,</p>
+<blockquote>
+<div><p>ChannelDetailView.as_view(), name=’channel-detail’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -674,11 +640,11 @@ object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-update’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;</span><span class="p">,</span>
-    <span class="n">ChannelUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-update&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’channels/(?P&lt;slug&gt;[wd-]+)/(?P&lt;pk&gt;[0-9]+)/change/$’,</p>
+<blockquote>
+<div><p>ChannelUpdateView.as_view(), name=’channel-update’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -725,11 +691,11 @@ this object.</p>
 <p>For this to work, the developer must have defined a named view somewhere
 in urls.py that follows the format ‘modelname-action’, so in this case
 a named view of ‘channel-detail’ would be referenced by this method.</p>
-<p>ex.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;</span><span class="p">,</span>
-    <span class="n">ChannelDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;channel-detail&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>ex.
+url(r’channels/(?P&lt;slug&gt;[wd-]+)/$’,</p>
+<blockquote>
+<div><p>ChannelDetailView.as_view(), name=’channel-detail’)</p>
+</div></blockquote>
 <p>If no View has been created and defined in urls.py, returns an
 HTML anchor.</p>
 <p>This method is naive and simply returns a path. Securing access to
@@ -741,46 +707,6 @@ responsibility.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.message_transform">
-<code class="sig-name descname">message_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.message_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.message_transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.distribute_message">
-<code class="sig-name descname">distribute_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">online</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.distribute_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.distribute_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.format_senders">
-<code class="sig-name descname">format_senders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_senders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_senders" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.pose_transform">
-<code class="sig-name descname">pose_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">sender_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.pose_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.pose_transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.format_external">
-<code class="sig-name descname">format_external</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">senders</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_external"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_external" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.format_message">
-<code class="sig-name descname">format_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msgobj</span></em>, <em class="sig-param"><span class="n">emit</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.format_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.format_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.pre_send_message">
-<code class="sig-name descname">pre_send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.pre_send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.pre_send_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.comms.DefaultChannel.post_send_message">
-<code class="sig-name descname">post_send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.post_send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.post_send_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py exception">
 <dt id="evennia.comms.comms.DefaultChannel.DoesNotExist">
@@ -850,6 +776,7 @@ responsibility.</p>
   <li><a href="../../1.0-dev/api/evennia.comms.comms.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.comms.comms.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

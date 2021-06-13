@@ -69,7 +69,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Call parent function</span>
-        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EvenniaForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
 
         <span class="c1"># Escape all values provided by user</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">escape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -250,6 +250,7 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="forms.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

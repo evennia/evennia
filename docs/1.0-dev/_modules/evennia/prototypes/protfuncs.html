@@ -31,7 +31,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -41,30 +40,35 @@
             
   <h1>Source code for evennia.prototypes.protfuncs</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Protfuncs are FuncParser-callables that can be embedded in a prototype to</span>
-<span class="sd">provide custom logic without having access to Python. The protfunc is parsed at</span>
-<span class="sd">the time of spawning, using the creating object&#39;s session as input. If the</span>
-<span class="sd">protfunc returns a non-string, this is what will be added to the prototype.</span>
+<span class="sd">Protfuncs are function-strings embedded in a prototype and allows for a builder to create a</span>
+<span class="sd">prototype with custom logics without having access to Python. The Protfunc is parsed using the</span>
+<span class="sd">inlinefunc parser but is fired at the moment the spawning happens, using the creating object&#39;s</span>
+<span class="sd">session as input.</span>
 
 <span class="sd">In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</span>
 
 <span class="sd">    { ...</span>
 
-<span class="sd">    &quot;key&quot;: &quot;$funcname(args, kwargs)&quot;</span>
+<span class="sd">    &quot;key&quot;: &quot;$funcname(arg1, arg2, ...)&quot;</span>
 
 <span class="sd">    ...  }</span>
 
-<span class="sd">Available protfuncs are either all callables in one of the modules of `settings.PROT_FUNC_MODULES`</span>
-<span class="sd">or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</span>
+<span class="sd">and multiple functions can be nested (no keyword args are supported). The result will be used as the</span>
+<span class="sd">value for that prototype key for that individual spawn.</span>
+
+<span class="sd">Available protfuncs are callables in one of the modules of `settings.PROT_FUNC_MODULES`. They</span>
+<span class="sd">are specified as functions</span>
 
 <span class="sd">    def funcname (*args, **kwargs)</span>
 
-<span class="sd">At spawn-time the spawner passes the following extra kwargs into each callable (in addition to</span>
-<span class="sd">what is added in the call itself):</span>
+<span class="sd">where *args are the arguments given in the prototype, and **kwargs are inserted by Evennia:</span>
 
 <span class="sd">    - session (Session): The Session of the entity spawning using this prototype.</span>
 <span class="sd">    - prototype (dict): The dict this protfunc is a part of.</span>
 <span class="sd">    - current_key (str): The active key this value belongs to in the prototype.</span>
+<span class="sd">    - testing (bool): This is set if this function is called as part of the prototype validation; if</span>
+<span class="sd">        set, the protfunc should take care not to perform any persistent actions, such as operate on</span>
+<span class="sd">        objects or add things to the database.</span>
 
 <span class="sd">Any traceback raised by this function will be handled at the time of spawning and abort the spawn</span>
 <span class="sd">before any object is created/updated. It must otherwise return the value to store for the specified</span>
@@ -72,33 +76,315 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">funcparser</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span> <span class="k">as</span> <span class="n">base_randint</span><span class="p">,</span> <span class="n">random</span> <span class="k">as</span> <span class="n">base_random</span><span class="p">,</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">base_choice</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">justify</span> <span class="k">as</span> <span class="n">base_justify</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_str</span>
+
+<span class="n">_PROTLIB</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_RE_DBREF</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\#[0-9]+&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="protfunc_callable_protkey"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.protfunc_callable_protkey">[docs]</a><span class="k">def</span> <span class="nf">protfunc_callable_protkey</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="c1"># default protfuncs</span>
+
+
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Usage: $protkey(keyname)</span>
+<span class="sd">    Usage: $random()</span>
+<span class="sd">    Returns a random value in the interval [0, 1)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base_random</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="randint"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.randint">[docs]</a><span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $randint(start, end)</span>
+<span class="sd">    Returns random integer in interval [start, end]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;$randint needs two arguments - start and end.&quot;</span><span class="p">)</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">base_randint</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="left_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.left_justify">[docs]</a><span class="k">def</span> <span class="nf">left_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $left_justify(&lt;text&gt;)</span>
+<span class="sd">    Returns &lt;text&gt; left-justified.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base_justify</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="right_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.right_justify">[docs]</a><span class="k">def</span> <span class="nf">right_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $right_justify(&lt;text&gt;)</span>
+<span class="sd">    Returns &lt;text&gt; right-justified across screen width.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base_justify</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="center_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.center_justify">[docs]</a><span class="k">def</span> <span class="nf">center_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $center_justify(&lt;text&gt;)</span>
+<span class="sd">    Returns &lt;text&gt; centered in screen width.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base_justify</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="choice"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.choice">[docs]</a><span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $choice(val, val, val, ...)</span>
+<span class="sd">    Returns one of the values randomly</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base_choice</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="full_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.full_justify">[docs]</a><span class="k">def</span> <span class="nf">full_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $full_justify(&lt;text&gt;)</span>
+<span class="sd">    Returns &lt;text&gt; filling up screen width by adding extra space.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base_justify</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="protkey"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.protkey">[docs]</a><span class="k">def</span> <span class="nf">protkey</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $protkey(&lt;key&gt;)</span>
 <span class="sd">    Returns the value of another key in this prototoype. Will raise an error if</span>
 <span class="sd">        the key is not found in this prototype.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype&quot;</span><span class="p">,</span> <span class="p">{})</span>
-    <span class="n">prot_value</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_eval</span><span class="p">(</span><span class="n">prot_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">ParsingError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">prot_value</span></div>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;prototype&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">prototype</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span></div>
 
 
-<span class="c1"># this is picked up by FuncParser</span>
-<span class="n">FUNCPARSER_CALLABLES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;protkey&quot;</span><span class="p">:</span> <span class="n">protfunc_callable_protkey</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">funcparser</span><span class="o">.</span><span class="n">FUNCPARSER_CALLABLES</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">funcparser</span><span class="o">.</span><span class="n">SEARCHING_CALLABLES</span><span class="p">,</span>
-<span class="p">}</span>
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $add(val1, val2)</span>
+<span class="sd">    Returns the result of val1 + val2. Values must be</span>
+<span class="sd">        valid simple Python structures possible to add,</span>
+<span class="sd">        such as numbers, lists etc.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># try to convert to python structures, otherwise, keep as strings</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val1</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val1</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val2</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val2</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">val1</span> <span class="o">+</span> <span class="n">val2</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$add requires two arguments.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sub"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.sub">[docs]</a><span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $del(val1, val2)</span>
+<span class="sd">    Returns the value of val1 - val2. Values must be</span>
+<span class="sd">        valid simple Python structures possible to</span>
+<span class="sd">        subtract.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># try to convert to python structures, otherwise, keep as strings</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val1</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val1</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val2</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val2</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">val1</span> <span class="o">-</span> <span class="n">val2</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$sub requires two arguments.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mult"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.mult">[docs]</a><span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $mul(val1, val2)</span>
+<span class="sd">    Returns the value of val1 * val2. The values must be</span>
+<span class="sd">        valid simple Python structures possible to</span>
+<span class="sd">        multiply, like strings and/or numbers.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># try to convert to python structures, otherwise, keep as strings</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val1</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val1</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val2</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val2</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">val1</span> <span class="o">*</span> <span class="n">val2</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$mul requires two arguments.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="div"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.div">[docs]</a><span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $div(val1, val2)</span>
+<span class="sd">    Returns the value of val1 / val2. Values must be numbers and</span>
+<span class="sd">        the result is always a float.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># try to convert to python structures, otherwise, keep as strings</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val1</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val1</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val2</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val2</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">val1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$mult requires two arguments.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="toint"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.toint">[docs]</a><span class="k">def</span> <span class="nf">toint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $toint(&lt;number&gt;)</span>
+<span class="sd">    Returns &lt;number&gt; as an integer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$toint requires one argument.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="eval"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.eval">[docs]</a><span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage $eval(&lt;expression&gt;)</span>
+<span class="sd">    Returns evaluation of a simple Python expression. The string may *only* consist of the following</span>
+<span class="sd">        Python literal structures: strings, numbers, tuples, lists, dicts, booleans,</span>
+<span class="sd">        and None. The strings can also contain #dbrefs. Escape embedded protfuncs as $$protfunc(..)</span>
+<span class="sd">        - those will then be evaluated *after* $eval.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_PROTLIB</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_PROTLIB</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">_PROTLIB</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">struct</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">struct</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># we must shield the string, otherwise it will be merged as a string and future</span>
+        <span class="c1"># literal_evas will pick up e.g. &#39;2&#39; as something that should be converted to a number</span>
+        <span class="n">struct</span> <span class="o">=</span> <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
+
+    <span class="c1"># convert any #dbrefs to objects (also in nested structures)</span>
+    <span class="n">struct</span> <span class="o">=</span> <span class="n">_PROTLIB</span><span class="o">.</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">struct</span></div>
+
+
+<span class="k">def</span> <span class="nf">_obj_search</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Helper function to search for an object&quot;</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">return_list</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;return_list&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span>
+
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_list</span><span class="p">:</span>
+        <span class="n">retlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+                    <span class="n">retlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">retlist</span> <span class="o">=</span> <span class="n">targets</span>
+        <span class="k">return</span> <span class="n">retlist</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># single-match</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$obj: Query &#39;</span><span class="si">{}</span><span class="s2">&#39; gave no matches.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;$obj: Query &#39;</span><span class="si">{query}</span><span class="s2">&#39; gave </span><span class="si">{nmatches}</span><span class="s2"> matches. Limit your &quot;</span>
+                <span class="s2">&quot;query or use $objlist instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">nmatches</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;$obj: Obj </span><span class="si">{target}</span><span class="s2">(#</span><span class="si">{dbref}</span><span class="s2"> cannot be added - &quot;</span>
+                    <span class="s2">&quot;Account </span><span class="si">{account}</span><span class="s2"> does not have &#39;control&#39; access.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">target</span>
+
+
+<div class="viewcode-block" id="obj"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.obj">[docs]</a><span class="k">def</span> <span class="nf">obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage $obj(&lt;query&gt;)</span>
+<span class="sd">    Returns one Object searched globally by key, alias or #dbref. Error if more than one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">_obj_search</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="objlist"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.objlist">[docs]</a><span class="k">def</span> <span class="nf">objlist</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage $objlist(&lt;query&gt;)</span>
+<span class="sd">    Returns list with one or more Objects searched globally by key, alias or #dbref.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">_obj_search</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage $dbref(&lt;#dbref&gt;)</span>
+<span class="sd">    Validate that a #dbref input is valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">_RE_DBREF</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$dbref requires a valid #dbref argument.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -136,6 +422,7 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -154,7 +441,6 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
-        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
