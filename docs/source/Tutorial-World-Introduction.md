@@ -60,13 +60,7 @@ will automatically be unquelled.
 
 ## Gameplay
 
-![the castle off the moor](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/22916c25-6299-4
-53d-a221-446ec839f567/da2pmzu-46d63c6d-9cdc-41dd-87d6-1106db5a5e1a.jpg/v1/fill/w_600,h_849,q_75,strp
-/the_castle_off_the_moor_by_griatch_art_da2pmzu-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1N
-iJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD04NDkiLCJwYXRoIjoiXC9m
-XC8yMjkxNmMyNS02Mjk5LTQ1M2QtYTIyMS00NDZlYzgzOWY1NjdcL2RhMnBtenUtNDZkNjNjNmQtOWNkYy00MWRkLTg3ZDYtMTEw
-NmRiNWE1ZTFhLmpwZyIsIndpZHRoIjoiPD02MDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.o
-muS3D1RmFiZCy9OSXiIita-HxVGrBok3_7asq0rflw)
+![the castle off the moor](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/22916c25-6299-453d-a221-446ec839f567/da2pmzu-46d63c6d-9cdc-41dd-87d6-1106db5a5e1a.jpg/v1/fill/w_600,h_849,q_75,strp/the_castle_off_the_moor_by_griatch_art_da2pmzu-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD04NDkiLCJwYXRoIjoiXC9mXC8yMjkxNmMyNS02Mjk5LTQ1M2QtYTIyMS00NDZlYzgzOWY1NjdcL2RhMnBtenUtNDZkNjNjNmQtOWNkYy00MWRkLTg3ZDYtMTEwNmRiNWE1ZTFhLmpwZyIsIndpZHRoIjoiPD02MDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.omuS3D1RmFiZCy9OSXiIita-HxVGrBok3_7asq0rflw)
 
 
 *To get into the mood of this miniature quest, imagine you are an adventurer out to find fame and
@@ -88,7 +82,7 @@ the scenes of the tutorial).
 - *defend* will lower the chance to taking damage on your enemy's next attack.
 - You *can* run from a fight that feels too deadly. Expect to be chased though.
 - Being defeated is a part of the experience ...
- 
+
 ## Uninstall
 
 Uninstalling the tutorial world basically means deleting all the rooms and objects it consists of.

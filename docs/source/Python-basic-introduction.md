@@ -196,8 +196,7 @@ your life a lot easier.
 This is a [reserved Python keyword](https://docs.python.org/2.5/ref/keywords.html); try not to use
 these words anywhere else.
 - A function name can not have spaces but otherwise we could have called it almost anything. We call
-it `hello_world`. Evennia follows [Python's standard naming
-style](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#a-quick-list-of-code-style-
+it `hello_world`. Evennia follows [Python's standard naming style](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#a-quick-list-of-code-style-
 points) with lowercase letters and underscores. Use this style for now.
 - `who` is what we call the *argument* to our function. Arguments are variables we pass to the
 function. We could have named it anything and we could also have multiple arguments separated by

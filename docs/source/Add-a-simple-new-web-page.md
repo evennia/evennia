@@ -69,14 +69,13 @@ If you'd rather not take advantage of Evennia's base styles, you can do somethin
 </html>
 ```
 
- 
+
 ### The URL
 
 When you enter the address `http://localhost:4001/story` in your web browser, Django will parse that
 field to figure out which page you want to go to. You tell it which patterns are relevant in the
 file
-[mygame/web/urls.py](https://github.com/evennia/evennia/blob/master/evennia/game_template/web/urls.p
-y).
+[mygame/web/urls.py](https://github.com/evennia/evennia/blob/master/evennia/game_template/web/urls.py).
 Open it now.
 
 Django looks for the variable `urlpatterns` in this file. You want to add your new pattern to the
