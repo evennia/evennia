@@ -79,7 +79,8 @@ files are things like images, CSS files and Javascript.</p>
 <code class="docutils literal notranslate"><span class="pre">static</span></code>, <code class="docutils literal notranslate"><span class="pre">templates</span></code>, <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> and <code class="docutils literal notranslate"><span class="pre">templates_overrides</span></code>. The first two of those are
 populated automatically by Django and used to serve the website. You should not edit anything in
 them - the change will be lost. To customize the website you’ll need to copy the file you want to
-change from the <code class="docutils literal notranslate"><span class="pre">web/website/template/</span></code> or <code class="docutils literal notranslate"><span class="pre">web/website/static/</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">corresponding</span> <span class="pre">place</span> <span class="pre">under</span> <span class="pre">one</span> <span class="pre">of</span> </code>_overrides` directories.</p>
+change from the <code class="docutils literal notranslate"><span class="pre">web/website/template/</span></code> or <code class="docutils literal notranslate"><span class="pre">web/website/static/</span></code> path to the corresponding place
+under one of <code class="docutils literal notranslate"><span class="pre">_overrides</span></code> directories.</p>
 <p>Example: To override or modify <code class="docutils literal notranslate"><span class="pre">evennia/web/website/template/website/index.html</span></code> you need to
 add/modify <code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/website/index.html</span></code>.</p>
 <p>The detailed description on how to customize the website is best described in tutorial form. See the
@@ -140,8 +141,7 @@ the root of the website. It will now our own function <code class="docutils lite
 <code class="docutils literal notranslate"><span class="pre">mygame.com</span></code> in the address bar. If we had wanted to add a view for <code class="docutils literal notranslate"><span class="pre">http://mygame.com/awesome</span></code>, the
 regular expression would have been <code class="docutils literal notranslate"><span class="pre">^/awesome</span></code>.</p>
 </div></blockquote>
-<p>Look at [evennia/web/website/views.py](https://github.com/evennia/evennia/blob/master/evennia/web/we
-bsite/views.py#L82) to see the inputs and outputs you must have to define a view. Easiest may be to
+<p>Look at <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/web/website/views.py#L82">evennia/web/website/views.py</a> to see the inputs and outputs you must have to define a view. Easiest may be to
 copy the default file to <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code> to have something to modify and expand on.</p>
 <p>Restart the server and reload the page in the browser - the website will now use your custom view.
 If there are errors, consider turning on <code class="docutils literal notranslate"><span class="pre">settings.DEBUG</span></code> to see the full tracebacks - in debug mode

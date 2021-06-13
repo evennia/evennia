@@ -12,8 +12,7 @@ information about how commands work can be found in the documentation for [Comma
 
 ## A-Z
 
-- [`__unloggedin_look_command`](https://github.com/evennia/evennia/wiki/Default-Command-
-Help#wiki-`--unloggedin-look-command`-cmdunconnectedlook) - look when in unlogged-in state
+- [`__unloggedin_look_command`](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-`--unloggedin-look-command`-cmdunconnectedlook) - look when in unlogged-in state
 - [about](./Default-Command-Help#wiki-about-cmdabout) - show Evennia info
 - [access](./Default-Command-Help#wiki-access-cmdaccess) - show your current game access
 - [addcom](./Default-Command-Help#wiki-addcom-cmdaddcom) - add a channel alias and/or subscribe to a
@@ -137,14 +136,12 @@ another
 ## Command details
 
 These are generated from the auto-documentation and are ordered by their source file location in
-[evennia/commands/default/](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
-)
+[evennia/commands/default/](https://github.com/evennia/evennia/tree/master/evennia/commands/default/)
 
 
 ### `account.py`
 
-[View account.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py)
+[View account.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py)
 
 
 #### charcreate (CmdCharCreate)
@@ -165,8 +162,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdCharCreate` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### chardelete (CmdCharDelete)
@@ -184,8 +180,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdCharDelete` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### color (CmdColorTest)
@@ -207,8 +202,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdColorTest` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### ic (CmdIC)
@@ -234,8 +228,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdIC` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### look (CmdOOCLook)
@@ -253,8 +246,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdOOCLook` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### ooc (CmdOOC)
@@ -274,8 +266,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdOOC` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### option (CmdOption)
@@ -299,8 +290,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdOption` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### password (CmdPassword)
@@ -318,8 +308,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdPassword` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### quell (CmdQuell)
@@ -386,8 +375,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdSessions` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultSession'* of class `SessionCmdSet` in [cmdset_session.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_session.py).
+Belongs to command set *'DefaultSession'* of class `SessionCmdSet` in [cmdset_session.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_session.py).
 
 
 #### style (CmdStyle)
@@ -407,8 +395,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_session.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdStyle` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### who (CmdWho)
@@ -428,14 +415,12 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdWho` in
 [account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/account.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 ### `admin.py`
 
-[View admin.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py)
+[View admin.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py)
 
 
 #### ban (CmdBan)
@@ -476,8 +461,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdBan` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### boot (CmdBoot)
@@ -500,8 +484,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdBoot` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### emit (CmdEmit)
@@ -530,8 +513,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdEmit` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### force (CmdForce)
@@ -550,8 +532,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdForce` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### perm (CmdPerm)
@@ -575,8 +556,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdPerm` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### unban (CmdUnban)
@@ -597,8 +577,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdUnban` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### userpassword (CmdNewPassword)
@@ -616,8 +595,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdNewPassword` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### wall (CmdWall)
@@ -636,14 +614,12 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Admin"*
 - **Source:** class `CmdWall` in
 [admin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/admin.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `batchprocess.py`
 
-[View batchprocess.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/batchprocess.py)
+[View batchprocess.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/batchprocess.py)
 
 
 #### batchcode (CmdBatchCode)
@@ -668,10 +644,8 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **aliases:** *batchcodes*
 - **[locks](./Locks):** *"cmd:superuser()"*
 - **[`help_category`](./Help-System):** *"Building"*
-- **Source:** class `CmdBatchCode` in [batchprocess.py](https://github.com/evennia/evennia/tree/mast
-er/evennia/commands/default/batchprocess.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+- **Source:** class `CmdBatchCode` in [batchprocess.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/batchprocess.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### batchcommands (CmdBatchCommands)
@@ -692,16 +666,13 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **aliases:** *batchcmd*, *batchcommand*
 - **[locks](./Locks):** *"cmd:perm(batchcommands) or perm(Developer)"*
 - **[`help_category`](./Help-System):** *"Building"*
-- **Source:** class `CmdBatchCommands` in [batchprocess.py](https://github.com/evennia/evennia/tree/
-master/evennia/commands/default/batchprocess.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+- **Source:** class `CmdBatchCommands` in [batchprocess.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/batchprocess.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `building.py`
 
-[View building.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py)
+[View building.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py)
 
 
 #### alias (CmdSetObjAlias)
@@ -732,8 +703,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdSetObjAlias` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### cmdsets (CmdListCmdSets)
@@ -752,8 +722,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdListCmdSets` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### command (ObjManipCommand)
@@ -807,8 +776,7 @@ Belongs to command set *'<Unknown>'* of class `<Unknown>` in
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdCopy` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### cpattr (CmdCpAttr)
@@ -839,8 +807,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdCpAttr` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### create (CmdCreate)
@@ -871,8 +838,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdCreate` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### desc (CmdDesc)
@@ -894,8 +860,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdDesc` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### destroy (CmdDestroy)
@@ -925,8 +890,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdDestroy` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### dig (CmdDig)
@@ -958,8 +922,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdDig` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### examine (CmdExamine)
@@ -986,8 +949,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdExamine` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### find (CmdFind)
@@ -1018,8 +980,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdFind` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### link (CmdLink)
@@ -1048,8 +1009,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdLink` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### lock (CmdLock)
@@ -1089,8 +1049,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdLock` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### mvattr (CmdMvAttr)
@@ -1115,8 +1074,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdMvAttr` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### name (CmdName)
@@ -1135,8 +1093,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdName` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### open (CmdOpen)
@@ -1144,8 +1101,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
     open a new exit from the current room
 
     Usage:
-      open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] =
-<destination>
+      open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination>
 
     Handles the creation of exits. If a destination is given, the exit
     will point there. The <return exit> argument sets up an exit at the
@@ -1159,8 +1115,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdOpen` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### script (CmdScript)
@@ -1188,8 +1143,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdScript` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### set (CmdSetAttribute)
@@ -1237,8 +1191,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdSetAttribute` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### sethome (CmdSetHome)
@@ -1262,8 +1215,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdSetHome` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### spawn (CmdSpawn)
@@ -1334,8 +1286,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdSpawn` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### tag (CmdTag)
@@ -1365,8 +1316,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdTag` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### tel (CmdTeleport)
@@ -1402,8 +1352,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdTeleport` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### tunnel (CmdTunnel)
@@ -1438,8 +1387,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdTunnel` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### typeclass (CmdTypeclass)
@@ -1495,8 +1443,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdTypeclass` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### unlink (CmdUnLink)
@@ -1515,8 +1462,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdUnLink` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### wipe (CmdWipe)
@@ -1539,14 +1485,12 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdWipe` in
 [building.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/building.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `comms.py`
 
-[View comms.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py)
+[View comms.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py)
 
 
 #### addcom (CmdAddCom)
@@ -1567,8 +1511,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdAddCom` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### allcom (CmdAllCom)
@@ -1590,8 +1533,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdAllCom` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### cboot (CmdCBoot)
@@ -1612,8 +1554,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdCBoot` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### ccreate (CmdChannelCreate)
@@ -1631,8 +1572,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdChannelCreate` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### cdesc (CmdCdesc)
@@ -1651,8 +1591,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdCdesc` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### cdestroy (CmdCdestroy)
@@ -1670,8 +1609,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdCdestroy` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### cemit (CmdCemit)
@@ -1695,8 +1633,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdCemit` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### channels (CmdChannels)
@@ -1718,8 +1655,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdChannels` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### clock (CmdClock)
@@ -1738,8 +1674,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdClock` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### cwho (CmdCWho)
@@ -1757,8 +1692,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdCWho` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### delcom (CmdDelCom)
@@ -1780,8 +1714,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdDelCom` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### irc2chan (CmdIRC2Chan)
@@ -1820,8 +1753,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdIRC2Chan` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### page (CmdPage)
@@ -1846,8 +1778,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdPage` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### rss2chan (CmdRSS2Chan)
@@ -1880,14 +1811,12 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Comms"*
 - **Source:** class `CmdRSS2Chan` in
 [comms.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/comms.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 ### `general.py`
 
-[View general.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py)
+[View general.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py)
 
 
 #### access (CmdAccess)
@@ -1926,8 +1855,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdDrop` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### get (CmdGet)
@@ -1946,8 +1874,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdGet` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### give (CmdGive)
@@ -1966,8 +1893,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdGive` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### home (CmdHome)
@@ -1985,8 +1911,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdHome` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### inventory (CmdInventory)
@@ -2005,8 +1930,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdInventory` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### look (CmdLook)
@@ -2026,8 +1950,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdLook` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### nick (CmdNick)
@@ -2077,8 +2000,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdNick` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### pose (CmdPose)
@@ -2103,8 +2025,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdPose` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### say (CmdSay)
@@ -2122,8 +2043,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdSay` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### setdesc (CmdSetDesc)
@@ -2143,8 +2063,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdSetDesc` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### whisper (CmdWhisper)
@@ -2164,8 +2083,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdWhisper` in
 [general.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/general.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `help.py`
@@ -2192,8 +2110,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdHelp` in
 [help.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/help.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### sethelp (CmdSetHelp)
@@ -2227,14 +2144,12 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"Building"*
 - **Source:** class `CmdSetHelp` in
 [help.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/help.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `system.py`
 
-[View system.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py)
+[View system.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py)
 
 
 #### about (CmdAbout)
@@ -2252,8 +2167,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdAbout` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### objects (CmdObjects)
@@ -2273,8 +2187,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdObjects` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### py (CmdPy)
@@ -2329,8 +2242,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdPy` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### reload (CmdReload)
@@ -2350,8 +2262,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdReload` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### reset (CmdReset)
@@ -2379,8 +2290,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdReset` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### scripts (CmdScripts)
@@ -2410,8 +2320,7 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdScripts` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### server (CmdServerLoad)
@@ -2455,8 +2364,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdServerLoad` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### service (CmdService)
@@ -2484,8 +2392,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdService` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 #### shutdown (CmdShutdown)
@@ -2503,8 +2410,7 @@ s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_chara
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdShutdown` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://gi
-thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
+Belongs to command set *'DefaultAccount'* of class `AccountCmdSet` in [cmdset_account.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py).
 
 
 #### time (CmdTime)
@@ -2523,14 +2429,12 @@ thub.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_account.py)
 - **[`help_category`](./Help-System):** *"System"*
 - **Source:** class `CmdTime` in
 [system.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/system.py).
-Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](http
-s://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
+Belongs to command set *'DefaultCharacter'* of class `CharacterCmdSet` in [cmdset_character.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_character.py).
 
 
 ### `unloggedin.py`
 
-[View unloggedin.py
-source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py)
+[View unloggedin.py source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py)
 
 
 #### __unloggedin_look_command (CmdUnconnectedLook)
@@ -2551,8 +2455,7 @@ source](https://github.com/evennia/evennia/tree/master/evennia/commands/default/
 - **[`help_category`](./Help-System):** *"General"*
 - **Source:** class `CmdUnconnectedLook` in [unloggedin.py](https://github.com/evennia/evennia/tree/
 master/evennia/commands/default/unloggedin.py).
-Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](h
-ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
+Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
 
 *OBS: This is a [[System Command|Commands]]. System commands have fixed keys and are called by the
 server in specific situations.*
@@ -2573,10 +2476,8 @@ server in specific situations.*
 - **aliases:** *con*, *conn*, *co*
 - **[locks](./Locks):** *"cmd:all()"*
 - **[`help_category`](./Help-System):** *"General"*
-- **Source:** class `CmdUnconnectedConnect` in [unloggedin.py](https://github.com/evennia/evennia/tr
-ee/master/evennia/commands/default/unloggedin.py).
-Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](h
-ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
+- **Source:** class `CmdUnconnectedConnect` in [unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py).
+Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
 
 
 #### create (CmdUnconnectedCreate)
@@ -2595,10 +2496,8 @@ ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_un
 - **aliases:** *cre*, *cr*
 - **[locks](./Locks):** *"cmd:all()"*
 - **[`help_category`](./Help-System):** *"General"*
-- **Source:** class `CmdUnconnectedCreate` in [unloggedin.py](https://github.com/evennia/evennia/tre
-e/master/evennia/commands/default/unloggedin.py).
-Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](h
-ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
+- **Source:** class `CmdUnconnectedCreate` in [unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py).
+Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
 
 
 #### help (CmdUnconnectedHelp)
@@ -2615,10 +2514,8 @@ ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_un
 - **aliases:** *?*, *h*
 - **[locks](./Locks):** *"cmd:all()"*
 - **[`help_category`](./Help-System):** *"General"*
-- **Source:** class `CmdUnconnectedHelp` in [unloggedin.py](https://github.com/evennia/evennia/tree/
-master/evennia/commands/default/unloggedin.py).
-Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](h
-ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
+- **Source:** class `CmdUnconnectedHelp` in [unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py).
+Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
 
 
 #### quit (CmdUnconnectedQuit)
@@ -2636,8 +2533,6 @@ ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_un
 - **aliases:** *qu*, *q*
 - **[locks](./Locks):** *"cmd:all()"*
 - **[`help_category`](./Help-System):** *"General"*
-- **Source:** class `CmdUnconnectedQuit` in [unloggedin.py](https://github.com/evennia/evennia/tree/
-master/evennia/commands/default/unloggedin.py).
-Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](h
-ttps://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
+- **Source:** class `CmdUnconnectedQuit` in [unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/unloggedin.py).
+Belongs to command set *'DefaultUnloggedin'* of class `UnloggedinCmdSet` in [cmdset_unloggedin.py](https://github.com/evennia/evennia/tree/master/evennia/commands/default/cmdset_unloggedin.py).
 

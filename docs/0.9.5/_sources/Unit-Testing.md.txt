@@ -55,8 +55,7 @@ forces Evennia to use this settings file over the default one.
 Evennia's test suite makes use of Django unit test system, which in turn relies on Python's
 *unittest* module.
 
-> If you want to help out writing unittests for Evennia, take a look at Evennia's [coveralls.io
-page](https://coveralls.io/github/evennia/evennia). There you see which modules have any form of
+> If you want to help out writing unittests for Evennia, take a look at Evennia's [coveralls.io page](https://coveralls.io/github/evennia/evennia). There you see which modules have any form of
 test coverage and which does not.
 
 To make the test runner find the tests, they must be put in a module named `test*.py` (so `test.py`,
@@ -74,16 +73,16 @@ To test the results, you use special methods of the `TestCase` class.  Many of t
 "`assert`", such as `assertEqual` or `assertTrue`.
 
 Example of a `TestCase` class:
- 
+
 ```python
     import unittest
-    
+
     # the function we want to test
     from mypath import myfunc
-    
+
     class TestObj(unittest.TestCase):
        "This tests a function myfunc."
-    
+
        def test_return_value(self):
            "test method. Makes sure return value is as expected."
            expected_return = "This is me being nice."
@@ -98,8 +97,7 @@ Example of a `TestCase` class:
            self.assertEqual(expected_return, actual_return)
 ```
 
-You might also want to read the [documentation for the unittest
-module](http://docs.python.org/library/unittest.html).
+You might also want to read the [documentation for the unittest module](http://docs.python.org/library/unittest.html).
 
 ### Using the EvenniaTest class
 
@@ -108,8 +106,7 @@ initiates a range of useful properties on themselves for testing Evennia systems
 `.account` and `.session` representing a mock connected Account and its Session and `.char1` and
 `.char2` representing Characters complete with a location in the test database. These are all useful
 when testing Evennia system requiring any of the default Evennia typeclasses as inputs. See the full
-definition of the `EvenniaTest` class in [evennia/utils/test_resources.py](https://github.com/evenni
-a/evennia/blob/master/evennia/utils/test_resources.py).
+definition of the `EvenniaTest` class in [evennia/utils/test_resources.py](https://github.com/evennia/evennia/blob/master/evennia/utils/test_resources.py).
 
 ```python
 # in a test module
@@ -164,9 +161,7 @@ of the Evennia distribution and its unit tests should be run with all other Even
 The way to do this is to only temporarily add your models to the `INSTALLED_APPS` directory when the
 test runs. here is an example of how to do it.
 
-> Note that this solution, derived from this [stackexchange
-answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-
-testing#503435) is currently untested! Please report your findings.
+> Note that this solution, derived from this [stackexchange answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435) is currently untested! Please report your findings.
 
 ```python
 # a file contrib/mycontrib/tests.py
@@ -199,7 +194,7 @@ class TestMyModel(EvenniaTest):
         from django.db.models import loading
         loading.cache.loaded = False
         call_command('syncdb', verbosity=0)
-         
+
     def tearDown(self):
         settings.configure(**OLD_DEFAULT_SETTINGS)
         django.setup()
@@ -290,11 +285,11 @@ just to show how unit testing works:
     # mygame/commands/tests.py
 
     import unittest
-    
+
     class TestString(unittest.TestCase):
-    
+
         """Unittest for strings (just a basic example)."""
-    
+
         def test_upper(self):
             """Test the upper() str method."""
             self.assertEqual('foo'.upper(), 'FOO')
@@ -317,7 +312,7 @@ Let's execute that test to see if it works.
     .
     ----------------------------------------------------------------------
     Ran 1 test in 0.001s
-    
+
     OK
     Destroying test database for alias 'default'...
 
@@ -330,8 +325,8 @@ to see how it looks when it fails.
 
 ### Testing commands
 
-This section will test the proper execution of the 'abilities' command, as described in the [First
-Steps Coding](First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we
+This section will test the proper execution of the 'abilities' command, as described in the
+[First Steps Coding](./First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we
 will need it to test it.
 
 Testing commands in Evennia is a bit more complex than the simple testing example we have seen.
@@ -347,14 +342,14 @@ already have in `commands` from before.
     # bottom of mygame/commands/tests.py
 
     from evennia.commands.default.tests import CommandTest
-    
+
     from commands.command import CmdAbilities
     from typeclasses.characters import Character
-    
+
     class TestAbilities(CommandTest):
-    
+
         character_typeclass = Character
-    
+
         def test_simple(self):
             self.call(CmdAbilities(), "", "STR: 5, AGI: 4, MAG: 2")
 ```
@@ -390,7 +385,7 @@ Let's run our new test:
     ..
     ----------------------------------------------------------------------
     Ran 2 tests in 0.156s
-    
+
     OK
     Destroying test database for alias 'default'...
 
@@ -405,19 +400,19 @@ will have nothing but static output to test. Here we are going to learn how to t
 output.<br>
 
 This tutorial assumes you have a basic understanding of what regular expressions are. If you do not
-I recommend reading the `Introduction` and `Simple Pattern` sections at [Python regular expressions
-tutorial](https://docs.python.org/3/howto/regex.html). If you do plan on making a complete Evennia
+I recommend reading the `Introduction` and `Simple Pattern` sections at
+[Python regular expressions tutorial](https://docs.python.org/3/howto/regex.html). If you do plan on making a complete Evennia
 project learning regular expressions will save a great deal of time.<br>
 
 Append the code below to your `tests.py` file.<br>
 
 ```python
     # bottom of mygame/commands/tests.py
-    
+
     class TestDynamicAbilities(CommandTest):
-    
+
         character_typeclass = Character
-    
+
         def test_simple(self):
             cmd_abil_result = self.call(CmdAbilities(), "")
             self.assertRegex(cmd_abil_result, "STR: \d+, AGI: \d+, MAG: \d+")

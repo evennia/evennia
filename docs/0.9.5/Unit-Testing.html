@@ -98,8 +98,7 @@ forces Evennia to use this settings file over the default one.</p>
 <p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s
 <em>unittest</em> module.</p>
 <blockquote>
-<div><p>If you want to help out writing unittests for Evennia, take a look at Evennia’s <a class="reference external" href="https://coveralls.io/github/evennia/evennia">coveralls.io
-page</a>. There you see which modules have any form of
+<div><p>If you want to help out writing unittests for Evennia, take a look at Evennia’s <a class="reference external" href="https://coveralls.io/github/evennia/evennia">coveralls.io page</a>. There you see which modules have any form of
 test coverage and which does not.</p>
 </div></blockquote>
 <p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>,
@@ -134,13 +133,13 @@ can optionally do cleanup after each test.</p>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">unittest</span>
-    
+
     <span class="c1"># the function we want to test</span>
     <span class="kn">from</span> <span class="nn">mypath</span> <span class="kn">import</span> <span class="n">myfunc</span>
-    
+
     <span class="k">class</span> <span class="nc">TestObj</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
        <span class="s2">&quot;This tests a function myfunc.&quot;</span>
-    
+
        <span class="k">def</span> <span class="nf">test_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
            <span class="s2">&quot;test method. Makes sure return value is as expected.&quot;</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is me being nice.&quot;</span>
@@ -155,8 +154,7 @@ can optionally do cleanup after each test.</p>
            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>You might also want to read the <a class="reference external" href="http://docs.python.org/library/unittest.html">documentation for the unittest
-module</a>.</p>
+<p>You might also want to read the <a class="reference external" href="http://docs.python.org/library/unittest.html">documentation for the unittest module</a>.</p>
 <section id="using-the-evenniatest-class">
 <h3>Using the EvenniaTest class<a class="headerlink" href="#using-the-evenniatest-class" title="Permalink to this headline">¶</a></h3>
 <p>Evennia offers a custom TestCase, the <code class="docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code> class. This class
@@ -164,8 +162,7 @@ initiates a range of useful properties on themselves for testing Evennia systems
 <code class="docutils literal notranslate"><span class="pre">.account</span></code> and <code class="docutils literal notranslate"><span class="pre">.session</span></code> representing a mock connected Account and its Session and <code class="docutils literal notranslate"><span class="pre">.char1</span></code> and
 <code class="docutils literal notranslate"><span class="pre">.char2</span></code> representing Characters complete with a location in the test database. These are all useful
 when testing Evennia system requiring any of the default Evennia typeclasses as inputs. See the full
-definition of the <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> class in [evennia/utils/test_resources.py](https://github.com/evenni
-a/evennia/blob/master/evennia/utils/test_resources.py).</p>
+definition of the <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> class in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/test_resources.py">evennia/utils/test_resources.py</a>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -235,9 +232,7 @@ of the Evennia distribution and its unit tests should be run with all other Even
 <p>The way to do this is to only temporarily add your models to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> directory when the
 test runs. here is an example of how to do it.</p>
 <blockquote>
-<div><p>Note that this solution, derived from this [stackexchange
-answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-
-testing#503435) is currently untested! Please report your findings.</p>
+<div><p>Note that this solution, derived from this <a class="reference external" href="http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435">stackexchange answer</a> is currently untested! Please report your findings.</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
@@ -312,7 +307,7 @@ testing#503435) is currently untested! Please report your findings.</p>
         <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
         <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-         
+
     <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">OLD_DEFAULT_SETTINGS</span><span class="p">)</span>
         <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
@@ -409,11 +404,11 @@ just to show how unit testing works:</p>
 <span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/tests.py</span>
 
     <span class="kn">import</span> <span class="nn">unittest</span>
-    
+
     <span class="k">class</span> <span class="nc">TestString</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-    
+
         <span class="sd">&quot;&quot;&quot;Unittest for strings (just a basic example).&quot;&quot;&quot;</span>
-    
+
         <span class="k">def</span> <span class="nf">test_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Test the upper() str method.&quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s1">&#39;FOO&#39;</span><span class="p">)</span>
@@ -448,8 +443,8 @@ to see how it looks when it fails.</p>
 </section>
 <section id="testing-commands">
 <h3>Testing commands<a class="headerlink" href="#testing-commands" title="Permalink to this headline">¶</a></h3>
-<p>This section will test the proper execution of the ‘abilities’ command, as described in the <a class="reference internal" href="First-Steps-Coding.html"><span class="doc">First
-Steps Coding</span></a> page.  Follow this tutorial to create the ‘abilities’ command, we
+<p>This section will test the proper execution of the ‘abilities’ command, as described in the
+<a class="reference internal" href="First-Steps-Coding.html"><span class="doc">First Steps Coding</span></a> page.  Follow this tutorial to create the ‘abilities’ command, we
 will need it to test it.</p>
 <p>Testing commands in Evennia is a bit more complex than the simple testing example we have seen.
 Luckily, Evennia supplies a special test class to do just that … we just need to inherit from it
@@ -473,14 +468,14 @@ already have in <code class="docutils literal notranslate"><span class="pre">com
 <span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
 
     <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
-    
+
     <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdAbilities</span>
     <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
-    
+
     <span class="k">class</span> <span class="nc">TestAbilities</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-    
+
         <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">Character</span>
-    
+
         <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;STR: 5, AGI: 4, MAG: 2&quot;</span><span class="p">)</span>
 </pre></div>
@@ -530,8 +525,8 @@ the code expects static unchanging numbers. While very good for learning it is u
 will have nothing but static output to test. Here we are going to learn how to test against dynamic
 output.<br></p>
 <p>This tutorial assumes you have a basic understanding of what regular expressions are. If you do not
-I recommend reading the <code class="docutils literal notranslate"><span class="pre">Introduction</span></code> and <code class="docutils literal notranslate"><span class="pre">Simple</span> <span class="pre">Pattern</span></code> sections at <a class="reference external" href="https://docs.python.org/3/howto/regex.html">Python regular expressions
-tutorial</a>. If you do plan on making a complete Evennia
+I recommend reading the <code class="docutils literal notranslate"><span class="pre">Introduction</span></code> and <code class="docutils literal notranslate"><span class="pre">Simple</span> <span class="pre">Pattern</span></code> sections at
+<a class="reference external" href="https://docs.python.org/3/howto/regex.html">Python regular expressions tutorial</a>. If you do plan on making a complete Evennia
 project learning regular expressions will save a great deal of time.<br></p>
 <p>Append the code below to your <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file.<br></p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
@@ -543,11 +538,11 @@ project learning regular expressions will save a great deal of time.<br></p>
 <span class="normal">7</span>
 <span class="normal">8</span>
 <span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
-    
+
     <span class="k">class</span> <span class="nc">TestDynamicAbilities</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-    
+
         <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">Character</span>
-    
+
         <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">cmd_abil_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_abil_result</span><span class="p">,</span> <span class="s2">&quot;STR: \d+, AGI: \d+, MAG: \d+&quot;</span><span class="p">)</span>

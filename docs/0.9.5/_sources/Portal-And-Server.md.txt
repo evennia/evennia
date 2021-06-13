@@ -8,8 +8,7 @@ If you are new to the concept, the main purpose of separating the two is to have
 the Portal but keep the MUD running on the Server. This way one can restart/reload the game (the
 Server part) without Accounts getting disconnected.
 
-![portal and server layout](https://474a3b9f-a-62cb3a1a-s-
-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png)
+![portal and server layout](https://474a3b9f-a-62cb3a1a-s-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png)
 
 The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection.
 This allows the two programs to communicate seamlessly.

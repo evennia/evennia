@@ -103,8 +103,7 @@ don’t expect <code class="docutils literal notranslate"><span class="pre">me</
 if class is<code class="docutils literal notranslate"><span class="pre">Dog</span></code>, an instance of <code class="docutils literal notranslate"><span class="pre">Dog</span></code> might be <code class="docutils literal notranslate"><span class="pre">fido</span></code>. Our in-game persona is of a class
 <code class="docutils literal notranslate"><span class="pre">Character</span></code>. The superuser <code class="docutils literal notranslate"><span class="pre">christine</span></code> is an <em>instance</em> of the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class (an instance is
 also often referred to as an <em>object</em>). This is an important concept in <em>object oriented
-programming</em>. You are wise to [familiarize yourself with it](https://en.wikipedia.org/wiki/Class-
-based_programming) a little.</p>
+programming</em>. You are wise to <a class="reference external" href="https://en.wikipedia.org/wiki/Class-based_programming">familiarize yourself with it</a> a little.</p>
 <blockquote>
 <div><p>In other terms:</p>
 <ul class="simple">
@@ -216,8 +215,7 @@ library <a class="reference external" href="Directory-Overview.html#evennia-libr
 also explore it <a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia">online on github</a>.</p>
 <p>The structure of the library directly reflects how you import from it.</p>
 <ul class="simple">
-<li><p>To, for example, import <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201">the text justify
-function</a> from
+<li><p>To, for example, import <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201">the text justify function</a> from
 <code class="docutils literal notranslate"><span class="pre">evennia/utils/utils.py</span></code> you would do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.utils.utils</span> <span class="pre">import</span> <span class="pre">justify</span></code>. In your code you
 could then just call <code class="docutils literal notranslate"><span class="pre">justify(...)</span></code> to access its functionality.</p></li>
 <li><p>You could also do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.utils</span> <span class="pre">import</span> <span class="pre">utils</span></code>. In code you would then have to write
@@ -231,14 +229,12 @@ import in Python.</p></li>
 </ul>
 <p>Now, remember that our <code class="docutils literal notranslate"><span class="pre">characters.py</span></code> module did <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">DefaultCharacter</span></code>. But if we
 look at the contents of the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder, there is no <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> anywhere! This is
-because Evennia gives a large number of optional “shortcuts”, known as [the “flat” API](Evennia-
-API). The intention is to make it easier to remember where to find stuff. The flat API is defined in
+because Evennia gives a large number of optional “shortcuts”, known as <a class="reference internal" href="Evennia-API.html"><span class="doc">the “flat” API</span></a>. The intention is to make it easier to remember where to find stuff. The flat API is defined in
 that weirdly named <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. This file just basically imports useful things from all over
 Evennia so you can more easily find them in one place.</p>
 <p>We could <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia#typeclasses">just look at the documenation</a> to find out where we can look
 at our <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> parent. But for practice, let’s figure it out. Here is where
-<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188">is imported
-from</a> inside <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>:</p>
+<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188">is imported from</a> inside <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 </pre></div>
 </td></tr></table></div>
@@ -263,8 +259,7 @@ See <a class="reference internal" href="Evennia-API.html"><span class="doc">more
 <h2>Tweaking our Character class<a class="headerlink" href="#tweaking-our-character-class" title="Permalink to this headline">¶</a></h2>
 <p>In the previous section we traced the parent of our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class to be
 <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> in
-[evennia/objects/objects.py](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.
-py).
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py">evennia/objects/objects.py</a>.
 Open that file and locate the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> class. It’s quite a bit down
 in this module so you might want to search using your editor’s (or browser’s)
 search function. Once you find it, you’ll find that the class starts like this:</p>
@@ -339,8 +334,7 @@ search function. Once you find it, you’ll find that the class starts like this
     <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>
-<p>… And so on (you can see the full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915">class online
-here</a>). Here we
+<p>… And so on (you can see the full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915">class online here</a>). Here we
 have functional code! These methods may not be directly visible in <code class="docutils literal notranslate"><span class="pre">Character</span></code> back in our game dir,
 but they are still available since <code class="docutils literal notranslate"><span class="pre">Character</span></code> is a child of <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> above. Here is a
 brief summary of the methods we find in <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (follow in the code to see if you can see
@@ -371,8 +365,7 @@ Character.</p></li>
 </td></tr></table></div>
 <p>This means that <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> is in <em>itself</em> a child of something called <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>! Let’s
 see what this parent class provides. It’s in the same module as <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>, you just need to
-<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193">scroll up near the
-top</a>:</p>
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193">scroll up near the top</a>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">TypeclassBase</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)):</span>
    <span class="c1"># ...</span>
@@ -389,11 +382,9 @@ the doc string of <code class="docutils literal notranslate"><span class="pre">m
 <blockquote>
 <div><p>As seen, <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> actually has multiple parents. In one of those the basic <code class="docutils literal notranslate"><span class="pre">key</span></code> property
 is defined, but we won’t travel further up the inheritance tree in this tutorial. If you are
-interested to see them, you can find <code class="docutils literal notranslate"><span class="pre">TypeclassBase</span></code> in [evennia/typeclasses/models.py](https://gith
-ub.com/evennia/evennia/blob/master/evennia/typeclasses/models.py#L93) and <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/models.py#L121">evennia/obj
+interested to see them, you can find <code class="docutils literal notranslate"><span class="pre">TypeclassBase</span></code> in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/typeclasses/models.py#L93">evennia/typeclasses/models.py</a> and <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/models.py#L121">evennia/obj
 ects/models.py</a>. We
-will also not go into the details of <a class="reference external" href="https://docs.python.org/2/tutorial/classes.html#multiple-inheritance">Multiple
-Inheritance</a> or
+will also not go into the details of <a class="reference external" href="https://docs.python.org/2/tutorial/classes.html#multiple-inheritance">Multiple Inheritance</a> or
 <a class="reference external" href="http://www.onlamp.com/pub/a/python/2003/04/17/metaclasses.html">Metaclasses</a> here. The general rule
 is that if you realize that you need these features, you already know enough to use them.</p>
 </div></blockquote>
@@ -444,8 +435,7 @@ for us. In this case, <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">return</span></code>s it just the way it was (the <code class="docutils literal notranslate"><span class="pre">return</span></code> is another reserved Python word).</p>
 <blockquote>
 <div><p>We won’t go into <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> here, but it (and its sibling <code class="docutils literal notranslate"><span class="pre">*args</span></code>) is also important to
-understand, extra reading is <a class="reference external" href="https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python">here for
-<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code></a>.</p>
+understand, extra reading is <a class="reference external" href="https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python">here for <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code></a>.</p>
 </div></blockquote>
 <p>Now, open your game folder and edit <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. Locate your <code class="docutils literal notranslate"><span class="pre">Character</span></code>
 class and modify it as such:</p>
@@ -470,8 +460,7 @@ through the method.</p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">f</span></code> in front of the string, it means we turned the string into a ‘formatted string’. We
 can now easily inject stuff directly into the string by wrapping them in curly brackets <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">}</span></code>. In
 this example, we put the incoming <code class="docutils literal notranslate"><span class="pre">message</span></code> into the string, followed by an ellipsis. This is only
-one way to format a string. Python has very powerful <a class="reference external" href="https://docs.python.org/2/library/string.html#format-specification-mini-language">string
-formatting</a> and
+one way to format a string. Python has very powerful <a class="reference external" href="https://docs.python.org/2/library/string.html#format-specification-mini-language">string formatting</a> and
 you are wise to learn it well, considering your game will be mainly text-based.</p>
 <blockquote>
 <div><p>You could also copy &amp; paste the relevant method from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> here to get the full doc
@@ -516,11 +505,9 @@ automatically.</p>
 program.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span> <span class="o">...</span>
 <span class="o">...</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 
-</pre></div>
-</div>
-<p>IPython has some very nice ways to explore what Evennia has to offer.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">evennia</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">IPython</span> <span class="n">has</span> <span class="n">some</span> <span class="n">very</span> <span class="n">nice</span> <span class="n">ways</span> <span class="n">to</span> <span class="n">explore</span> <span class="n">what</span> <span class="n">Evennia</span> <span class="n">has</span> <span class="n">to</span> <span class="n">offer</span><span class="o">.</span>
+
+<span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">evennia</span>
 <span class="o">&gt;</span> <span class="n">evennia</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
 </pre></div>
 </div>
@@ -551,15 +538,14 @@ and resources <a class="reference internal" href="Links.html"><span class="doc">
 <p>We have touched upon many of the concepts here but to use Evennia and to be able to follow along in
 the code, you will need basic understanding of Python
 <a class="reference external" href="http://docs.python.org/2/tutorial/modules.html">modules</a>,
-<a class="reference external" href="http://www.tutorialspoint.com/python/python_variable_types.htm">variables</a>, <a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#if-statements">conditional
-statements</a>,
+<a class="reference external" href="http://www.tutorialspoint.com/python/python_variable_types.htm">variables</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#if-statements">conditional statements</a>,
 <a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#for-statements">loops</a>,
-<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#defining-functions">functions</a>, <a class="reference external" href="http://docs.python.org/tutorial/datastructures.html">lists,
-dictionaries, list comprehensions</a> and <a class="reference external" href="http://docs.python.org/tutorial/introduction.html#strings">string
-formatting</a>. You should also have a basic
-understanding of <a class="reference external" href="http://www.tutorialspoint.com/python/python_classes_objects.htm">object-oriented
-programming</a> and what Python
-<a class="reference external" href="http://docs.python.org/tutorial/classes.html">Classes</a> are.</p>
+<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#defining-functions">functions</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/datastructures.html">lists, dictionaries, list comprehensions</a>
+and <a class="reference external" href="http://docs.python.org/tutorial/introduction.html#strings">string formatting</a>. You should also have a basic
+understanding of <a class="reference external" href="http://www.tutorialspoint.com/python/python_classes_objects.htm">object-oriented programming</a>
+and what Python <a class="reference external" href="http://docs.python.org/tutorial/classes.html">Classes</a> are.</p>
 <p>Once you have familiarized yourself, or if you prefer to pick Python up as you go, continue to one
 of the beginning-level <a class="reference internal" href="Tutorials.html"><span class="doc">Evennia tutorials</span></a> to gradually build up your understanding.</p>
 <p>Good luck!</p>

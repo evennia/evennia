@@ -49,8 +49,7 @@
   <section id="turn-based-combat-system">
 <h1>Turn based Combat System<a class="headerlink" href="#turn-based-combat-system" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired
-by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing
-list</a>.</p>
+by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing list</a>.</p>
 <section id="overview-of-combat-system-concepts">
 <h2>Overview of combat system concepts<a class="headerlink" href="#overview-of-combat-system-concepts" title="Permalink to this headline">¶</a></h2>
 <p>Most MUDs will use some sort of combat system. There are several main variations:</p>
@@ -94,8 +93,7 @@ free.</p></li>
 <li><p>The commands are (in our example) simple; they can either <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">&lt;target&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">feint</span> <span class="pre">&lt;target&gt;</span></code> or
 <code class="docutils literal notranslate"><span class="pre">parry</span> <span class="pre">&lt;target&gt;</span></code>. They can also <code class="docutils literal notranslate"><span class="pre">defend</span></code>, a generic passive defense. Finally they may choose to
 <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>.</p></li>
-<li><p>When attacking we use a classic [rock-paper-scissors](https://en.wikipedia.org/wiki/Rock-paper-
-scissors) mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats
+<li><p>When attacking we use a classic <a class="reference external" href="https://en.wikipedia.org/wiki/Rock-paper-scissors">rock-paper-scissors</a> mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats
 <code class="docutils literal notranslate"><span class="pre">hit</span></code>. <code class="docutils literal notranslate"><span class="pre">defend</span></code> is a general passive action that has a percentage chance to win against <code class="docutils literal notranslate"><span class="pre">hit</span></code>
 (only).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code> must be entered two times in a row and will only succeed if there is no <code class="docutils literal notranslate"><span class="pre">hit</span></code>
@@ -112,8 +110,7 @@ characters and handles all the combat information. Since Scripts are database en
 that the combat will not be affected by a server reload.</p></li>
 <li><p>A combat <a class="reference internal" href="Command-Sets.html"><span class="doc">command set</span></a> with the relevant commands needed for combat, such as the
 various attack/defend options and the <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> command to leave the combat mode.</p></li>
-<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system
-tutorial</span></a>. We will only sketch such a module here for our end-turn
+<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. We will only sketch such a module here for our end-turn
 combat resolution.</p></li>
 <li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> for initiating the combat mode. This is added to the default
 command set. It will create the combat handler and add the character(s) to it. It will also assign
@@ -369,7 +366,7 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
 <span class="sd">        commands). We know this by checking the existence of the</span>
 <span class="sd">        `normal_turn_end` NAttribute, set just before calling</span>
 <span class="sd">        force_repeat.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span><span class="p">:</span>
             <span class="c1"># we get here because the turn ended normally</span>
@@ -391,7 +388,7 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
                                        <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
         <span class="c1"># set up back-reference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-       
+
     <span class="k">def</span> <span class="nf">remove_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="s2">&quot;Remove combatant from handler&quot;</span>
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
@@ -542,7 +539,7 @@ weapon(s) held by the player or by which skills they know.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You add &#39;hit&#39; to the combat queue&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only queue two actions per turn!&quot;</span><span class="p">)</span>
- 
+
         <span class="c1"># tell the handler to check if turn is over</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">check_end_turn</span><span class="p">()</span>
 </pre></div>
@@ -595,8 +592,7 @@ do.</p>
 </section>
 <section id="rules-module">
 <h2>Rules module<a class="headerlink" href="#rules-module" title="Permalink to this headline">¶</a></h2>
-<p>A general way to implement a rule module is found in the [rule system tutorial](Implementing-a-game-
-rule-system). Proper resolution would likely require us to change our Characters to store things
+<p>A general way to implement a rule module is found in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. Proper resolution would likely require us to change our Characters to store things
 like strength, weapon skills and so on. So for this example we will settle for a very simplistic
 rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here
 but just announce the results of each turn. In a real system the Character objects would hold stats

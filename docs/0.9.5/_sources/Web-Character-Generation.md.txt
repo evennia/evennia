@@ -15,8 +15,7 @@ selection screen when you log into the game later). Other modes can be used with
 auto-puppet the new Character.
 
 You should have some familiarity with how Django sets up its Model Template View framework. You need
-to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-
-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
+to understand what is happening in the basic [Web Character View tutorial](./Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
 at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django
 does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
 interface). This guide will outline the format of the models, views, urls, and html templates
@@ -29,32 +28,28 @@ Here are some screenshots of the simple app we will be making.
 Index page, with no character application yet done:
 
 ***
-![Index page, with no character application yet done.](https://lh3.googleusercontent.com/-57KuSWHXQ_
-M/VWcULN152tI/AAAAAAAAEZg/kINTmVlHf6M/w425-h189-no/webchargen_index2.gif)
+![Index page, with no character application yet done.](https://lh3.googleusercontent.com/-57KuSWHXQ_M/VWcULN152tI/AAAAAAAAEZg/kINTmVlHf6M/w425-h189-no/webchargen_index2.gif)
 ***
 
 Having clicked the "create" link you get to create your character (here we will only have name and
 background, you can add whatever is needed to fit your game):
 
 ***
-![Character creation.](https://lh3.googleusercontent.com/-ORiOEM2R_yQ/VWcUKgy84rI/AAAAAAAAEZY/B3CBh3
-FHii4/w607-h60-no/webchargen_creation.gif)
+![Character creation.](https://lh3.googleusercontent.com/-ORiOEM2R_yQ/VWcUKgy84rI/AAAAAAAAEZY/B3CBh3FHii4/w607-h60-no/webchargen_creation.gif)
 ***
 
 Back to the index page. Having entered our character application (we called our character "TestApp")
 you see it listed:
 
 ***
-![Having entered an application.](https://lh6.googleusercontent.com/-HlxvkvAimj4/VWcUKjFxEiI/AAAAAAA
-AEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif)
+![Having entered an application.](https://lh6.googleusercontent.com/-HlxvkvAimj4/VWcUKjFxEiI/AAAAAAAAEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif)
 ***
 
 We can also view an already written character application by clicking on it - this brings us to the
 *detail* page:
 
 ***
-![Detail view of character application.](https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/
-AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif)
+![Detail view of character application.](https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif)
 ***
 
 ## Installing an App
@@ -281,7 +276,7 @@ After all of this, our `views.py` file should look like something like this:
 
 ```python
 # file mygame/web/chargen/views.py
-   
+
 from django.shortcuts import render
 from web.chargen.models import CharApp
 from web.chargen.forms import AppForm
@@ -544,8 +539,7 @@ created character object. Thankfully, the Evennia API makes this easy.
 
 As sad as it is, if your server is open to the web, bots might come to visit and take advantage of
 your open form to create hundreds, thousands, millions of characters if you give them the
-opportunity.  This section shows you how to use the [No CAPCHA
-reCAPCHA](https://www.google.com/recaptcha/intro/invisible.html) designed by Google.  Not only is it
+opportunity.  This section shows you how to use the [No CAPCHA reCAPCHA](https://www.google.com/recaptcha/intro/invisible.html) designed by Google.  Not only is it
 easy to use, it is user-friendly... for humans.  A simple checkbox to check, except if Google has
 some suspicion, in which case you will have a more difficult test with an image and the usual text
 inside.  It's worth pointing out that, as long as Google doesn't suspect you of being a robot, this

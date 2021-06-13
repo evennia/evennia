@@ -97,5 +97,4 @@ docs](https://getbootstrap.com/docs/4.0/layout/grid/)
 
 ## More Bootstrap
 Bootstrap also provides a huge amount of utilities, as well as styling and content elements. To
-learn more about them, please [read the Bootstrap docs](https://getbootstrap.com/docs/4.0/getting-
-started/introduction/) or read one of our other web tutorials.
+learn more about them, please [read the Bootstrap docs](https://getbootstrap.com/docs/4.0/getting-started/introduction/) or read one of our other web tutorials.
