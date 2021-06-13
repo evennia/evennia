@@ -60,8 +60,7 @@ permissions to transfer to their web-created characters.</p>
 selection screen when you log into the game later). Other modes can be used with some adaptation to
 auto-puppet the new Character.</p>
 <p>You should have some familiarity with how Django sets up its Model Template View framework. You need
-to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-
-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
+to understand what is happening in the basic <a class="reference internal" href="Web-Character-View-Tutorial.html"><span class="doc">Web Character View tutorial</span></a>. If you don’t understand the listed tutorial or have a grasp of Django basics, please look
 at the <a class="reference external" href="https://docs.djangoproject.com/en/1.8/intro/">Django tutorial</a> to get a taste of what Django
 does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
 interface). This guide will outline the format of the models, views, urls, and html templates
@@ -72,26 +71,22 @@ needed.</p>
 <p>Here are some screenshots of the simple app we will be making.</p>
 <p>Index page, with no character application yet done:</p>
 <hr class="docutils" />
-<p>![Index page, with no character application yet done.](https://lh3.googleusercontent.com/-57KuSWHXQ_
-M/VWcULN152tI/AAAAAAAAEZg/kINTmVlHf6M/w425-h189-no/webchargen_index2.gif)</p>
+<p><img alt="Index page, with no character application yet done." src="https://lh3.googleusercontent.com/-57KuSWHXQ_M/VWcULN152tI/AAAAAAAAEZg/kINTmVlHf6M/w425-h189-no/webchargen_index2.gif" /></p>
 <hr class="docutils" />
 <p>Having clicked the “create” link you get to create your character (here we will only have name and
 background, you can add whatever is needed to fit your game):</p>
 <hr class="docutils" />
-<p>![Character creation.](https://lh3.googleusercontent.com/-ORiOEM2R_yQ/VWcUKgy84rI/AAAAAAAAEZY/B3CBh3
-FHii4/w607-h60-no/webchargen_creation.gif)</p>
+<p><img alt="Character creation." src="https://lh3.googleusercontent.com/-ORiOEM2R_yQ/VWcUKgy84rI/AAAAAAAAEZY/B3CBh3FHii4/w607-h60-no/webchargen_creation.gif" /></p>
 <hr class="docutils" />
 <p>Back to the index page. Having entered our character application (we called our character “TestApp”)
 you see it listed:</p>
 <hr class="docutils" />
-<p>![Having entered an application.](https://lh6.googleusercontent.com/-HlxvkvAimj4/VWcUKjFxEiI/AAAAAAA
-AEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif)</p>
+<p><img alt="Having entered an application." src="https://lh6.googleusercontent.com/-HlxvkvAimj4/VWcUKjFxEiI/AAAAAAAAEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif" /></p>
 <hr class="docutils" />
 <p>We can also view an already written character application by clicking on it - this brings us to the
 <em>detail</em> page:</p>
 <hr class="docutils" />
-<p>![Detail view of character application.](https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/
-AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif)</p>
+<p><img alt="Detail view of character application." src="https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif" /></p>
 </section>
 <hr class="docutils" />
 <section id="installing-an-app">
@@ -450,7 +445,7 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
-   
+
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 <span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
 <span class="kn">from</span> <span class="nn">web.chargen.forms</span> <span class="kn">import</span> <span class="n">AppForm</span>
@@ -789,8 +784,7 @@ created character object. Thankfully, the Evennia API makes this easy.</p>
 <h2>Adding a no CAPCHA reCAPCHA on your character generation<a class="headerlink" href="#adding-a-no-capcha-recapcha-on-your-character-generation" title="Permalink to this headline">¶</a></h2>
 <p>As sad as it is, if your server is open to the web, bots might come to visit and take advantage of
 your open form to create hundreds, thousands, millions of characters if you give them the
-opportunity.  This section shows you how to use the <a class="reference external" href="https://www.google.com/recaptcha/intro/invisible.html">No CAPCHA
-reCAPCHA</a> designed by Google.  Not only is it
+opportunity.  This section shows you how to use the <a class="reference external" href="https://www.google.com/recaptcha/intro/invisible.html">No CAPCHA reCAPCHA</a> designed by Google.  Not only is it
 easy to use, it is user-friendly… for humans.  A simple checkbox to check, except if Google has
 some suspicion, in which case you will have a more difficult test with an image and the usual text
 inside.  It’s worth pointing out that, as long as Google doesn’t suspect you of being a robot, this

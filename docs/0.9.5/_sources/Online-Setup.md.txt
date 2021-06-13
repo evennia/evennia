@@ -238,8 +238,7 @@ Also, on Freenode visit the #letsencrypt channel for assistance from the communi
 additional resource, Let's Encrypt has a very active [community
 forum](https://community.letsencrypt.org/).
 
-[A blog where someone sets up Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-
-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)
+[A blog where someone sets up Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)
 
 The only process missing from all of the above documentation is how to pass verification. This is
 how Let's Encrypt verifies that you have control over your domain (not necessarily ownership, it's
@@ -415,7 +414,7 @@ Evennia users:
     | `Linode`_              | Cloud          | $5/month /     | Multiple regions. Smallest option provides 1GB RAM       |
     |                        |                | on-demand      |                                                          |
     +------------------------+----------------+----------------+----------------------------------------------------------+
-    | `Genesis MUD hosting`_ | Shell account  | $8/month       | Dedicated MUD host with very limited memory offerings.   | 
+    | `Genesis MUD hosting`_ | Shell account  | $8/month       | Dedicated MUD host with very limited memory offerings.   |
     |                        |                |                | When last investigated (2017) ran a 13 years old Python  |
     |                        |                |                | version (2.4) (convince them to update or compile).      |
     |                        |                |                | Note that Evennia needs *at least* the "Deluxe" package  |

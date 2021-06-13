@@ -2,8 +2,8 @@
 
 
 Before continuing to read these tutorials (and especially before you start to code or build your
-game in earnest) it's strongly recommended that you read the [Evennia coding introduction](Coding-
-Introduction) as well as the [Planning your own game](./Game-Planning) pages first.
+game in earnest) it's strongly recommended that you read the
+[Evennia coding introduction](./Coding-Introduction) as well as the [Planning your own game](./Game-Planning) pages first.
 
 Please note that it's not within the scope of our tutorials to teach you basic Python. If you are
 new to the language, expect to have to look up concepts you are unfamiliar with. Usually a quick
@@ -34,22 +34,17 @@ _General code practices for newbie game developers._
 
 To use Evennia, you will need basic understanding of Python
 [modules](http://docs.python.org/3.7/tutorial/modules.html),
-[variables](http://www.tutorialspoint.com/python/python_variable_types.htm), [conditional
-statements](http://docs.python.org/tutorial/controlflow.html#if-statements),
+[variables](http://www.tutorialspoint.com/python/python_variable_types.htm), [conditional statements](http://docs.python.org/tutorial/controlflow.html#if-statements),
 [loops](http://docs.python.org/tutorial/controlflow.html#for-statements),
-[functions](http://docs.python.org/tutorial/controlflow.html#defining-functions), [lists,
-dictionaries, list comprehensions](http://docs.python.org/tutorial/datastructures.html) and [string
-formatting](http://docs.python.org/tutorial/introduction.html#strings). You should also have a basic
-understanding of [object-oriented
-programming](http://www.tutorialspoint.com/python/python_classes_objects.htm) and what Python
+[functions](http://docs.python.org/tutorial/controlflow.html#defining-functions), [lists, dictionaries, list comprehensions](http://docs.python.org/tutorial/datastructures.html) and [string formatting](http://docs.python.org/tutorial/introduction.html#strings). You should also have a basic
+understanding of [object-oriented programming](http://www.tutorialspoint.com/python/python_classes_objects.htm) and what Python
 [Classes](http://docs.python.org/tutorial/classes.html) are.
 
 - [Python tutorials for beginners](https://wiki.python.org/moin/BeginnersGuide/NonProgrammers) -
 external link with tutorials for those not familiar with coding in general or Python in particular.
 - [Tutorial: Version Control](./Version-Control) - use GIT to organize your code both for your own
 game project and for contributing to Evennia.
-- MIT offers free courses in many subjects.  Their [Introduction to Computer Science and
-Programming](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-
+- MIT offers free courses in many subjects.  Their [Introduction to Computer Science and Programming](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-
 introduction-to-computer-science-and-programming-spring-2011/) uses Python as its language of
 choice.  Longer path, but more in-depth.  Definitely worth a look.
 
@@ -113,8 +108,7 @@ Evennia.
 - [Tutorial: Handling virtual time in your game](./Gametime-Tutorial)
 - [Tutorial: Setting up a coordinate system for rooms](./Coordinates)
 - [Tutorial: customize the way channels and channel commands work in your game](./Customize-channels)
-- [Tutorial: Adding unit tests to your game project](./Unit-Testing#testing-for-game-development-mini-
-tutorial)
+- [Tutorial: Adding unit tests to your game project](./Unit-Testing#testing-for-game-development-mini- tutorial)
 
 ### Contrib
 

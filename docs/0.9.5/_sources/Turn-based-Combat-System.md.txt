@@ -2,8 +2,7 @@
 
 
 This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired
-by the discussions held on the [mailing
-list](https://groups.google.com/forum/#!msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ).
+by the discussions held on the [mailing list](https://groups.google.com/forum/#!msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ).
 
 ## Overview of combat system concepts
 
@@ -49,8 +48,7 @@ free.
 - The commands are (in our example) simple; they can either `hit <target>`, `feint <target>` or
 `parry <target>`. They can also `defend`, a generic passive defense. Finally they may choose to
 `disengage/flee`.
-- When attacking we use a classic [rock-paper-scissors](https://en.wikipedia.org/wiki/Rock-paper-
-scissors) mechanic to determine success: `hit` defeats `feint`, which defeats `parry` which defeats
+- When attacking we use a classic [rock-paper-scissors](https://en.wikipedia.org/wiki/Rock-paper-scissors) mechanic to determine success: `hit` defeats `feint`, which defeats `parry` which defeats
 `hit`. `defend` is a general passive action that has a percentage chance to win against `hit`
 (only).
 - `disengage/flee` must be entered two times in a row and will only succeed if there is no `hit`
@@ -67,8 +65,7 @@ characters and handles all the combat information. Since Scripts are database en
 that the combat will not be affected by a server reload.
 - A combat [command set](./Command-Sets) with the relevant commands needed for combat, such as the
 various attack/defend options and the `flee/disengage` command to leave the combat mode.
-- A rule resolution system. The basics of making such a module is described in the [rule system
-tutorial](Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn
+- A rule resolution system. The basics of making such a module is described in the [rule system tutorial](./Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn
 combat resolution.
 - An `attack` [command](./Commands) for initiating the combat mode. This is added to the default
 command set. It will create the combat handler and add the character(s) to it. It will also assign
@@ -168,7 +165,7 @@ class CombatHandler(DefaultScript):
         commands). We know this by checking the existence of the
         `normal_turn_end` NAttribute, set just before calling
         force_repeat.
-        
+
         """
         if self.ndb.normal_turn_end:
             # we get here because the turn ended normally
@@ -190,7 +187,7 @@ class CombatHandler(DefaultScript):
                                        ("defend", character, None)]
         # set up back-reference
         self._init_character(character)
-       
+
     def remove_character(self, character):
         "Remove combatant from handler"
         if character.id in self.db.characters:
@@ -311,7 +308,7 @@ class CmdHit(Command):
             self.caller.msg("You add 'hit' to the combat queue")
         else:
             self.caller.msg("You can only queue two actions per turn!")
- 
+
         # tell the handler to check if turn is over
         self.caller.ndb.combat_handler.check_end_turn()
 ```
@@ -347,8 +344,7 @@ class CombatCmdSet(CmdSet):
 
 ## Rules module
 
-A general way to implement a rule module is found in the [rule system tutorial](Implementing-a-game-
-rule-system). Proper resolution would likely require us to change our Characters to store things
+A general way to implement a rule module is found in the [rule system tutorial](./Implementing-a-game-rule-system). Proper resolution would likely require us to change our Characters to store things
 like strength, weapon skills and so on. So for this example we will settle for a very simplistic
 rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here
 but just announce the results of each turn. In a real system the Character objects would hold stats

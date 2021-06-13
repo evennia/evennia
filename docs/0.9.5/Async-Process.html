@@ -156,16 +156,16 @@ errback.</p></li>
     <span class="k">class</span> <span class="nc">CmdAsync</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;asynccommand&quot;</span>
-    
+
        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-           
+
            <span class="k">def</span> <span class="nf">long_running_function</span><span class="p">():</span>
                <span class="c1">#[... lots of time-consuming code  ...]</span>
                <span class="k">return</span> <span class="n">final_value</span>
-           
+
            <span class="k">def</span> <span class="nf">at_return_function</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The final value is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">r</span><span class="p">)</span>
-    
+
            <span class="k">def</span> <span class="nf">at_err_function</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There was an error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
@@ -210,8 +210,7 @@ the <a class="reference internal" href="Command-Duration.html"><span class="doc"
 </section>
 <section id="the-interactive-decorator">
 <h2>The &#64;interactive decorator<a class="headerlink" href="#the-interactive-decorator" title="Permalink to this headline">¶</a></h2>
-<p>As of Evennia 0.9, the <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code> [decorator](https://realpython.com/primer-on-python-
-decorators/)
+<p>As of Evennia 0.9, the <code class="docutils literal notranslate"><span class="pre">&#64;interactive</span></code> <a class="reference external" href="https://realpython.com/primer-on-python-decorators/">decorator</a>
 is available. This makes any function or method possible to ‘pause’ and/or await player input
 in an interactive way.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
@@ -231,7 +230,7 @@ in an interactive way.</p>
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-        
+
       <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
           <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Getting ready to wait ...&quot;</span><span class="p">)</span>
           <span class="k">yield</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>

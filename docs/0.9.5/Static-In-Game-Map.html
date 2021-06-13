@@ -62,8 +62,7 @@ geometries impossible in the real world.</p>
 sanity of their players. And when they do, the game becomes possible to map. This tutorial will give
 an example of a simple but flexible in-game map system to further help player’s to navigate. We will</p>
 <p>To simplify development and error-checking we’ll break down the work into bite-size chunks, each
-building on what came before. For this we’ll make extensive use of the [Batch code processor](Batch-
-Code-Processor), so you may want to familiarize yourself with that.</p>
+building on what came before. For this we’ll make extensive use of the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch code processor</span></a>, so you may want to familiarize yourself with that.</p>
 <ol>
 <li><p><strong>Planning the map</strong> - Here we’ll come up with a small example map to use for the rest of the
 tutorial.</p></li>
@@ -90,9 +89,7 @@ don’t show in the documentation wiki.</p>
 </section>
 <section id="planning-the-map">
 <h2>Planning the Map<a class="headerlink" href="#planning-the-map" title="Permalink to this headline">¶</a></h2>
-<p>Let’s begin with the fun part! Maps in MUDs come in many different [shapes and
-sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
+<p>Let’s begin with the fun part! Maps in MUDs come in many different <a class="reference external" href="http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-mud/index.html">shapes and sizes</a>. Some appear as just boxes connected by lines. Others have complex graphics that are
 external to the game itself.</p>
 <p>Our map will be in-game text but that doesn’t mean we’re restricted to the normal alphabet! If
 you’ve ever selected the <a class="reference external" href="https://en.wikipedia.org/wiki/Wingdings">Wingdings font</a> in Microsoft Word
@@ -440,12 +437,12 @@ of characters allowing us to pick out the characters we need.</p>
 <span class="sd">    This function returns the whole map</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">map</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    
+
     <span class="c1">#For each row in our map, add it to map</span>
     <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">:</span>
         <span class="nb">map</span> <span class="o">+=</span> <span class="n">valuey</span>
         <span class="nb">map</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">map</span>
 
 <span class="k">def</span> <span class="nf">return_minimap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
@@ -454,12 +451,12 @@ of characters allowing us to pick out the characters we need.</p>
 <span class="sd">    Returning all chars in a 2 char radius from (x,y)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">map</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    
+
     <span class="c1">#For each row we need, add the characters we need.</span>
     <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">[</span><span class="n">y</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>         <span class="k">for</span> <span class="n">valuex</span> <span class="ow">in</span> <span class="n">valuey</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
             <span class="nb">map</span> <span class="o">+=</span> <span class="n">valuex</span>
         <span class="nb">map</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">map</span>
 </pre></div>
 </td></tr></table></div>
@@ -638,9 +635,8 @@ Prompt use <code class="docutils literal notranslate"><span class="pre">evennia<
 <p>You should now have a mapped little world and a basic understanding of batchcode, EvTable and how
 easily new game defining features can be added to Evennia.</p>
 <p>You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
-not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), <a class="reference internal" href="Tutorial-Aggressive-NPCs.html"><span class="doc">fill your world with NPC’s</span></a> or <a class="reference internal" href="Turn-based-Combat-System.html"><span class="doc">implement a combat
-system</span></a>.</p>
+not add more features to your game by trying other tutorials: <a class="reference internal" href="Weather-Tutorial.html"><span class="doc">Add weather to your world</span></a>,
+<a class="reference internal" href="Tutorial-Aggressive-NPCs.html"><span class="doc">fill your world with NPC’s</span></a> or <a class="reference internal" href="Turn-based-Combat-System.html"><span class="doc">implement a combat system</span></a>.</p>
 </section>
 </section>
 

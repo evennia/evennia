@@ -153,7 +153,7 @@ properties to easily access and update coordinates.  This is a Pythonic approach
 <span class="sd">    See examples/object.py for a list of</span>
 <span class="sd">    properties and methods available on all Objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the X coordinate or None.&quot;&quot;&quot;</span>
@@ -174,7 +174,7 @@ properties to easily access and update coordinates.  This is a Pythonic approach
         <span class="sd">&quot;&quot;&quot;Return the Y coordinate or None.&quot;&quot;&quot;</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;coordy&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-    
+
     <span class="nd">@y</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Change the Y coordinate.&quot;&quot;&quot;</span>
@@ -189,7 +189,7 @@ properties to easily access and update coordinates.  This is a Pythonic approach
         <span class="sd">&quot;&quot;&quot;Return the Z coordinate or None.&quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;coordz&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-    
+
     <span class="nd">@z</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Change the Z coordinate.&quot;&quot;&quot;</span>
@@ -201,8 +201,7 @@ properties to easily access and update coordinates.  This is a Pythonic approach
 </pre></div>
 </td></tr></table></div>
 <p>If you aren’t familiar with the concept of properties in Python, I encourage you to read a good
-tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-
-programming/property)
+tutorial on the subject.  <a class="reference external" href="https://www.programiz.com/python-programming/property">This article on Python properties</a>
 is well-explained and should help you understand the idea.</p>
 <p>Let’s look at our properties for <code class="docutils literal notranslate"><span class="pre">x</span></code>.  First of all is the read property.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>

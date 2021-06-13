@@ -480,5 +480,4 @@ close from the code I've provided here.  Notice, however, that this resource is
 external to Evennia and not maintained by anyone but the original author of
 this article.
 
-[Read the full example on Github](https://github.com/vincent-
-lg/avenew/blob/master/commands/comms.py)
+[Read the full example on Github](https://github.com/vincent-lg/avenew/blob/master/commands/comms.py)

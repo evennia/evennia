@@ -6,8 +6,7 @@
 
 - [evennia.com](http://www.evennia.com) - Main Evennia portal page. Links to all corners of Evennia.
 - [Evennia github page](https://github.com/evennia/evennia) - Download code and read documentation.
-- [Evennia official chat channel](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRy
-dWUmMTE9MTk1JjEyPXRydWUbb) - Our official IRC chat #evennia at irc.freenode.net:6667.
+- [Evennia official chat channel](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb) - Our official IRC chat #evennia at irc.freenode.net:6667.
 - [Evennia forums/mailing list](http://groups.google.com/group/evennia) - Web interface to our
 google group.
 - [Evennia development blog](http://evennia.blogspot.se/) - Musings from the lead developer.
@@ -106,8 +105,7 @@ Influential mailing list active 1996-2004. Advanced game design discussions.
 - [Mud-dev wiki](http://mud-dev.wikidot.com/) - A (very) slowly growing resource on MUD creation.
 - [Mud Client/Server Interaction](http://cryosphere.net/mud-protocol.html) - A page on classic MUD
 telnet protocols.
-- [Mud Tech's fun/cool but ...](http://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-
-ship-damned-thing/) - Greg Taylor gives good advice on mud design.
+- [Mud Tech's fun/cool but ...](http://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-ship-damned-thing/) - Greg Taylor gives good advice on mud design.
 - [Lost Library of MOO](http://www.hayseed.net/MOO/) - Archive of scientific articles on mudding (in
 particular moo).
 - [Nick Gammon's hints thread](http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=5959) -
@@ -118,14 +116,12 @@ articles (not MUD-specific)
 - [The Alexandrian](http://thealexandrian.net/) - A blog about tabletop roleplaying and board games,
 but with lots of general discussion about rule systems and game balance that could be applicable
 also for MUDs.
-- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-
-design/the-laws-of-online-world-design/) - thought-provoking guidelines and things to think about
+- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-design/the-laws-of-online-world-design/) - thought-provoking guidelines and things to think about
 when designing a virtual multiplayer world (Raph is known for *Ultima Online* among other things).
 
 ### Literature
 
-- Richard Bartle *Designing Virtual Worlds*  ([amazon page](http://www.amazon.com/Designing-Virtual-
-Worlds-Richard-Bartle/dp/0131018167)) - Essential reading for the design of any persistent game
+- Richard Bartle *Designing Virtual Worlds*  ([amazon page](http://www.amazon.com/Designing-Virtual-Worlds-Richard-Bartle/dp/0131018167)) - Essential reading for the design of any persistent game
 world, written by the co-creator of the original game *MUD*. Published in 2003 but it's still as
 relevant now as when it came out. Covers everything you need to know and then some.
 - Zed A. Shaw *Learn Python the Hard way* ([homepage](https://learnpythonthehardway.org/)) - Despite
@@ -161,7 +157,7 @@ economic system.
 - [GIT](http://git-scm.com/)
  - [Documentation](http://git-scm.com/documentation)
  - [Learn GIT in 15 minutes](http://try.github.io/levels/1/challenges/1) (interactive tutorial)
- 
+
 ### Python Info
 
 - [Python Website](http://www.python.org/)

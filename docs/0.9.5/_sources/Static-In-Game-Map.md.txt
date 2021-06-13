@@ -18,8 +18,7 @@ sanity of their players. And when they do, the game becomes possible to map. Thi
 an example of a simple but flexible in-game map system to further help player's to navigate. We will
 
 To simplify development and error-checking we'll break down the work into bite-size chunks, each
-building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-
-Code-Processor), so you may want to familiarize yourself with that.
+building on what came before. For this we'll make extensive use of the [Batch code processor](./Batch-Code-Processor), so you may want to familiarize yourself with that.
 
 1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the
 tutorial.
@@ -36,7 +35,7 @@ map we designed before.
     O─O─O  To the south, the glow of a campfire can be seen. To the east lie
     ≈↑│↑∩  the vast mountains and to the west is heard the waves of the sea.
     ↑▲O▲↑
-    
+
     Exits: north(#8), east(#9), south(#10), west(#11)
     ```
 
@@ -46,9 +45,7 @@ don't show in the documentation wiki.
 
 ## Planning the Map
 
-Let's begin with the fun part! Maps in MUDs come in many different [shapes and
-sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
+Let's begin with the fun part! Maps in MUDs come in many different [shapes and sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
 external to the game itself.
 
 Our map will be in-game text but that doesn't mean we're restricted to the normal alphabet! If
@@ -275,12 +272,12 @@ def return_map():
     This function returns the whole map
     """
     map = ""
-    
+
     #For each row in our map, add it to map
     for valuey in world_map:
         map += valuey
         map += "\n"
-    
+
     return map
 
 def return_minimap(x, y, radius = 2):
@@ -289,12 +286,12 @@ def return_minimap(x, y, radius = 2):
     Returning all chars in a 2 char radius from (x,y)
     """
     map = ""
-    
+
     #For each row we need, add the characters we need.
     for valuey in world_map[y-radius:y+radius+1]:         for valuex in valuey[x-radius:x+radius+1]:
             map += valuex
         map += "\n"
-    
+
     return map
 ```
 
@@ -411,6 +408,5 @@ You should now have a mapped little world and a basic understanding of batchcode
 easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
-not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](./Tutorial-Aggressive-NPCs) or [implement a combat
-system](Turn-based-Combat-System).
+not add more features to your game by trying other tutorials: [Add weather to your world](./Weather-Tutorial),
+[fill your world with NPC's](./Tutorial-Aggressive-NPCs) or [implement a combat system](./Turn-based-Combat-System).

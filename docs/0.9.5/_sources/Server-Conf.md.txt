@@ -10,8 +10,8 @@ The "Settings" file referenced throughout the documentation is the file
 `mygame/server/conf/settings.py`. This is automatically created on the first run of `evennia --init`
 (see the [Getting Started](./Getting-Started) page).
 
-Your new `settings.py` is relatively bare out of the box. Evennia's core settings file is actually [
-evennia/settings_default.py](https://github.com/evennia/evennia/blob/master/evennia/settings_default
+Your new `settings.py` is relatively bare out of the box. Evennia's core settings file is actually
+[evennia/settings_default.py](https://github.com/evennia/evennia/blob/master/evennia/settings_default
 .py) and is considerably more extensive (it is also heavily documented so you should refer to this
 file directly for the available settings).
 
