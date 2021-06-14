@@ -238,15 +238,20 @@ var text2html = (function () {
 
         // HACK: parse TELNET ASCII byte-by-byte, convert ESC's to |'s -- serverside "raw" bug?
         //       Bug is further proven out by the fact that |'s don't come through as doubles.
-        let chars = text.split(''); // to characters
-        console.log( "raw: " + chars );
-        for( let n=0; n<chars.length; n++ ) {
-            if( ascii(chars[n]) === 27 ) {
-                chars[n] = '|';
+        let hack = new RegExp( String.fromCharCode(27) );
+        if( text.match( hack ) ) {
+            let chars = text.split(''); // to characters
+            for( let n=0; n<chars.length; n++ ) {
+                if( chars[n] === '|' ) {
+                    console.log( 'Got Pipe' );
+                    chars[n] = "&#124;";
+                }
+                if( ascii(chars[n]) === 27 ) {
+                    chars[n] = '|';
+                }
             }
+            text = chars.join(''); // from character strings
         }
-        text = chars.join(''); // from characters
-        console.log( "raw2: " + text );
 
         let strings = text.split( /(\n|\|[\/])/ ); // newline or pipe-slash
         for( let x=0; x<strings.length; x++ ) {
