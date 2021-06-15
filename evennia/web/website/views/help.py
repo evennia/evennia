@@ -109,9 +109,11 @@ def collect_topics(account):
                     # skip the command if it's help entry already exists in the topic list
                     entry_exists = False
                     for verify_cmd in cmd_help_topics:
-                        if verify_cmd.key and cmd.key and \
-                           verify_cmd.help_category == cmd.help_category and \
-                           verify_cmd.__doc__ == cmd.__doc__:
+                        if (
+                                verify_cmd.key and cmd.key and
+                                verify_cmd.help_category == cmd.help_category and
+                                verify_cmd.__doc__ == cmd.__doc__
+                            ):
                             entry_exists = True
                             break
                     if entry_exists:
