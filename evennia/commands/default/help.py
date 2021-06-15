@@ -28,6 +28,7 @@ from evennia.help.utils import help_search_with_index, parse_entry_for_subcatego
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE_ENABLED = settings.HELP_MORE_ENABLED
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
+HELP_CLICKABLE_TOPICS = settings.HELP_CLICKABLE_TOPICS
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -98,7 +99,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
     subtopic_separator_char = r"/"
 
     # should topics disply their help entry when clicked
-    clickable_topics = True
+    clickable_topics = HELP_CLICKABLE_TOPICS
 
     def msg_help(self, text):
         """
