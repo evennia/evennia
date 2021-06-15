@@ -237,7 +237,6 @@ class HelpEntry(SharedMemoryModel):
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
-            # log_info(f'HelpEntry web_get_detail_url url: {url}')
             return url
         except Exception:
             return "#"

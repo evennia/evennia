@@ -244,5 +244,3 @@ class FileHelpStorageHandler:
 
 # singleton to hold the loaded help entries
 FILE_HELP_ENTRIES = FileHelpStorageHandler()
-# Used by Django Sites/Admin
-#get_absolute_url = web_get_detail_url
