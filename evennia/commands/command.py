@@ -16,7 +16,6 @@ from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
-from evennia.utils.logger import log_info
 
 
 class InterruptCommand(Exception):
@@ -550,7 +549,6 @@ Command {self} has no defined `func()` - showing on-command variables:
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
         except Exception as e:
-            log_info(f'Exception: {getattr(e, "message", repr(e))}')
             return "#"
 
     def client_width(self):

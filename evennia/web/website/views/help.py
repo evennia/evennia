@@ -230,7 +230,7 @@ class HelpDetailView(HelpMixin, DetailView):
         # Get the object in question
         obj = self.get_object(full_set)
 
-        # filter non related caegories from the query set
+        # filter non related categories from the query set
         obj_category = get_help_category(obj)
         category_set = []
         for entry in full_set:
