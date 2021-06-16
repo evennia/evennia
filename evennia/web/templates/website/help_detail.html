@@ -17,8 +17,8 @@
         <hr />
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'help' %}">Help Index</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'help' %}#{{ object.help_category }}">{{ object.help_category|title }}</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ object.key|title }}</li>
+          <li class="breadcrumb-item"><a href="{% url 'help' %}#{{ object.web_help_category }}">{{ object.help_category|title }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ object.web_help_key|title }}</li>
         </ol>
         <hr />
 
@@ -62,7 +62,7 @@
             {% endif %}
 
             <div class="card mb-3">
-              <div class="card-header">{{ object.help_category|title }}</div>
+              <div class="card-header">{{ object.web_help_category|title }}</div>
 
               <ul class="list-group list-group-flush">
                 {% for topic in topic_list %}
