@@ -33,7 +33,10 @@ def get_help_category(help_entry, slugify_cat=True):
     Returns:
         help_category (str): The category for the help entry.
     """
-    help_category = getattr(help_entry, 'help_category', DEFAULT_HELP_CATEGORY)
+    help_category = getattr(help_entry, 'help_category', None)
+    if not help_category:
+        help_category = getattr(help_entry, 'db_help_category', DEFAULT_HELP_CATEGORY)
+    # if one does not exist, create a category for ease of use with web views html templates
     if not hasattr(help_entry, 'web_help_category'):
         setattr(help_entry, 'web_help_category', slugify(help_category))
     return slugify(help_category) if slugify_cat else help_category
@@ -46,9 +49,16 @@ def get_help_topic(help_entry):
         help_entry (HelpEntry, FileHelpEntry or Command): Help entry instance.
 
     Returns:
-        topic (str): The topic of the help entry. Default is 'unknown_topic'.
+        help_topic (str): The topic of the help entry. Default is 'unknown_topic'.
     """
-    return getattr(help_entry, 'key', 'unknown_topic')
+    help_topic = getattr(help_entry, 'key', None)
+    # if object has no key, assume it is a db help entry.
+    if not help_topic:
+        help_topic = getattr(help_entry, 'db_key', 'unknown_topic')
+    # if one does not exist, create a key for ease of use with web views html templates
+    if not hasattr(help_entry, 'web_help_key'):
+        setattr(help_entry, 'web_help_key', slugify(help_topic))
+    return help_topic
 
 
 def can_read_topic(cmd_or_topic, account):
