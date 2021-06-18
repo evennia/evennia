@@ -66,6 +66,7 @@ Up requirements to Django 3.2+
   into a more consistent structure for overriding. Expanded webpage documentation considerably.
 - REST API list-view was shortened (#2401). New CSS/HTML. Add ReDoc for API autodoc page.
 - Update and fix dummyrunner with cleaner code and setup.
+- Made `iter_to_str` format prettier strings
 
 ### Evennia 0.9.5 (2019-2020)
 
