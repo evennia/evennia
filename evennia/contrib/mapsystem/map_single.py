@@ -177,17 +177,21 @@ class SingleMap:
     # we normally only accept one single character for the legend key
     legend_key_exceptions = ("\\")
 
-    def __init__(self, map_module_or_dict, name="map"):
+    def __init__(self, map_module_or_dict, name="map", other_maps=None):
         """
         Initialize the map parser by feeding it the map.
 
         Args:
             map_module_or_dict (str, module or dict): Path or module pointing to a map. If a dict,
-                this should be a dict with a key 'map' and optionally a 'legend'
+                this should be a dict with a MAP_DATA key 'map' and optionally a 'legend'
                 dicts to specify the map structure.
             name (str, optional): Unique identifier for this map. Needed if the game uses
                 more than one map. Used when referencing this map during map transitions,
-                baking of pathfinding matrices etc.
+                baking of pathfinding matrices etc. This will be overridden by any 'name' given
+                in the MAP_DATA itself.
+            other_maps (dict, optional): Reference to mapping {name: SingleMap, ...} representing
+                all possible maps one could potentially reach from this map. This is usually
+                provided by the MutlMap handler.
 
         Notes:
             The map deals with two sets of coorinate systems:
@@ -206,6 +210,9 @@ class SingleMap:
 
         # store so we can reload
         self.map_module_or_dict = map_module_or_dict
+
+        self.other_maps = other_maps
+        self.room_prototypes = None
 
         # map setup
         self.xygrid = None
@@ -241,99 +248,6 @@ class SingleMap:
 
     def __repr__(self):
         return f"<Map {self.max_X + 1}x{self.max_Y + 1}, {len(self.node_index_map)} nodes>"
-
-    def _get_topology_around_coord(self, coord, dist=2):
-        """
-        Get all links and nodes up to a certain distance from an XY coordinate.
-
-        Args:
-            coord (tuple), the X,Y coordinate of the center point.
-            dist (int): How many nodes away from center point to find paths for.
-
-        Returns:
-            tuple: A tuple of 5 elements `(coords, xmin, xmax, ymin, ymax)`, where the
-                first element is a list of xy-coordinates (on xygrid) for all linked nodes within
-                range. This is meant to be used with the xygrid for extracting a subset
-                for display purposes. The others are the minimum size of the rectangle
-                surrounding the area containing `coords`.
-
-        Notes:
-            This performs a depth-first pass down the the given dist.
-
-        """
-        def _scan_neighbors(start_node, points, dist=2,
-                            xmin=BIGVAL, ymin=BIGVAL, xmax=0, ymax=0, depth=0):
-
-            x0, y0 = start_node.x, start_node.y
-            points.append((x0, y0))
-            xmin, xmax = min(xmin, x0), max(xmax, x0)
-            ymin, ymax = min(ymin, y0), max(ymax, y0)
-
-            if depth < dist:
-                # keep stepping
-                for direction, end_node in start_node.links.items():
-                    x, y = x0, y0
-                    for link in start_node.xy_steps_to_node[direction]:
-                        x, y = link.x, link.y
-                        points.append((x, y))
-                        xmin, xmax = min(xmin, x), max(xmax, x)
-                        ymin, ymax = min(ymin, y), max(ymax, y)
-
-                    points, xmin, xmax, ymin, ymax = _scan_neighbors(
-                        end_node, points, dist=dist,
-                        xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax,
-                        depth=depth + 1)
-
-            return points, xmin, xmax, ymin, ymax
-
-        center_node = self.get_node_from_coord(coord)
-        points, xmin, xmax, ymin, ymax = _scan_neighbors(center_node, [], dist=dist)
-        return list(set(points)), xmin, xmax, ymin, ymax
-
-    def _calculate_path_matrix(self):
-        """
-        Solve the pathfinding problem using Dijkstra's algorithm. This will try to
-        load the solution from disk if possible.
-
-        """
-        if self.pathfinder_baked_filename and isfile(self.pathfinder_baked_filename):
-            # check if the solution for this grid was already solved previously.
-
-            mapstr, dist_matrix, pathfinding_routes = "", None, None
-            with open(self.pathfinder_baked_filename, 'rb') as fil:
-                try:
-                    mapstr, dist_matrix, pathfinding_routes = pickle.load(fil)
-                except Exception:
-                    logger.log_trace()
-            if (mapstr == self.mapstring
-                    and dist_matrix is not None
-                    and pathfinding_routes is not None):
-                # this is important - it means the map hasn't changed so
-                # we can re-use the stored data!
-                self.dist_matrix = dist_matrix
-                self.pathfinding_routes = pathfinding_routes
-                return
-
-        # build a matrix representing the map graph, with 0s as impassable areas
-
-        nnodes = len(self.node_index_map)
-        pathfinding_graph = zeros((nnodes, nnodes))
-        for inode, node in self.node_index_map.items():
-            pathfinding_graph[inode, :] = node.linkweights(nnodes)
-
-        # create a sparse matrix to represent link relationships from each node
-        pathfinding_matrix = csr_matrix(pathfinding_graph)
-
-        # solve using Dijkstra's algorithm
-        self.dist_matrix, self.pathfinding_routes = dijkstra(
-            pathfinding_matrix, directed=True,
-            return_predecessors=True, limit=self.max_pathfinding_length)
-
-        if self.pathfinder_baked_filename:
-            # try to cache the results
-            with open(self.pathfinder_baked_filename, 'wb') as fil:
-                pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
-                            fil, protocol=4)
 
     def _parse(self):
         """
@@ -450,6 +364,26 @@ class SingleMap:
             for iy, node_or_link in ydct.items():
                 display_map[iy][ix] = node_or_link.get_display_symbol(xygrid, mapinstance=self)
 
+        if self.room_prototypes:
+            # validate that prototypes are actually all represented by a node on the grid.
+            node_positions = []
+            for node in node_index_map:
+                # check so every node has a prototype
+                node_coord = (node.X, node.Y)
+                node_positions.append(node_coord)
+                if node_coord not in self.room_prototypes:
+                    raise MapParserError(
+                        f"Symbol '{char}' on XY=({node_coord[0]},{node_coord[1]}) has "
+                        "no corresponding entry in the `rooms` prototype dictionary."
+                    )
+                for (iX, iY) in self.room_prototypes:
+                    # also check in the reverse direction - so every prototype has a node
+                    if (iX, iY) not in node_positions:
+                        raise MapParserError(
+                            f"There is a room prototype for XY=({iX},{iY}), but that position "
+                            "of the map grid lacks a node."
+                        )
+
         # store
         self.max_x, self.max_y = max_x, max_y
         self.xygrid = xygrid
@@ -459,6 +393,99 @@ class SingleMap:
 
         self.node_index_map = node_index_map
         self.display_map = display_map
+
+    def _get_topology_around_coord(self, coord, dist=2):
+        """
+        Get all links and nodes up to a certain distance from an XY coordinate.
+
+        Args:
+            coord (tuple), the X,Y coordinate of the center point.
+            dist (int): How many nodes away from center point to find paths for.
+
+        Returns:
+            tuple: A tuple of 5 elements `(coords, xmin, xmax, ymin, ymax)`, where the
+                first element is a list of xy-coordinates (on xygrid) for all linked nodes within
+                range. This is meant to be used with the xygrid for extracting a subset
+                for display purposes. The others are the minimum size of the rectangle
+                surrounding the area containing `coords`.
+
+        Notes:
+            This performs a depth-first pass down the the given dist.
+
+        """
+        def _scan_neighbors(start_node, points, dist=2,
+                            xmin=BIGVAL, ymin=BIGVAL, xmax=0, ymax=0, depth=0):
+
+            x0, y0 = start_node.x, start_node.y
+            points.append((x0, y0))
+            xmin, xmax = min(xmin, x0), max(xmax, x0)
+            ymin, ymax = min(ymin, y0), max(ymax, y0)
+
+            if depth < dist:
+                # keep stepping
+                for direction, end_node in start_node.links.items():
+                    x, y = x0, y0
+                    for link in start_node.xy_steps_to_node[direction]:
+                        x, y = link.x, link.y
+                        points.append((x, y))
+                        xmin, xmax = min(xmin, x), max(xmax, x)
+                        ymin, ymax = min(ymin, y), max(ymax, y)
+
+                    points, xmin, xmax, ymin, ymax = _scan_neighbors(
+                        end_node, points, dist=dist,
+                        xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax,
+                        depth=depth + 1)
+
+            return points, xmin, xmax, ymin, ymax
+
+        center_node = self.get_node_from_coord(coord)
+        points, xmin, xmax, ymin, ymax = _scan_neighbors(center_node, [], dist=dist)
+        return list(set(points)), xmin, xmax, ymin, ymax
+
+    def _calculate_path_matrix(self):
+        """
+        Solve the pathfinding problem using Dijkstra's algorithm. This will try to
+        load the solution from disk if possible.
+
+        """
+        if self.pathfinder_baked_filename and isfile(self.pathfinder_baked_filename):
+            # check if the solution for this grid was already solved previously.
+
+            mapstr, dist_matrix, pathfinding_routes = "", None, None
+            with open(self.pathfinder_baked_filename, 'rb') as fil:
+                try:
+                    mapstr, dist_matrix, pathfinding_routes = pickle.load(fil)
+                except Exception:
+                    logger.log_trace()
+            if (mapstr == self.mapstring
+                    and dist_matrix is not None
+                    and pathfinding_routes is not None):
+                # this is important - it means the map hasn't changed so
+                # we can re-use the stored data!
+                self.dist_matrix = dist_matrix
+                self.pathfinding_routes = pathfinding_routes
+                return
+
+        # build a matrix representing the map graph, with 0s as impassable areas
+
+        nnodes = len(self.node_index_map)
+        pathfinding_graph = zeros((nnodes, nnodes))
+        for inode, node in self.node_index_map.items():
+            pathfinding_graph[inode, :] = node.linkweights(nnodes)
+
+        # create a sparse matrix to represent link relationships from each node
+        pathfinding_matrix = csr_matrix(pathfinding_graph)
+
+        # solve using Dijkstra's algorithm
+        self.dist_matrix, self.pathfinding_routes = dijkstra(
+            pathfinding_matrix, directed=True,
+            return_predecessors=True, limit=self.max_pathfinding_length)
+
+        if self.pathfinder_baked_filename:
+            # try to cache the results
+            with open(self.pathfinder_baked_filename, 'wb') as fil:
+                pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
+                            fil, protocol=4)
 
     def reload(self, map_module_or_dict=None):
         """
@@ -486,8 +513,11 @@ class SingleMap:
             mod = mod_import(map_module_or_dict)
             mapdata = variable_from_module(mod, "MAP_DATA")
             if not mapdata:
+                # try to read mapdata directly from global variables
+                mapdata['name'] = variable_from_module(mod, "NAME", default=self.name)
                 mapdata['map'] = variable_from_module(mod, "MAP")
                 mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
+                mapdata['rooms'] = variable_from_module(mod, "ROOMS")
 
         # validate
         for key in mapdata.get('legend', DEFAULT_LEGEND):
@@ -501,9 +531,14 @@ class SingleMap:
             raise MapError("No map found. Add 'map' key to map-data (MAP_DATA) dict or "
                            "add variable MAP to a module passed into the parser.")
 
+        self.room_prototypes = mapdata.get('rooms')
+
         # store/update result
+        self.name = mapdata.get('name', self.name)
         self.mapstring = mapdata['map']
-        self.legend = map_module_or_dict.get("legend", DEFAULT_LEGEND)
+        # merge the custom legend onto the default legend to allow easily
+        # overriding only parts of it
+        self.legend = {**DEFAULT_LEGEND, **map_module_or_dict.get("legend", DEFAULT_LEGEND)}
 
         # process the new(?) data
         self._parse()
