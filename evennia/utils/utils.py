@@ -1837,10 +1837,7 @@ def percentile(iterable, percent, key=lambda x: x):
     return d0 + d1
 
 
-from evennia.utils.ansi import strip_ansi
-
-
-def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ansi=True):
+def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
     """
     This helper function makes a 'grid' output, where it distributes the given
     string-elements as evenly as possible to fill out the given width.
@@ -1864,9 +1861,6 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
         like this to make it easier to insert decorations between rows, such
         as horizontal bars.
     """
-    def ansi_len(text):
-        """Use arg ignore_ansi to calculate length of text in element."""
-        return len(strip_ansi(text)) if ignore_ansi else len(text)
 
     def _minimal_rows(elements):
         """
@@ -1875,8 +1869,8 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
         """
         rows = [""]
         for element in elements:
-            rowlen = ansi_len((rows[-1]))
-            elen = ansi_len((element))
+            rowlen = display_len((rows[-1]))
+            elen = display_len((element))
             if rowlen + elen <= width:
                 rows[-1] += element
             else:
@@ -1888,7 +1882,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
         Dynamic-space, good for making even columns in a multi-line grid but
         will look strange for a single line.
         """
-        wls = [ansi_len((elem)) for elem in elements]
+        wls = [display_len((elem)) for elem in elements]
         wls_percentile = [wl for iw, wl in enumerate(wls) if iw not in verbatim_elements]
 
         if wls_percentile:
@@ -1904,7 +1898,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
             # we use rstrip here to remove extra spaces added by sep
             return [
                 crop(element.rstrip(), width) + " " \
-                     * max(0, width - ansi_len((element.rstrip())))
+                     * max(0, width - display_len((element.rstrip())))
                 for iel, element in enumerate(elements)
             ]
 
@@ -1916,7 +1910,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
         for ie, element in enumerate(elements):
 
             wl = wls[ie]
-            lrow = ansi_len((row))
+            lrow = display_len((row))
             # debug = row.replace(" ", ".")
 
             if lrow + wl > width:
@@ -1955,7 +1949,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
 
             if ie >= nelements - 1:
                 # last element, make sure to store
-                row += " " * max(0, width - ansi_len((row)))
+                row += " " * max(0, width - display_len((row)))
                 rows.append(row)
         return rows
 
@@ -1968,7 +1962,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, ignore_ans
     # add sep to all but the very last element
     elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
 
-    if sum(ansi_len((element)) for element in elements) <= width:
+    if sum(display_len((element)) for element in elements) <= width:
         # grid fits in one line
         return _minimal_rows(elements)
     else:
