@@ -43,7 +43,6 @@ PARENT = {
 
 # link coordinates to rooms
 ROOMS = {
-    "base_prototype": PARENT,
     (1, 0): {
         "key": "Dungeon Entrance",
         "prototype_parent": PARENT,
