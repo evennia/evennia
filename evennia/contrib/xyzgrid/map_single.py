@@ -47,7 +47,7 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
 
     '''
 
-    LEGEND = {'#': mapsystem.MapNode, '|': mapsystem.NSMapLink,...}
+    LEGEND = {'#': xyzgrid.MapNode, '|': xyzgrid.NSMapLink,...}
 
     # optional, for more control
     MAP_DATA = {
@@ -92,7 +92,7 @@ try:
     from scipy import zeros
 except ImportError as err:
     raise ImportError(
-        f"{err}\nThe MapSystem contrib requires "
+        f"{err}\nThe XYZgrid contrib requires "
         "the SciPy package. Install with `pip install scipy'.")
 from django.conf import settings
 from evennia.utils.utils import variable_from_module, mod_import

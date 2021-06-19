@@ -1,8 +1,8 @@
 """
 XYZ-aware rooms and exits.
 
-These are intended to be used with the MapSystem - which interprets the `Z` 'coordinate' as
-different (named) 2D XY  maps. But if not wanting to use the MapSystem gridding, these can also be
+These are intended to be used with the XYZgrid - which interprets the `Z` 'coordinate' as
+different (named) 2D XY  maps. But if not wanting to use the XYZgrid gridding, these can also be
 used as stand-alone XYZ-coordinate-aware rooms.
 
 """
@@ -12,7 +12,7 @@ from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
 
 # name of all tag categories. Note that the Z-coordinate is
-# the `map_name` of the MapSystem
+# the `map_name` of the XYZgrid
 MAP_X_TAG_CATEGORY = "room_x_coordinate"
 MAP_Y_TAG_CATEGORY = "room_y_coordinate"
 MAP_Z_TAG_CATEGORY = "room_z_coordinate"
@@ -39,7 +39,7 @@ class XYZManager(ObjectManager):
         Kwargs:
             coord (tuple, optional): A tuple (X, Y, Z) where each element is either
                 an `int`, `str` or `None`. `None` acts as a wild card. Note that
-                the `Z`-coordinate is the name of the map (case-sensitive) in the MapSystem contrib.
+                the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
             **kwargs: All other kwargs are passed on to the query.
 
         Returns:
@@ -65,7 +65,7 @@ class XYZManager(ObjectManager):
 
         Kwargs:
             coord (tuple): A tuple of `int` or `str` (not `None`). The `Z`-coordinate
-                acts as the name (case-sensitive) of the map in the MapSystem contrib.
+                acts as the name (case-sensitive) of the map in the XYZgrid contrib.
             **kwargs: All other kwargs are passed on to the query.
 
         Returns:
@@ -102,7 +102,7 @@ class XYZExitManager(XYZManager):
         Kwargs:
             coord (tuple, optional): A tuple (X, Y, Z) for the source location. Each
                 element is either an `int`, `str` or `None`. `None` acts as a wild card. Note that
-                the `Z`-coordinate is the name of the map (case-sensitive) in the MapSystem contrib.
+                the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
             destination_coord (tuple, optional): Same as the `coord` but for the destination of the
                 exit.
             **kwargs: All other kwargs are passed on to the query.
@@ -116,7 +116,7 @@ class XYZExitManager(XYZManager):
             e.g. find all exits in a room, or leading to a room or even to rooms
             in a particular X/Y row/column.
 
-            In the MapSystem, `z != zdest` means a _transit_ between different maps.
+            In the XYZgrid, `z != zdest` means a _transit_ between different maps.
 
         """
         x, y, z = coord
@@ -145,7 +145,7 @@ class XYZExitManager(XYZManager):
         Kwargs:
             coord (tuple, optional): A tuple (X, Y, Z) for the source location. Each
                 element is either an `int` or `str` (not `None`).
-                the `Z`-coordinate is the name of the map (case-sensitive) in the MapSystem contrib.
+                the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
             destination_coord (tuple, optional): Same as the `coord` but for the destination of the
                 exit.
             **kwargs: All other kwargs are passed on to the query.
@@ -196,7 +196,7 @@ class XYZRoom(DefaultRoom):
                 rooms).
             coords (tuple, optional): A 3D coordinate (X, Y, Z) for this room's location on a
                 map grid. Each element can theoretically be either `int` or `str`, but for the
-                MapSystem, the X, Y are always integers while the `Z` coordinate is used for the
+                XYZgrid, the X, Y are always integers while the `Z` coordinate is used for the
                 map's name.
             **kwargs: Will be passed into the normal `DefaultRoom.create` method.
 
@@ -250,9 +250,10 @@ class XYZExit(DefaultExit):
                 rooms).
             coords (tuple or None, optional): A 3D coordinate (X, Y, Z) for this room's location
                 on a map grid.  Each element can theoretically be either `int` or `str`, but for the
-                MapSystem, the X, Y are always integers while the `Z` coordinate is used for the
-                map's name. Set to `None` if instead using a direct room reference with `location`.
-            destination_coord (tuple or None, optional): Works as `coords`, but for destination of
+                XYZgrid contrib, the X, Y are always integers while the `Z` coordinate is used for
+                the map's name. Set to `None` if instead using a direct room reference with
+                `location`.  destination_coord (tuple or None, optional): Works as `coords`, but for
+                destination of
                 the exit. Set to `None` if using the `destination` kwarg to point to room directly.
             location (Object, optional): Only used if `coord` is not given. This can be used
                 to place this exit in any room, including non-XYRoom type rooms.
