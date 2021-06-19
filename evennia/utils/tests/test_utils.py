@@ -72,10 +72,11 @@ class TestListToString(TestCase):
     def test_list_to_string(self):
         self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=""))
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
-        self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3]))
+        self.assertEqual("1, 2, and 3", utils.list_to_string([1, 2, 3]))
         self.assertEqual(
-            '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
+            '"1", "2", and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
         )
+        self.assertEqual("1 and 2", utils.list_to_string([1, 2]))
 
 
 class TestMLen(TestCase):

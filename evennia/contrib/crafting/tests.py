@@ -182,9 +182,9 @@ class TestCraftingRecipe(TestCase):
             "i1": "cons2",
             "i2": "cons3",
             "o0": "Result1",
-            "tools": "bar, bar2 and bar3",
+            "tools": "bar, bar2, and bar3",
             "consumables": "cons1 and cons2",
-            "inputs": "cons1, cons2 and cons3",
+            "inputs": "cons1, cons2, and cons3",
             "outputs": "Result1",
         }
 

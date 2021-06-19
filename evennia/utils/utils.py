@@ -381,15 +381,13 @@ def iter_to_str(initer, endsep="and", addquote=False):
         >>> list_to_string([1,2,3], endsep='')
         '1, 2, 3'
         >>> list_to_string([1,2,3], ensdep='and')
-        '1, 2 and 3'
+        '1, 2, and 3'
         >>> list_to_string([1,2,3], endsep='and', addquote=True)
-        '"1", "2" and "3"'
+        '"1", "2", and "3"'
         ```
 
     """
-    if not endsep:
-        endsep = ","
-    else:
+    if endsep:
         endsep = " " + endsep
     if not initer:
         return ""
@@ -397,11 +395,15 @@ def iter_to_str(initer, endsep="and", addquote=False):
     if addquote:
         if len(initer) == 1:
             return '"%s"' % initer[0]
-        return ", ".join('"%s"' % v for v in initer[:-1]) + "%s %s" % (endsep, '"%s"' % initer[-1])
+        elif len(initer) == 2:
+            return '"%s"' % ('"%s "' % endsep).join(str(v) for v in initer)
+        return ", ".join('"%s"' % v for v in initer[:-1]) + ",%s %s" % (endsep, '"%s"' % initer[-1])
     else:
         if len(initer) == 1:
             return str(initer[0])
-        return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
+        elif len(initer) == 2:
+            return ("%s " % endsep).join(str(v) for v in initer)
+        return ", ".join(str(v) for v in initer[:-1]) + ",%s %s" % (endsep, initer[-1])
 
 
 # legacy aliases
