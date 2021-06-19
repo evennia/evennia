@@ -351,11 +351,11 @@ class TaskHandler(object):
             # an unsaveable callback should immediately abort
             try:
                 dbserialize(callback)
-            except (TypeError, AttributeError, PickleError):
+            except (TypeError, AttributeError, PickleError) as err:
                 raise ValueError(
-                    "the specified callback {} cannot be pickled. "
+                    "the specified callback {callback} cannot be pickled. "
                     "It must be a top-level function in a module or an "
-                    "instance method.".format(callback)
+                    "instance method ({err}).".format(callback=callback, err=err)
                 )
                 return
 
