@@ -11,7 +11,7 @@ try:
     from scipy import zeros
 except ImportError as err:
     raise ImportError(
-        f"{err}\nThe MapSystem contrib requires "
+        f"{err}\nThe XYZgrid contrib requires "
         "the SciPy package. Install with `pip install scipy'.")
 
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL

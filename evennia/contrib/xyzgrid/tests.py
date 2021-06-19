@@ -1,6 +1,6 @@
 """
 
-Tests for the Mapsystem
+Tests for the XYZgrid system.
 
 """
 

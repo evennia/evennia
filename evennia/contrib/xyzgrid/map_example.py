@@ -37,7 +37,7 @@ LEGEND = {
 PARENT = {
     "key": "An empty dungeon room",
     "prototype_key": "dungeon_doom_prot",
-    "typeclass": "evennia.contrib.mapsystem.rooms.XYRoom",
+    "typeclass": "evennia.contrib.xyzgrid.xyzrooms.XYZRoom",
     "desc": "Air is cold and stale in this barren room."
 }
 
