@@ -68,6 +68,7 @@ Up requirements to Django 3.2+
 - Update and fix dummyrunner with cleaner code and setup.
 - Made `iter_to_str` format prettier strings, using Oxford comma.
 - Added an MXP anchor tag to also support clickable web links.
+- New `tasks` command for managing tasks started with `utils.delay` (PR by davewiththenicehat)
 
 ### Evennia 0.9.5 (2019-2020)
 
@@ -151,6 +152,7 @@ without arguments starts a full interactive Python console.
 - Include more Web-client info in `session.protocol_flags`.
 - Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
   only two boxes in location.
+- Fix for TaskHandler with proper deferred returns/ability to cancel etc (PR by davewiththenicehat)
 
 
 ## Evennia 0.9 (2018-2019)

@@ -25,7 +25,7 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.evmore import EvMore
 from evennia.utils.evmenu import ask_yes_no
-from evennia.utils.utils import crop, class_from_module
+from evennia.utils.utils import crop, class_from_module, iter_to_str
 from evennia.scripts.taskhandler import TaskHandlerTask
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -1213,13 +1213,7 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
     Display or terminate active tasks (delays).
 
     Usage:
-        tasks
-          show all current active taks.
-        tasks[/switch] [function name]
-          Process the action in the switch to all tasks that are deferring a specific function name.
-          This would match the name of the callback you passed to a delay or the task handler.
-        tasks[/switch] [task id]
-          Process the action in the switch to a specific task.
+        tasks[/switch] [task_id or function_name]
 
     Switches:
         pause   - Pause the callback of a task.
@@ -1230,29 +1224,22 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
         cancel  - Stop a task from automatically executing.
 
     Notes:
-        A task is a single use method of delaying the call of a function.
+        A task is a single use method of delaying the call of a function. Calls are created
+        in code, using `evennia.utils.delay`.
+        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.
 
-        Tasks can be created using utils.delay.
-        Reference: https://evennia.readthedocs.io/en/latest/Command-Duration.html
+        By default, tasks that are canceled and never called are cleaned up after one minute.
 
-        Only the action requested on the first switch will be processed. All other switches will
-        be ignored.
-
-        By default, tasks that are canceled and never called are automatically removed after
-        one minute.
-
-    Example:
-        tasks/cancel move_callback
-            Cancel all movement delays from the slow_exit contrib.
-            In this example slow exits creates it's tasks with:
-                utils.delay(move_delay, move_callback)
-        tasks/cancel 2
-            Cancel task id 2.
+    Examples:
+        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.
+            In this example slow exits creates it's tasks with
+            `utils.delay(move_delay, move_callback)`
+        - `tasks/cancel 2` - Cancel task id 2.
 
     """
 
     key = "tasks"
-    aliases = ["delays"]
+    aliases = ["delays", "task"]
     switch_options = ("pause", "unpause", "do_task", "call", "remove", "cancel")
     locks = "perm(Developer)"
     help_category = "System"
@@ -1260,7 +1247,7 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
     @staticmethod
     def coll_date_func(task):
         """Replace regex characters in date string and collect deferred function name."""
-        t_comp_date = str(task[0]).replace('-', '/').replace('.', ' ms:')
+        t_comp_date = str(task[0]).replace('-', '/')
         t_func_name = str(task[1]).split(' ')
         t_func_mem_ref = t_func_name[3] if len(t_func_name) >= 4 else None
         return t_comp_date, t_func_mem_ref
@@ -1355,8 +1342,8 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                         t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
 
                 if task.exists():  # make certain the task has not been called yet.
-                    prompt = f'Yes or No, {action_request} task {task_id}? With completion date ' \
-                             f'{t_comp_date}. Deferring function {t_func_name}.'
+                    prompt = (f'{action_request.capitalize()} task {task_id} with completion date '
+                              f'{t_comp_date} ({t_func_name}) {{options}}?')
                     no_msg = f'No {action_request} processed.'
                     # record variables for use in do_task_action method
                     self.task_id = task_id
@@ -1364,7 +1351,12 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                     self.t_func_mem_ref = t_func_mem_ref
                     self.task_action = switch_action
                     self.action_request = action_request
-                    ask_yes_no(self.caller, prompt, self.do_task_action, no_msg, no_msg, True)
+                    ask_yes_no(self.caller,
+                               prompt=prompt,
+                               yes_action=self.do_task_action,
+                               no_action=no_msg,
+                               default="Y",
+                               allow_abort=True)
                     return True
                 else:
                     self.msg(task_comp_msg)
@@ -1432,4 +1424,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
         # create and display the table
         tasks_table = EvTable(*tasks_header, table=tasks_list, maxwidth=width, border='cells',
                               align='center')
-        self.msg(tasks_table)
+        actions = (f'/{switch}' for switch in self.switch_options)
+        helptxt = f"\nActions: {iter_to_str(actions)}"
+        self.msg(str(tasks_table) + helptxt)

@@ -427,7 +427,7 @@ class ANSIParser(object):
 
         """
         string = self.mxp_sub.sub(r"\2", string)
-        string = self.mxp_url_sub.sub(r"\2", string)
+        string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
         return string
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
