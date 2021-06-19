@@ -103,9 +103,10 @@ class TextToHTMLparser(object):
     )
     re_dblspace = re.compile(r" {2,}", re.M)
     re_url = re.compile(
-        r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
+        r'(?<!=")((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
     re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
+    re_mxpurl = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 
     def _sub_bgfg(self, colormatch):
         # print("colormatch.groups()", colormatch.groups())
@@ -290,6 +291,21 @@ class TextToHTMLparser(object):
         )
         return val
 
+    def sub_mxp_urls(self, match):
+        """
+        Helper method to be passed to re.sub,
+        replaces MXP links with HTML code.
+        Args:
+            match (re.Matchobject): Match for substitution.
+        Returns:
+            text (str): Processed text.
+        """
+        url, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
+        val = (
+            r"""<a id="mxplink" href="{url}" target="_blank">{text}</a>""".format(url=url, text=text)
+        )
+        return val
+
     def sub_text(self, match):
         """
         Helper method to be passed to re.sub,
@@ -337,6 +353,7 @@ class TextToHTMLparser(object):
         # convert all ansi to html
         result = re.sub(self.re_string, self.sub_text, text)
         result = re.sub(self.re_mxplink, self.sub_mxp_links, result)
+        result = re.sub(self.re_mxpurl, self.sub_mxp_urls, result)
         result = self.re_color(result)
         result = self.re_bold(result)
         result = self.re_underline(result)
