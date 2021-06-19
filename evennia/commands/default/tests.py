@@ -18,6 +18,7 @@ from anything import Anything
 
 from parameterized import parameterized
 from django.conf import settings
+from twisted.internet import task
 from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
@@ -574,6 +575,170 @@ class TestSystem(CommandTest):
 
     def test_server_load(self):
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
+
+_TASK_HANDLER = None
+
+def func_test_cmd_tasks():
+    return 'success'
+
+class TestCmdTasks(CommandTest):
+
+    def setUp(self):
+        super().setUp()
+        # get a reference of TASK_HANDLER
+        self.timedelay = 5
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        _TASK_HANDLER.clock = task.Clock()
+        self.task_handler = _TASK_HANDLER
+        self.task_handler.clear()
+        self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
+        task_args = self.task_handler.tasks.get(self.task.get_id(), False)
+
+
+    def tearDown(self):
+        super().tearDown()
+        self.task_handler.clear()
+
+    def test_no_tasks(self):
+        self.task_handler.clear()
+        self.call(system.CmdTasks(), '', 'There are no active tasks.')
+
+    def test_active_task(self):
+        cmd_result = self.call(system.CmdTasks(), '')
+        for ptrn in ('Task ID', 'Completion Date', 'Function', 'KWARGS', 'persisten',
+                     '1', r'\d+/\d+/\d+', r'\d+\:\d+\:\d+', r'ms\:\d+', 'func_test', '{}',
+                     'False'):
+            self.assertRegex(cmd_result, ptrn)
+
+    def test_persistent_task(self):
+        self.task_handler.clear()
+        self.task_handler.add(self.timedelay, func_test_cmd_tasks, persistent=True)
+        cmd_result = self.call(system.CmdTasks(), '')
+        self.assertRegex(cmd_result, 'True')
+
+    def test_pause_unpause(self):
+        # test pause
+        args = f'/pause {self.task.get_id()}'
+        wanted_msg = 'Yes or No, pause task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        self.assertTrue(self.task.paused)
+        self.task_handler.clock.advance(self.timedelay + 1)
+        # test unpause
+        args = f'/unpause {self.task.get_id()}'
+        self.assertTrue(self.task.exists())
+        wanted_msg = 'Yes or No, unpause task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        # verify task continues after unpause
+        self.task_handler.clock.advance(1)
+        self.assertFalse(self.task.exists())
+
+    def test_do_task(self):
+        args = f'/do_task {self.task.get_id()}'
+        wanted_msg = 'Yes or No, do_task task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        self.assertFalse(self.task.exists())
+
+    def test_remove(self):
+        args = f'/remove {self.task.get_id()}'
+        wanted_msg = 'Yes or No, remove task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        self.assertFalse(self.task.exists())
+
+    def test_call(self):
+        args = f'/call {self.task.get_id()}'
+        wanted_msg = 'Yes or No, call task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        # make certain the task is still active
+        self.assertTrue(self.task.active())
+        # go past delay time, the task should call do_task and remove itself after calling.
+        self.task_handler.clock.advance(self.timedelay + 1)
+        self.assertFalse(self.task.exists())
+
+    def test_cancel(self):
+        args = f'/cancel {self.task.get_id()}'
+        wanted_msg = 'Yes or No, cancel task 1? With completion date'
+        cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.char1.execute_cmd('y')
+        self.assertTrue(self.task.exists())
+        self.assertFalse(self.task.active())
+
+    def test_func_name_manipulation(self):
+        self.task_handler.add(self.timedelay, func_test_cmd_tasks)  # add an extra task
+        args = f'/remove func_test_cmd_tasks'
+        wanted_msg = 'Task action remove completed on task ID 1.|The task function remove returned: True|' \
+                     'Task action remove completed on task ID 2.|The task function remove returned: True'
+        self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertFalse(self.task_handler.tasks)  # no tasks should exist.
+
+    def test_wrong_func_name(self):
+        args = f'/remove intentional_fail'
+        wanted_msg = 'No tasks deferring function name intentional_fail found.'
+        self.call(system.CmdTasks(), args, wanted_msg)
+        self.assertTrue(self.task.active())
+
+    def test_no_input(self):
+        args = f'/cancel {self.task.get_id()}'
+        self.call(system.CmdTasks(), args)
+        # task should complete since no input was received
+        self.task_handler.clock.advance(self.timedelay + 1)
+        self.assertFalse(self.task.exists())
+
+    def test_responce_of_yes(self):
+        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.char1.msg = Mock()
+        self.char1.execute_cmd('y')
+        text = ''
+        for _, _, kwargs in self.char1.msg.mock_calls:
+            text += kwargs.get('text', '')
+        self.assertEqual(text, 'cancel request completed.The task function cancel returned: True')
+        self.assertTrue(self.task.exists())
+
+    def test_task_complete_waiting_input(self):
+        """Test for task completing while waiting for input."""
+        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.task_handler.clock.advance(self.timedelay + 1)
+        self.char1.msg = Mock()
+        self.char1.execute_cmd('y')
+        text = ''
+        for _, _, kwargs in self.char1.msg.mock_calls:
+            text += kwargs.get('text', '')
+        self.assertEqual(text, 'Task completed while waiting for input.')
+        self.assertFalse(self.task.exists())
+
+    def test_new_task_waiting_input(self):
+        """
+        Test task completing than a new task with the same ID being made while waitinf for input.
+        """
+        self.assertTrue(self.task.get_id(), 1)
+        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.task_handler.clock.advance(self.timedelay + 1)
+        self.assertFalse(self.task.exists())
+        self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
+        self.assertTrue(self.task.get_id(), 1)
+        self.char1.msg = Mock()
+        self.char1.execute_cmd('y')
+        text = ''
+        for _, _, kwargs in self.char1.msg.mock_calls:
+            text += kwargs.get('text', '')
+        self.assertEqual(text, 'Task completed while waiting for input.')
+
+    def test_misformed_command(self):
+        wanted_msg = 'Task command misformed.|Proper format tasks[/switch] ' \
+                     '[function name or task id]'
+        self.call(system.CmdTasks(), f'/cancel', wanted_msg)
 
 
 class TestAdmin(CommandTest):
