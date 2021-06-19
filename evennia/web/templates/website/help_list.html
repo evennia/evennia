@@ -42,9 +42,9 @@
                   {% for object in web_help_category.list %}
                   <li>
                       <a href="{{ object.web_get_detail_url }}">{{ object|title }}</a>
-                      {% if object.web_get_update_url %}
+                      {% if object.web_get_admin_url %}
                           {% if user.is_staff %}
-                              <a href="{% url "admin:help_helpentry_changelist" %}">-edit-</a>
+                              <a href="{{ object.web_get_admin_url }}">-edit-</a>
                           {% endif %}
                       {% endif %}
                   </li>
