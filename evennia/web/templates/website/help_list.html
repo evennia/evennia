@@ -40,7 +40,14 @@
               <h5><a id="{{ web_help_category.grouper }}"></a>{{ web_help_category.grouper|title }}</h5>
               <ul>
                   {% for object in web_help_category.list %}
-                  <li><a href="{{ object.web_get_detail_url }}">{{ object|title }}</a></li>
+                  <li>
+                      <a href="{{ object.web_get_detail_url }}">{{ object|title }}</a>
+                      {% if object.web_get_update_url %}
+                          {% if user.is_staff %}
+                              <a href="{% url "admin:help_helpentry_changelist" %}">-edit-</a>
+                          {% endif %}
+                      {% endif %}
+                  </li>
                   {% endfor %}
               </ul>
               {% endfor %}
