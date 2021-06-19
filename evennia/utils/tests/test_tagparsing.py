@@ -145,13 +145,17 @@ class ANSIStringTestCase(TestCase):
         """
         mxp1 = "|lclook|ltat|le"
         mxp2 = "Start to |lclook here|ltclick somewhere here|le first"
+        mxp3 = "Check out |luhttps://www.example.com|ltmy website|le!"
         self.assertEqual(15, len(ANSIString(mxp1)))
         self.assertEqual(53, len(ANSIString(mxp2)))
+        self.assertEqual(53, len(ANSIString(mxp3)))
         # These would indicate an issue with the tables.
         self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
         self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
+        self.assertEqual(len(ANSIString(mxp3)), len(ANSIString(mxp3).split("\n")[0]))
         self.assertEqual(mxp1, ANSIString(mxp1))
         self.assertEqual(mxp2, str(ANSIString(mxp2)))
+        self.assertEqual(mxp3, str(ANSIString(mxp3)))
 
     def test_add(self):
         """
