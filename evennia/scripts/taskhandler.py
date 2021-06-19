@@ -279,17 +279,24 @@ class TaskHandler(object):
             if not persistent:
                 continue
 
+            safe_callback = callback
             if getattr(callback, "__self__", None):
                 # `callback` is an instance method
                 obj = callback.__self__
                 name = callback.__name__
-                callback = (obj, name)
+                safe_callback = (obj, name)
 
             # Check if callback can be pickled. args and kwargs have been checked
-            safe_callback = None
+            try:
+                dbserialize(safe_callback)
+            except (TypeError, AttributeError, PickleError) as err:
+                raise ValueError(
+                    "the specified callback {callback} cannot be pickled. "
+                    "It must be a top-level function in a module or an "
+                    "instance method ({err}).".format(callback=callback, err=err)
+                )
 
-
-            self.to_save[task_id] = dbserialize((date, callback, args, kwargs))
+            self.to_save[task_id] = dbserialize((date, safe_callback, args, kwargs))
         ServerConfig.objects.conf("delayed_tasks", self.to_save)
 
     def add(self, timedelay, callback, *args, **kwargs):
@@ -336,17 +343,6 @@ class TaskHandler(object):
         if persistent:
             safe_args = []
             safe_kwargs = {}
-
-            # an unsaveable callback should immediately abort
-            try:
-                dbserialize(callback)
-            except (TypeError, AttributeError, PickleError) as err:
-                raise ValueError(
-                    "the specified callback {callback} cannot be pickled. "
-                    "It must be a top-level function in a module or an "
-                    "instance method ({err}).".format(callback=callback, err=err)
-                )
-                return
 
             # Check that args and kwargs contain picklable information
             for arg in args:
