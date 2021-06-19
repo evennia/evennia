@@ -128,8 +128,8 @@ def c_login(client):
 
 def c_login_nodig(client):
     "logins, don't dig its own room"
-    cname = DUMMY_NAME % client.gid
-    cpwd = DUMMY_PWD % client.gid
+    cname = DUMMY_NAME.format(gid=client.gid)
+    cpwd = DUMMY_PWD.format(gid=client.gid)
     cmds = (
         f"create {cname} {cpwd}",
         f"connect {cname} {cpwd}"
@@ -183,7 +183,7 @@ def c_digs(client):
     exitname1 = EXIT_TEMPLATE % client.counter()
     exitname2 = EXIT_TEMPLATE % client.counter()
     client.exits.extend([exitname1, exitname2])
-    return ("@dig/tel %s = %s, %s" % (roomname, exitname1, exitname2),)
+    return ("dig/tel %s = %s, %s" % (roomname, exitname1, exitname2),)
 
 
 def c_creates_obj(client):
@@ -191,10 +191,10 @@ def c_creates_obj(client):
     objname = OBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
     cmds = (
-        "@create %s" % objname,
-        '@desc %s = "this is a test object' % objname,
-        "@set %s/testattr = this is a test attribute value." % objname,
-        "@set %s/testattr2 = this is a second test attribute." % objname,
+        "create %s" % objname,
+        'desc %s = "this is a test object' % objname,
+        "set %s/testattr = this is a test attribute value." % objname,
+        "set %s/testattr2 = this is a second test attribute." % objname,
     )
     return cmds
 
@@ -203,7 +203,7 @@ def c_creates_button(client):
     "creates example button, storing name on client"
     objname = TOBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
-    cmds = ("@create %s:%s" % (objname, TOBJ_TYPECLASS), "@desc %s = test red button!" % objname)
+    cmds = ("create %s:%s" % (objname, TOBJ_TYPECLASS), "desc %s = test red button!" % objname)
     return cmds
 
 
@@ -295,7 +295,7 @@ elif PROFILE == 'normal_builder':
         (0.1, c_help),
         (0.01, c_digs),
         (0.01, c_creates_obj),
-        (0.2, c_moves)
+        (0.2, c_moves),
         (0.1, c_measure_lag)
     )
 elif PROFILE == 'heavy_builder':

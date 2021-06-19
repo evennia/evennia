@@ -8,7 +8,6 @@ System commands
 import code
 import traceback
 import os
-import io
 import datetime
 import sys
 import django
@@ -25,9 +24,12 @@ from evennia.utils import logger, utils, gametime, create, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.evmore import EvMore
-from evennia.utils.utils import crop, class_from_module
+from evennia.utils.evmenu import ask_yes_no
+from evennia.utils.utils import crop, class_from_module, iter_to_str
+from evennia.scripts.taskhandler import TaskHandlerTask
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+_TASK_HANDLER = None
 
 # delayed imports
 _RESOURCE = None
@@ -45,6 +47,7 @@ __all__ = (
     "CmdAbout",
     "CmdTime",
     "CmdServerLoad",
+    "CmdTasks",
 )
 
 
@@ -1203,3 +1206,224 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
                 "*" if sub[5] else "-",
             )
         self.caller.msg("|wActive tickers|n:\n" + str(table))
+
+
+class CmdTasks(COMMAND_DEFAULT_CLASS):
+    """
+    Display or terminate active tasks (delays).
+
+    Usage:
+        tasks[/switch] [task_id or function_name]
+
+    Switches:
+        pause   - Pause the callback of a task.
+        unpause - Process all callbacks made since pause() was called.
+        do_task - Execute the task (call its callback).
+        call    - Call the callback of this task.
+        remove  - Remove a task without executing it.
+        cancel  - Stop a task from automatically executing.
+
+    Notes:
+        A task is a single use method of delaying the call of a function. Calls are created
+        in code, using `evennia.utils.delay`.
+        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.
+
+        By default, tasks that are canceled and never called are cleaned up after one minute.
+
+    Examples:
+        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.
+            In this example slow exits creates it's tasks with
+            `utils.delay(move_delay, move_callback)`
+        - `tasks/cancel 2` - Cancel task id 2.
+
+    """
+
+    key = "tasks"
+    aliases = ["delays", "task"]
+    switch_options = ("pause", "unpause", "do_task", "call", "remove", "cancel")
+    locks = "perm(Developer)"
+    help_category = "System"
+
+    @staticmethod
+    def coll_date_func(task):
+        """Replace regex characters in date string and collect deferred function name."""
+        t_comp_date = str(task[0]).replace('-', '/')
+        t_func_name = str(task[1]).split(' ')
+        t_func_mem_ref = t_func_name[3] if len(t_func_name) >= 4 else None
+        return t_comp_date, t_func_mem_ref
+
+    def do_task_action(self, *args, **kwargs):
+        """
+        Process the action of a tasks command.
+
+        This exists to gain support with yes or no function from EvMenu.
+        """
+        task_id = self.task_id
+
+        # get a reference of the global task handler
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+
+        # verify manipulating the correct task
+        task_args = _TASK_HANDLER.tasks.get(task_id, False)
+        if not task_args:  # check if the task is still active
+            self.msg('Task completed while waiting for input.')
+            return
+        else:
+            # make certain a task with matching IDs has not been created
+            t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
+            if self.t_comp_date != t_comp_date or self.t_func_mem_ref != t_func_mem_ref:
+                self.msg('Task completed while waiting for input.')
+                return
+
+        # Do the action requested by command caller
+        action_return = self.task_action()
+        self.msg(f'{self.action_request} request completed.')
+        self.msg(f'The task function {self.action_request} returned: {action_return}')
+
+    def func(self):
+        # get a reference of the global task handler
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        # handle no tasks active.
+        if not _TASK_HANDLER.tasks:
+            self.msg('There are no active tasks.')
+            if self.switches or self.args:
+                self.msg('Likely the task has completed and been removed.')
+            return
+
+        # handle caller's request to manipulate a task(s)
+        if self.switches and self.lhs:
+
+            # find if the argument is a task id or function name
+            action_request = self.switches[0]
+            try:
+                arg_is_id = int(self.lhslist[0])
+            except ValueError:
+                arg_is_id = False
+
+            # if the argument is a task id, proccess the action on a single task
+            if arg_is_id:
+
+                err_arg_msg = 'Switch and task ID are required when manipulating a task.'
+                task_comp_msg = 'Task completed while processing request.'
+
+                # handle missing arguments or switches
+                if not self.switches and self.lhs:
+                    self.msg(err_arg_msg)
+                    return
+
+                # create a handle for the task
+                task_id = arg_is_id
+                task = TaskHandlerTask(task_id)
+
+                # handle task no longer existing
+                if not task.exists():
+                    self.msg(f'Task {task_id} does not exist.')
+                    return
+
+                # get a reference of the function caller requested
+                switch_action = getattr(task, action_request, False)
+                if not switch_action:
+                    self.msg(f'{self.switches[0]}, is not an acceptable task action or ' \
+                             f'{task_comp_msg.lower()}')
+
+                # verify manipulating the correct task
+                if task_id in _TASK_HANDLER.tasks:
+                    task_args = _TASK_HANDLER.tasks.get(task_id, False)
+                    if not task_args:  # check if the task is still active
+                        self.msg(task_comp_msg)
+                        return
+                    else:
+                        t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
+                        t_func_name = str(task_args[1]).split(' ')
+                        t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+
+                if task.exists():  # make certain the task has not been called yet.
+                    prompt = (f'{action_request.capitalize()} task {task_id} with completion date '
+                              f'{t_comp_date} ({t_func_name}) {{options}}?')
+                    no_msg = f'No {action_request} processed.'
+                    # record variables for use in do_task_action method
+                    self.task_id = task_id
+                    self.t_comp_date = t_comp_date
+                    self.t_func_mem_ref = t_func_mem_ref
+                    self.task_action = switch_action
+                    self.action_request = action_request
+                    ask_yes_no(self.caller,
+                               prompt=prompt,
+                               yes_action=self.do_task_action,
+                               no_action=no_msg,
+                               default="Y",
+                               allow_abort=True)
+                    return True
+                else:
+                    self.msg(task_comp_msg)
+                    return
+
+            # the argument is not a task id, process the action on all task deferring the function
+            # specified as an argument
+            else:
+
+                name_match_found = False
+                arg_func_name = self.lhslist[0].lower()
+
+                # repack tasks into a new dictionary
+                current_tasks = {}
+                for task_id, task_args in _TASK_HANDLER.tasks.items():
+                    current_tasks.update({task_id: task_args})
+
+                # call requested action on all tasks with the function name
+                for task_id, task_args in current_tasks.items():
+                    t_func_name = str(task_args[1]).split(' ')
+                    t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+                    # skip this task if it is not for the function desired
+                    if arg_func_name != t_func_name:
+                        continue
+                    name_match_found = True
+                    task = TaskHandlerTask(task_id)
+                    switch_action = getattr(task, action_request, False)
+                    if switch_action:
+                        action_return = switch_action()
+                        self.msg(f'Task action {action_request} completed on task ID {task_id}.')
+                        self.msg(f'The task function {action_request} returned: {action_return}')
+
+                # provide a message if not tasks of the function name was found
+                if not name_match_found:
+                    self.msg(f'No tasks deferring function name {arg_func_name} found.')
+                    return
+                return True
+
+        # check if an maleformed request was created
+        elif self.switches or self.lhs:
+            self.msg('Task command misformed.')
+            self.msg('Proper format tasks[/switch] [function name or task id]')
+            return
+
+        # No task manupilation requested, build a table of tasks and display it
+        # get the width of screen in characters
+        width = self.client_width()
+        # create table header and list to hold tasks data and actions
+        tasks_header = ('Task ID', 'Completion Date', 'Function', 'Arguments', 'KWARGS',
+                        'persistent')
+        # empty list of lists, the size of the header
+        tasks_list = [list() for i in range(len(tasks_header))]
+        for task_id, task in _TASK_HANDLER.tasks.items():
+            # collect data from the task
+            t_comp_date, t_func_mem_ref = self.coll_date_func(task)
+            t_func_name = str(task[1]).split(' ')
+            t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+            t_args = str(task[2])
+            t_kwargs = str(task[3])
+            t_pers = str(task[4])
+            # add task data to the tasks list
+            task_data = (task_id, t_comp_date, t_func_name, t_args, t_kwargs, t_pers)
+            for i in range(len(tasks_header)):
+                tasks_list[i].append(task_data[i])
+        # create and display the table
+        tasks_table = EvTable(*tasks_header, table=tasks_list, maxwidth=width, border='cells',
+                              align='center')
+        actions = (f'/{switch}' for switch in self.switch_options)
+        helptxt = f"\nActions: {iter_to_str(actions)}"
+        self.msg(str(tasks_table) + helptxt)

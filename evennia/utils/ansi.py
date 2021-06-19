@@ -223,6 +223,7 @@ class ANSIParser(object):
         ansi_xterm256_bright_bg_map += settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
     mxp_re = r"\|lc(.*?)\|lt(.*?)\|le"
+    mxp_url_re = r"\|lu(.*?)\|lt(.*?)\|le"
 
     # prepare regex matching
     brightbg_sub = re.compile(
@@ -237,6 +238,7 @@ class ANSIParser(object):
     # xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
     ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
+    mxp_url_sub = re.compile(mxp_url_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map_dict = dict(ansi_map)
@@ -424,7 +426,9 @@ class ANSIParser(object):
             string (str): The processed string.
 
         """
-        return self.mxp_sub.sub(r"\2", string)
+        string = self.mxp_sub.sub(r"\2", string)
+        string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
+        return string
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
         """
