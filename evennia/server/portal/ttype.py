@@ -10,12 +10,10 @@ etc. If the client does not support TTYPE, this will be ignored.
 All data will be stored on the protocol's protocol_flags dictionary,
 under the 'TTYPE' key.
 """
-from twisted.python.compat import _bytesChr as bchr
-
 # telnet option codes
-TTYPE = bchr(24)  # b"\x18"
-IS = bchr(0)  # b"\x00"
-SEND = bchr(1)  # b"\x01"
+TTYPE = bytes([24])  # b"\x18"
+IS = bytes([0])  # b"\x00"
+SEND = bytes([1])  # b"\x01"
 
 # terminal capabilities and their codes
 MTTS = [
