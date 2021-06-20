@@ -8,7 +8,7 @@ from time import time
 from random import randint
 from unittest import TestCase
 from parameterized import parameterized
-from . import map_single
+from . import xymap
 
 MAP1 = """
 
@@ -320,7 +320,8 @@ class TestMap1(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP1}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP1}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -404,7 +405,8 @@ class TestMap2(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP2}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP2}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -514,7 +516,8 @@ class TestMap3(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP3}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP3}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -563,7 +566,8 @@ class TestMap4(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP4}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP4}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -593,7 +597,8 @@ class TestMap5(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP5}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP5}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -621,7 +626,8 @@ class TestMap6(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP6}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP6}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -653,7 +659,8 @@ class TestMap7(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP7}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP7}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -681,7 +688,8 @@ class TestMap8(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP8}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP8}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -747,7 +755,8 @@ class TestMap9(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP9}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP9}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -776,7 +785,8 @@ class TestMap10(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP10}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP10}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -824,7 +834,8 @@ class TestMap11(TestCase):
 
     """
     def setUp(self):
-        self.map = map_single.SingleMap({"map": MAP11}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP11}, name="testmap")
+        self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -914,7 +925,8 @@ class TestMapStressTest(TestCase):
         grid = self._get_grid(Xmax, Ymax)
         # print(f"\n\n{grid}\n")
         t0 = time()
-        map_single.SingleMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj.parse()
         t1 = time()
         self.assertLess(t1 - t0, max_time, f"Map creation of ({Xmax}x{Ymax}) grid slower "
                         f"than expected {max_time}s.")
@@ -930,7 +942,8 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = map_single.SingleMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj.parse()
 
         t0 = time()
         mapobj._calculate_path_matrix()
@@ -962,7 +975,8 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = map_single.SingleMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj.parse()
 
         t0 = time()
         mapobj._calculate_path_matrix()
