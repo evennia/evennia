@@ -28,6 +28,7 @@ from evennia.help.utils import help_search_with_index, parse_entry_for_subcatego
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE_ENABLED = settings.HELP_MORE_ENABLED
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
+HELP_CLICKABLE_TOPICS = settings.HELP_CLICKABLE_TOPICS
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -97,6 +98,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
     # separator between subtopics:
     subtopic_separator_char = r"/"
 
+    # should topics disply their help entry when clicked
+    clickable_topics = HELP_CLICKABLE_TOPICS
+
     def msg_help(self, text):
         """
         messages text to the caller, adding an extra oob argument to indicate
@@ -121,21 +125,22 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         self.msg(text=(text, {"type": "help"}))
 
     def format_help_entry(self, topic="", help_text="", aliases=None, suggested=None,
-                          subtopics=None):
-        """
-        This visually formats the help entry.
+                          subtopics=None, click_topics=True):
+        """This visually formats the help entry.
         This method can be overriden to customize the way a help
         entry is displayed.
 
         Args:
-            title (str): The title of the help entry.
-            help_text (str): Text of the help entry.
-            aliases (list): List of help-aliases (displayed in header).
-            suggested (list): Strings suggested reading (based on title).
-            subtopics (list): A list of strings - the subcategories available
+            title (str, optional): The title of the help entry.
+            help_text (str, optional): Text of the help entry.
+            aliases (list, optional): List of help-aliases (displayed in header).
+            suggested (list, optional): Strings suggested reading (based on title).
+            subtopics (list, optional): A list of strings - the subcategories available
                 for this entry.
+            click_topics (bool, optional): Should help topics be clickable. Default is True.
 
-        Returns the formatted string, ready to be sent.
+        Returns:
+            help_message (str): Help entry formated for console.
 
         """
         separator = "|C" + "-" * self.client_width() + "|n"
@@ -153,7 +158,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         help_text = "\n" + dedent(help_text.strip('\n')) if help_text else ""
 
         if subtopics:
-            subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
+            if click_topics:
+                subtopics = [
+                             f"|lchelp {topic}/{subtop}|lt|w{topic}/{subtop}|n|le"
+                             for subtop in subtopics
+                            ]
+            else:
+                subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
             subtopics = (
                 "\n|CSubtopics:|n\n  {}".format(
                     "\n  ".join(format_grid(subtopics, width=self.client_width())))
@@ -162,7 +173,10 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             subtopics = ''
 
         if suggested:
-            suggested = [f"|w{sug}|n" for sug in suggested]
+            if click_topics:
+                suggested = [f"|lchelp {sug}|lt|w{sug}|n|le" for sug in suggested]
+            else:
+                suggested = [f"|w{sug}|n" for sug in suggested]
             suggested = (
                 "\n|COther topic suggestions:|n\n{}".format(
                     "\n  ".join(format_grid(suggested, width=self.client_width())))
@@ -176,9 +190,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         return "\n".join(part.rstrip() for part in partorder if part)
 
-    def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False):
-        """
-        Output a category-ordered g for displaying the main help, grouped by
+    def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False,
+                          click_topics=True):
+        """Output a category-ordered g for displaying the main help, grouped by
         category.
 
         Args:
@@ -190,14 +204,15 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 be titled with the category name or not. While pointless in a
                 general index, the title should probably show when explicitly
                 listing the category itself.
+            click_topics (bool, optional): Should help topics be clickable. Default is True.
 
         Returns:
             str: The help index organized into a grid.
 
-        The input are the
-        pre-loaded help files for commands and database-helpfiles
-        respectively.  You can override this method to return a
-        custom display of the list of commands and topics.
+        Notes
+            The input are the pre-loaded help files for commands and database-helpfiles
+            respectively.  You can override this method to return a custom display of the list of
+            commands and topics.
 
         """
         def _group_by_category(help_dict):
@@ -207,7 +222,16 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             if len(help_dict) == 1 and not title_lone_category:
                 # don't list categories if there is only one
                 for category in help_dict:
+                    # gather and sort the entries from the help dictionary
                     entries = sorted(set(help_dict.get(category, [])))
+
+                    # make the help topics clickable
+                    if click_topics:
+                        entries = [
+                            f'|lchelp {entry}|lt{entry}|le' for entry in entries
+                        ]
+
+                    # add the entries to the grid
                     grid.extend(entries)
             else:
                 # list the categories
@@ -222,7 +246,16 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                     )
                     verbatim_elements.append(len(grid) - 1)
 
+                    # gather and sort the entries from the help dictionary
                     entries = sorted(set(help_dict.get(category, [])))
+
+                    # make the help topics clickable
+                    if click_topics:
+                        entries = [
+                            f'|lchelp {entry}|lt{entry}|le' for entry in entries
+                        ]
+
+                    # add the entries to the grid
                     grid.extend(entries)
 
             return grid, verbatim_elements
@@ -449,6 +482,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         """
         caller = self.caller
         query, subtopics, cmdset = self.topic, self.subtopics, self.cmdset
+        clickable_topics = self.clickable_topics
 
         if not query:
             # list all available help entries, grouped by category. We want to
@@ -470,7 +504,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
             # generate the index and display
             output = self.format_help_index(cmd_help_by_category,
-                                            file_db_help_by_category)
+                                            file_db_help_by_category,
+                                            click_topics=clickable_topics)
             self.msg_help(output)
 
             return
@@ -526,7 +561,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             output = self.format_help_entry(
                 topic=None,  # this will give a no-match style title
                 help_text=help_text,
-                suggested=suggestions
+                suggested=suggestions,
+                click_topics=clickable_topics
             )
 
             self.msg_help(output)
@@ -542,7 +578,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                                   if category_lower == topic.help_category]
             output = self.format_help_index({category: cmds_in_category},
                                             {category: topics_in_category},
-                                            title_lone_category=True)
+                                            title_lone_category=True,
+                                            click_topics=clickable_topics)
             self.msg_help(output)
             return
 
@@ -596,7 +633,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                         output = self.format_help_entry(
                             topic=topic,
                             help_text=f"No help entry found for '{checked_topic}'",
-                            subtopics=subtopic_index
+                            subtopics=subtopic_index,
+                            click_topics=clickable_topics
                         )
                         self.msg_help(output)
                         return
@@ -616,7 +654,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             help_text=help_text,
             aliases=aliases if not subtopics else None,
             subtopics=subtopic_index,
-            suggested=suggested
+            suggested=suggested,
+            click_topics=clickable_topics
         )
 
         self.msg_help(output)
