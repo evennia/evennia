@@ -617,6 +617,9 @@ DEFAULT_HELP_CATEGORY = "general"
 # File-based help entries. These are modules containing dicts defining help
 # entries. They can be used together with in-database entries created in-game.
 FILE_HELP_ENTRY_MODULES = ["world.help_entries"]
+# if topics listed in help should be clickable
+# clickable links only work on clients that support MXP.
+HELP_CLICKABLE_TOPICS = True
 
 ######################################################################
 # FuncParser
