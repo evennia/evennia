@@ -46,4 +46,10 @@ class MapParserError(MapError):
     pass
 
 
+class MapTransition(RuntimeWarning):
+    """
+    Used when signaling to the parser that a link
+    leads to another map.
 
+    """
+    pass

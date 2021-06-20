@@ -37,7 +37,7 @@ advanced tools like pathfinding will only operate within each XY `Map`.
    map/location/Z-coordinate.
 2. The Map Legend - describes how to parse each symbol in the map string to a
    topological relation, such as 'a room' or 'a two-way link east-west'.
-3. The Map - combines the Map String and Legend into a parsed object with
+3. The XYMap - combines the Map String and Legend into a parsed object with
    pathfinding and visual-range handling.
 4. The MultiMap - tracks multiple maps
 5. Rooms, Exits and Prototypes - custom Typeclasses that understands XYZ coordinates.

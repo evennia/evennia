@@ -1,7 +1,7 @@
 r"""
-# Map
+# XYMap
 
-The `Map` class represents one XY-grid of interconnected map-legend components. It's built from an
+The `XYMap` class represents one XY-grid of interconnected map-legend components. It's built from an
 ASCII representation, where unique characters represents each type of component. The Map parses the
 map into an internal graph that can be efficiently used for pathfinding the shortest route between
 any two nodes (rooms).
@@ -53,6 +53,13 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
     MAP_DATA = {
         "map": MAP,
         "legend": LEGEND,
+        "name": "City of Foo",
+        "prototypes": {
+            (0,1): { ... },
+            (1,3): { ... },
+            ...
+        }
+
     }
 
 ```
@@ -131,7 +138,7 @@ DEFAULT_LEGEND = {
 # Map parser implementation
 
 
-class SingleMap:
+class XYMap:
     r"""
     This represents a single map of interconnected nodes/rooms, parsed from a ASCII map
     representation.
@@ -177,7 +184,7 @@ class SingleMap:
     # we normally only accept one single character for the legend key
     legend_key_exceptions = ("\\")
 
-    def __init__(self, map_module_or_dict, name="map", other_maps=None):
+    def __init__(self, map_module_or_dict, name="map", grid=None):
         """
         Initialize the map parser by feeding it the map.
 
@@ -189,9 +196,8 @@ class SingleMap:
                 more than one map. Used when referencing this map during map transitions,
                 baking of pathfinding matrices etc. This will be overridden by any 'name' given
                 in the MAP_DATA itself.
-            other_maps (dict, optional): Reference to mapping {name: SingleMap, ...} representing
-                all possible maps one could potentially reach from this map. This is usually
-                provided by the MutlMap handler.
+            grid (xyzgrid.XYZGrid, optional): Reference to the top-level grid object, which
+                stores all maps. This is necessary for transitioning from map to another.
 
         Notes:
             The map deals with two sets of coorinate systems:
@@ -211,8 +217,10 @@ class SingleMap:
         # store so we can reload
         self.map_module_or_dict = map_module_or_dict
 
-        self.other_maps = other_maps
-        self.room_prototypes = None
+        self.grid = grid
+        self.prototypes = None
+        # transitional mapping
+        self.symbol_map = None
 
         # map setup
         self.xygrid = None
@@ -249,12 +257,14 @@ class SingleMap:
     def __repr__(self):
         return f"<Map {self.max_X + 1}x{self.max_Y + 1}, {len(self.node_index_map)} nodes>"
 
-    def _parse(self):
+    def parse_first_pass(self):
         """
-        Parses the numerical grid from the string. The result of this is a 2D array
-        of [[MapNode,...], [MapNode, ...]] with MapLinks inside them describing their
-        linkage to other nodes. See the class docstring for details of how the grid
-        should be defined.
+        Parses the numerical grid from the string. The first pass means parsing out
+        all nodes. The linking-together of nodes is not happening until the second pass
+        (the reason for this is that maps can also link to other maps, so all maps need
+        to have gone through their first parsing-passes before they can be linked together).
+
+        See the class docstring for details of how the grid should be defined.
 
         Notes:
             In this parsing, the 'xygrid' is the full range of chraracters read from
@@ -269,6 +279,8 @@ class SingleMap:
         XYgrid = defaultdict(dict)
         # needed by pathfinder
         node_index_map = {}
+        # used by transitions
+        symbol_map = defaultdict(list)
 
         mapstring = self.mapstring
         if mapstring.count(mapcorner_symbol) < 2:
@@ -347,44 +359,16 @@ class SingleMap:
                     node_index += 1
 
                     xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = \
-                        mapnode_or_link_class(node_index=node_index, x=ix, y=iy)
+                        mapnode_or_link_class(node_index=node_index, x=ix, y=iy, xymap=self)
 
                 else:
                     # we have a link at this xygrid position (this is ok everywhere)
-                    xygrid[ix][iy] = mapnode_or_link_class(ix, iy)
+                    xygrid[ix][iy] = mapnode_or_link_class(ix, iy, xymap=self)
 
-        # second pass: Here we loop over all nodes and have them connect to each other
-        # via the detected linkages.
-        for node in node_index_map.values():
-            node.scan_all_directions(xygrid)
+                # store the symbol mapping for transition lookups
+                symbol_map[char].append(xygrid[ix][iy])
 
-        # build display map
-        display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
-        for ix, ydct in xygrid.items():
-            for iy, node_or_link in ydct.items():
-                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid, mapinstance=self)
-
-        if self.room_prototypes:
-            # validate that prototypes are actually all represented by a node on the grid.
-            node_positions = []
-            for node in node_index_map:
-                # check so every node has a prototype
-                node_coord = (node.X, node.Y)
-                node_positions.append(node_coord)
-                if node_coord not in self.room_prototypes:
-                    raise MapParserError(
-                        f"Symbol '{char}' on XY=({node_coord[0]},{node_coord[1]}) has "
-                        "no corresponding entry in the `rooms` prototype dictionary."
-                    )
-                for (iX, iY) in self.room_prototypes:
-                    # also check in the reverse direction - so every prototype has a node
-                    if (iX, iY) not in node_positions:
-                        raise MapParserError(
-                            f"There is a room prototype for XY=({iX},{iY}), but that position "
-                            "of the map grid lacks a node."
-                        )
-
-        # store
+        # store results
         self.max_x, self.max_y = max_x, max_y
         self.xygrid = xygrid
 
@@ -392,7 +376,48 @@ class SingleMap:
         self.XYgrid = XYgrid
 
         self.node_index_map = node_index_map
+        self.symbol_map = symbol_map
+
+    def parse_second_pass(self):
+        """
+        Parsing, second pass. Here we loop over all nodes and have them connect to each other via
+        the detected linkages. For multi-map grids (that links to one another), this must run after
+        all maps have run through the first pass of their parsing.
+
+        This will create the linkages, build the display map for visualization and validate
+        all prototypes for the nodes and their connected links.
+
+        """
+        node_index_map = self.node_index_map
+        max_x, max_y = self.max_x, self.max_y
+        xygrid = self.xygrid
+
+        # build all links
+        for node in node_index_map.values():
+            node.scan_all_directions(xygrid)
+
+        # build display map
+        display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
+        for ix, ydct in xygrid.items():
+            for iy, node_or_link in ydct.items():
+                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid, xymap=self)
+
+        # validate and make sure all nodes/links have prototypes
+        for node in node_index_map.values():
+            node_coord = (node.X, node.Y)
+            # load prototype from override, or use default
+            node.prototype = self.prototypes.get(node_coord, node.prototype)
+            # do the same for links (x, y, direction) coords
+            for direction, maplink in node.first_links.items():
+                maplink.prototype = self.prototypes.get(node_coord + (direction,), maplink.prototype)
+
+        # store results
         self.display_map = display_map
+
+    def parse(self):
+        """Shortcut for running the full parsing of a single map. Useful for testing."""
+        self.parse_first_pass()
+        self.parse_second_pass()
 
     def _get_topology_around_coord(self, coord, dist=2):
         """
@@ -518,6 +543,7 @@ class SingleMap:
                 mapdata['map'] = variable_from_module(mod, "MAP")
                 mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
                 mapdata['rooms'] = variable_from_module(mod, "ROOMS")
+                mapdata['prototypes'] = variable_from_module(mod, "PROTOTYPES", default={})
 
         # validate
         for key in mapdata.get('legend', DEFAULT_LEGEND):
@@ -536,12 +562,10 @@ class SingleMap:
         # store/update result
         self.name = mapdata.get('name', self.name)
         self.mapstring = mapdata['map']
+        self.prototypes = mapdata.get('prototypes', {})
         # merge the custom legend onto the default legend to allow easily
         # overriding only parts of it
         self.legend = {**DEFAULT_LEGEND, **map_module_or_dict.get("legend", DEFAULT_LEGEND)}
-
-        # process the new(?) data
-        self._parse()
 
     def get_node_from_coord(self, coords):
         """
@@ -570,6 +594,19 @@ class SingleMap:
             return self.XYgrid[coords[0]][coords[1]]
         except KeyError:
             return None
+
+    def get_components_with_symbol(self, symbol):
+        """
+        Find all map components (nodes, links) with a given symbol in this map.
+
+        Args:
+            symbol (char): A single character-symbol to search for.
+
+        Returns:
+            list: A list of MapNodes and/or MapLinks found with the matching symbol.
+
+        """
+        return self.symbol_map.get(symbol, [])
 
     def get_shortest_path(self, startcoord, endcoord):
         """
