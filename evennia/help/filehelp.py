@@ -152,6 +152,18 @@ class FileHelpEntry:
         except Exception:
             return "#"
 
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        return False
+
     def access(self, accessing_obj, access_type="view", default=True):
         """
         Determines if another object has permission to access this help entry.
