@@ -551,6 +551,18 @@ Command {self} has no defined `func()` - showing on-command variables:
         except Exception as e:
             return "#"
 
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        return False
+
     def client_width(self):
         """
         Get the client screenwidth for the session using this command.
