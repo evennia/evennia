@@ -17,7 +17,6 @@ from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.utils import (
     class_from_module,
     inherits_from,
@@ -204,14 +203,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 be titled with the category name or not. While pointless in a
                 general index, the title should probably show when explicitly
                 listing the category itself.
-            click_topics (bool, optional): Should help topics be clickable. Default is True.
-
+            click_topics (bool, optional): If help-topics are clickable or not
+                (for webclient or telnet clients with MXP support).
         Returns:
             str: The help index organized into a grid.
 
-        Notes
+        Notes:
             The input are the pre-loaded help files for commands and database-helpfiles
-            respectively.  You can override this method to return a custom display of the list of
+            respectively. You can override this method to return a custom display of the list of
             commands and topics.
 
         """
