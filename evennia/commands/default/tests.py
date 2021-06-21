@@ -607,8 +607,8 @@ class TestCmdTasks(CommandTest):
 
     def test_active_task(self):
         cmd_result = self.call(system.CmdTasks(), '')
-        for ptrn in ('Task ID', 'Completion Date', 'Function', 'KWARGS', 'persisten',
-                     '1', r'\d+/\d+/\d+', r'\d+\:\d+\:\d+', r'ms\:\d+', 'func_test', '{}',
+        for ptrn in ('Task ID', 'Completion', 'Date', 'Function', 'KWARGS', 'persisten',
+                     '1', r'\d+/\d+/\d+', r'\d+\:', r'\d+\:\d+', r'\:\d+', 'func_test', '{}',
                      'False'):
             self.assertRegex(cmd_result, ptrn)
 
@@ -621,18 +621,18 @@ class TestCmdTasks(CommandTest):
     def test_pause_unpause(self):
         # test pause
         args = f'/pause {self.task.get_id()}'
-        wanted_msg = 'Yes or No, pause task 1? With completion date'
+        wanted_msg = 'Pause task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         self.assertTrue(self.task.paused)
         self.task_handler.clock.advance(self.timedelay + 1)
         # test unpause
         args = f'/unpause {self.task.get_id()}'
         self.assertTrue(self.task.exists())
-        wanted_msg = 'Yes or No, unpause task 1? With completion date'
+        wanted_msg = 'Unpause task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         # verify task continues after unpause
         self.task_handler.clock.advance(1)
@@ -640,25 +640,25 @@ class TestCmdTasks(CommandTest):
 
     def test_do_task(self):
         args = f'/do_task {self.task.get_id()}'
-        wanted_msg = 'Yes or No, do_task task 1? With completion date'
+        wanted_msg = 'Do_task task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         self.assertFalse(self.task.exists())
 
     def test_remove(self):
         args = f'/remove {self.task.get_id()}'
-        wanted_msg = 'Yes or No, remove task 1? With completion date'
+        wanted_msg = 'Remove task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         self.assertFalse(self.task.exists())
 
     def test_call(self):
         args = f'/call {self.task.get_id()}'
-        wanted_msg = 'Yes or No, call task 1? With completion date'
+        wanted_msg = 'Call task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         # make certain the task is still active
         self.assertTrue(self.task.active())
@@ -668,9 +668,9 @@ class TestCmdTasks(CommandTest):
 
     def test_cancel(self):
         args = f'/cancel {self.task.get_id()}'
-        wanted_msg = 'Yes or No, cancel task 1? With completion date'
+        wanted_msg = 'Cancel task 1 with completion date'
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, '\. Deferring function func_test_cmd_tasks\.')
+        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
         self.char1.execute_cmd('y')
         self.assertTrue(self.task.exists())
         self.assertFalse(self.task.active())
