@@ -32,7 +32,7 @@ terminal.
 > Note: If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to
 start tailing the logs again.
  - Make sure you can connect with your web browser to `http://localhost:4001` or, alternatively,
-`http:127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to
+`http://127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to
 play the game in the web client. Also check so that you can connect with a mud client to host
 `localhost`, port `4000` or host `127.0.0.1`, port `4000`.
 - [Google for "my ip"](https://www.google.se/search?q=my+ip) or use any online service to figure out
