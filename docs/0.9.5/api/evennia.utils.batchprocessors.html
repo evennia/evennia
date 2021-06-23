@@ -40,23 +40,21 @@
   <section id="module-evennia.utils.batchprocessors">
 <span id="evennia-utils-batchprocessors"></span><h1>evennia.utils.batchprocessors<a class="headerlink" href="#module-evennia.utils.batchprocessors" title="Permalink to this headline">¶</a></h1>
 <p>This module contains the core methods for the Batch-command- and
-Batch-code-processors respectively. In short, these are two different
-ways to build a game world using a normal text-editor without having
-to do so ‘on the fly’ in-game. They also serve as an automatic backup
-so you can quickly recreate a world also after a server reset. The
-functions in this module is meant to form the backbone of a system
-called and accessed through game commands.</p>
-<p>The Batch-command processor is the simplest. It simply runs a list of
-in-game commands in sequence by reading them from a text file. The
-advantage of this is that the builder only need to remember the normal
-in-game commands. They are also executing with full permission checks
-etc, making it relatively safe for builders to use. The drawback is
-that in-game there is really a builder-character walking around
-building things, and it can be important to create rooms and objects
-in the right order, so the character can move between them. Also
-objects that affects players (such as mobs, dark rooms etc) will
-affect the building character too, requiring extra care to turn
-off/on.</p>
+Batch-code-processors respectively. In short, these are two different ways to
+build a game world using a normal text-editor without having to do so ‘on the
+fly’ in-game. They also serve as an automatic backup so you can quickly
+recreate a world also after a server reset. The functions in this module is
+meant to form the backbone of a system called and accessed through game
+commands.</p>
+<p>The Batch-command processor is the simplest. It simply runs a list of in-game
+commands in sequence by reading them from a text file. The advantage of this is
+that the builder only need to remember the normal in-game commands. They are
+also executing with full permission checks etc, making it relatively safe for
+builders to use. The drawback is that in-game there is really a
+builder-character walking around building things, and it can be important to
+create rooms and objects in the right order, so the character can move between
+them. Also objects that affects players (such as mobs, dark rooms etc) will
+affect the building character too, requiring extra care to turn off/on.</p>
 <p>The Batch-code processor is a more advanced system that accepts full
 Python code, executing in chunks. The advantage of this is much more
 power; practically anything imaginable can be coded and handled using
@@ -69,33 +67,38 @@ etc. You also need to know Python and Evennia’s API. Hence it’s
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.</p>
 <section id="batch-command-processor-file-syntax">
-<h2>Batch-Command processor file syntax<a class="headerlink" href="#batch-command-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
+<h2>Batch-command processor file syntax<a class="headerlink" href="#batch-command-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor accepts ‘batchcommand files’ e.g
 <strong>batch.ev</strong>, containing a sequence of valid Evennia commands in a
 simple format. The engine runs each command in sequence, as if they
 had been run at the game prompt.</p>
 <p>Each Evennia command must be delimited by a line comment to mark its
-end. This way entire game worlds can be created and planned offline; it is
+end.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">look</span>
+<span class="c1"># delimiting comment</span>
+<span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">box</span>
+<span class="c1"># another required comment</span>
+</pre></div>
+</div>
+<p>One can also inject another batchcmdfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#INSERT path.batchcmdfile</span>
+</pre></div>
+</div>
+<p>This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
 real offline text editor is often much better than any online text
 editor or prompt.</p>
-<p>There is only one batchcommand-specific entry to use in a batch-command
-files (all others are just like in-game commands):</p>
-<ul class="simple">
-<li><p><strong>#INSERT path.batchcmdfile</strong> - this as the first entry on a line will
-import and run a batch.ev file in this position, as if it was
-written in this file.</p></li>
-</ul>
-<p>Example of batch.ev file:</p>
+<section id="example-of-batch-ev-file">
+<h3>Example of batch.ev file:<a class="headerlink" href="#example-of-batch-ev-file" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># batch file</span>
 <span class="c1"># all lines starting with # are comments; they also indicate</span>
 <span class="c1"># that a command definition is over.</span>
 
-<span class="nd">@create</span> <span class="n">box</span>
+<span class="n">create</span> <span class="n">box</span>
 
 <span class="c1"># this comment ends the @create command.</span>
 
-<span class="nd">@set</span> <span class="n">box</span><span class="o">/</span><span class="n">desc</span> <span class="o">=</span> <span class="n">A</span> <span class="n">large</span> <span class="n">box</span><span class="o">.</span>
+<span class="nb">set</span> <span class="n">box</span><span class="o">/</span><span class="n">desc</span> <span class="o">=</span> <span class="n">A</span> <span class="n">large</span> <span class="n">box</span><span class="o">.</span>
 
 <span class="n">Inside</span> <span class="n">are</span> <span class="n">some</span> <span class="n">scattered</span> <span class="n">piles</span> <span class="n">of</span> <span class="n">clothing</span><span class="o">.</span>
 
@@ -108,24 +111,25 @@ written in this file.</p></li>
 
 <span class="c1"># (so two empty lines becomes a new paragraph).</span>
 
-<span class="nd">@teleport</span> <span class="c1">#221</span>
+<span class="n">teleport</span> <span class="c1">#221</span>
 
 <span class="c1"># (Assuming #221 is a warehouse or something.)</span>
 <span class="c1"># (remember, this comment ends the @teleport command! Don&#39;f forget it)</span>
 
 <span class="c1"># Example of importing another file at this point.</span>
-<span class="c1">#INSERT examples.batch</span>
+<span class="c1">#IMPORT examples.batch</span>
 
-<span class="nd">@drop</span> <span class="n">box</span>
+<span class="n">drop</span> <span class="n">box</span>
 
 <span class="c1"># Done, the box is in the warehouse! (this last comment is not necessary to</span>
-<span class="c1"># close the @drop command since it&#39;s the end of the file)</span>
+<span class="c1"># close the drop command since it&#39;s the end of the file)</span>
 </pre></div>
 </div>
 <p>An example batch file is <strong>contrib/examples/batch_example.ev</strong>.</p>
 </section>
+</section>
 <section id="batch-code-processor-file-syntax">
-<h2>Batch-Code processor file syntax<a class="headerlink" href="#batch-code-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
+<h2>Batch-code processor file syntax<a class="headerlink" href="#batch-code-processor-file-syntax" title="Permalink to this headline">¶</a></h2>
 <p>The Batch-code processor accepts full python modules (e.g. <strong>batch.py</strong>)
 that looks identical to normal Python files. The difference from
 importing and running any Python module is that the batch-code module
@@ -156,13 +160,17 @@ this file.</p></li>
 <p>Importing works as normal. The following variables are automatically
 made available in the script namespace.</p>
 <ul class="simple">
-<li><p><strong>caller</strong> -  The object executing the batchscript</p></li>
-<li><p><strong>DEBUG</strong> - This is a boolean marking if the batchprocessor is running
-in debug mode. It can be checked to e.g. delete created objects
+<li><p><strong>caller</strong> - The object executing the batchscript</p></li>
+<li><dl class="simple">
+<dt><strong>DEBUG</strong> - This is a boolean marking if the batchprocessor is running</dt><dd><p>in debug mode. It can be checked to e.g. delete created objects
 when running a CODE block multiple times during testing.
-(avoids creating a slew of same-named db objects)</p></li>
+(avoids creating a slew of same-named db objects)</p>
+</dd>
+</dl>
+</li>
 </ul>
-<p>Example batch.py file:</p>
+<section id="example-batch-py-file">
+<h3>Example batch.py file<a class="headerlink" href="#example-batch-py-file" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#HEADER</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -190,7 +198,6 @@ when running a CODE block multiple times during testing.
 <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
 </pre></div>
 </div>
-<hr class="docutils" />
 <dl class="py function">
 <dt id="evennia.utils.batchprocessors.read_batchfile">
 <code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">read_batchfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em>, <em class="sig-param"><span class="n">file_ending</span><span class="o">=</span><span class="default_value">'.py'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#read_batchfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.read_batchfile" title="Permalink to this definition">¶</a></dt>
@@ -207,7 +214,7 @@ or .py). The ending should not be included in the python path.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>str</em> – The text content of the batch file.</p>
+<dd class="field-even"><p><em>text (str)</em> – The text content of the batch file.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>IOError</strong> – If problems reading file.</p>
@@ -223,13 +230,22 @@ or .py). The ending should not be included in the python path.</p>
 <dl class="py method">
 <dt id="evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">
 <code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCommandProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>This parses the lines of a batchfile according to the following
-rules:</p>
+<dd><p>This parses the lines of a batch-command-file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pythonpath</strong> (<em>str</em>) – The dot-python path to the file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of all parsed commands with arguments, as strings.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Parsing follows the following rules:</p>
 <ol class="arabic simple">
-<li><p><strong>#</strong> at the beginning of a line marks the end of the command before
+<li><p>A <strong>#</strong> at the beginning of a line marks the end of the command before
 it. It is also a comment and any number of # can exist on
 subsequent lines (but not inside comments).</p></li>
-<li><p><strong>#INSERT</strong> at the beginning of a line imports another
+<li><p>#INSERT at the beginning of a line imports another
 batch-cmd file file and pastes it into the batch file as if
 it was written there.</p></li>
 <li><p>Commands are placed alone at the beginning of a line and their
@@ -264,30 +280,28 @@ a newline (so two empty lines is a paragraph).</p></li>
 <dl class="py method">
 <dt id="evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">
 <code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>This parses the lines of a batchfile according to the following
-rules:</p>
+<dd><p>This parses the lines of a batch-code file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pythonpath</strong> (<em>str</em>) – The dot-python path to the file.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>codeblocks (list)</em> –</p>
+<dd class="field-even"><p><p><em>list</em> –</p>
 <dl class="simple">
-<dt>A list of all #CODE blocks, each with</dt><dd><p>prepended #HEADER data. If no #CODE blocks were found,
-this will be a list of one element.</p>
+<dt>A list of all <strong>#CODE</strong> blocks, each with</dt><dd><p>prepended <strong>#HEADER</strong> block data. If no <strong>#CODE</strong>
+blocks were found, this will be a list of one element
+containing all code in the file (so a normal Python file).</p>
 </dd>
 </dl>
 </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>Parsing is done according to the following rules:</p>
 <ol class="arabic simple">
-<li><dl class="simple">
-<dt>Code before a #CODE/HEADER block are considered part of</dt><dd><p>the first code/header block or is the ONLY block if no
-#CODE/HEADER blocks are defined.</p>
-</dd>
-</dl>
-</li>
+<li><p>Code before a #CODE/HEADER block are considered part of
+the first code/header block or is the ONLY block if no
+<strong>#CODE/HEADER</strong> blocks are defined.</p></li>
 <li><p>Lines starting with #HEADER starts a header block (ends other blocks)</p></li>
 <li><p>Lines starting with #CODE begins a code block (ends other blocks)</p></li>
 <li><p>Lines starting with #INSERT are on form #INSERT filename. Code from
@@ -322,6 +336,7 @@ namespace.</p></li>
 
 </section>
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -346,8 +361,14 @@ namespace.</p></li>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">evennia.utils.batchprocessors</a><ul>
-<li><a class="reference internal" href="#batch-command-processor-file-syntax">Batch-Command processor file syntax</a></li>
-<li><a class="reference internal" href="#batch-code-processor-file-syntax">Batch-Code processor file syntax</a></li>
+<li><a class="reference internal" href="#batch-command-processor-file-syntax">Batch-command processor file syntax</a><ul>
+<li><a class="reference internal" href="#example-of-batch-ev-file">Example of batch.ev file:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#batch-code-processor-file-syntax">Batch-code processor file syntax</a><ul>
+<li><a class="reference internal" href="#example-batch-py-file">Example batch.py file</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -374,7 +395,6 @@ namespace.</p></li>
   <li><a href="../../1.0-dev/api/evennia.utils.batchprocessors.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.batchprocessors.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

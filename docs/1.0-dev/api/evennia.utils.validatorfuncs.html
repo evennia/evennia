@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.validatorfuncs</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -66,7 +67,7 @@ inputer’s timezone. Always returns a result in UTC.</p>
 <li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account performing this lookup. Unless <strong>from_tz</strong> is provided,
 the account’s timezone option will be used.</p></li>
 <li><p><strong>from_tz</strong> (<em>pytz.timezone</em>) – An instance of a pytz timezone object from the
-user. If not provided, tries to use the timezone option of the <strong>account</strong>.
+user. If not provided, tries to use the timezone option of <strong>account</strong>.
 If neither one is provided, defaults to UTC.</p></li>
 </ul>
 </dd>
@@ -86,8 +87,9 @@ If neither one is provided, defaults to UTC.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>entry</strong> (<em>string</em>) – This is a string from user-input. The intended format is, for example: “5d 2w 90s” for
-‘five days, two weeks, and ninety seconds.’ Invalid sections are ignored.</p></li>
+<li><p><strong>entry</strong> (<em>string</em>) – This is a string from user-input. The intended format is, for example:
+“5d 2w 90s” for ‘five days, two weeks, and ninety seconds.’ Invalid sections are
+ignored.</p></li>
 <li><p><strong>option_key</strong> (<em>str</em>) – Name to display this query as.</p></li>
 </ul>
 </dd>
@@ -120,14 +122,16 @@ If neither one is provided, defaults to UTC.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.validatorfuncs.boolean">
 <code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">boolean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entry</span></em>, <em class="sig-param"><span class="n">option_key</span><span class="o">=</span><span class="default_value">'True/False'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.boolean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simplest check in computer logic, right? This will take user input to flick the switch on or off
-:param entry: A value such as True, On, Enabled, Disabled, False, 0, or 1.
-:type entry: str
-:param option_key: What kind of Boolean we are setting. What Option is this for?
-:type option_key: str</p>
+<dd><p>Simplest check in computer logic, right? This will take user input to flick the switch on or off</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Boolean</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>str</em>) – A value such as True, On, Enabled, Disabled, False, 0, or 1.</p></li>
+<li><p><strong>option_key</strong> (<em>str</em>) – What kind of Boolean we are setting. What Option is this for?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boolean</p>
 </dd>
 </dl>
 </dd></dl>
@@ -204,7 +208,6 @@ If neither one is provided, defaults to UTC.</p></li>
   <li><a href="../../0.9.5/api/evennia.utils.validatorfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -221,6 +224,7 @@ If neither one is provided, defaults to UTC.</p></li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.validatorfuncs</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

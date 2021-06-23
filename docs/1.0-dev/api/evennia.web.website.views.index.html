@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.index</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,57 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-website-views-index">
-<h1>evennia.web.website.views.index<a class="headerlink" href="#evennia-web-website-views-index" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.website.views.index">
+<span id="evennia-web-website-views-index"></span><h1>evennia.web.website.views.index<a class="headerlink" href="#module-evennia.web.website.views.index" title="Permalink to this headline">¶</a></h1>
+<p>The main index page, including the game stats</p>
+<dl class="py class">
+<dt id="evennia.web.website.views.index.EvenniaIndexView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.index.</code><code class="sig-name descname">EvenniaIndexView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/index.html#EvenniaIndexView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
+<p>This is a basic example of a Django class-based view, which are functionally
+very similar to Evennia Commands but differ in structure. Commands are used
+to interface with users using a terminal client. Views are used to interface
+with users using a web browser.</p>
+<p>To use a class-based view, you need to have written a template in HTML, and
+then you write a view like this to tell Django what values to display on it.</p>
+<p>While there are simpler ways of writing views using plain functions (and
+Evennia currently contains a few examples of them), just like Commands,
+writing views as classes provides you with more flexibility– you can extend
+classes and change things to suit your needs rather than having to copy and
+paste entire code blocks over and over. Django also comes with many default
+views for displaying things, all of them implemented as classes.</p>
+<p>This particular example displays the index page.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.index.EvenniaIndexView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/index.html'</em><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.index.EvenniaIndexView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/index.html#EvenniaIndexView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a common Django method. Think of this as the website
+equivalent of the Evennia Command.func() method.</p>
+<p>If you just want to display a static page with no customization, you
+don’t need to define this method– just create a view, define
+template_name and you’re done.</p>
+<p>The only catch here is that if you extend or overwrite this method,
+you’ll always want to make sure you call the parent method to get a
+context object. It’s just a dict, but it comes prepopulated with all
+sorts of background data intended for display on the page.</p>
+<p>You can do whatever you want to it, but it must be returned at the end
+of this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – Passed through.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>context (dict)</em> – Dictionary of data you want to display on the page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +134,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +150,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.index</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -64,17 +64,16 @@ accessed via specific handler methods):</p>
 <li><p>db_sender_accounts: Account senders</p></li>
 <li><p>db_sender_objects: Object senders</p></li>
 <li><p>db_sender_scripts: Script senders</p></li>
-<li><p>db_sender_external: External senders (defined as string names)</p></li>
+<li><p>db_sender_external: External sender (defined as string name)</p></li>
 <li><p>db_receivers_accounts: Receiving accounts</p></li>
 <li><p>db_receivers_objects: Receiving objects</p></li>
 <li><p>db_receivers_scripts: Receiveing scripts</p></li>
-<li><p>db_receivers_channels: Receiving channels</p></li>
+<li><p>db_receiver_external: External sender (defined as string name)</p></li>
 <li><p>db_header: Header text</p></li>
 <li><p>db_message: The actual message text</p></li>
 <li><p>db_date_created: time message was created / sent</p></li>
 <li><p>db_hide_from_sender: bool if message should be hidden from sender</p></li>
 <li><p>db_hide_from_receivers: list of receiver objects to hide message from</p></li>
-<li><p>db_hide_from_channels: list of channels objects to hide message from</p></li>
 <li><p>db_lock_storage: Internal storage of lock strings.</p></li>
 </ul>
 <dl class="py attribute">
@@ -181,19 +180,10 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.comms.models.Msg.db_receivers_channels">
-<code class="sig-name descname">db_receivers_channels</code><a class="headerlink" href="#evennia.comms.models.Msg.db_receivers_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the forward and reverse sides of
-a many-to-many relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
-instances.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+<dt id="evennia.comms.models.Msg.db_receiver_external">
+<code class="sig-name descname">db_receiver_external</code><a class="headerlink" href="#evennia.comms.models.Msg.db_receiver_external" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -257,22 +247,6 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.comms.models.Msg.db_hide_from_channels">
-<code class="sig-name descname">db_hide_from_channels</code><a class="headerlink" href="#evennia.comms.models.Msg.db_hide_from_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the forward and reverse sides of
-a many-to-many relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
-instances.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.comms.models.Msg.db_tags">
 <code class="sig-name descname">db_tags</code><a class="headerlink" href="#evennia.comms.models.Msg.db_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -293,12 +267,6 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.comms.managers.MsgManager object&gt;</em><a class="headerlink" href="#evennia.comms.models.Msg.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="evennia.comms.models.Msg.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#Msg.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.Msg.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="evennia.comms.models.Msg.locks">
 <code class="sig-name descname">locks</code><a class="reference internal" href="../_modules/evennia/comms/models.html#Msg.locks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.Msg.locks" title="Permalink to this definition">¶</a></dt>
@@ -312,7 +280,7 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dl class="py method">
 <dt id="evennia.comms.models.Msg.senders">
 <em class="property">property </em><code class="sig-name descname">senders</code><a class="headerlink" href="#evennia.comms.models.Msg.senders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter. Allows for value = self.sender</p>
+<dd><p>Getter. Allows for value = self.senders</p>
 </dd></dl>
 
 <dl class="py method">
@@ -321,7 +289,8 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dd><p>Remove a single sender or a list of senders.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>senders</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>str</em><em> or </em><em>list</em>) – Senders to remove.</p>
+<dd class="field-odd"><p><strong>senders</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>str</em><em> or </em><em>list</em>) – Senders to remove.
+If a string, removes the external sender.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -330,31 +299,29 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dt id="evennia.comms.models.Msg.receivers">
 <em class="property">property </em><code class="sig-name descname">receivers</code><a class="headerlink" href="#evennia.comms.models.Msg.receivers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter. Allows for value = self.receivers.
-Returns four lists of receivers: accounts, objects, scripts and channels.</p>
+Returns four lists of receivers: accounts, objects, scripts and</p>
+<blockquote>
+<div><p>external_receivers.</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.comms.models.Msg.remove_receiver">
 <code class="sig-name descname">remove_receiver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">receivers</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#Msg.remove_receiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.Msg.remove_receiver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a single receiver or a list of receivers.</p>
+<dd><p>Remove a single receiver, a list of receivers, or a single extral receiver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>receivers</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>Script</em><em>, </em><em>Channel</em><em> or </em><em>list</em>) – Receiver to remove.</p>
+<dd class="field-odd"><p><strong>receivers</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>Script</em><em>, </em><em>list</em><em> or </em><em>str</em>) – Receiver
+to remove. A string removes the external receiver.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.comms.models.Msg.channels">
-<em class="property">property </em><code class="sig-name descname">channels</code><a class="headerlink" href="#evennia.comms.models.Msg.channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter. Allows for value = self.channels. Returns a list of channels.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.comms.models.Msg.hide_from">
 <em class="property">property </em><code class="sig-name descname">hide_from</code><a class="headerlink" href="#evennia.comms.models.Msg.hide_from" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter. Allows for value = self.hide_from.
-Returns 3 lists of accounts, objects and channels</p>
+Returns two lists of accounts and objects.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -434,6 +401,12 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.comms.models.Msg.receiver_external">
+<em class="property">property </em><code class="sig-name descname">receiver_external</code><a class="headerlink" href="#evennia.comms.models.Msg.receiver_external" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_receiver_external</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.comms.models.Msg.sender_external">
 <em class="property">property </em><code class="sig-name descname">sender_external</code><a class="headerlink" href="#evennia.comms.models.Msg.sender_external" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_sender_external</strong>.</p>
@@ -448,26 +421,24 @@ object the first time, the query is executed.</p>
 
 <dl class="py class">
 <dt id="evennia.comms.models.TempMsg">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.models.</code><code class="sig-name descname">TempMsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">hide_from</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#TempMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.TempMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.models.</code><code class="sig-name descname">TempMsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">hide_from</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#TempMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.TempMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a non-persistent object for sending temporary messages
-that will not be stored.  It mimics the “real” Msg object, but
-doesn’t require sender to be given.</p>
+<p>This is a non-persistent object for sending temporary messages that will not be stored.  It
+mimics the “real” Msg object, but doesn’t require sender to be given.</p>
 <dl class="py method">
 <dt id="evennia.comms.models.TempMsg.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">hide_from</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#TempMsg.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.TempMsg.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senders</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">hide_from</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/models.html#TempMsg.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.TempMsg.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the temp message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>senders</strong> (<em>any</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Senders of the message.</p></li>
-<li><p><strong>receivers</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>Channel</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Receivers of this message.</p></li>
-<li><p><strong>channels</strong> (<em>Channel</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Channels to send to.</p></li>
+<li><p><strong>receivers</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>Script</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Receivers of this message.</p></li>
 <li><p><strong>message</strong> (<em>str</em><em>, </em><em>optional</em>) – Message to send.</p></li>
 <li><p><strong>header</strong> (<em>str</em><em>, </em><em>optional</em>) – Header of message.</p></li>
 <li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – Message class, if any.</p></li>
 <li><p><strong>lockstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Lock for the message.</p></li>
-<li><p><strong>hide_from</strong> (<em>Account</em><em>, </em><em>Object</em><em>, </em><em>Channel</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Entities to hide this message from.</p></li>
+<li><p><strong>hide_from</strong> (<em>Account</em><em>, </em><em>Object</em><em>, or </em><em>list</em><em>, </em><em>optional</em>) – Entities to hide this message from.</p></li>
 </ul>
 </dd>
 </dl>
@@ -495,7 +466,7 @@ doesn’t require sender to be given.</p>
 <dd><p>Remove a receiver or a list of receivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>Channel</em><em>, </em><em>str</em><em> or </em><em>list</em>) – Receivers to remove.</p>
+<dd class="field-odd"><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>Script</em><em>, </em><em>str</em><em> or </em><em>list</em>) – Receivers to remove.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -571,11 +542,6 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.comms.managers.ChannelDBManager object&gt;</em><a class="headerlink" href="#evennia.comms.models.ChannelDB.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.comms.models.ChannelDB.subscriptions">
-<code class="sig-name descname">subscriptions</code><a class="reference internal" href="../_modules/evennia/comms/models.html#ChannelDB.subscriptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.ChannelDB.subscriptions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py exception">
 <dt id="evennia.comms.models.ChannelDB.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.comms.models.ChannelDB.DoesNotExist" title="Permalink to this definition">¶</a></dt>
@@ -586,22 +552,6 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dt id="evennia.comms.models.ChannelDB.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.comms.models.ChannelDB.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.comms.models.ChannelDB.channel_set">
-<code class="sig-name descname">channel_set</code><a class="headerlink" href="#evennia.comms.models.ChannelDB.channel_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the forward and reverse sides of
-a many-to-many relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
-instances.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -647,22 +597,6 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.comms.models.ChannelDB.hide_from_channels_set">
-<code class="sig-name descname">hide_from_channels_set</code><a class="headerlink" href="#evennia.comms.models.ChannelDB.hide_from_channels_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the forward and reverse sides of
-a many-to-many relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
-instances.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.comms.models.ChannelDB.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#evennia.comms.models.ChannelDB.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -677,6 +611,11 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt id="evennia.comms.models.ChannelDB.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.comms.models.ChannelDB.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.models.ChannelDB.subscriptions">
+<code class="sig-name descname">subscriptions</code><a class="reference internal" href="../_modules/evennia/comms/models.html#ChannelDB.subscriptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.models.ChannelDB.subscriptions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -725,7 +664,6 @@ object the first time, the query is executed.</p>
   <li><a href="../../1.0-dev/api/evennia.comms.models.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.comms.models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

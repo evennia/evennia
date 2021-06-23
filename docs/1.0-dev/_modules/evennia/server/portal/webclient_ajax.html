@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient_ajax</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -56,6 +57,7 @@
 <span class="sd">                 The WebClient resource in this module will</span>
 <span class="sd">                 handle these requests and act as a gateway</span>
 <span class="sd">                 to sessions connected over the webclient.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -68,7 +70,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">parse_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.text2html</span> <span class="kn">import</span> <span class="n">parse_html</span>
 <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">session</span>
 
@@ -264,10 +266,13 @@
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">host_string</span><span class="p">,</span> <span class="s2">&quot;csessid&quot;</span><span class="p">:</span> <span class="n">csessid</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="AjaxWebClient.mode_keepalive"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient_ajax.html#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_keepalive">[docs]</a>    <span class="k">def</span> <span class="nf">mode_keepalive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by render_POST when the</span>
 <span class="sd">        client is replying to the keepalive.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
@@ -543,7 +548,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -562,6 +566,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient_ajax</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

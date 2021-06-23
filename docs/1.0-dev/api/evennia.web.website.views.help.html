@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.help</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,100 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-website-views-help">
-<h1>evennia.web.website.views.help<a class="headerlink" href="#evennia-web-website-views-help" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.website.views.help">
+<span id="evennia-web-website-views-help"></span><h1>evennia.web.website.views.help<a class="headerlink" href="#module-evennia.web.website.views.help" title="Permalink to this headline">¶</a></h1>
+<p>Views to manipulate help entries.</p>
+<dl class="py class">
+<dt id="evennia.web.website.views.help.HelpMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">HelpMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with HelpEntry objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpMixin.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpMixin.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Help'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.help.HelpMixin.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpMixin.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook; here we want to return a list of only those HelpEntries
+and other documentation that the current user is allowed to see.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – List of Help entries available to the user.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.help.HelpListView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">HelpListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.help.HelpMixin" title="evennia.web.website.views.help.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.help.HelpMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>Returns a list of help entries that can be viewed by a user, authenticated
+or not.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpListView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 500</em><a class="headerlink" href="#evennia.web.website.views.help.HelpListView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpListView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/help_list.html'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpListView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpListView.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Help Index'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpListView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.help.HelpDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">HelpDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.help.HelpMixin" title="evennia.web.website.views.help.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.help.HelpMixin</span></code></a>, <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.EvenniaDetailView" title="evennia.web.website.views.mixins.EvenniaDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.EvenniaDetailView</span></code></a></p>
+<p>Returns the detail page for a given help entry.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.help.HelpDetailView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/help_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.help.HelpDetailView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpDetailView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds navigational data to the template to let browsers go to the next
+or previous entry in the help list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.help.HelpDetailView.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpDetailView.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override of Django hook that retrieves an object by category and topic
+instead of pk and slug.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>entry (HelpEntry)</em> – HelpEntry requested in the URL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +177,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +193,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.help</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -45,12 +45,12 @@
 
 <span class="sd">There are two similar but separate stores of sessions:</span>
 
-<span class="sd">  - ServerSessionHandler - this stores generic game sessions</span>
-<span class="sd">         for the game. These sessions has no knowledge about</span>
-<span class="sd">         how they are connected to the world.</span>
-<span class="sd">  - PortalSessionHandler - this stores sessions created by</span>
-<span class="sd">         twisted protocols. These are dumb connectors that</span>
-<span class="sd">         handle network communication but holds no game info.</span>
+<span class="sd">- ServerSessionHandler - this stores generic game sessions</span>
+<span class="sd">     for the game. These sessions has no knowledge about</span>
+<span class="sd">     how they are connected to the world.</span>
+<span class="sd">- PortalSessionHandler - this stores sessions created by</span>
+<span class="sd">     twisted protocols. These are dumb connectors that</span>
+<span class="sd">     handle network communication but holds no game info.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -59,18 +59,19 @@
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
     <span class="n">delay</span><span class="p">,</span>
     <span class="n">callables_from_module</span><span class="p">,</span>
+    <span class="n">class_from_module</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGOUT</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_FIRST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LAST_LOGOUT</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="kn">import</span> <span class="n">parse_inlinefunc</span>
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">codecs_decode</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="n">_INLINEFUNC_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INLINEFUNC_ENABLED</span>
+<span class="n">_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span>
 
 <span class="c1"># delayed imports</span>
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
@@ -79,7 +80,7 @@
 <span class="n">_ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_OOB_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">_ERR_BAD_UTF8</span> <span class="o">=</span> <span class="s2">&quot;Your client sent an incorrect UTF-8 sequence.&quot;</span>
+<span class="n">_ERR_BAD_UTF8</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Your client sent an incorrect UTF-8 sequence.&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DummySession"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.DummySession">[docs]</a><span class="k">class</span> <span class="nc">DummySession</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -88,28 +89,6 @@
 
 <span class="n">DUMMYSESSION</span> <span class="o">=</span> <span class="n">DummySession</span><span class="p">()</span>
 
-<span class="c1"># AMP signals</span>
-<span class="n">PCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># portal session connect</span>
-<span class="n">PDISCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># portal session disconnect</span>
-<span class="n">PSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># portal session sync</span>
-<span class="n">SLOGIN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># server session login</span>
-<span class="n">SDISCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># server session disconnect</span>
-<span class="n">SDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>  <span class="c1"># server session disconnect all</span>
-<span class="n">SSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>  <span class="c1"># server shutdown</span>
-<span class="n">SSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># server session sync</span>
-<span class="n">SCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="c1"># server portal connection (for bots)</span>
-<span class="n">PCONNSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># portal post-syncing session</span>
-<span class="n">PDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>  <span class="c1"># portal session discnnect all</span>
-<span class="n">SRELOAD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>  <span class="c1"># server reloading (have portal start a new server)</span>
-<span class="n">SSTART</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="c1"># server start (portal must already be running anyway)</span>
-<span class="n">PSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>  <span class="c1"># portal (+server) shutdown</span>
-<span class="n">SSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>  <span class="c1"># server shutdown</span>
-<span class="n">PSTATUS</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>  <span class="c1"># ping server or portal status</span>
-<span class="n">SRESET</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>  <span class="c1"># server shutdown in reset mode</span>
-
-<span class="c1"># i18n</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="n">_SERVERNAME</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span>
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
 <span class="n">_IDLE_TIMEOUT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span>
@@ -117,6 +96,8 @@
 <span class="n">_MAX_SERVER_COMMANDS_PER_SECOND</span> <span class="o">=</span> <span class="mf">100.0</span>
 <span class="n">_MAX_SESSION_COMMANDS_PER_SECOND</span> <span class="o">=</span> <span class="mf">5.0</span>
 <span class="n">_MODEL_MAP</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="kc">None</span>
+
 
 <span class="c1"># input handlers</span>
 
@@ -133,8 +114,7 @@
     <span class="k">global</span> <span class="n">_ServerSession</span><span class="p">,</span> <span class="n">_AccountDB</span><span class="p">,</span> <span class="n">_ServerConfig</span><span class="p">,</span> <span class="n">_ScriptDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ServerSession</span><span class="p">:</span>
         <span class="c1"># we allow optional arbitrary serversession class for overloading</span>
-        <span class="n">modulename</span><span class="p">,</span> <span class="n">classname</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">_ServerSession</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">modulename</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
+        <span class="n">_ServerSession</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_AccountDB</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ServerConfig</span><span class="p">:</span>
@@ -142,10 +122,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_ScriptDB</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
     <span class="c1"># including once to avoid warnings in Python syntax checkers</span>
-    <span class="k">assert</span> <span class="n">_ServerSession</span>
-    <span class="k">assert</span> <span class="n">_AccountDB</span>
-    <span class="k">assert</span> <span class="n">_ServerConfig</span>
-    <span class="k">assert</span> <span class="n">_ScriptDB</span></div>
+    <span class="k">assert</span> <span class="n">_ServerSession</span><span class="p">,</span> <span class="s2">&quot;ServerSession class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_AccountDB</span><span class="p">,</span> <span class="s2">&quot;AccountDB class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_ServerConfig</span><span class="p">,</span> <span class="s2">&quot;ServerConfig class could not load&quot;</span>
+    <span class="k">assert</span> <span class="n">_ScriptDB</span><span class="p">,</span> <span class="s2">&quot;ScriptDB class c ould not load&quot;</span></div>
 
 
 <span class="c1"># -----------------------------------------------------------</span>
@@ -160,24 +140,36 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="s2">&quot;Clean out None-sessions automatically.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean out None-sessions automatically.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SessionHandler.get"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.SessionHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="s2">&quot;Clean out None-sessions automatically.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean out None-sessions automatically.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="s2">&quot;Don&#39;t assign None sessions&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Don&#39;t assign None sessions&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="s2">&quot;None-keys are not accepted.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        None-keys are not accepted.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SessionHandler.get_sessions"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.SessionHandler.get_sessions">[docs]</a>    <span class="k">def</span> <span class="nf">get_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_unloggedin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -210,29 +202,32 @@
 
 <div class="viewcode-block" id="SessionHandler.clean_senddata"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.SessionHandler.clean_senddata">[docs]</a>    <span class="k">def</span> <span class="nf">clean_senddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Clean up data for sending across the AMP wire. Also apply INLINEFUNCS.</span>
+<span class="sd">        Clean up data for sending across the AMP wire. Also apply the</span>
+<span class="sd">        FuncParser using callables from `settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): The relevant session instance.</span>
-<span class="sd">            kwargs (dict) Each keyword represents a</span>
-<span class="sd">                send-instruction, with the keyword itself being the name</span>
-<span class="sd">                of the instruction (like &quot;text&quot;). Suitable values for each</span>
-<span class="sd">                keyword are:</span>
-<span class="sd">                ::</span>
-
-<span class="sd">                    arg                -&gt;  [[arg], {}]</span>
-<span class="sd">                    [args]             -&gt;  [[args], {}]</span>
-<span class="sd">                    {kwargs}           -&gt;  [[], {kwargs}]</span>
-<span class="sd">                    [args, {kwargs}]   -&gt;  [[arg], {kwargs}]</span>
-<span class="sd">                    [[args], {kwargs}] -&gt;  [[args], {kwargs}]</span>
+<span class="sd">            kwargs (dict) Each keyword represents a send-instruction, with the keyword itself being</span>
+<span class="sd">                the name of the instruction (like &quot;text&quot;). Suitable values for each keyword are:</span>
+<span class="sd">                - arg                -&gt;  [[arg], {}]</span>
+<span class="sd">                - [args]             -&gt;  [[args], {}]</span>
+<span class="sd">                - {kwargs}           -&gt;  [[], {kwargs}]</span>
+<span class="sd">                - [args, {kwargs}]   -&gt;  [[arg], {kwargs}]</span>
+<span class="sd">                - [[args], {kwargs}] -&gt;  [[args], {kwargs}]</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            kwargs (dict): A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,</span>
-<span class="sd">                where the keys, args and kwargs have all been converted to</span>
-<span class="sd">                send-safe entities (strings or numbers), and inlinefuncs have been</span>
-<span class="sd">                applied.</span>
+<span class="sd">            where the keys, args and kwargs have all been converted to</span>
+<span class="sd">            send-safe entities (strings or numbers), and funcparser parsing has been</span>
+<span class="sd">            applied.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_FUNCPARSER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_FUNCPARSER</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
+            <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="p">,</span>
+                                     <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">strip_inlinefunc</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strip_inlinefunc&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -253,7 +248,10 @@
             <span class="k">return</span> <span class="n">data</span>
 
         <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-            <span class="s2">&quot;Helper function to convert data to AMP-safe (picketable) values&quot;</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper function to convert data to AMP-safe (picketable) values&quot;</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">newdict</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -264,9 +262,11 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">_utf8</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">_INLINEFUNC_ENABLED</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">raw</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ServerSessionHandler</span><span class="p">):</span>
-                    <span class="c1"># only parse inlinefuncs on the outgoing path (sessionhandler-&gt;)</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">parse_inlinefunc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="n">strip_inlinefunc</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span>
+                        <span class="ow">and</span> <span class="ow">not</span> <span class="n">raw</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ServerSessionHandler</span><span class="p">)):</span>
+                    <span class="c1"># only apply funcparser on the outgoing path (sessionhandler-&gt;)</span>
+                    <span class="c1"># data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">_FUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="n">strip_inlinefunc</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
                 <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="k">elif</span> <span class="p">(</span>
@@ -314,14 +314,11 @@
 
 <div class="viewcode-block" id="ServerSessionHandler"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ServerSessionHandler</span><span class="p">(</span><span class="n">SessionHandler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This object holds the stack of sessions active in the game at</span>
-<span class="sd">    any time.</span>
+<span class="sd">    This object holds the stack of sessions active in the game at any time.</span>
 
-<span class="sd">    A session register with the handler in two steps, first by</span>
-<span class="sd">    registering itself with the connect() method. This indicates an</span>
-<span class="sd">    non-authenticated session. Whenever the session is authenticated</span>
-<span class="sd">    the session together with the related account is sent to the login()</span>
-<span class="sd">    method.</span>
+<span class="sd">    A session register with the handler in two steps, first by registering itself with the connect()</span>
+<span class="sd">    method. This indicates an non-authenticated session. Whenever the session is authenticated the</span>
+<span class="sd">    session together with the related account is sent to the login() method.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -366,7 +363,7 @@
         <span class="n">sess</span><span class="o">.</span><span class="n">load_sync_data</span><span class="p">(</span><span class="n">portalsessiondata</span><span class="p">)</span>
         <span class="n">sess</span><span class="o">.</span><span class="n">at_sync</span><span class="p">()</span>
         <span class="c1"># validate all scripts</span>
-        <span class="n">_ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="c1"># _ScriptDB.objects.validate()</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">sess</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span> <span class="o">=</span> <span class="n">sess</span>
 
         <span class="k">if</span> <span class="n">sess</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="n">sess</span><span class="o">.</span><span class="n">uid</span><span class="p">:</span>
@@ -494,7 +491,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SCONN</span><span class="p">,</span> <span class="n">protocol_path</span><span class="o">=</span><span class="n">protocol_path</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">configdict</span>
+            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SCONN</span><span class="p">,</span> <span class="n">protocol_path</span><span class="o">=</span><span class="n">protocol_path</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">configdict</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.portal_restart_server"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.portal_restart_server">[docs]</a>    <span class="k">def</span> <span class="nf">portal_restart_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -502,14 +499,14 @@
 <span class="sd">        Called by server when reloading. We tell the portal to start a new server instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SRELOAD</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.portal_reset_server"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.portal_reset_server">[docs]</a>    <span class="k">def</span> <span class="nf">portal_reset_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server when reloading. We tell the portal to start a new server instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SRESET</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.portal_shutdown"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.portal_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">portal_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -517,13 +514,12 @@
 <span class="sd">        itself down)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PSHUTD</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">PSHUTD</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.login"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log in the previously unloggedin session and the account we by</span>
-<span class="sd">        now should know is connected to it. After this point we assume</span>
-<span class="sd">        the session to be logged in one way or another.</span>
+<span class="sd">        Log in the previously unloggedin session and the account we by now should know is connected</span>
+<span class="sd">        to it. After this point we assume the session to be logged in one way or another.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): The Session to authenticate.</span>
@@ -565,7 +561,7 @@
         <span class="c1"># sync the portal to the session</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">testmode</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-                <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SLOGIN</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;logged_in&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">uid</span><span class="p">}</span>
+                <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SLOGIN</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;logged_in&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">uid</span><span class="p">}</span>
             <span class="p">)</span>
         <span class="n">account</span><span class="o">.</span><span class="n">at_post_login</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nsess</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
@@ -610,7 +606,7 @@
         <span class="k">if</span> <span class="n">sync_portal</span><span class="p">:</span>
             <span class="c1"># inform portal that session should be closed.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-                <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SDISCONN</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span>
+                <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SDISCONN</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.all_sessions_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.all_sessions_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">all_sessions_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -621,7 +617,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sessdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_sync_data</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
+            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.session_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.session_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
@@ -632,7 +628,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sessdata</span> <span class="o">=</span> <span class="p">{</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">get_sync_data</span><span class="p">()}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.session_portal_partial_sync"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.session_portal_partial_sync">[docs]</a>    <span class="k">def</span> <span class="nf">session_portal_partial_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_data</span><span class="p">):</span>
@@ -645,7 +641,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">session_data</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">session_data</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.disconnect_all_sessions"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.disconnect_all_sessions">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_all_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;You have been disconnected.&quot;</span><span class="p">):</span>
@@ -661,7 +657,7 @@
             <span class="k">del</span> <span class="n">session</span>
         <span class="c1"># tell portal to disconnect all sessions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
-            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">SDISCONNALL</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span>
+            <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">SDISCONNALL</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSessionHandler.disconnect_duplicate_sessions"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.disconnect_duplicate_sessions">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_duplicate_sessions</span><span class="p">(</span>
@@ -680,7 +676,8 @@
         <span class="c1"># mean connecting from the same host would not catch duplicates</span>
         <span class="n">sid</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">curr_session</span><span class="p">)</span>
         <span class="n">doublet_sessions</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">sess</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">sess</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="n">sess</span><span class="o">.</span><span class="n">uid</span> <span class="o">==</span> <span class="n">uid</span> <span class="ow">and</span> <span class="nb">id</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">!=</span> <span class="n">sid</span>
+            <span class="n">sess</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">sess</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="n">sess</span><span class="o">.</span><span class="n">uid</span> <span class="o">==</span> <span class="n">uid</span> <span class="ow">and</span> <span class="nb">id</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">!=</span> <span class="n">sid</span>
         <span class="p">]</span>
 
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">doublet_sessions</span><span class="p">:</span>
@@ -790,8 +787,8 @@
 <span class="sd">            puppet (Object): Object puppeted</span>
 
 <span class="sd">        Returns.</span>
-<span class="sd">            sessions (Session or list): Can be more than one of Object is controlled by</span>
-<span class="sd">                more than one Session (MULTISESSION_MODE &gt; 1).</span>
+<span class="sd">            sessions (Session or list): Can be more than one of Object is controlled by more than</span>
+<span class="sd">                one Session (MULTISESSION_MODE &gt; 1).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">puppet</span><span class="o">.</span><span class="n">sessid</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -804,8 +801,9 @@
 <span class="sd">        Given a client identification hash (for session types that offer them)</span>
 <span class="sd">        return all sessions with a matching hash.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Args</span>
 <span class="sd">            csessid (str): The session hash.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            sessions (list): The sessions with matching .csessid, if any.</span>
 
@@ -868,9 +866,9 @@
 
 <div class="viewcode-block" id="ServerSessionHandler.call_inputfuncs"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.call_inputfuncs">[docs]</a>    <span class="k">def</span> <span class="nf">call_inputfuncs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Split incoming data into its inputfunc counterparts.</span>
-<span class="sd">        This should be called by the serversession.data_in</span>
-<span class="sd">        as `sessionhandler.call_inputfunc(self, **kwargs)`.</span>
+<span class="sd">        Split incoming data into its inputfunc counterparts. This should be</span>
+<span class="sd">        called by the `serversession.data_in` as</span>
+<span class="sd">        `sessionhandler.call_inputfunc(self, **kwargs)`.</span>
 
 <span class="sd">        We also intercept OOB communication here.</span>
 
@@ -878,8 +876,8 @@
 <span class="sd">            sessions (Session): Session.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (any): Incoming data from protocol on</span>
-<span class="sd">                the form `{&quot;commandname&quot;: ((args), {kwargs}),...}`</span>
+<span class="sd">            any (tuple): Incoming data from protocol, each</span>
+<span class="sd">                on the form `commandname=((args), {kwargs})`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -900,7 +898,11 @@
                     <span class="n">log_trace</span><span class="p">()</span></div></div>
 
 
-<span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">ServerSessionHandler</span><span class="p">()</span>
+<span class="c1"># import class from settings</span>
+<span class="n">_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER_CLASS</span><span class="p">)</span>
+
+<span class="c1"># Instantiate class. These globals are used to provide singleton-like behavior.</span>
+<span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">_SESSION_HANDLER_CLASS</span><span class="p">()</span>
 <span class="n">SESSIONS</span> <span class="o">=</span> <span class="n">SESSION_HANDLER</span>  <span class="c1"># legacy</span>
 </pre></div>
 
@@ -938,7 +940,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="sessionhandler.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

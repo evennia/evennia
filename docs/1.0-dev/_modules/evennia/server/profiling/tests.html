@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -41,6 +42,7 @@
   <h1>Source code for evennia.server.profiling.tests</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">mock_open</span>
+<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
 <span class="kn">from</span> <span class="nn">.dummyrunner_settings</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">c_creates_button</span><span class="p">,</span>
     <span class="n">c_creates_obj</span><span class="p">,</span>
@@ -70,8 +72,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="s2">&quot;20171025161153-1&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Dummy-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;password-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Dummy_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">Something</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span> <span class="o">=</span> <span class="s2">&quot;testing_room_start_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span></div>
@@ -84,28 +86,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
-                <span class="s2">&quot;create </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span><span class="p">),</span>
-                <span class="s2">&quot;connect </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span><span class="p">),</span>
-                <span class="s2">&quot;@dig </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
-                <span class="s2">&quot;@teleport </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
-                <span class="s2">&quot;@dig testing_room_1 = exit_1, exit_1&quot;</span><span class="p">,</span>
+                <span class="n">Something</span><span class="p">,</span>  <span class="c1"># create</span>
+                <span class="n">Something</span><span class="p">,</span>  <span class="c1"># connect</span>
+                <span class="s2">&quot;dig </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
+                <span class="s2">&quot;teleport </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
+                <span class="s2">&quot;py from evennia.server.profiling.dummyrunner import DummyRunnerCmdSet;&quot;</span>
+                <span class="s2">&quot;self.cmdset.add(DummyRunnerCmdSet, persistent=False)&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_login_no_dig"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_login_no_dig">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_login_no_dig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="n">c_login_nodig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;create </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span><span class="p">),</span>
-                <span class="s2">&quot;connect </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span><span class="p">),</span>
-            <span class="p">),</span>
-        <span class="p">)</span></div>
+        <span class="n">cmd1</span><span class="p">,</span> <span class="n">cmd2</span> <span class="o">=</span> <span class="n">c_login_nodig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">cmd1</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;create &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">cmd2</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;connect &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_logout">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_logout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;@quit&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_logout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,))</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.perception_method_tests"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.perception_method_tests">[docs]</a>    <span class="k">def</span> <span class="nf">perception_method_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="p">),))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;exit1&quot;</span><span class="p">,</span> <span class="s2">&quot;exit2&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> exit1&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> exit2&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">]</span>
@@ -124,11 +123,11 @@
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_help"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;help @teleport&quot;</span><span class="p">,</span> <span class="s2">&quot;help look&quot;</span><span class="p">,</span> <span class="s2">&quot;help @tunnel&quot;</span><span class="p">,</span> <span class="s2">&quot;help @dig&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;dummyrunner_echo_response&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_digs"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_digs">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_digs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_digs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;@dig/tel testing_room_1 = exit_1, exit_1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_digs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;dig/tel testing_room_1 = exit_1, exit_1&quot;</span><span class="p">,</span> <span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;exit_1&quot;</span><span class="p">,</span> <span class="s2">&quot;exit_1&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
@@ -137,10 +136,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_creates_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
-                <span class="s2">&quot;@create </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
-                <span class="s1">&#39;@desc </span><span class="si">%s</span><span class="s1"> = &quot;this is a test object&#39;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
-                <span class="s2">&quot;@set </span><span class="si">%s</span><span class="s2">/testattr = this is a test attribute value.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
-                <span class="s2">&quot;@set </span><span class="si">%s</span><span class="s2">/testattr2 = this is a second test attribute.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+                <span class="s2">&quot;create </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+                <span class="s1">&#39;desc </span><span class="si">%s</span><span class="s1"> = &quot;this is a test object&#39;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+                <span class="s2">&quot;set </span><span class="si">%s</span><span class="s2">/testattr = this is a test attribute value.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+                <span class="s2">&quot;set </span><span class="si">%s</span><span class="s2">/testattr2 = this is a second test attribute.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">,</span> <span class="p">[</span><span class="n">objname</span><span class="p">])</span>
@@ -151,7 +150,7 @@
         <span class="n">typeclass_name</span> <span class="o">=</span> <span class="s2">&quot;contrib.tutorial_examples.red_button.RedButton&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_creates_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;@create </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">typeclass_name</span><span class="p">),</span> <span class="s2">&quot;@desc </span><span class="si">%s</span><span class="s2"> = test red button!&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;create </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">typeclass_name</span><span class="p">),</span> <span class="s2">&quot;desc </span><span class="si">%s</span><span class="s2"> = test red button!&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">,</span> <span class="p">[</span><span class="n">objname</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
@@ -160,25 +159,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_socialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
-                <span class="s2">&quot;ooc Hello!&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;ooc Testing ...&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;ooc Testing ... times 2&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pub Hello!&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;say Yo!&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;emote stands looking around.&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_moves"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_moves">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;look&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;north&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;north&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_n"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_n">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_n</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;north&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_n</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,))</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_s"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_s">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;south&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;south&quot;</span><span class="p">,))</span></div></div>
 
 
 <div class="viewcode-block" id="TestMemPlot"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestMemPlot">[docs]</a><span class="k">class</span> <span class="nc">TestMemPlot</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
@@ -238,7 +235,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -257,6 +253,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

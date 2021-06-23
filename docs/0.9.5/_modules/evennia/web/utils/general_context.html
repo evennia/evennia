@@ -39,40 +39,19 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.web.utils.general_context</h1><div class="highlight"><pre>
-<span></span><span class="c1">#</span>
-<span class="c1"># This file defines global variables that will always be</span>
-<span class="c1"># available in a view context without having to repeatedly</span>
-<span class="c1"># include it. For this to work, this file is included in</span>
-<span class="c1"># the settings file, in the TEMPLATE_CONTEXT_PROCESSORS</span>
-<span class="c1"># tuple.</span>
-<span class="c1">#</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file defines global variables that will always be available in a view</span>
+<span class="sd">context without having to repeatedly include it.</span>
+
+<span class="sd">For this to work, this file is included in the settings file, in the</span>
+<span class="sd">TEMPLATES[&quot;OPTIONS&quot;][&quot;context_processors&quot;] list.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span>
-
-<span class="c1"># Determine the site name and server version</span>
-<div class="viewcode-block" id="set_game_name_and_slogan"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.set_game_name_and_slogan">[docs]</a><span class="k">def</span> <span class="nf">set_game_name_and_slogan</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets global variables GAME_NAME and GAME_SLOGAN which are used by</span>
-<span class="sd">    general_context.</span>
-
-<span class="sd">    Notes:</span>
-<span class="sd">        This function is used for unit testing the values of the globals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">GAME_NAME</span><span class="p">,</span> <span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="n">SERVER_VERSION</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">GAME_NAME</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">GAME_NAME</span> <span class="o">=</span> <span class="s2">&quot;Evennia&quot;</span>
-    <span class="n">SERVER_VERSION</span> <span class="o">=</span> <span class="n">get_evennia_version</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_SLOGAN</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="n">SERVER_VERSION</span></div>
-
-
-<span class="n">set_game_name_and_slogan</span><span class="p">()</span>
 
 <span class="c1"># Setup lists of the most relevant apps so</span>
 <span class="c1"># the adminsite becomes more readable.</span>
@@ -82,7 +61,30 @@
 <span class="n">GAME_SETUP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Permissions&quot;</span><span class="p">,</span> <span class="s2">&quot;Config&quot;</span><span class="p">]</span>
 <span class="n">CONNECTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Irc&quot;</span><span class="p">]</span>
 <span class="n">WEBSITE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Flatpages&quot;</span><span class="p">,</span> <span class="s2">&quot;News&quot;</span><span class="p">,</span> <span class="s2">&quot;Sites&quot;</span><span class="p">]</span>
+<span class="n">REST_API_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
 
+<span class="c1"># Determine the site name and server version</span>
+<div class="viewcode-block" id="set_game_name_and_slogan"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.set_game_name_and_slogan">[docs]</a><span class="k">def</span> <span class="nf">set_game_name_and_slogan</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets global variables GAME_NAME and GAME_SLOGAN which are used by</span>
+<span class="sd">    general_context.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function is used for unit testing the values of the globals.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">GAME_NAME</span><span class="p">,</span> <span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="n">SERVER_VERSION</span><span class="p">,</span> <span class="n">REST_API_ENABLED</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">GAME_NAME</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">GAME_NAME</span> <span class="o">=</span> <span class="s2">&quot;Evennia&quot;</span>
+    <span class="n">SERVER_VERSION</span> <span class="o">=</span> <span class="n">get_evennia_version</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_SLOGAN</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="n">SERVER_VERSION</span>
+
+    <span class="n">REST_API_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">REST_API_ENABLED</span></div>
 
 <div class="viewcode-block" id="set_webclient_settings"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.set_webclient_settings">[docs]</a><span class="k">def</span> <span class="nf">set_webclient_settings</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -91,6 +93,7 @@
 
 <span class="sd">    Notes:</span>
 <span class="sd">        Used for unit testing.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">WEBCLIENT_ENABLED</span><span class="p">,</span> <span class="n">WEBSOCKET_CLIENT_ENABLED</span><span class="p">,</span> <span class="n">WEBSOCKET_PORT</span><span class="p">,</span> <span class="n">WEBSOCKET_URL</span>
     <span class="n">WEBCLIENT_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBCLIENT_ENABLED</span>
@@ -105,13 +108,15 @@
     <span class="n">WEBSOCKET_URL</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_URL</span></div>
 
 
+<span class="n">set_game_name_and_slogan</span><span class="p">()</span>
 <span class="n">set_webclient_settings</span><span class="p">()</span>
 
 <span class="c1"># The main context processor function</span>
 <div class="viewcode-block" id="general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.general_context">[docs]</a><span class="k">def</span> <span class="nf">general_context</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns common Evennia-related context stuff, which</span>
-<span class="sd">    is automatically added to context of all views.</span>
+<span class="sd">    Returns common Evennia-related context stuff, which is automatically added</span>
+<span class="sd">    to context of all views.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
@@ -136,6 +141,7 @@
         <span class="s2">&quot;websocket_enabled&quot;</span><span class="p">:</span> <span class="n">WEBSOCKET_CLIENT_ENABLED</span><span class="p">,</span>
         <span class="s2">&quot;websocket_port&quot;</span><span class="p">:</span> <span class="n">WEBSOCKET_PORT</span><span class="p">,</span>
         <span class="s2">&quot;websocket_url&quot;</span><span class="p">:</span> <span class="n">WEBSOCKET_URL</span><span class="p">,</span>
+        <span class="s2">&quot;rest_api_enabled&quot;</span><span class="p">:</span> <span class="n">REST_API_ENABLED</span><span class="p">,</span>
     <span class="p">}</span></div>
 </pre></div>
 
@@ -173,7 +179,6 @@
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="general_context.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

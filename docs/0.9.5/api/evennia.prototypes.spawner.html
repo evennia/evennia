@@ -80,7 +80,7 @@ prototype_locks (str, optional): locks for restricting access to this prototype.
 <dl class="simple">
 <dt>prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype</dt><dd><p>in listings</p>
 </dd>
-<dt>prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or</dt><dd><p>a list of parents, for multiple left-to-right inheritance.</p>
+<dt>prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent</dt><dd><p>prototype, or a list of parents, for multiple left-to-right inheritance.</p>
 </dd>
 </dl>
 <p>prototype: Deprecated. Same meaning as ‘parent’.</p>
@@ -224,8 +224,8 @@ attr/tag (for example) are represented by a tuple.</p></li>
 This is most useful for displaying.</p></li>
 <li><p><strong>implicit_keep</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, the resulting diff will assume KEEP unless the new
 prototype explicitly change them. That is, if a key exists in <strong>prototype1</strong> and
-not in <strong>prototype2</strong>, it will not be REMOVEd but set to KEEP instead. This is particularly
-useful for auto-generated prototypes when updating objects.</p></li>
+not in <strong>prototype2</strong>, it will not be REMOVEd but set to KEEP instead. This is
+particularly useful for auto-generated prototypes when updating objects.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -349,7 +349,7 @@ of the olc _format_diff_text_and_options without the options.</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.spawner.batch_update_objects_with_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update existing objects with the latest version of the prototype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -366,6 +366,7 @@ expected - for example, one usually do not want to remove the object’s locatio
 if it’s not set in the prototype. With <strong>exact=True</strong>, all un-specified properties of the
 objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
 between the  object and the prototype but is usually impractical.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – This may be used by protfuncs to do permission checks.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -435,7 +436,7 @@ unprivileged users!</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.spawner.spawn">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">spawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">prototypes</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.spawn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">spawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">prototypes</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.spawn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn a number of prototyped objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -445,6 +446,7 @@ dictionary. These will be batched-spawned as one object each.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – This may be used by protfuncs to do access checks.</p></li>
 <li><p><strong>prototype_modules</strong> (<em>str</em><em> or </em><a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A python-path to a prototype
 module, or a list of such paths. These will be used to build
 the global protparents dictionary accessible by the input
@@ -517,7 +519,6 @@ custom <strong>prototype_parents</strong> are given to this function.</p></li>
   <li><a href="../../1.0-dev/api/evennia.prototypes.spawner.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.prototypes.spawner.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

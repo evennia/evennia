@@ -52,81 +52,6 @@
 <span class="sd">with a lock variable/field, so be careful to not expect</span>
 <span class="sd">a certain object type.</span>
 
-
-<span class="sd">**Appendix: MUX locks**</span>
-
-<span class="sd">Below is a list nicked from the MUX help file on the locks available</span>
-<span class="sd">in standard MUX. Most of these are not relevant to core Evennia since</span>
-<span class="sd">locks in Evennia are considerably more flexible and can be implemented</span>
-<span class="sd">on an individual command/typeclass basis rather than as globally</span>
-<span class="sd">available like the MUX ones. So many of these are not available in</span>
-<span class="sd">basic Evennia, but could all be implemented easily if needed for the</span>
-<span class="sd">individual game.</span>
-
-<span class="sd">```</span>
-<span class="sd">MUX Name:      Affects:        Effect:</span>
-<span class="sd">----------------------------------------------------------------------</span>
-<span class="sd">DefaultLock:   Exits:          controls who may traverse the exit to</span>
-<span class="sd">                               its destination.</span>
-<span class="sd">                                 Evennia: &quot;traverse:&lt;lockfunc()&gt;&quot;</span>
-<span class="sd">               Rooms:          controls whether the account sees the</span>
-<span class="sd">                               SUCC or FAIL message for the room</span>
-<span class="sd">                               following the room description when</span>
-<span class="sd">                               looking at the room.</span>
-<span class="sd">                                 Evennia: Custom typeclass</span>
-<span class="sd">               Accounts/Things: controls who may GET the object.</span>
-<span class="sd">                                 Evennia: &quot;get:&lt;lockfunc()&quot;</span>
-<span class="sd"> EnterLock:    Accounts/Things: controls who may ENTER the object</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> GetFromLock:  All but Exits:  controls who may gets things from a</span>
-<span class="sd">                               given location.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> GiveLock:     Accounts/Things: controls who may give the object.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> LeaveLock:    Accounts/Things: controls who may LEAVE the object.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> LinkLock:     All but Exits:  controls who may link to the location</span>
-<span class="sd">                               if the location is LINK_OK (for linking</span>
-<span class="sd">                               exits or setting drop-tos) or ABODE (for</span>
-<span class="sd">                               setting homes)</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> MailLock:     Accounts:        controls who may @mail the account.</span>
-<span class="sd">                               Evennia:</span>
-<span class="sd"> OpenLock:     All but Exits:  controls who may open an exit.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> PageLock:     Accounts:        controls who may page the account.</span>
-<span class="sd">                                 Evennia: &quot;send:&lt;lockfunc()&gt;&quot;</span>
-<span class="sd"> ParentLock:   All:            controls who may make @parent links to</span>
-<span class="sd">                               the object.</span>
-<span class="sd">                                 Evennia: Typeclasses and</span>
-<span class="sd">                               &quot;puppet:&lt;lockstring()&gt;&quot;</span>
-<span class="sd"> ReceiveLock:  Accounts/Things: controls who may give things to the</span>
-<span class="sd">                               object.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> SpeechLock:   All but Exits:  controls who may speak in that location</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> TeloutLock:   All but Exits:  controls who may teleport out of the</span>
-<span class="sd">                               location.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> TportLock:    Rooms/Things:   controls who may teleport there</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> UseLock:      All but Exits:  controls who may USE the object, GIVE</span>
-<span class="sd">                               the object money and have the PAY</span>
-<span class="sd">                               attributes run, have their messages</span>
-<span class="sd">                               heard and possibly acted on by LISTEN</span>
-<span class="sd">                               and AxHEAR, and invoke $-commands</span>
-<span class="sd">                               stored on the object.</span>
-<span class="sd">                                 Evennia: Commands and Cmdsets.</span>
-<span class="sd"> DropLock:     All but rooms:  controls who may drop that object.</span>
-<span class="sd">                                 Evennia:</span>
-<span class="sd"> VisibleLock:  All:            Controls object visibility when the</span>
-<span class="sd">                               object is not dark and the looker</span>
-<span class="sd">                               passes the lock. In DARK locations, the</span>
-<span class="sd">                               object must also be set LIGHT and the</span>
-<span class="sd">                               viewer must pass the VisibleLock.</span>
-<span class="sd">                                 Evennia: Room typeclass with</span>
-<span class="sd">                                          Dark/light script</span>
-<span class="sd">```</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -153,20 +78,29 @@
 
 
 <div class="viewcode-block" id="true"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.true">[docs]</a><span class="k">def</span> <span class="nf">true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="s2">&quot;Always returns True.&quot;</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Always returns True.</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="false"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.false">[docs]</a><span class="k">def</span> <span class="nf">false</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="s2">&quot;Always returns False&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Always returns False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="superuser"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.superuser">[docs]</a><span class="k">def</span> <span class="nf">superuser</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
@@ -580,8 +514,6 @@
 <span class="sd">    Only true if accessed_obj has the specified tag and optional</span>
 <span class="sd">    category.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
-        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
     <span class="n">tagkey</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
@@ -612,9 +544,6 @@
 <span class="sd">    of recursion (so if this lock is on a room, then an object inside a box</span>
 <span class="sd">    in your inventory will also pass the lock).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
-        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
 
     <span class="k">def</span> <span class="nf">_recursive_inside</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="n">lvl</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
@@ -687,17 +616,6 @@
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="kc">False</span></div>
-
-
-<div class="viewcode-block" id="superuser"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.superuser">[docs]</a><span class="k">def</span> <span class="nf">superuser</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Only accepts an accesing_obj that is superuser (e.g. user #1)</span>
-
-<span class="sd">    Since a superuser would not ever reach this check (superusers</span>
-<span class="sd">    bypass the lock entirely), any user who gets this far cannot be a</span>
-<span class="sd">    superuser, hence we just return False. :)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
@@ -778,7 +696,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="lockfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

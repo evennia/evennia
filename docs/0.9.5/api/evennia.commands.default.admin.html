@@ -90,6 +90,11 @@ supplied it will be echoed to the user unless /quiet is set.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(boot) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdBoot.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdBoot.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'admin', 'key': 'boot', 'tags': '', 'text': '\n    kick an account from the server.\n\n    Usage\n      boot[/switches] &lt;account obj&gt; [: reason]\n\n    Switches:\n      quiet - Silently boot without informing account\n      sid - boot by session id instead of name or dbref\n\n    Boot an account object from the server. If a reason is\n    supplied it will be echoed to the user unless /quiet is set.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdBoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -164,6 +169,11 @@ values in each tuple is set to the empty string.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(ban) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdBan.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdBan.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'bans', 'category': 'admin', 'key': 'ban', 'tags': '', 'text': &quot;\n    ban an account from the server\n\n    Usage:\n      ban [&lt;name or ip&gt; [: reason]]\n\n    Without any arguments, shows numbered list of active bans.\n\n    This command bans a user from accessing the game. Supply an optional\n    reason to be able to later remember why the ban was put in place.\n\n    It is often preferable to ban an account from the server than to\n    delete an account with accounts/delete. If banned by name, that account\n    account can no longer be logged into.\n\n    IP (Internet Protocol) address banning allows blocking all access\n    from a specific address or subnet. Use an asterisk (*) as a\n    wildcard.\n\n    Examples:\n      ban thomas             - ban account 'thomas'\n      ban/ip 134.233.2.111   - ban specific ip address\n      ban/ip 134.233.2.*     - ban all in a subnet\n      ban/ip 134.233.*.*     - even wider ban\n\n    A single IP filter can be easy to circumvent by changing computers\n    or requesting a new IP address. Setting a wide IP block filter with\n    wildcards might be tempting, but remember that it may also\n    accidentally block innocent users connecting from the same country\n    or region.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdBan.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -208,6 +218,11 @@ unban.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdUnban.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(unban) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdUnban.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdUnban.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'admin', 'key': 'unban', 'tags': '', 'text': '\n    remove a ban from an account\n\n    Usage:\n      unban &lt;banid&gt;\n\n    This will clear an account name/ip ban previously set with the ban\n    command.  Use this command without an argument to view a numbered\n    list of bans. Use the numbers in this list to select which one to\n    unban.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdUnban.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -268,6 +283,11 @@ to accounts respectively.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(emit) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdEmit.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'remit pemit', 'category': 'admin', 'key': 'emit', 'tags': '', 'text': '\n    admin command for emitting message to multiple objects\n\n    Usage:\n      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n\n    Switches:\n      room     -  limit emits to rooms only (default)\n      accounts -  limit emits to accounts only\n      contents -  send to the contents of matched objects too\n\n    Emits a message to the selected objects or to\n    your immediate surroundings. If the object is a room,\n    send to its contents. remit and pemit are just\n    limited forms of emit, for sending to rooms and\n    to accounts respectively.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -309,6 +329,11 @@ to accounts respectively.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdNewPassword.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(newpassword) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdNewPassword.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdNewPassword.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'admin', 'key': 'userpassword', 'tags': '', 'text': &quot;\n    change the password of an account\n\n    Usage:\n      userpassword &lt;user obj&gt; = &lt;new password&gt;\n\n    Set an account's password.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdNewPassword.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -364,6 +389,11 @@ or account. If no permission is given, list all permissions on &lt;object&gt;.</
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(perm) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdPerm.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdPerm.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'setperm', 'category': 'admin', 'key': 'perm', 'tags': '', 'text': '\n    set the permissions of an account/object\n\n    Usage:\n      perm[/switch] &lt;object&gt; [= &lt;permission&gt;[,&lt;permission&gt;,...]]\n      perm[/switch] *&lt;account&gt; [= &lt;permission&gt;[,&lt;permission&gt;,...]]\n\n    Switches:\n      del     -  delete the given permission from &lt;object&gt; or &lt;account&gt;.\n      account -  set permission on an account (same as adding * to name)\n\n    This command sets/clears individual permission strings on an object\n    or account. If no permission is given, list all permissions on &lt;object&gt;.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdPerm.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -406,6 +436,11 @@ including all currently unlogged in.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdWall.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(wall) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdWall.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdWall.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'admin', 'key': 'wall', 'tags': '', 'text': '\n    make an announcement to all\n\n    Usage:\n      wall &lt;message&gt;\n\n    Announces a message to all connected sessions\n    including all currently unlogged in.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdWall.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -457,6 +492,11 @@ including all currently unlogged in.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(spawn) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.admin.CmdForce.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.admin.CmdForce.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'force', 'tags': '', 'text': '\n    forces an object to execute a command\n\n    Usage:\n        force &lt;object&gt;=&lt;command string&gt;\n\n    Example:\n        force bob=get stick\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdForce.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -503,7 +543,6 @@ including all currently unlogged in.</p>
   <li><a href="../../1.0-dev/api/evennia.commands.default.admin.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.default.admin.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

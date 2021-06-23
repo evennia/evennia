@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -340,7 +341,7 @@ with (it may still be useful as a mix-in prototype).</p></li>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.protfunc_parser">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">protfunc_parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">available_functions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">stacktrace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#protfunc_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.protfunc_parser" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">protfunc_parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">available_functions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">stacktrace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#protfunc_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.protfunc_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a prototype value string for a protfunc and process it.</p>
 <p>Available protfuncs are specified as callables in one of the modules of
 <strong>settings.PROTFUNC_MODULES</strong>, or specified on the command line.</p>
@@ -351,8 +352,6 @@ with (it may still be useful as a mix-in prototype).</p></li>
 protfuncs, all other types are returned as-is.</p></li>
 <li><p><strong>available_functions</strong> (<em>dict</em><em>, </em><em>optional</em>) – Mapping of name:protfunction to use for this parsing.
 If not set, use default sources.</p></li>
-<li><p><strong>testing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Passed to protfunc. If in a testing mode, some protfuncs may
-behave differently.</p></li>
 <li><p><strong>stacktrace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, print the stack parsing process of the protfunc-parser.</p></li>
 </ul>
 </dd>
@@ -361,22 +360,15 @@ behave differently.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Passed to protfunc. Session of the entity spawning the prototype.</p></li>
 <li><p><strong>protototype</strong> (<em>dict</em>) – Passed to protfunc. The dict this protfunc is a part of.</p></li>
 <li><p><strong>current_key</strong> (<em>str</em>) – Passed to protfunc. The key in the prototype that will hold this value.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – This is necessary for certain protfuncs that perform object
+searches and have to check permissions.</p></li>
 <li><p><strong>any</strong> (<em>any</em>) – Passed on to the protfunc.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>testresult (tuple)</em> –</p>
-<dl class="simple">
-<dt>If <strong>testing</strong> is set, returns a tuple (error, result) where error is</dt><dd><p>either None or a string detailing the error from protfunc_parser or seen when trying to
-run <strong>literal_eval</strong> on the parsed string.</p>
-</dd>
-<dt>any (any): A structure to replace the string on the prototype level. If this is a</dt><dd><p>callable or a (callable, (args,)) structure, it will be executed as if one had supplied
-it to the prototype directly. This structure is also passed through literal_eval so one
-can get actual Python primitives out of it (not just strings). It will also identify
-eventual object #dbrefs in the output from the protfunc.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p><em>any</em> – A structure to replace the string on the prototype leve.  Note
+that FunctionParser functions $funcname(<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs) can return any
+data type to insert into the prototype.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -423,18 +415,22 @@ eventual object #dbrefs in the output from the protfunc.</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.init_spawn_value">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze the prototype value and produce a value useful at the point of spawning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>value</strong> (<em>any</em>) – <p>This can be:
 callable - will be called as callable()
-(callable, (args,)) - will be called as callable(<a href="#id1"><span class="problematic" id="id2">*</span></a>args)
+(callable, (args,)) - will be called as callable(<a href="#id5"><span class="problematic" id="id6">*</span></a>args)
 other - will be assigned depending on the variable type
 validator (callable, optional): If given, this will be called with the value to</p>
 <blockquote>
 <div><p>check and guarantee the outcome is of a given type.</p>
 </div></blockquote>
+<dl class="simple">
+<dt>caller (Object or Account): This is necessary for certain protfuncs that perform object</dt><dd><p>searches and have to check permissions.</p>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -500,7 +496,6 @@ validator (callable, optional): If given, this will be called with the value to<
   <li><a href="../../0.9.5/api/evennia.prototypes.prototypes.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -517,6 +512,7 @@ validator (callable, optional): If given, this will be called with the value to<
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

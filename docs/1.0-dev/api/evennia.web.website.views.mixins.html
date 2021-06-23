@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.mixins</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,83 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-website-views-mixins">
-<h1>evennia.web.website.views.mixins<a class="headerlink" href="#evennia-web-website-views-mixins" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.website.views.mixins">
+<span id="evennia-web-website-views-mixins"></span><h1>evennia.web.website.views.mixins<a class="headerlink" href="#module-evennia.web.website.views.mixins" title="Permalink to this headline">¶</a></h1>
+<p>These are mixins for class-based views, granting functionality.</p>
+<dl class="py class">
+<dt id="evennia.web.website.views.mixins.TypeclassMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.mixins.</code><code class="sig-name descname">TypeclassMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views/mixins.html#TypeclassMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.mixins.TypeclassMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Django views typically work with classes called “models.” Evennia objects
+are an enhancement upon these Django models and are called “typeclasses.”
+But Django itself has no idea what a “typeclass” is.</p>
+<p>For the sake of mitigating confusion, any view class with this in its
+inheritance list will be modified to work with Evennia Typeclass objects or
+Django models interchangeably.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.mixins.TypeclassMixin.typeclass">
+<em class="property">property </em><code class="sig-name descname">typeclass</code><a class="headerlink" href="#evennia.web.website.views.mixins.TypeclassMixin.typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.mixins.EvenniaCreateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.mixins.</code><code class="sig-name descname">EvenniaCreateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/mixins.html#EvenniaCreateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaCreateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.CreateView</span></code>, <a class="reference internal" href="#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default CreateView.</p>
+<p>CreateView is used for creating new objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.mixins.EvenniaCreateView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaCreateView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.mixins.EvenniaDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.mixins.</code><code class="sig-name descname">EvenniaDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/mixins.html#EvenniaDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.detail.DetailView</span></code>, <a class="reference internal" href="#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default DetailView.</p>
+<p>DetailView is used for displaying objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.mixins.EvenniaDetailView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaDetailView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.mixins.EvenniaUpdateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.mixins.</code><code class="sig-name descname">EvenniaUpdateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/mixins.html#EvenniaUpdateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaUpdateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.UpdateView</span></code>, <a class="reference internal" href="#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default UpdateView.</p>
+<p>UpdateView is used for updating objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.mixins.EvenniaUpdateView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaUpdateView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.mixins.EvenniaDeleteView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.mixins.</code><code class="sig-name descname">EvenniaDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/mixins.html#EvenniaDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaDeleteView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.DeleteView</span></code>, <a class="reference internal" href="#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default DeleteView.</p>
+<p>DeleteView is used for deleting objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.mixins.EvenniaDeleteView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.mixins.EvenniaDeleteView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +160,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +176,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.mixins</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

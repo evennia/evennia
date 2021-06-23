@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.adminsite</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,50 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-utils-adminsite">
-<h1>evennia.web.utils.adminsite<a class="headerlink" href="#evennia-web-utils-adminsite" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.utils.adminsite">
+<span id="evennia-web-utils-adminsite"></span><h1>evennia.web.utils.adminsite<a class="headerlink" href="#module-evennia.web.utils.adminsite" title="Permalink to this headline">¶</a></h1>
+<p>Custom Evennia admin-site, for better customization of the admin-site
+as a whole.</p>
+<p>This must be located outside of the admin/ folder because it must be imported
+before any of the app-data (which in turn must be imported in the <strong>__init__.py</strong>
+of that folder for Django to find them).</p>
+<dl class="py class">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminApp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.adminsite.</code><code class="sig-name descname">EvenniaAdminApp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/adminsite.html#EvenniaAdminApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.apps.AdminConfig</span></code></p>
+<p>This is imported in INSTALLED_APPS instead of django.contrib.admin.</p>
+<dl class="py attribute">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminApp.default_site">
+<code class="sig-name descname">default_site</code><em class="property"> = 'evennia.web.utils.adminsite.EvenniaAdminSite'</em><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminApp.default_site" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminSite">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.adminsite.</code><code class="sig-name descname">EvenniaAdminSite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'admin'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/adminsite.html#EvenniaAdminSite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminSite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.sites.AdminSite</span></code></p>
+<p>The main admin site root (replacing the default from Django). When doing
+admin.register in the admin/ folder, this is what is being registered to.</p>
+<dl class="py attribute">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminSite.site_header">
+<code class="sig-name descname">site_header</code><em class="property"> = 'Evennia web admin'</em><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminSite.site_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminSite.app_order">
+<code class="sig-name descname">app_order</code><em class="property"> = ['accounts', 'objects', 'scripts', 'comms', 'help', 'typeclasses', 'server', 'sites', 'flatpages', 'auth']</em><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminSite.app_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.utils.adminsite.EvenniaAdminSite.get_app_list">
+<code class="sig-name descname">get_app_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/adminsite.html#EvenniaAdminSite.get_app_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.adminsite.EvenniaAdminSite.get_app_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sorted list of all the installed apps that have been
+registered in this site.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +127,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +143,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.adminsite</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

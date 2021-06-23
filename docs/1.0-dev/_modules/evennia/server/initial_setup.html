@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -66,13 +67,11 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need</span>
-<span class="sd">help, want to contribute, report issues or just join the community.</span>
-<span class="sd">As Account #1 you can create a demo/tutorial area with &#39;|wbatchcommand tutorial_world.build|n&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<span class="p">)</span>
+<span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need</span>
+<span class="s2">help, want to contribute, report issues or just join the community.</span>
+<span class="s2">As Account #1 you can create a demo/tutorial area with &#39;|wbatchcommand tutorial_world.build|n&#39;.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
 
 <span class="n">WARNING_POSTGRESQL_FIX</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -81,7 +80,7 @@
 <span class="s2">    but the superuser was not yet connected to them. Please use in</span>
 <span class="s2">    game commands to connect Account #1 to those channels when first</span>
 <span class="s2">    logging in.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="get_god_account"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.get_god_account">[docs]</a><span class="k">def</span> <span class="nf">get_god_account</span><span class="p">():</span>
@@ -172,10 +171,9 @@
     <span class="n">goduser</span> <span class="o">=</span> <span class="n">get_god_account</span><span class="p">()</span>
 
     <span class="n">channel_mudinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_mudinfo</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;settings.CHANNEL_MUDINFO must be defined.&quot;</span><span class="p">)</span>
-    <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_mudinfo</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">channel_mudinfo</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_mudinfo</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span>
 
     <span class="n">channel_connectinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span>
     <span class="k">if</span> <span class="n">channel_connectinfo</span><span class="p">:</span>
@@ -315,7 +313,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -334,6 +331,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

@@ -403,6 +403,11 @@ available to the command</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.barter.CmdTradeBase.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdTradeBase.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    Base command for Trade commands to inherit from. Implements the\n    custom parsing.\n    '}</em><a class="headerlink" href="#evennia.contrib.barter.CmdTradeBase.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -444,6 +449,11 @@ available to the command</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.barter.CmdTradeHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdTradeHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdTradeHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'trade', 'key': 'trade help', 'tags': '', 'text': '\n    help command for the trade system.\n\n    Usage:\n        trade help\n\n    Displays help for the trade commands.\n    '}</em><a class="headerlink" href="#evennia.contrib.barter.CmdTradeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -488,6 +498,11 @@ standing offer.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.barter.CmdOffer.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdOffer.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdOffer.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'trading', 'key': 'offer', 'tags': '', 'text': '\n    offer one or more items in trade.\n\n    Usage:\n      offer &lt;object&gt; [, object2, ...][:emote]\n\n    Offer objects in trade. This will replace the currently\n    standing offer.\n    '}</em><a class="headerlink" href="#evennia.contrib.barter.CmdOffer.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -537,6 +552,11 @@ the current offer using the ‘offers’ command.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdAccept.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdAccept.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'agree', 'category': 'trading', 'key': 'accept', 'tags': '', 'text': &quot;\n    accept the standing offer\n\n    Usage:\n      accept [:emote]\n      agreee [:emote]\n\n    This will accept the current offer. The other party must also accept\n    for the deal to go through. You can use the 'decline' command to change\n    your mind as long as the other party has not yet accepted. You can inspect\n    the current offer using the 'offers' command.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.barter.CmdAccept.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -583,6 +603,11 @@ decline the old offer.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdDecline.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdDecline.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'trading', 'key': 'decline', 'tags': '', 'text': &quot;\n    decline the standing offer\n\n    Usage:\n      decline [:emote]\n\n    This will decline a previously 'accept'ed offer (so this allows you to\n    change your mind). You can only use this as long as the other party\n    has not yet accepted the deal. Also, changing the offer will automatically\n    decline the old offer.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.barter.CmdDecline.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -625,6 +650,11 @@ determine if it’s worth your while.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.barter.CmdEvaluate.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdEvaluate.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdEvaluate.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'eval', 'category': 'trading', 'key': 'evaluate', 'tags': '', 'text': &quot;\n    evaluate objects on offer\n\n    Usage:\n      evaluate &lt;offered object&gt;\n\n    This allows you to examine any object currently on offer, to\n    determine if it's worth your while.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.barter.CmdEvaluate.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -675,6 +705,11 @@ try to influence the other part in the deal.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdStatus.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdStatus.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'deal offers', 'category': 'trading', 'key': 'status', 'tags': '', 'text': &quot;\n    show a list of the current deal\n\n    Usage:\n      status\n      deal\n      offers\n\n    Shows the currently suggested offers on each sides of the deal. To\n    accept the current deal, use the 'accept' command. Use 'offer' to\n    change your deal. You might also want to use 'say', 'emote' etc to\n    try to influence the other part in the deal.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.barter.CmdStatus.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -717,6 +752,11 @@ finish trade [:say]</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.barter.CmdFinish.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdFinish.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdFinish.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'finish trade', 'category': 'trading', 'key': 'end trade', 'tags': '', 'text': '\n    end the trade prematurely\n\n    Usage:\n      end trade [:say]\n      finish trade [:say]\n\n    This ends the trade prematurely. No trade will take place.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.barter.CmdFinish.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -793,6 +833,11 @@ info to your choice.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.barter.CmdTrade.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.barter.CmdTrade.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'barter', 'category': 'general', 'key': 'trade', 'tags': '', 'text': '\n    Initiate trade with another party\n\n    Usage:\n      trade &lt;other party&gt; [:say]\n      trade &lt;other party&gt; accept [:say]\n      trade &lt;other party&gt; decline [:say]\n\n    Initiate trade with another party. The other party needs to repeat\n    this command with trade accept/decline within a minute in order to\n    properly initiate the trade action. You can use the decline option\n    yourself if you want to retract an already suggested trade. The\n    optional say part works like the say command and allows you to add\n    info to your choice.\n    '}</em><a class="headerlink" href="#evennia.contrib.barter.CmdTrade.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -839,7 +884,6 @@ info to your choice.</p>
   <li><a href="../../1.0-dev/api/evennia.contrib.barter.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.barter.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

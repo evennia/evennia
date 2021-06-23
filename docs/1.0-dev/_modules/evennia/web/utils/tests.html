@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -50,13 +51,12 @@
 
 <div class="viewcode-block" id="TestGeneralContext.test_general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_general_context">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_SLOGAN&quot;</span><span class="p">,</span> <span class="s2">&quot;test_game_slogan&quot;</span><span class="p">)</span>
-    <span class="nd">@patch</span><span class="p">(</span>
-        <span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBCLIENT_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;webclient_enabled_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.REST_API_ENABLED&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_general_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
         <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">AnonymousUser</span><span class="p">()</span>
@@ -80,6 +80,7 @@
                 <span class="s2">&quot;websocket_enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;websocket_port&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;websocket_url&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;rest_api_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
 
@@ -89,6 +90,7 @@
     <span class="k">def</span> <span class="nf">test_set_game_name_and_slogan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_version</span><span class="p">,</span> <span class="n">mock_settings</span><span class="p">):</span>
         <span class="n">mock_get_version</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;version 1&quot;</span>
         <span class="c1"># test default/fallback values</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">REST_API_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">general_context</span><span class="o">.</span><span class="n">set_game_name_and_slogan</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_NAME</span><span class="p">,</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="s2">&quot;version 1&quot;</span><span class="p">)</span>
@@ -147,7 +149,6 @@
   <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -166,6 +167,7 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.tests</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

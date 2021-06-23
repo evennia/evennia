@@ -1,0 +1,968 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.awsstorage.aws_s3_cdn &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.awsstorage.aws_s3_cdn</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">AWS Storage System</span>
+<span class="sd">The Right Honourable Reverend (trhr) 2020</span>
+
+<span class="sd">ABOUT THIS PLUGIN:</span>
+
+<span class="sd">This plugin migrates the Web-based portion of Evennia, namely images,</span>
+<span class="sd">javascript, and other items located inside staticfiles into Amazon AWS (S3) for hosting.</span>
+
+<span class="sd">Files hosted on S3 are &quot;in the cloud,&quot; and while your personal</span>
+<span class="sd">server may be sufficient for serving multimedia to a minimal number of users,</span>
+<span class="sd">the perfect use case for this plugin would be:</span>
+
+<span class="sd">1) Servers supporting heavy web-based traffic (webclient, etc)</span>
+<span class="sd">2) With a sizable number of users</span>
+<span class="sd">3) Where the users are globally distributed</span>
+<span class="sd">4) Where multimedia files are served to users as a part of gameplay</span>
+
+<span class="sd">Bottom line - if you&#39;re sending an image to a player every time they traverse a</span>
+<span class="sd">map, the bandwidth reduction will be substantial. If not, probably skip</span>
+<span class="sd">this one.</span>
+
+<span class="sd">Note that storing and serving files via S3 is not technically free outside of</span>
+<span class="sd">Amazon&#39;s &quot;free tier&quot; offering, which you may or may not be eligible for;</span>
+<span class="sd">evennia&#39;s base install currently requires 1.5MB of storage space on S3,</span>
+<span class="sd">making the current total cost to install this plugin ~$0.0005 per year. If</span>
+<span class="sd">you have substantial media assets and intend to serve them to many users,</span>
+<span class="sd">caveat emptor on a total cost of ownership - check AWS&#39;s pricing structure.</span>
+
+<span class="sd">See the ./README.md file for details and install instructions.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ImproperlyConfigured</span><span class="p">,</span>
+    <span class="n">SuspiciousOperation</span><span class="p">,</span>
+    <span class="n">SuspiciousFileOperation</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">ev_settings</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">ev_settings</span><span class="o">.</span><span class="n">AWS_ACCESS_KEY_ID</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">ev_settings</span><span class="o">.</span><span class="n">AWS_SECRET_ACCESS_KEY</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">ev_settings</span><span class="o">.</span><span class="n">AWS_STORAGE_BUCKET_NAME</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">ev_settings</span><span class="o">.</span><span class="n">AWS_S3_REGION_NAME</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You must add AWS-specific settings&quot;</span>
+                <span class="s2">&quot;to mygame/server/conf/secret_settings.py to use this plugin.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;mygame-evennia&quot;</span> <span class="o">==</span> <span class="n">ev_settings</span><span class="o">.</span><span class="n">AWS_STORAGE_BUCKET_NAME</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You must customize your AWS_STORAGE_BUCKET_NAME&quot;</span>
+                <span class="s2">&quot;in mygame/server/conf/secret_settings.py;&quot;</span>
+                <span class="s2">&quot;it must be unique among ALL other S3 users&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">mimetypes</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">posixpath</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">gzip</span> <span class="kn">import</span> <span class="n">GzipFile</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">SpooledTemporaryFile</span>
+<span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="kn">import</span> <span class="n">File</span>
+<span class="kn">from</span> <span class="nn">django.core.files.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">django.utils.deconstruct</span> <span class="kn">import</span> <span class="n">deconstructible</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">filepath_to_uri</span><span class="p">,</span> <span class="n">force_bytes</span><span class="p">,</span> <span class="n">force_text</span><span class="p">,</span> <span class="n">smart_text</span>
+<span class="kn">from</span> <span class="nn">django.utils.timezone</span> <span class="kn">import</span> <span class="n">is_naive</span><span class="p">,</span> <span class="n">make_naive</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">django.utils.six.moves.urllib</span> <span class="kn">import</span> <span class="n">parse</span> <span class="k">as</span> <span class="n">urlparse</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">parse</span> <span class="k">as</span> <span class="n">urlparse</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">boto3.session</span>
+    <span class="kn">from</span> <span class="nn">boto3</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">boto3_version</span>
+    <span class="kn">from</span> <span class="nn">botocore.client</span> <span class="kn">import</span> <span class="n">Config</span>
+    <span class="kn">from</span> <span class="nn">botocore.exceptions</span> <span class="kn">import</span> <span class="n">ClientError</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t load S3 bindings. </span><span class="si">%s</span><span class="s2"> Did you run &#39;pip install boto3?&#39;&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+<span class="n">boto3_version_info</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">boto3_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)])</span>
+
+
+<div class="viewcode-block" id="setting"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.setting">[docs]</a><span class="k">def</span> <span class="nf">setting</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to get a Django setting by name. If setting doesn&#39;t exist</span>
+<span class="sd">    it will return a default.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): A Django setting name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value of the setting variable by that name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev_settings</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="safe_join"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.safe_join">[docs]</a><span class="k">def</span> <span class="nf">safe_join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function, a version of django.utils._os.safe_join for S3 paths.</span>
+<span class="sd">    Joins one or more path components to the base path component</span>
+<span class="sd">    intelligently. Returns a normalized version of the final path.</span>
+<span class="sd">    The final path must be located inside of the base path component</span>
+<span class="sd">    (otherwise a ValueError is raised). Paths outside the base path</span>
+<span class="sd">    indicate a possible security sensitive operation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base (str): A path string to the base of the staticfiles</span>
+<span class="sd">        *paths (list): A list of paths as referenced from the base path</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        final_path (str): A joined path, base + filepath</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="n">force_text</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="n">base_path</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">force_text</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+
+    <span class="n">final_path</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">_final_path</span> <span class="o">=</span> <span class="n">posixpath</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">posixpath</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_path</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+        <span class="c1"># posixpath.normpath() strips the trailing /. Add it back.</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_final_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">==</span> <span class="n">final_path</span><span class="p">:</span>
+            <span class="n">_final_path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+        <span class="n">final_path</span> <span class="o">=</span> <span class="n">_final_path</span>
+    <span class="k">if</span> <span class="n">final_path</span> <span class="o">==</span> <span class="n">base_path</span><span class="p">:</span>
+        <span class="n">final_path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+
+    <span class="c1"># Ensure final_path starts with base_path and that the next character after</span>
+    <span class="c1"># the base path is /.</span>
+    <span class="n">base_path_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">final_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">final_path</span><span class="p">[</span><span class="n">base_path_len</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the joined path is located outside of the base path&quot;</span> <span class="s2">&quot; component&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">final_path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_location"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.check_location">[docs]</a><span class="k">def</span> <span class="nf">check_location</span><span class="p">(</span><span class="n">storage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to make sure that the storage location is configured correctly.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        storage (Storage): A Storage object (Django)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImproperlyConfigured: If the storage location is not configured correctly,</span>
+<span class="sd">            this is raised.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">storage</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.location cannot begin with a leading slash. Found &#39;</span><span class="si">{}</span><span class="s2">&#39;. Use &#39;</span><span class="si">{}</span><span class="s2">&#39; instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">storage</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">storage</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">correct</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="lookup_env"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.lookup_env">[docs]</a><span class="k">def</span> <span class="nf">lookup_env</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for looking up names in env vars. Returns the first element found.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        names (str): A list of environment variables</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        value (str): The value of the found environment variable.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="get_available_overwrite_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.get_available_overwrite_name">[docs]</a><span class="k">def</span> <span class="nf">get_available_overwrite_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function indicating files that will be overwritten during trunc.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): The name of the file</span>
+<span class="sd">        max_length (int): The maximum length of a filename</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        joined (path): A joined path including directory, file, and extension</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">max_length</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_length</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span>
+
+    <span class="c1"># Adapted from Django</span>
+    <span class="n">dir_name</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">file_root</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">truncation</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="n">max_length</span>
+
+    <span class="n">file_root</span> <span class="o">=</span> <span class="n">file_root</span><span class="p">[:</span><span class="o">-</span><span class="n">truncation</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_root</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SuspiciousFileOperation</span><span class="p">(</span>
+            <span class="s1">&#39;aws-s3-cdn tried to truncate away entire filename &quot;</span><span class="si">%s</span><span class="s1">&quot;. &#39;</span>
+            <span class="s2">&quot;Please make sure that the corresponding file field &quot;</span>
+            <span class="s1">&#39;allows sufficient &quot;max_length&quot;.&#39;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_root</span><span class="p">,</span> <span class="n">file_ext</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="S3Boto3StorageFile"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile">[docs]</a><span class="nd">@deconstructible</span>
+<span class="k">class</span> <span class="nc">S3Boto3StorageFile</span><span class="p">(</span><span class="n">File</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The default file object used by the S3Boto3Storage backend.</span>
+<span class="sd">    This file implements file streaming using boto&#39;s multipart</span>
+<span class="sd">    uploading functionality. The file can be opened in read or</span>
+<span class="sd">    write mode.</span>
+<span class="sd">    This class extends Django&#39;s File class. However, the contained</span>
+<span class="sd">    data is only the data contained in the current buffer. So you</span>
+<span class="sd">    should not access the contained file object directly. You should</span>
+<span class="sd">    access the data via this class.</span>
+<span class="sd">    Warning: This file *must* be closed using the close() method in</span>
+<span class="sd">    order to properly write the file to S3. Be sure to close the file</span>
+<span class="sd">    in your application.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_FILE_BUFFER_SIZE&quot;</span><span class="p">,</span> <span class="mi">5242880</span><span class="p">)</span>
+
+<div class="viewcode-block" id="S3Boto3StorageFile.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the File object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name of the file</span>
+<span class="sd">            mode (str): The access mode (&#39;r&#39; or &#39;w&#39;)</span>
+<span class="sd">            storage (Storage): The Django Storage object</span>
+<span class="sd">            buffer_size (int): The buffer size, for multipart uploads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t combine &#39;r&#39; and &#39;w&#39; in mode.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_mode</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="k">else</span> <span class="n">force_text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="n">storage</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="c1"># Force early RAII-style exception if object does not exist</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes_written</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># 5 MB is the minimum part size (if there is more than one part).</span>
+        <span class="c1"># Amazon allows up to 10,000 parts.  The default supports uploads</span>
+        <span class="c1"># up to roughly 50 GB.  Increase the part size to accommodate</span>
+        <span class="c1"># for files larger than this.</span>
+        <span class="k">if</span> <span class="n">buffer_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_counter</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper property to return filesize</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">content_length</span>
+
+    <span class="k">def</span> <span class="nf">_get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to manage zipping and temporary files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">SpooledTemporaryFile</span><span class="p">(</span>
+                <span class="n">max_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">max_memory_size</span><span class="p">,</span>
+                <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.S3Boto3StorageFile&quot;</span><span class="p">,</span>
+                <span class="nb">dir</span><span class="o">=</span><span class="n">setting</span><span class="p">(</span><span class="s2">&quot;FILE_UPLOAD_TEMP_DIR&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">download_fileobj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">gzip</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">content_encoding</span> <span class="o">==</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span>
+
+    <span class="k">def</span> <span class="nf">_set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_file</span><span class="p">,</span> <span class="n">_set_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="S3Boto3StorageFile.read"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if file is in read mode; then continues to boto3 operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;File was not opened in read mode.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_mode</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="S3Boto3StorageFile.readline"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.readline">[docs]</a>    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if file is in read mode; then continues to boto3 operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;File was not opened in read mode.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_mode</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="S3Boto3StorageFile.write"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if file is in write mode or needs multipart handling,</span>
+<span class="sd">        then continues to boto3 operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;File was not opened in write mode.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">initiate_multipart_upload</span><span class="p">(</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_file_size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_flush_write_buffer</span><span class="p">()</span>
+        <span class="n">bstr</span> <span class="o">=</span> <span class="n">force_bytes</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes_written</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bstr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bstr</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_buffer_file_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">length</span>
+
+    <span class="k">def</span> <span class="nf">_flush_write_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flushes the write buffer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_file_size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span><span class="o">.</span><span class="n">Part</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_counter</span><span class="p">)</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">Body</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_empty_on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempt to create an empty file for this key when this File is closed if no bytes</span>
+<span class="sd">        have been written and no object already exists on S3 for this key.</span>
+<span class="sd">        This behavior is meant to mimic the behavior of Django&#39;s builtin FileSystemStorage,</span>
+<span class="sd">        where files are always created after they are opened in write mode:</span>
+<span class="sd">            f = storage.open(&quot;file.txt&quot;, mode=&quot;w&quot;)</span>
+<span class="sd">            f.close()</span>
+
+<span class="sd">            Raises:</span>
+<span class="sd">                Exception: Raised if a 404 error occurs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes_written</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Check if the object exists on the server; if so, don&#39;t do anything</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Body</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+
+<div class="viewcode-block" id="S3Boto3StorageFile.close"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manages file closing after multipart uploads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_flush_write_buffer</span><span class="p">()</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="n">part</span><span class="o">.</span><span class="n">e_tag</span><span class="p">,</span> <span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="n">part</span><span class="o">.</span><span class="n">part_number</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span><span class="o">.</span><span class="n">complete</span><span class="p">(</span><span class="n">MultipartUpload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Parts&quot;</span><span class="p">:</span> <span class="n">parts</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes_written</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_empty_on_close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="S3Boto3Storage"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage">[docs]</a><span class="nd">@deconstructible</span>
+<span class="k">class</span> <span class="nc">S3Boto3Storage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Amazon Simple Storage Service using Boto3</span>
+<span class="sd">    This storage backend supports opening files in read or write</span>
+<span class="sd">    mode and supports streaming(buffering) data in chunks to S3</span>
+<span class="sd">    when writing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_content_type</span> <span class="o">=</span> <span class="s2">&quot;application/octet-stream&quot;</span>
+    <span class="c1"># If config provided in init, signature_version and addressing_style settings/args are ignored.</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># used for looking up the access and secret key from env vars</span>
+    <span class="n">access_key_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AWS_S3_ACCESS_KEY_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;AWS_ACCESS_KEY_ID&quot;</span><span class="p">]</span>
+    <span class="n">secret_key_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AWS_S3_SECRET_ACCESS_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span><span class="p">]</span>
+    <span class="n">security_token_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AWS_SESSION_TOKEN&quot;</span><span class="p">,</span> <span class="s2">&quot;AWS_SECURITY_TOKEN&quot;</span><span class="p">]</span>
+    <span class="n">security_token</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">access_key</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_ACCESS_KEY_ID&quot;</span><span class="p">,</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_ACCESS_KEY_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="n">secret_key</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_SECRET_ACCESS_KEY&quot;</span><span class="p">,</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="n">file_overwrite</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_FILE_OVERWRITE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">object_parameters</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_OBJECT_PARAMETERS&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">bucket_name</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_STORAGE_BUCKET_NAME&quot;</span><span class="p">)</span>
+    <span class="n">auto_create_bucket</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_AUTO_CREATE_BUCKET&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">default_acl</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_DEFAULT_ACL&quot;</span><span class="p">,</span> <span class="s2">&quot;public-read&quot;</span><span class="p">)</span>
+    <span class="n">bucket_acl</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_BUCKET_ACL&quot;</span><span class="p">,</span> <span class="n">default_acl</span><span class="p">)</span>
+    <span class="n">querystring_auth</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_QUERYSTRING_AUTH&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">querystring_expire</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_QUERYSTRING_EXPIRE&quot;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)</span>
+    <span class="n">signature_version</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_SIGNATURE_VERSION&quot;</span><span class="p">)</span>
+    <span class="n">reduced_redundancy</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_REDUCED_REDUNDANCY&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_LOCATION&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">encryption</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_ENCRYPTION&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">custom_domain</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_CUSTOM_DOMAIN&quot;</span><span class="p">)</span>
+    <span class="n">addressing_style</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_ADDRESSING_STYLE&quot;</span><span class="p">)</span>
+    <span class="n">secure_urls</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_SECURE_URLS&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">file_name_charset</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_FILE_NAME_CHARSET&quot;</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">gzip</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_IS_GZIPPED&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">preload_metadata</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_PRELOAD_METADATA&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">gzip_content_types</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span>
+        <span class="s2">&quot;GZIP_CONTENT_TYPES&quot;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;text/css&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text/javascript&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;application/javascript&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;application/x-javascript&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;image/svg+xml&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">url_protocol</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_URL_PROTOCOL&quot;</span><span class="p">,</span> <span class="s2">&quot;http:&quot;</span><span class="p">)</span>
+    <span class="n">endpoint_url</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_ENDPOINT_URL&quot;</span><span class="p">)</span>
+    <span class="n">proxies</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_PROXIES&quot;</span><span class="p">)</span>
+    <span class="n">region_name</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_REGION_NAME&quot;</span><span class="p">)</span>
+    <span class="n">use_ssl</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_USE_SSL&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">verify</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_VERIFY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">max_memory_size</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_MAX_MEMORY_SIZE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="S3Boto3Storage.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if some of the settings we&#39;ve provided as class attributes</span>
+<span class="sd">        need to be overwritten with values passed in here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="n">check_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Backward-compatibility: given the anteriority of the SECURE_URL setting</span>
+        <span class="c1"># we fall back to https if specified in order to avoid the construction</span>
+        <span class="c1"># of unsecure urls.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secure_urls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url_protocol</span> <span class="o">=</span> <span class="s2">&quot;https:&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_access_keys</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">security_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_security_token</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">s3</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;addressing_style&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">addressing_style</span><span class="p">},</span>
+                <span class="n">signature_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signature_version</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">boto3_version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;proxies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxies</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_connections&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_bucket&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">&quot;_connections&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">&quot;_bucket&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the actual connection to S3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span>
+                <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span>
+                <span class="n">aws_session_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">security_token</span><span class="p">,</span>
+                <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region_name</span><span class="p">,</span>
+                <span class="n">use_ssl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_ssl</span><span class="p">,</span>
+                <span class="n">endpoint_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_url</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">connection</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current bucket. If there is no current bucket object</span>
+<span class="sd">        create it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_or_create_bucket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the locally cached files for the bucket.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload_metadata</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decode_name</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">key</span><span class="p">):</span> <span class="n">entry</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span>
+
+    <span class="k">def</span> <span class="nf">_get_access_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the access keys to use when accessing S3. If none is</span>
+<span class="sd">        provided in the settings then get them from the environment</span>
+<span class="sd">        variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">access_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">access_key_names</span><span class="p">)</span>
+        <span class="n">secret_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">secret_key_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">access_key</span><span class="p">,</span> <span class="n">secret_key</span>
+
+    <span class="k">def</span> <span class="nf">_get_security_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the security token to use when accessing S3. Get it from</span>
+<span class="sd">        the environment variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">security_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_token</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">security_token_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">security_token</span>
+
+    <span class="k">def</span> <span class="nf">_get_or_create_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a bucket if it exists, otherwise creates it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Bucket</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_create_bucket</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Directly call head_bucket instead of bucket.load() because head_bucket()</span>
+                <span class="c1"># fails on wrong region, while bucket.load() does not.</span>
+                <span class="n">bucket</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_bucket</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">301</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                        <span class="s2">&quot;Bucket </span><span class="si">%s</span><span class="s2"> exists, but in a different &quot;</span>
+                        <span class="s2">&quot;region than we are connecting to. Set &quot;</span>
+                        <span class="s2">&quot;the region to connect to by setting &quot;</span>
+                        <span class="s2">&quot;AWS_S3_REGION_NAME to the correct region.&quot;</span> <span class="o">%</span> <span class="n">name</span>
+                    <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                    <span class="c1"># Notes: When using the us-east-1 Standard endpoint, you can create</span>
+                    <span class="c1"># buckets in other regions. The same is not true when hitting region specific</span>
+                    <span class="c1"># endpoints. However, when you create the bucket not in the same region, the</span>
+                    <span class="c1"># connection will fail all future requests to the Bucket after the creation</span>
+                    <span class="c1"># (301 Moved Permanently).</span>
+                    <span class="c1">#</span>
+                    <span class="c1"># For simplicity, we enforce in S3Boto3Storage that any auto-created</span>
+                    <span class="c1"># bucket must match the region that the connection is for.</span>
+                    <span class="c1">#</span>
+                    <span class="c1"># Also note that Amazon specifically disallows &quot;us-east-1&quot; when passing bucket</span>
+                    <span class="c1"># region names; LocationConstraint *must* be blank to create in US Standard.</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket_acl</span><span class="p">:</span>
+                        <span class="n">bucket_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket_acl</span><span class="p">}</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">bucket_params</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">region_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">region_name</span>
+                    <span class="k">if</span> <span class="n">region_name</span> <span class="o">!=</span> <span class="s2">&quot;us-east-1&quot;</span><span class="p">:</span>
+                        <span class="n">bucket_params</span><span class="p">[</span><span class="s2">&quot;CreateBucketConfiguration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                            <span class="s2">&quot;LocationConstraint&quot;</span><span class="p">:</span> <span class="n">region_name</span>
+                        <span class="p">}</span>
+                    <span class="n">bucket</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">bucket_params</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+        <span class="k">return</span> <span class="n">bucket</span>
+
+    <span class="k">def</span> <span class="nf">_clean_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cleans the name so that Windows style paths work</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Normalize Windows style paths</span>
+        <span class="n">clean_name</span> <span class="o">=</span> <span class="n">posixpath</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="c1"># os.path.normpath() can strip trailing slashes so we implement</span>
+        <span class="c1"># a workaround here.</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">clean_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="c1"># Add a trailing slash as it was stripped.</span>
+            <span class="n">clean_name</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">return</span> <span class="n">clean_name</span>
+
+    <span class="k">def</span> <span class="nf">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalizes the name so that paths like /path/to/ignored/../something.txt</span>
+<span class="sd">        work. We check to make sure that the path pointed to is not outside</span>
+<span class="sd">        the directory specified by the LOCATION setting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">safe_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SuspiciousOperation</span><span class="p">(</span><span class="s2">&quot;Attempted access to &#39;</span><span class="si">%s</span><span class="s2">&#39; denied.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_encode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">smart_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_decode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">force_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compress_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gzip a given string content.&quot;&quot;&quot;</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">zbuf</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+        <span class="c1">#  The GZIP header has a modification time attribute (see http://www.zlib.org/rfc-gzip.html)</span>
+        <span class="c1">#  Each time a file is compressed it changes even if the other contents don&#39;t change</span>
+        <span class="c1">#  For S3 this defeats detection of changes using MD5 sums on gzipped files</span>
+        <span class="c1">#  Fixing the mtime at 0.0 at compression time avoids this problem</span>
+        <span class="n">zfile</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="n">zbuf</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">zfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_bytes</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">zfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">zbuf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Boto 2 returned the InMemoryUploadedFile with the file pointer replaced,</span>
+        <span class="c1"># but Boto 3 seems to have issues with that. No need for fp.name in Boto3</span>
+        <span class="c1"># so just returning the BytesIO directly</span>
+        <span class="k">return</span> <span class="n">zbuf</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens the file, if it exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">S3Boto3StorageFile</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File does not exist: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">raise</span>  <span class="c1"># Let it bubble up if it was some other error</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stitches and cleans multipart uploads; normalizes file paths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cleaned_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="n">cleaned_name</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_write_parameters</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gzip</span>
+            <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentType&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_content_types</span>
+            <span class="ow">and</span> <span class="s2">&quot;ContentEncoding&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span>
+        <span class="p">):</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compress_content</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentEncoding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span>
+
+        <span class="n">encoded_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="n">encoded_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload_metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">[</span><span class="n">encoded_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
+        <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">ExtraArgs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cleaned_name</span>
+
+<div class="viewcode-block" id="S3Boto3Storage.delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes a file from S3.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.exists"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if file exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">ClientError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.listdir"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.listdir">[docs]</a>    <span class="k">def</span> <span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translational function to go from S3 file paths to the format</span>
+<span class="sd">        Django&#39;s listdir expects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1"># The path needs to end with a slash, but if the root is empty, leave</span>
+        <span class="c1"># it.</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+
+        <span class="n">directories</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">paginator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_paginator</span><span class="p">(</span><span class="s2">&quot;list_objects&quot;</span><span class="p">)</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Delimiter</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">Prefix</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CommonPrefixes&quot;</span><span class="p">,</span> <span class="p">()):</span>
+                <span class="n">directories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posixpath</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;Prefix&quot;</span><span class="p">],</span> <span class="n">path</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Contents&quot;</span><span class="p">,</span> <span class="p">()):</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posixpath</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;Key&quot;</span><span class="p">],</span> <span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">directories</span><span class="p">,</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.size"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the filesize of a remote file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">entry</span><span class="o">.</span><span class="n">content_length</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">content_length</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encryption</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ServerSideEncryption&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;AES256&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_redundancy</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;StorageClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;REDUCED_REDUNDANCY&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_acl</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ACL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_acl</span>
+
+        <span class="n">_type</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">content_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;content_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">content_type</span> <span class="o">=</span> <span class="n">content_type</span> <span class="ow">or</span> <span class="n">_type</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_content_type</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">content_type</span>
+        <span class="k">if</span> <span class="n">encoding</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentEncoding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoding</span>
+
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_object_parameters</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">params</span>
+
+<div class="viewcode-block" id="S3Boto3Storage.get_object_parameters"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_object_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary that is passed to file upload. Override this</span>
+<span class="sd">        method to adjust this on a per-object basis to set e.g ContentDisposition.</span>
+<span class="sd">        By default, returns the value of AWS_S3_OBJECT_PARAMETERS.</span>
+<span class="sd">        Setting ContentEncoding will prevent objects from being automatically gzipped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.get_modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an (aware) datetime object containing the last modified time if</span>
+<span class="sd">        USE_TZ is True, otherwise returns a naive datetime in the local timezone.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># only call self.bucket.Object() if the key is not found</span>
+        <span class="c1"># in the preloaded metadata.</span>
+        <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;USE_TZ&quot;</span><span class="p">):</span>
+            <span class="c1"># boto3 returns TZ aware timestamps</span>
+            <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">last_modified</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">make_naive</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">last_modified</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a naive datetime object containing the last modified time.</span>
+<span class="sd">        If USE_TZ=False then get_modified_time will return a naive datetime</span>
+<span class="sd">        so we just return that, else we have to localize and strip the tz</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_time</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mtime</span> <span class="k">if</span> <span class="n">is_naive</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span> <span class="k">else</span> <span class="n">make_naive</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_strip_signing_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Boto3 does not currently support generating URLs that are unsigned. Instead we</span>
+<span class="sd">        take the signed URLs and strip any querystring params related to signing and expiration.</span>
+<span class="sd">        Note that this may end up with URLs that are still invalid, especially if params are</span>
+<span class="sd">        passed in that only work with signed URLs, e.g. response header params.</span>
+<span class="sd">        The code attempts to strip all query parameters that match names of known parameters</span>
+<span class="sd">        from v2 and v4 signatures, regardless of the actual signature version used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">split_url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">parse_qsl</span><span class="p">(</span><span class="n">split_url</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">keep_blank_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">blacklist</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x-amz-algorithm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-credential&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-expires&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-signedheaders&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-signature&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x-amz-security-token&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;awsaccesskeyid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expires&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;signature&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">filtered_qs</span> <span class="o">=</span> <span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">qs</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blacklist</span><span class="p">)</span>
+        <span class="c1"># Note: Parameters that did not have a value in the original query string will have</span>
+        <span class="c1"># an &#39;=&#39; sign appended to it, e.g ?foo&amp;bar becomes ?foo=&amp;bar=</span>
+        <span class="n">joined_qs</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keyval</span><span class="p">)</span> <span class="k">for</span> <span class="n">keyval</span> <span class="ow">in</span> <span class="n">filtered_qs</span><span class="p">)</span>
+        <span class="n">split_url</span> <span class="o">=</span> <span class="n">split_url</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;&amp;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">joined_qs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">split_url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+
+<div class="viewcode-block" id="S3Boto3Storage.url"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URL of a remotely-hosted file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Preserve the trailing slash after normalizing the path.</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_domain</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">//</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_protocol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_domain</span><span class="p">,</span> <span class="n">filepath_to_uri</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">expire</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expire</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">querystring_expire</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">parameters</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Bucket&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">generate_presigned_url</span><span class="p">(</span>
+            <span class="s2">&quot;get_object&quot;</span><span class="p">,</span> <span class="n">Params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">ExpiresIn</span><span class="o">=</span><span class="n">expire</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">querystring_auth</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">url</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_signing_parameters</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="S3Boto3Storage.get_available_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_available_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite existing file with the same name.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_overwrite</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">get_available_overwrite_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_available_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="aws_s3_cdn.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

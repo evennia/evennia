@@ -39,6 +39,7 @@
           <li class="nav-item nav-item-1"><a href="../Contribs/Contrib-Overview.html" accesskey="U">Contrib modules</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.crafting</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -46,8 +47,776 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-crafting-crafting">
-<h1>evennia.contrib.crafting.crafting<a class="headerlink" href="#evennia-contrib-crafting-crafting" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.crafting.crafting">
+<span id="evennia-contrib-crafting-crafting"></span><h1>evennia.contrib.crafting.crafting<a class="headerlink" href="#module-evennia.contrib.crafting.crafting" title="Permalink to this headline">¶</a></h1>
+<p>Crafting - Griatch 2020</p>
+<p>This is a general crafting engine. The basic functionality of crafting is to
+combine any number of of items or tools in a ‘recipe’ to produce a new result.</p>
+<blockquote>
+<div><p>item + item + item + tool + tool  -&gt; recipe -&gt; new result</p>
+</div></blockquote>
+<p>This is useful not only for traditional crafting but the engine is flexible
+enough to also be useful for puzzles or similar.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Add the <strong>CmdCraft</strong> Command from this module to your default cmdset. This
+allows for crafting from in-game using a simple syntax.</p></li>
+<li><p>Create a new module and add it to a new list in your settings file
+(<strong>server/conf/settings.py</strong>) named <strong>CRAFT_RECIPES_MODULES</strong>, such as
+<strong>CRAFT_RECIPE_MODULES = [“world.recipes_weapons”]</strong>.</p></li>
+<li><p>In the new module(s), create one or more classes, each a child of
+<strong>CraftingRecipe</strong> from this module. Each such class must have a unique <strong>.name</strong>
+property. It also defines what inputs are required and what is created using
+this recipe.</p></li>
+<li><p>Objects to use for crafting should (by default) be tagged with tags using the
+tag-category <strong>crafting_material</strong> or <strong>crafting_tool</strong>. The name of the object
+doesn’t matter, only its tag.</p></li>
+</ul>
+</section>
+<section id="crafting-in-game">
+<h2>Crafting in game<a class="headerlink" href="#crafting-in-game" title="Permalink to this headline">¶</a></h2>
+<p>The default <strong>craft</strong> command handles all crafting needs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">spiked</span> <span class="n">club</span> <span class="kn">from</span> <span class="nn">club</span><span class="p">,</span> <span class="n">nails</span>
+</pre></div>
+</div>
+<p>Here, <strong>spiked club</strong> specifies the recipe while <strong>club</strong> and <strong>nails</strong> are objects
+the crafter must have in their inventory. These will be consumed during
+crafting (by default only if crafting was successful).</p>
+<p>A recipe can also require <em>tools</em> (like the <strong>hammer</strong> above). These must be
+either in inventory <em>or</em> be in the current location. Tools are <em>not</em> consumed
+during the crafting process.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">craft</span> <span class="n">wooden</span> <span class="n">doll</span> <span class="kn">from</span> <span class="nn">wood</span> <span class="k">with</span> <span class="n">knife</span>
+</pre></div>
+</div>
+</section>
+<section id="crafting-in-code">
+<h2>Crafting in code<a class="headerlink" href="#crafting-in-code" title="Permalink to this headline">¶</a></h2>
+<p>In code, you should use the helper function <strong>craft</strong> from this module. This
+specifies the name of the recipe to use and expects all suitable
+ingredients/tools as arguments (consumables and tools should be added together,
+tools will be identified before consumables).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting</span> <span class="kn">import</span> <span class="n">crafting</span>
+
+<span class="n">spiked_club</span> <span class="o">=</span> <span class="n">crafting</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;spiked club&quot;</span><span class="p">,</span> <span class="n">club</span><span class="p">,</span> <span class="n">nails</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result is always a list with zero or more objects. A fail leads to an empty
+list. The crafter should already have been notified of any error in this case
+(this should be handle by the recipe itself).</p>
+</section>
+<section id="recipes">
+<h2>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h2>
+<p>A <em>recipe</em> is a class that works like an input/output blackbox: you initialize
+it with consumables (and/or tools) if they match the recipe, a new
+result is spit out.  Consumables are consumed in the process while tools are not.</p>
+<p>This module contains a base class for making new ingredient types
+(<strong>CraftingRecipeBase</strong>) and an implementation of the most common form of
+crafting (<strong>CraftingRecipe</strong>) using objects and prototypes.</p>
+<p>Recipes are put in one or more modules added as a list to the
+<strong>CRAFT_RECIPE_MODULES</strong> setting, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CRAFT_RECIPE_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;world.recipes_weapons&#39;</span><span class="p">,</span> <span class="s1">&#39;world.recipes_potions&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Below is an example of a crafting recipe and how <strong>craft</strong> calls it under the
+hood. See the <strong>CraftingRecipe</strong> class for details of which properties and
+methods are available to override - the craft behavior can be modified
+substantially this way.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+
+<span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="c1"># Pig iron is a high-carbon result of melting iron in a blast furnace.</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;pig iron&quot;</span>  <span class="c1"># this is what crafting.craft and CmdCraft uses</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blast furnace&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;iron ore&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Pig Iron ingot&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;An ingot of crude pig iron.&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;pig iron&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)]}</span>
+    <span class="p">]</span>
+
+<span class="c1"># for testing, conveniently spawn all we need based on the tags on the class</span>
+<span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">PigIronRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+
+<span class="n">recipe</span> <span class="o">=</span> <span class="n">PigIronRecipe</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">tools</span> <span class="o">+</span> <span class="n">consumables</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the above class was added to a module in <strong>CRAFT_RECIPE_MODULES</strong>, it could be
+called using its <strong>.name</strong> property, as “pig iron”.</p>
+<p>The [example_recipies](api:evennia.contrib.crafting.example_recipes) module has
+a full example of the components for creating a sword from base components.</p>
+<hr class="docutils" />
+<dl class="py exception">
+<dt id="evennia.contrib.crafting.crafting.CraftingError">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CraftingError</code><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Crafting error.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.crafting.crafting.CraftingValidationError">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CraftingValidationError</code><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingValidationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingValidationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingError" title="evennia.contrib.crafting.crafting.CraftingError"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.crafting.crafting.CraftingError</span></code></a></p>
+<p>Error if crafting validation failed.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CraftingRecipeBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The recipe handles all aspects of performing a ‘craft’ operation. This is
+the base of the crafting system, intended to be replace if you want to
+adapt it for very different functionality - see the <strong>CraftingRecipe</strong> child
+class for an implementation of the most common type of crafting using
+objects.</p>
+<p>Example of usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recipe</span> <span class="o">=</span> <span class="n">CraftRecipe</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="n">obj3</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that the most common crafting operation is that the inputs are
+consumed - so in that case the recipe cannot be used a second time (doing so
+will raise a <strong>CraftingError</strong>)</p>
+<p>Process:</p>
+<ol class="arabic simple">
+<li><p><strong>.craft(**kwargs)</strong> - this starts the process on the initialized recipe. The kwargs
+are optional but will be passed into all of the following hooks.</p></li>
+<li><p><strong>.pre_craft(**kwargs)</strong> - this normally validates inputs and stores them in
+<strong>.validated_inputs.</strong>. Raises <strong>CraftingValidationError</strong> otherwise.</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p><strong>.do_craft(**kwargs)</strong> - should return the crafted item(s) or the empty list. Any
+crafting errors should be immediately reported to user.</p></li>
+<li><p><strong>.post_craft(crafted_result, **kwargs)</strong>- always called, even if <strong>pre_craft</strong>
+raised a <strong>CraftingError</strong> or <strong>CraftingValidationError</strong>.
+Should return <strong>crafted_result</strong> (modified or not).</p></li>
+</ol>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.name">
+<code class="sig-name descname">name</code><em class="property"> = 'recipe base'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.allow_reuse">
+<code class="sig-name descname">allow_reuse</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.allow_reuse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the recipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crafter</strong> (<em>Object</em>) – The one doing the crafting.</p></li>
+<li><p><strong>*inputs</strong> (<em>any</em>) – The ingredients of the recipe to use.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Any other parameters that are relevant for
+this recipe.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to crafter. This is a central point to override if wanting
+to change crafting return style in some way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
+<li><p><strong>**kwargs</strong> – Any optional properties relevant to this send.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.pre_craft">
+<code class="sig-name descname">pre_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.pre_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.pre_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override.</p>
+<p>This is called just before crafting operation and is normally
+responsible for validating the inputs, storing data on
+<strong>self.validated_inputs</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>**kwargs</strong> – Optional extra flags passed during initialization or</p></li>
+<li><p><strong>**.craft</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingValidationError" title="evennia.contrib.crafting.crafting.CraftingValidationError"><strong>CraftingValidationError</strong></a> – If validation fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.do_craft">
+<code class="sig-name descname">do_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.do_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.do_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override.</p>
+<p>This performs the actual crafting. At this point the inputs are
+expected to have been verified already. If needed, the validated
+inputs are available on this recipe instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Any extra flags passed at initialization.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The result of crafting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.post_craft">
+<code class="sig-name descname">post_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafting_result</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.post_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.post_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override.</p>
+<p>This is called just after crafting has finished. A common use of this
+method is to delete the inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crafting_result</strong> (<em>any</em>) – The outcome of crafting, as returned by <strong>do_craft</strong>.</p></li>
+<li><p><strong>**kwargs</strong> – Any extra flags passed at initialization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The final crafting result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipeBase.craft">
+<code class="sig-name descname">craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raise_exception</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipeBase.craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase.craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main crafting call method. Call this to produce a result and make
+sure all hooks run correctly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raise_exception</strong> (<em>bool</em>) – If crafting would return <strong>None</strong>, raise
+exception instead.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Any other parameters that is relevant
+for this particular craft operation. This will temporarily
+override same-named kwargs given at the creation of this recipe
+and be passed into all of the crafting hooks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The result of the craft, or <strong>None</strong> if crafting failed.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingValidationError" title="evennia.contrib.crafting.crafting.CraftingValidationError"><strong>CraftingValidationError</strong></a> – If recipe validation failed and
+<strong>raise_exception</strong> is True.</p></li>
+<li><p><a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingError" title="evennia.contrib.crafting.crafting.CraftingError"><strong>CraftingError</strong></a> – On If trying to rerun a no-rerun recipe, or if crafting
+would return <strong>None</strong> and raise_exception** is set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CraftingRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingRecipeBase" title="evennia.contrib.crafting.crafting.CraftingRecipeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.crafting.crafting.CraftingRecipeBase</span></code></a></p>
+<p>The CraftRecipe implements the most common form of crafting: Combining (and
+consuming) inputs to produce a new result. This type of recipe only works
+with typeclassed entities as inputs and outputs, since it’s based on Tags
+and Prototypes.</p>
+<p>There are two types of crafting ingredients: ‘tools’ and ‘consumables’. The
+difference between them is that the former is not consumed in the crafting
+process. So if you need a hammer and anvil to craft a sword, they are
+‘tools’ whereas the materials of the sword are ‘consumables’.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FlourRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;flour&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;windmill&#39;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wheat&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Bag of flour&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;typeclasses.food.Flour&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A small bag of flour.&quot;</span>
+         <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;flour&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">BreadRecipe</span><span class="p">(</span><span class="n">CraftRecipe</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bread&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;roller&quot;</span><span class="p">,</span> <span class="s2">&quot;owen&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flour&quot;</span><span class="p">,</span> <span class="s2">&quot;egg&quot;</span><span class="p">,</span> <span class="s2">&quot;egg&quot;</span><span class="p">,</span> <span class="s2">&quot;salt&quot;</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;yeast&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;bread&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A tasty bread.&quot;</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>name</strong> (str): The name of this recipe. This should be globally unique.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>tool_tag_category</strong> (str): What tag-category tools must use. Default is
+‘crafting_tool’.</p></li>
+<li><p><strong>tool_tags</strong> (list): Object-tags to use for tooling. If more than one instace
+of a tool is needed, add multiple entries here.</p></li>
+<li><p><strong>tool_names</strong> (list): Human-readable names for tools. These are used for informative
+messages/errors. If not given, the tags will be used. If given, this list should
+match the length of <strong>tool_tags</strong>.:</p></li>
+<li><p><strong>exact_tools</strong> (bool, default True): Must have exactly the right tools, any extra
+leads to failure.</p></li>
+<li><p><strong>exact_tool_order</strong> (bool, default False): Tools must be added in exactly the
+right order for crafting to pass.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>consumable_tag_category</strong> (str): What tag-category consumables must use.
+Default is ‘crafting_material’.</p></li>
+<li><p><strong>consumable_tags</strong> (list): Tags for objects that will be consumed as part of
+running the recipe.</p></li>
+<li><p><strong>consumable_names</strong> (list): Human-readable names for consumables. Same as for tools.</p></li>
+<li><p><strong>exact_consumables</strong> (bool, default True): Normally, adding more consumables
+than needed leads to a a crafting error. If this is False, the craft will
+still succeed (only the needed ingredients will be consumed).</p></li>
+<li><p><strong>exact_consumable_order</strong> (bool, default False): Normally, the order in which
+ingredients are added does not matter. With this set, trying to add consumables in
+another order than given will lead to failing crafting.</p></li>
+<li><p><strong>consume_on_fail</strong> (bool, default False): Normally, consumables remain if
+crafting fails. With this flag, a failed crafting will still consume
+consumables. Note that this will also consume any ‘extra’ consumables
+added not part of the recipe!</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>output_prototypes</strong> (list): One or more prototypes (<strong>prototype_keys</strong> or
+full dicts) describing how to create the result(s) of this recipe.</p></li>
+<li><p><strong>output_names</strong> (list): Human-readable names for (prospective) prototypes.
+This is used in error messages. If not given, this is extracted from the
+prototypes’ <strong>key</strong> if possible.</p></li>
+</ul>
+<p>custom messages all have custom formatting markers. Many are empty strings
+when not applicable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">missing</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">tool</span><span class="o">/</span><span class="n">consumable</span> <span class="n">missing</span> <span class="k">for</span> <span class="n">missing</span><span class="o">/</span><span class="n">out</span> <span class="n">of</span> <span class="n">order</span> <span class="n">errors</span><span class="o">.</span>
+<span class="p">{</span><span class="n">excess</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">tool</span><span class="o">/</span><span class="n">consumable</span> <span class="n">added</span> <span class="ow">in</span> <span class="n">excess</span> <span class="n">of</span> <span class="n">recipe</span>
+<span class="p">{</span><span class="n">inputs</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="nb">any</span> <span class="n">inputs</span> <span class="p">(</span><span class="n">tools</span> <span class="o">+</span> <span class="n">consumables</span><span class="p">)</span> <span class="n">involved</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span>
+<span class="p">{</span><span class="n">tools</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">sepatated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">tools</span> <span class="n">involved</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span>
+<span class="p">{</span><span class="n">consumables</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">consumables</span> <span class="n">involved</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span>
+<span class="p">{</span><span class="n">outputs</span><span class="p">}:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="p">(</span><span class="n">expected</span><span class="p">)</span> <span class="n">outputs</span>
+<span class="p">{</span><span class="n">t0</span><span class="p">}</span><span class="o">..</span><span class="p">{</span><span class="n">tN</span><span class="o">-</span><span class="mi">1</span><span class="p">}:</span> <span class="n">Individual</span> <span class="n">tools</span><span class="p">,</span> <span class="n">same</span> <span class="n">order</span> <span class="k">as</span> <span class="o">**.</span><span class="n">tool_names</span><span class="o">**.</span>
+<span class="p">{</span><span class="n">c0</span><span class="p">}</span><span class="o">..</span><span class="p">{</span><span class="n">cN</span><span class="o">-</span><span class="mi">1</span><span class="p">}:</span> <span class="n">Individual</span> <span class="n">consumables</span><span class="p">,</span> <span class="n">same</span> <span class="n">order</span> <span class="k">as</span> <span class="o">**.</span><span class="n">consumable_names</span><span class="o">**.</span>
+<span class="p">{</span><span class="n">o0</span><span class="p">}</span><span class="o">..</span><span class="p">{</span><span class="n">oN</span><span class="o">-</span><span class="mi">1</span><span class="p">}:</span> <span class="n">Individual</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">same</span> <span class="n">order</span> <span class="k">as</span> <span class="o">**.</span><span class="n">output_names</span><span class="o">**.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>error_tool_missing_message</strong>: “Could not craft {outputs} without {missing}.”</p></li>
+<li><p><strong>error_tool_order_message</strong>:
+“Could not craft {outputs} since {missing} was added in the wrong order.”</p></li>
+<li><p><strong>error_tool_excess_message</strong>: “Could not craft {outputs} (extra {excess}).”</p></li>
+<li><p><strong>error_consumable_missing_message</strong>: “Could not craft {outputs} without {missing}.”</p></li>
+<li><p><strong>error_consumable_order_message</strong>:
+“Could not craft {outputs} since {missing} was added in the wrong order.”</p></li>
+<li><p><strong>error_consumable_excess_message</strong>: “Could not craft {outputs} (excess {excess}).”</p></li>
+<li><p><strong>success_message</strong>: “You successfuly craft {outputs}!”</p></li>
+<li><p><strong>failure_message</strong>: “”  (this is handled by the other error messages by default)</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p>Crafting starts by calling <strong>.craft(**kwargs)</strong> on the parent class. The
+<strong>**kwargs</strong> are optional, extends any <strong>**kwargs</strong> passed to the class
+constructor and will be passed into all the following hooks.</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p><strong>.pre_craft(**kwargs)</strong> should handle validation of inputs. Results should
+be stored in <strong>validated_consumables/tools</strong> respectively. Raises <strong>CraftingValidationError</strong>
+otherwise.</p></li>
+<li><p><strong>.do_craft(**kwargs)</strong> will not be called if validation failed. Should return
+a list of the things crafted.</p></li>
+<li><p><strong>.post_craft(crafting_result, **kwargs)</strong> is always called, also if validation
+failed (<strong>crafting_result</strong> will then be falsy). It does any cleanup. By default
+this deletes consumables.</p></li>
+</ol>
+<p>Use <strong>.msg</strong> to conveniently send messages to the crafter. Raise
+<strong>evennia.contrib.crafting.crafting.CraftingError</strong> exception to abort
+crafting at any time in the sequence. If raising with a text, this will be
+shown to the crafter automatically</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'crafting recipe'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.consumable_tag_category">
+<code class="sig-name descname">consumable_tag_category</code><em class="property"> = 'crafting_material'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.consumable_tag_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.tool_tag_category">
+<code class="sig-name descname">tool_tag_category</code><em class="property"> = 'crafting_tool'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.tool_tag_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.exact_tools">
+<code class="sig-name descname">exact_tools</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.exact_tools" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.exact_tool_order">
+<code class="sig-name descname">exact_tool_order</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.exact_tool_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_missing_message">
+<code class="sig-name descname">error_tool_missing_message</code><em class="property"> = 'Could not craft {outputs} without {missing}.'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_missing_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_order_message">
+<code class="sig-name descname">error_tool_order_message</code><em class="property"> = 'Could not craft {outputs} since {missing} was added in the wrong order.'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_order_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_excess_message">
+<code class="sig-name descname">error_tool_excess_message</code><em class="property"> = 'Could not craft {outputs} without the exact tools (extra {excess}).'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_tool_excess_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.consume_on_fail">
+<code class="sig-name descname">consume_on_fail</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.consume_on_fail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.exact_consumables">
+<code class="sig-name descname">exact_consumables</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.exact_consumables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.exact_consumable_order">
+<code class="sig-name descname">exact_consumable_order</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.exact_consumable_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_missing_message">
+<code class="sig-name descname">error_consumable_missing_message</code><em class="property"> = 'Could not craft {outputs} without {missing}.'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_missing_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_order_message">
+<code class="sig-name descname">error_consumable_order_message</code><em class="property"> = 'Could not craft {outputs} since {missing} was added in the wrong order.'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_order_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_excess_message">
+<code class="sig-name descname">error_consumable_excess_message</code><em class="property"> = 'Could not craft {outputs} without the exact ingredients (extra {excess}).'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.error_consumable_excess_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.failure_message">
+<code class="sig-name descname">failure_message</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.failure_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.success_message">
+<code class="sig-name descname">success_message</code><em class="property"> = 'You successfully craft {outputs}!'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crafter</strong> (<em>Object</em>) – The one doing the crafting.</p></li>
+<li><p><strong>*inputs</strong> (<em>Object</em>) – The ingredients (+tools) of the recipe to use. The
+The recipe will itself figure out (from tags) which is a tool and
+which is a consumable.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Any other parameters that are relevant for
+this recipe. These will be passed into the crafting hooks.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Internally, this class stores validated data in
+<strong>.validated_consumables</strong>  and <strong>.validated_tools</strong> respectively. The
+<strong>.validated_inputs</strong> property (from parent) holds a list of everything
+types in the order inserted to the class constructor.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.consumable_names">
+<code class="sig-name descname">consumable_names</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.consumable_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.tool_names">
+<code class="sig-name descname">tool_names</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.tool_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.output_names">
+<code class="sig-name descname">output_names</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.output_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.seed">
+<em class="property">classmethod </em><code class="sig-name descname">seed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tool_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">consumable_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe.seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a helper class-method for easy testing and application of this
+recipe. When called, it will create simple dummy ingredients with names
+and tags needed by this recipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>consumable_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – This will be passed as
+<strong>**consumable_kwargs</strong> into the <strong>create_object</strong> call for each consumable.
+If not given, matching <strong>consumable_name</strong> or <strong>consumable_tag</strong>
+will  be used for key.</p></li>
+<li><p><strong>tool_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Will be passed as <strong>**tool_kwargs</strong> into the <strong>create_object</strong>
+call for each tool.  If not given, the matching
+<strong>tool_name</strong> or <strong>tool_tag</strong> will  be used for key.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – A tuple <strong>(tools, consumables)</strong> with newly created dummy
+objects matching the recipe ingredient list.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">SwordRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+<span class="n">recipe</span> <span class="o">=</span> <span class="n">SwordRecipe</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">tools</span> <span class="o">+</span> <span class="n">consumables</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>If <strong>key</strong> is given in <strong>consumable/tool_kwargs</strong> then _every_ created item
+of each type will have the same key.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.pre_craft">
+<code class="sig-name descname">pre_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe.pre_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.pre_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do pre-craft checks, including input validation.</p>
+<p>Check so the given inputs are what is needed. This operates on
+<strong>self.inputs</strong> which is set to the inputs added to the class
+constructor. Validated data is stored as lists on <strong>.validated_tools</strong>
+and <strong>.validated_consumables</strong> respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Any optional extra kwargs passed during initialization of
+the recipe class.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingValidationError" title="evennia.contrib.crafting.crafting.CraftingValidationError"><strong>CraftingValidationError</strong></a> – If validation fails. At this point the crafter
+is expected to have been informed of the problem already.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.do_craft">
+<code class="sig-name descname">do_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe.do_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.do_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override. This will not be called if validation in <strong>pre_craft</strong>
+fails.</p>
+<p>This performs the actual crafting. At this point the inputs are
+expected to have been verified already.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>list</em> –</p>
+<dl class="simple">
+<dt>A list of spawned objects created from the inputs, or None</dt><dd><p>on a failure.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method should use <strong>self.msg</strong> to inform the user about the
+specific reason of failure immediately.
+We may want to analyze the tools in some way here to affect the
+crafting process.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingRecipe.post_craft">
+<code class="sig-name descname">post_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">craft_result</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingRecipe.post_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingRecipe.post_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override.
+This is called just after crafting has finished. A common use of
+this method is to delete the inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>craft_result</strong> (<em>list</em>) – The crafted result, provided by <strong>self.do_craft</strong>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Passed from <strong>self.craft</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – The return(s) of the craft, possibly modified in this method.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is _always_ called, also if validation in <strong>pre_craft</strong> fails
+(<strong>craft_result</strong> will then be <strong>None</strong>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.crafting.crafting.craft">
+<code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="n">recipe_name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">raise_exception</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access function. Craft a given recipe from a source recipe module. A
+recipe module is a Python module containing recipe classes. Note that this
+requires <strong>settings.CRAFT_RECIPE_MODULES</strong> to be added to a list of one or
+more python-paths to modules holding Recipe-classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crafter</strong> (<em>Object</em>) – The one doing the crafting.</p></li>
+<li><p><strong>recipe_name</strong> (<em>str</em>) – The <strong>CraftRecipe.name</strong> to use. This uses fuzzy-matching
+if the result is unique.</p></li>
+<li><p><strong>*inputs</strong> – Suitable ingredients and/or tools (Objects) to use in the crafting.</p></li>
+<li><p><strong>raise_exception</strong> (<em>bool</em><em>, </em><em>optional</em>) – If crafting failed for whatever
+reason, raise <strong>CraftingError</strong>. The user will still be informed by the
+recipe.</p></li>
+<li><p><strong>**kwargs</strong> – Optional kwargs to pass into the recipe (will passed into
+recipe.craft).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – Crafted objects, if any.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#evennia.contrib.crafting.crafting.CraftingError" title="evennia.contrib.crafting.crafting.CraftingError"><strong>CraftingError</strong></a> – If <strong>raise_exception</strong> is True and crafting failed to</p></li>
+<li><p><strong>produce an output.  KeyError</strong> – If <strong>recipe_name</strong> failed to find a</p></li>
+<li><p><strong>matching recipe class</strong><strong> (or </strong><strong>the hit was not precise enough.</strong><strong>)</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If no recipe_module is given, will look for a list <strong>settings.CRAFT_RECIPE_MODULES</strong> and
+lastly fall back to the example module <strong>“evennia.contrib.”</strong></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.crafting.CraftingCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CraftingCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Store crafting command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Crafting cmdset'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CraftingCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CraftingCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CraftingCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.crafting.crafting.CraftingCmdSet'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CraftingCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.crafting.</code><code class="sig-name descname">CmdCraft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CmdCraft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Craft an item using ingredients and tools</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>craft &lt;recipe&gt; [from &lt;ingredient&gt;,…] [using &lt;tool&gt;, …]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>craft snowball from snow
+craft puppet from piece of wood using knife
+craft bread from flour, butter, water, yeast using owen, bowl, roller
+craft fireball using wand, spellbook</p>
+<p class="rubric">Notes</p>
+<p>Ingredients must be in the crafter’s inventory. Tools can also be
+things in the current location, like a furnace, windmill or anvil.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.key">
+<code class="sig-name descname">key</code><em class="property"> = 'craft'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('\\s|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'craft', 'tags': '', 'text': &quot;\n    Craft an item using ingredients and tools\n\n    Usage:\n      craft &lt;recipe&gt; [from &lt;ingredient&gt;,...] [using &lt;tool&gt;, ...]\n\n    Examples:\n      craft snowball from snow\n      craft puppet from piece of wood using knife\n      craft bread from flour, butter, water, yeast using owen, bowl, roller\n      craft fireball using wand, spellbook\n\n    Notes:\n        Ingredients must be in the crafter's inventory. Tools can also be\n        things in the current location, like a furnace, windmill or anvil.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CmdCraft.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle parsing of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">recipe</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">FROM</span> <span class="o">&lt;</span><span class="n">ingredients</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="n">USING</span> <span class="o">&lt;</span><span class="n">tools</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">craft</span> <span class="n">snowball</span> <span class="kn">from</span> <span class="nn">snow</span>
+<span class="n">craft</span> <span class="n">puppet</span> <span class="kn">from</span> <span class="nn">piece</span> <span class="n">of</span> <span class="n">wood</span> <span class="n">using</span> <span class="n">knife</span>
+<span class="n">craft</span> <span class="n">bread</span> <span class="kn">from</span> <span class="nn">flour</span><span class="p">,</span> <span class="n">butter</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">yeast</span> <span class="n">using</span> <span class="n">owen</span><span class="p">,</span> <span class="n">bowl</span><span class="p">,</span> <span class="n">roller</span>
+<span class="n">craft</span> <span class="n">fireball</span> <span class="n">using</span> <span class="n">wand</span><span class="p">,</span> <span class="n">spellbook</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.crafting.CmdCraft.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/crafting.html#CmdCraft.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.crafting.CmdCraft.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform crafting.</p>
+<p>Will check the <strong>craft</strong> locktype. If a consumable/ingredient does not pass
+this check, we will check for the ‘crafting_consumable_err_msg’
+Attribute, otherwise will use a default. If failing on a tool, will use
+the <strong>crafting_tool_err_msg</strong> if available.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -70,6 +839,17 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.crafting.crafting</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#crafting-in-game">Crafting in game</a></li>
+<li><a class="reference internal" href="#crafting-in-code">Crafting in code</a></li>
+<li><a class="reference internal" href="#recipes">Recipes</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="../Contribs/Crafting.html"
                         title="previous chapter">Crafting system contrib</a></p>
@@ -99,7 +879,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -123,6 +902,7 @@
           <li class="nav-item nav-item-1"><a href="../Contribs/Contrib-Overview.html" >Contrib modules</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.crafting</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

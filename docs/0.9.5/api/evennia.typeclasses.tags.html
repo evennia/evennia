@@ -271,6 +271,33 @@ will be created.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.has">
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_list</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.has" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given Tag (or list of Tags) exists on the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> (<em>str</em><em> or </em><em>iterable</em>) – The Tag key or tags to check for.
+If <strong>None</strong>, search by category.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – Limit the check to Tags with this
+category (note, that <strong>None</strong> is the default category).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>has_tag (bool or list)</em> –</p>
+<dl class="simple">
+<dt>If the Tag exists on this object or not.</dt><dd><p>If <strong>tag</strong> was given as an iterable then the return is a list of booleans.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If neither <strong>tag</strong> nor <strong>category</strong> is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.typeclasses.tags.TagHandler.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_tagobj</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_list</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the tag for the given key, category or combination of the two.</p>
@@ -364,8 +391,9 @@ tuples <strong>[(key, category), …]</strong>.</p></li>
 <dd><p>Batch-add tags from a list of tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple <strong>(keystr, category)</strong> or
-<strong>(keystr, category, data)</strong>. It’s possible to mix input types.</p>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple
+<strong>(keystr, category)</strong> or <strong>(keystr, category, data)</strong>. It’s possible to mix input
+types.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -435,7 +463,6 @@ of a latter tuple with the same category).</p>
   <li><a href="../../1.0-dev/api/evennia.typeclasses.tags.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.typeclasses.tags.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>
