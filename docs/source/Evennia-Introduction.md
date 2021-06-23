@@ -5,10 +5,10 @@ Domain) is a multiplayer real-time virtual world described primarily in text. MU
 of role-playing games, hack and slash, player versus player, interactive fiction and online chat.
 Players can read or view descriptions of rooms, objects, other players, non-player characters, and
 actions performed in the virtual world. Players typically interact with each other and the world by
-typing commands that resemble a natural language.* - [Wikipedia](http://en.wikipedia.org/wiki/MUD)
+typing commands that resemble a natural language.* - [Wikipedia](https://en.wikipedia.org/wiki/MUD)
 
 If you are reading this, it's quite likely you are dreaming of creating and running a text-based
-massively-multiplayer game ([MUD/MUX/MUSH](http://tinyurl.com/c5sc4bm) etc) of your very own. You
+massively-multiplayer game ([MUD/MUX/MUSH](https://tinyurl.com/c5sc4bm) etc) of your very own. You
 might just be starting to think about it, or you might have lugged around that *perfect* game in
 your mind for years ... you know *just* how good it would be, if you could only make it come to
 reality. We know how you feel. That is, after all, why Evennia came to be.
@@ -79,17 +79,17 @@ page](Links#wiki-litterature) for some reading suggestions. To efficiently code 
 Evennia you don't need to be a Python guru, but you do need to be able to read example code
 containing at least these basic Python features:
 
-- Importing and using python [modules](http://docs.python.org/3.7/tutorial/modules.html)
-- Using [variables](http://www.tutorialspoint.com/python/python_variable_types.htm), [conditional
-statements](http://docs.python.org/tutorial/controlflow.html#if-statements),
-[loops](http://docs.python.org/tutorial/controlflow.html#for-statements) and
-[functions](http://docs.python.org/tutorial/controlflow.html#defining-functions)
+- Importing and using python [modules](https://docs.python.org/3.7/tutorial/modules.html)
+- Using [variables](https://www.tutorialspoint.com/python/python_variable_types.htm), [conditional
+statements](https://docs.python.org/tutorial/controlflow.html#if-statements),
+[loops](https://docs.python.org/tutorial/controlflow.html#for-statements) and
+[functions](https://docs.python.org/tutorial/controlflow.html#defining-functions)
 - Using [lists, dictionaries and list
-comprehensions](http://docs.python.org/tutorial/datastructures.html)
-- Doing [string handling and formatting](http://docs.python.org/tutorial/introduction.html#strings)
+comprehensions](https://docs.python.org/tutorial/datastructures.html)
+- Doing [string handling and formatting](https://docs.python.org/tutorial/introduction.html#strings)
 - Have a basic understanding of [object-oriented
-programming](http://www.tutorialspoint.com/python/python_classes_objects.htm), using
-[Classes](http://docs.python.org/tutorial/classes.html), their methods and properties
+programming](https://www.tutorialspoint.com/python/python_classes_objects.htm), using
+[Classes](https://docs.python.org/tutorial/classes.html), their methods and properties
 
 Obviously, the more things you feel comfortable with, the easier time you'll have to find your way.
 With just basic knowledge you should be able to define your own [Commands](Components/Commands), create custom
@@ -120,9 +120,9 @@ Some more hints:
 1. Get engaged in the community. Make an introductory post to our [mailing
 list/forum](https://groups.google.com/forum/#!forum/evennia) and get to know people. It's also
 highly recommended you hop onto our [Developer
-chat](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
+chat](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
-of Evennia itself. This chat is logged (you can find links on http://www.evennia.com) and can also
+of Evennia itself. This chat is logged (you can find links on https://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.
 2. Read the [Game Planning](Howto/Starting/Part2/Game-Planning) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first

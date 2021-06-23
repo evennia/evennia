@@ -13,7 +13,7 @@
 
 # Evennia Documentation
 
-This is the manual of [Evennia](http://www.evennia.com), the open source Python
+This is the manual of [Evennia](https://www.evennia.com), the open source Python
 `MU*` creation system.
 
 - [Evennia Introduction](./Evennia-Introduction)

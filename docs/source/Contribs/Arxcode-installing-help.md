@@ -2,8 +2,8 @@
 
 ## Introduction 
 
-[Arx - After the Reckoning](http://play.arxmush.org/) is a big and very popular
-[Evennia](http://www.evennia.com)-based game. Arx is heavily roleplaying-centric, relying on game
+[Arx - After the Reckoning](https://play.arxmush.org/) is a big and very popular
+[Evennia](https://www.evennia.com)-based game. Arx is heavily roleplaying-centric, relying on game
 masters to drive the story. Technically it's maybe best described as "a MUSH, but with more coded
 systems". In August of 2018, the game's developer, Tehom, generously released the [source code of
 Arx on github](https://github.com/Arx-Game/arxcode). This is a treasure-trove for developers wanting
@@ -22,7 +22,7 @@ better match with the vanilla Evennia install.
 
 Firstly, set aside a folder/directory on your drive for everything to follow. 
 
-You need to start by installing [Evennia](http://www.evennia.com) by following most of the 
+You need to start by installing [Evennia](https://www.evennia.com) by following most of the 
 [Getting Started Instructions](../Setup/Setup-Quickstart) for your OS. The difference is that you need to `git clone
 https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older
 Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is
@@ -211,7 +211,7 @@ process is a little bit trickier.
  Make sure you have:
  * Git for Windows               https://git-scm.com/download/win
  * Anaconda for Windows          https://www.anaconda.com/distribution/
- * VC++ Compiler for Python 2.7  http://aka.ms/vcpython27
+ * VC++ Compiler for Python 2.7  https://aka.ms/vcpython27
 
 conda update conda
 conda create -n arx python=2.7

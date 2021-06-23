@@ -201,7 +201,7 @@ With a single object, we mean anything that is *not iterable*, like numbers, str
 instances without the `__iter__` method.
 
 * You can generally store any non-iterable Python entity that can be
-  [pickled](http://docs.python.org/library/pickle.html).
+  [pickled](https://docs.python.org/library/pickle.html).
 * Single database objects/typeclasses can be stored as any other in the Attribute. These can
   normally *not* be pickled, but Evennia will behind the scenes convert them to an internal
   representation using their classname, database-id and creation-date with a microsecond precision,
@@ -327,7 +327,7 @@ instead of `_SaverList` and so on).
 
 
 Remember, this is only valid for *mutable* iterables.
-[Immutable](http://en.wikipedia.org/wiki/Immutable) objects (strings, numbers, tuples etc) are
+[Immutable](https://en.wikipedia.org/wiki/Immutable) objects (strings, numbers, tuples etc) are
 already disconnected from the database from the onset.
 
 ```python

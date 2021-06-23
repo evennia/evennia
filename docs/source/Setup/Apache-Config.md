@@ -59,7 +59,7 @@ You'll then want to reload or restart apache2 after changing the configurations.
 With any luck, you'll be able to point your browser at your domain or subdomain that you set up in
 your vhost and see the nifty default Evennia webpage. If not, read the hopefully informative error
 message and work from there. Questions may be directed to our [Evennia Community
-site](http://evennia.com).
+site](https://evennia.com).
 
 ### A note on code reloading
 
