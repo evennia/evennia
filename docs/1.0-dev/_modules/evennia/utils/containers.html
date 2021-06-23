@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -60,7 +61,7 @@
 <span class="n">SCRIPTDB</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base container class. A container is simply a storage object whose</span>
 <span class="sd">    properties can be acquired as a property on it. This is generally</span>
@@ -196,12 +197,11 @@
             <span class="n">new_script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">new_script</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">!=</span> <span class="n">start_delay</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">repeats</span> <span class="o">!=</span> <span class="n">repeats</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="n">found</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">found</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">!=</span> <span class="n">start_delay</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">found</span><span class="o">.</span><span class="n">repeats</span> <span class="o">!=</span> <span class="n">repeats</span><span class="p">)):</span>
+            <span class="c1"># the setup changed</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">desc</span><span class="p">:</span>
             <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
         <span class="k">return</span> <span class="n">found</span>
@@ -318,7 +318,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -337,6 +336,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

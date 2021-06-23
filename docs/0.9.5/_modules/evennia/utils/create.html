@@ -40,27 +40,19 @@
             
   <h1>Source code for evennia.utils.create</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module gathers all the essential database-creation</span>
-<span class="sd">functions for the game engine&#39;s various object types.</span>
+<span class="sd">This module gathers all the essential database-creation functions for the game</span>
+<span class="sd">engine&#39;s various object types.</span>
 
-<span class="sd">Only objects created &#39;stand-alone&#39; are in here, e.g. object Attributes</span>
-<span class="sd">are always created directly through their respective objects.</span>
+<span class="sd">Only objects created &#39;stand-alone&#39; are in here. E.g. object Attributes are</span>
+<span class="sd">always created through their respective objects handlers.</span>
 
-<span class="sd">Each creation_* function also has an alias named for the entity being</span>
-<span class="sd">created, such as create_object() and object().  This is for</span>
-<span class="sd">consistency with the utils.search module and allows you to do the</span>
-<span class="sd">shorter &quot;create.object()&quot;.</span>
+<span class="sd">Each `creation_*` function also has an alias named for the entity being created,</span>
+<span class="sd">such as create_object() and object(). This is for consistency with the</span>
+<span class="sd">utils.search module and allows you to do the shorter `create.object()`.</span>
 
-<span class="sd">The respective object managers hold more methods for manipulating and</span>
-<span class="sd">searching objects already existing in the database.</span>
+<span class="sd">The respective object managers hold more methods for manipulating and searching</span>
+<span class="sd">objects already existing in the database.</span>
 
-<span class="sd">Models covered:</span>
-<span class="sd"> Objects</span>
-<span class="sd"> Scripts</span>
-<span class="sd"> Help</span>
-<span class="sd"> Message</span>
-<span class="sd"> Channel</span>
-<span class="sd"> Accounts</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
@@ -81,7 +73,6 @@
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_to_object</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_channelhandler</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <span class="c1"># limit symbol import from API</span>
@@ -122,31 +113,30 @@
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
 <span class="sd">        key (str): Name of the new object. If not set, a name of</span>
-<span class="sd">            #dbref will be set.</span>
+<span class="sd">            `#dbref` will be set.</span>
 <span class="sd">        home (Object or str): Obj or #dbref to use as the object&#39;s</span>
 <span class="sd">            home location.</span>
 <span class="sd">        permissions (list): A list of permission strings or tuples (permstring, category).</span>
 <span class="sd">        locks (str): one or more lockstrings, separated by semicolons.</span>
 <span class="sd">        aliases (list): A list of alternative keys or tuples (aliasstring, category).</span>
 <span class="sd">        tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</span>
-<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s</span>
-<span class="sd">            target.</span>
+<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s target.</span>
 <span class="sd">        report_to (Object): The object to return error messages to.</span>
 <span class="sd">        nohome (bool): This allows the creation of objects without a</span>
 <span class="sd">            default home location; only used when creating the default</span>
 <span class="sd">            location itself or during unittests.</span>
 <span class="sd">        attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
-<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
-<span class="sd">           to set as Attributes on the new object.</span>
+<span class="sd">            (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">            to set as Attributes on the new object.</span>
 <span class="sd">        nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
-<span class="sd">           adding this rarely makes sense since this data will not survive a reload.</span>
+<span class="sd">            adding this rarely makes sense since this data will not survive a reload.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        object (Object): A newly created object of the given typeclass.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ObjectDB.DoesNotExist: If trying to create an Object with</span>
-<span class="sd">        `location` or `home` that can&#39;t be found.</span>
+<span class="sd">            `location` or `home` that can&#39;t be found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_ObjectDB</span>
@@ -270,9 +260,8 @@
 <span class="sd">        report_to (Object): The object to return error messages to.</span>
 <span class="sd">        desc (str): Optional description of script</span>
 <span class="sd">        tags (list): List of tags or tuples (tag, category).</span>
-<span class="sd">        attributes (list): List of tuples `(key, value)`, `(key, value, category)`,</span>
-<span class="sd">           `(key, value, category, lockstring)` or</span>
-<span class="sd">           `(key, value, category, lockstring, default_access)`.</span>
+<span class="sd">        attributes (list): List if tuples (key, value) or (key, value, category)</span>
+<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        script (obj): An instance of the script created</span>
@@ -412,33 +401,38 @@
 
 
 <div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
-    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>
+    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new communication Msg. Msgs represent a unit of</span>
 <span class="sd">    database-persistent communication between entites.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        senderobj (Object or Account): The entity sending the Msg.</span>
+<span class="sd">        senderobj (Object, Account, Script, str or list): The entity (or</span>
+<span class="sd">            entities) sending the Msg. If a `str`, this is the id-string</span>
+<span class="sd">            for an external sender type.</span>
 <span class="sd">        message (str): Text with the message. Eventual headers, titles</span>
 <span class="sd">            etc should all be included in this text string. Formatting</span>
 <span class="sd">            will be retained.</span>
-<span class="sd">        channels (Channel, key or list): A channel or a list of channels to</span>
-<span class="sd">            send to. The channels may be actual channel objects or their</span>
-<span class="sd">            unique key strings.</span>
-<span class="sd">        receivers (Object, Account, str or list): An Account/Object to send</span>
-<span class="sd">            to, or a list of them. May be Account objects or accountnames.</span>
+<span class="sd">        receivers (Object, Account, Script, str or list): An Account/Object to send</span>
+<span class="sd">            to, or a list of them. If a string, it&#39;s an identifier for an external</span>
+<span class="sd">            receiver.</span>
 <span class="sd">        locks (str): Lock definition string.</span>
 <span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
 <span class="sd">        header (str): Mime-type or other optional information for the message</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        The Comm system is created very open-ended, so it&#39;s fully possible</span>
-<span class="sd">        to let a message both go to several channels and to several</span>
-<span class="sd">        receivers at the same time, it&#39;s up to the command definitions to</span>
-<span class="sd">        limit this as desired.</span>
+<span class="sd">        The Comm system is created to be very open-ended, so it&#39;s fully</span>
+<span class="sd">        possible to let a message both go several receivers at the same time,</span>
+<span class="sd">        it&#39;s up to the command definitions to limit this as desired.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;channels&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;create_message() does not accept &#39;channel&#39; kwarg anymore &quot;</span>
+            <span class="s2">&quot;- channels no longer accept Msg objects.&quot;</span>
+        <span class="p">)</span>
+
     <span class="k">global</span> <span class="n">_Msg</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_Msg</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span> <span class="k">as</span> <span class="n">_Msg</span>
@@ -450,8 +444,6 @@
     <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senderobj</span><span class="p">):</span>
         <span class="n">new_message</span><span class="o">.</span><span class="n">senders</span> <span class="o">=</span> <span class="n">sender</span>
     <span class="n">new_message</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
-    <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
-        <span class="n">new_message</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channel</span>
     <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
         <span class="n">new_message</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receiver</span>
     <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
@@ -669,7 +661,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="create.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

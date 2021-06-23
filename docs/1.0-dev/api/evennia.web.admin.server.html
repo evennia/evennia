@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.server</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,57 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-admin-server">
-<h1>evennia.web.admin.server<a class="headerlink" href="#evennia-web-admin-server" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.admin.server">
+<span id="evennia-web-admin-server"></span><h1>evennia.web.admin.server<a class="headerlink" href="#module-evennia.web.admin.server" title="Permalink to this headline">¶</a></h1>
+<p>This sets up how models are displayed
+in the web admin interface.</p>
+<dl class="py class">
+<dt id="evennia.web.admin.server.ServerConfigAdmin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.server.</code><code class="sig-name descname">ServerConfigAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/server.html#ServerConfigAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Custom admin for server configs</p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.list_display">
+<code class="sig-name descname">list_display</code><em class="property"> = ('db_key', 'db_value')</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.list_display_links">
+<code class="sig-name descname">list_display_links</code><em class="property"> = ('db_key',)</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.list_display_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.ordering">
+<code class="sig-name descname">ordering</code><em class="property"> = ['db_key', 'db_value']</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.ordering" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ['db_key']</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.save_as">
+<code class="sig-name descname">save_as</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.save_as" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.list_select_related">
+<code class="sig-name descname">list_select_related</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.list_select_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.server.ServerConfigAdmin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.server.ServerConfigAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +134,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +150,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.server</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

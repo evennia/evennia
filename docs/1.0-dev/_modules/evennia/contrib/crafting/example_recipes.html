@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.crafting.example_recipes &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.example_recipes</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.crafting.example_recipes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">How to make a sword - example crafting tree for the crafting system.</span>
+
+<span class="sd">See the `SwordSmithingBaseRecipe` in this module for an example of extendng the</span>
+<span class="sd">recipe with a mocked &#39;skill&#39; system (just random chance in our case). The skill</span>
+<span class="sd">system used is game-specific but likely to be needed for most &#39;real&#39; crafting</span>
+<span class="sd">systems.</span>
+
+<span class="sd">Note that &#39;tools&#39; are references to the tools used - they don&#39;t need to be in</span>
+<span class="sd">the inventory of the crafter. So when &#39;blast furnace&#39; is given below, it is a</span>
+<span class="sd">reference to a blast furnace used, not suggesting the crafter is carrying it</span>
+<span class="sd">around with them.</span>
+
+<span class="sd">## Sword crafting tree</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    # base materials (consumables)</span>
+
+<span class="sd">    iron ore, ash, sand, coal, oak wood, water, fur</span>
+
+<span class="sd">    # base tools (marked with [T] for clarity and assumed to already exist)</span>
+
+<span class="sd">    blast furnace[T], furnace[T], crucible[T], anvil[T],</span>
+<span class="sd">    hammer[T], knife[T], cauldron[T]</span>
+
+<span class="sd">    # recipes for making a sword</span>
+
+<span class="sd">    pig iron = iron ore + 2xcoal + blast furnace[T]</span>
+<span class="sd">    crucible_steel = pig iron + ash + sand + 2xcoal + crucible[T]</span>
+<span class="sd">    sword blade = crucible steel + hammer[T] + anvil[T] + furnace[T]</span>
+<span class="sd">    sword pommel = crucible steel + hammer[T] + anvil[T] + furnace[T]</span>
+<span class="sd">    sword guard = crucible steel + hammer[T] + anvil[T] + furnace[T]</span>
+
+<span class="sd">    rawhide = fur + knife[T]</span>
+<span class="sd">    oak bark + cleaned oak wood = oak wood + knife[T]</span>
+<span class="sd">    leather = rawhide + oak bark + water + cauldron[T]</span>
+
+<span class="sd">    sword handle = cleaned oak wood + knife[T]</span>
+
+<span class="sd">    sword = sword blade + sword guard + sword pommel</span>
+<span class="sd">            + sword handle + leather + knife[T] + hammer[T] + furnace[T]</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+
+
+<div class="viewcode-block" id="PigIronRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.PigIronRecipe">[docs]</a><span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pig iron is a high-carbon result of melting iron in a blast furnace.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;pig iron&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blast furnace&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;iron ore&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Pig Iron ingot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;An ingot of crude pig iron.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;pig iron&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="CrucibleSteelRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.CrucibleSteelRecipe">[docs]</a><span class="k">class</span> <span class="nc">CrucibleSteelRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixing pig iron with impurities like ash and sand and melting it in a</span>
+<span class="sd">    crucible produces a medieval level of steel (like damascus steel).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;crucible steel&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;crucible&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pig iron&quot;</span><span class="p">,</span> <span class="s2">&quot;ash&quot;</span><span class="p">,</span> <span class="s2">&quot;sand&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">,</span> <span class="s2">&quot;coal&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Crucible steel ingot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;An ingot of multi-colored crucible steel.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;crucible steel&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<span class="k">class</span> <span class="nc">_SwordSmithingBaseRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A parent for all metallurgy sword-creation recipes. Those have a chance to</span>
+<span class="sd">    failure but since steel is not lost in the process you can always try</span>
+<span class="sd">    again.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">success_message</span> <span class="o">=</span> <span class="s2">&quot;Your smithing work bears fruit and you craft </span><span class="si">{outputs}</span><span class="s2">!&quot;</span>
+    <span class="n">failed_message</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;You work and work but you are not happy with the result. You need to start over.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Making a sword blade takes skill. Here we emulate this by introducing a</span>
+<span class="sd">        random chance of failure (in a real game this could be a skill check</span>
+<span class="sd">        against a skill found on `self.crafter`). In this case you can always</span>
+<span class="sd">        start over since steel is not lost but can be re-smelted again for</span>
+<span class="sd">        another try.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            validated_inputs (list): all consumables/tools being used.</span>
+<span class="sd">            **kwargs: any extra kwargs passed during crafting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            any: The result of the craft, or None if a failure.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Depending on if we return a crafting result from this</span>
+<span class="sd">            method or not, `success_message` or `failure_message`</span>
+<span class="sd">            will be echoed to the crafter.</span>
+
+<span class="sd">            (for more control we could also message directly and raise</span>
+<span class="sd">            crafting.CraftingError to abort craft process on failure).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.8</span><span class="p">:</span>
+            <span class="c1"># 80% chance of success. This will spawn the sword and show</span>
+            <span class="c1"># success-message.</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># fail and show failed message</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="SwordBladeRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.SwordBladeRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordBladeRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A [sword]blade requires hammering the steel out into shape using heat and</span>
+<span class="sd">    force. This also includes the tang, which is the base for the hilt (the</span>
+<span class="sd">    part of the sword you hold on to).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sword blade&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hammer&quot;</span><span class="p">,</span> <span class="s2">&quot;anvil&quot;</span><span class="p">,</span> <span class="s2">&quot;furnace&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;crucible steel&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Sword blade&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A long blade that may one day become a sword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;sword blade&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SwordPommelRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.SwordPommelRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordPommelRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The pommel is the &#39;button&#39; or &#39;ball&#39; etc the end of the sword hilt, holding</span>
+<span class="sd">    it together.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sword pommel&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hammer&quot;</span><span class="p">,</span> <span class="s2">&quot;anvil&quot;</span><span class="p">,</span> <span class="s2">&quot;furnace&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;crucible steel&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Sword pommel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The pommel for a future sword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;sword pommel&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SwordGuardRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.SwordGuardRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordGuardRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The guard stops the hand from accidentally sliding off the hilt onto the</span>
+<span class="sd">    sword&#39;s blade and also protects the hand when parrying.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sword guard&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hammer&quot;</span><span class="p">,</span> <span class="s2">&quot;anvil&quot;</span><span class="p">,</span> <span class="s2">&quot;furnace&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;crucible steel&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Sword guard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The cross-guard for a future sword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;sword guard&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RawhideRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.RawhideRecipe">[docs]</a><span class="k">class</span> <span class="nc">RawhideRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rawhide is animal skin cleaned and stripped of hair.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;rawhide&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fur&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Rawhide&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Animal skin, cleaned and with hair removed.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;rawhide&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OakBarkRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.OakBarkRecipe">[docs]</a><span class="k">class</span> <span class="nc">OakBarkRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The actual thing needed for tanning leather is Tannin, but we skip</span>
+<span class="sd">    the step of refining tannin from the bark and use the bark as-is.</span>
+
+<span class="sd">    This produces two outputs - the bark and the cleaned wood.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;oak bark&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;oak wood&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Oak bark&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Bark of oak, stripped from the core wood.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;oak bark&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Oak Wood (cleaned)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Oakwood core, stripped of bark.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;cleaned oak wood&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">},</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LeatherRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.LeatherRecipe">[docs]</a><span class="k">class</span> <span class="nc">LeatherRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Leather is produced by tanning rawhide in a process traditionally involving</span>
+<span class="sd">    the chemical Tannin. Here we abbreviate this process a bit. Maybe a</span>
+<span class="sd">    &#39;tanning rack&#39; tool should be required too ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;leather&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cauldron&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rawhide&quot;</span><span class="p">,</span> <span class="s2">&quot;oak bark&quot;</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Piece of Leather&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A piece of leather.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;leather&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SwordHandleRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.SwordHandleRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordHandleRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The handle is the part of the hilt between the guard and the pommel where</span>
+<span class="sd">    you hold the sword. It consists of wooden pieces around the steel tang. It</span>
+<span class="sd">    is wrapped in leather, but that will be added at the end.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sword handle&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cleaned oak wood&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Sword handle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Two pieces of wood to be be fitted onto a sword&#39;s tang as its handle.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;sword handle&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SwordRecipe"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.example_recipes.html#evennia.contrib.crafting.example_recipes.SwordRecipe">[docs]</a><span class="k">class</span> <span class="nc">SwordRecipe</span><span class="p">(</span><span class="n">_SwordSmithingBaseRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A finished sword consists of a Blade ending in a non-sharp part called the</span>
+<span class="sd">    Tang. The cross Guard is put over the tang against the edge of the blade.</span>
+<span class="sd">    The Handle is put over the tang to give something easier to hold. The</span>
+<span class="sd">    Pommel locks everything in place. The handle is wrapped in leather</span>
+<span class="sd">    strips for better grip.</span>
+
+<span class="sd">    This covers only a single &#39;sword&#39; type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sword&quot;</span>
+    <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hammer&quot;</span><span class="p">,</span> <span class="s2">&quot;furnace&quot;</span><span class="p">,</span> <span class="s2">&quot;knife&quot;</span><span class="p">]</span>
+    <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sword blade&quot;</span><span class="p">,</span> <span class="s2">&quot;sword guard&quot;</span><span class="p">,</span> <span class="s2">&quot;sword pommel&quot;</span><span class="p">,</span> <span class="s2">&quot;sword handle&quot;</span><span class="p">,</span> <span class="s2">&quot;leather&quot;</span><span class="p">]</span>
+    <span class="n">output_prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Sword&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A bladed weapon.&quot;</span><span class="p">,</span>
+            <span class="c1"># setting the tag as well - who knows if one can make something from this too!</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;sword&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)],</span>
+        <span class="p">}</span>
+        <span class="c1"># obviously there would be other properties of a &#39;sword&#39; added here</span>
+        <span class="c1"># too, depending on how combat works in the your game!</span>
+    <span class="p">]</span>
+    <span class="c1"># this requires more precision</span>
+    <span class="n">exact_consumable_order</span> <span class="o">=</span> <span class="kc">True</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="example_recipes.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.crafting.example_recipes</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

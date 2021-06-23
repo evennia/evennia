@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.utils</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,49 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-admin-utils">
-<h1>evennia.web.admin.utils<a class="headerlink" href="#evennia-web-admin-utils" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.admin.utils">
+<span id="evennia-web-admin-utils"></span><h1>evennia.web.admin.utils<a class="headerlink" href="#module-evennia.web.admin.utils" title="Permalink to this headline">¶</a></h1>
+<p>Helper utils for admin views.</p>
+<dl class="py function">
+<dt id="evennia.web.admin.utils.get_and_load_typeclasses">
+<code class="sig-prename descclassname">evennia.web.admin.utils.</code><code class="sig-name descname">get_and_load_typeclasses</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">excluded_parents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/utils.html#get_and_load_typeclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.utils.get_and_load_typeclasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all typeclasses. We we need to initialize things here
+for them to be actually available in the admin process.
+This is intended to be used with forms.ChoiceField.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em><em> or </em><em>class</em><em>, </em><em>optional</em>) – Limit selection to this class and its children
+(at any distance).</p></li>
+<li><p><strong>exclude</strong> (<em>list</em>) – Class-parents to exclude from the resulting list. All
+children of these paretns will be skipped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of (str, str), the way ChoiceField wants it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.admin.utils.get_and_load_cmdsets">
+<code class="sig-prename descclassname">evennia.web.admin.utils.</code><code class="sig-name descname">get_and_load_cmdsets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">excluded_parents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/utils.html#get_and_load_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.utils.get_and_load_cmdsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all cmdsets available or as children based on a parent cmdset.  We need
+to initialize things here to make sure as much as possible is loaded in the
+admin process. This is intended to be used with forms.ChoiceField.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em><em>, </em><em>optional</em>) – Python-path to the parent cmdset, if any.</p></li>
+<li><p><strong>excluded_parents</strong> (<em>list</em>) – A list of cmset-paths to exclude from the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of (str, str), the way ChoiceField wants it.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +126,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +142,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.utils</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

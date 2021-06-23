@@ -31,6 +31,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -103,6 +104,7 @@
 <span class="sd">can then implement separate sets for different situations. For</span>
 <span class="sd">example, you can have a &#39;On a boat&#39; set, onto which you then tack on</span>
 <span class="sd">the &#39;Fishing&#39; set. Fishing from a boat? No problem!</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
@@ -144,7 +146,7 @@
 
 <span class="n">_ERROR_CMDSET_EXCEPTION</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
     <span class="sd">&quot;&quot;&quot;{traceback}</span>
-<span class="sd">Compile/Run error when loading cmdset &#39;{path}&#39;.&quot;,</span>
+<span class="sd">Compile/Run error when loading cmdset &#39;{path}&#39;.</span>
 <span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
 <span class="p">)</span>
 
@@ -209,7 +211,7 @@
         <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">modpath</span><span class="p">,</span> <span class="n">classname</span> <span class="o">=</span> <span class="n">python_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;The path &#39;</span><span class="si">%s</span><span class="s2">&#39; is not on the form modulepath.ClassName&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; is not on the form modulepath.ClassName&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># first try to get from cache</span>
@@ -353,6 +355,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display current commands</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;CmdSetHandler&gt; stack:&quot;</span><span class="p">]</span>
@@ -462,7 +465,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_current</span><span class="o">.</span><span class="n">actual_mergetype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
 <span class="sd">        is set as the default one (it will then end up at the bottom of the stack)</span>
@@ -471,7 +475,7 @@
 <span class="sd">            cmdset (CmdSet or str): Can be a cmdset object or the python path</span>
 <span class="sd">                to such an object.</span>
 <span class="sd">            emit_to_obj (Object, optional): An object to receive error messages.</span>
-<span class="sd">            permanent (bool, optional): This cmdset will remain across a server reboot.</span>
+<span class="sd">            persistent (bool, optional): Let cmdset remain across server reload.</span>
 <span class="sd">            default_cmdset (Cmdset, optional): Insert this to replace the</span>
 <span class="sd">                default cmdset position (there is only one such position,</span>
 <span class="sd">                always at the bottom of the stack).</span>
@@ -488,6 +492,11 @@
 <span class="sd">          it&#39;s a &#39;quirk&#39; that has to be documented.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;permanent&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;obj.cmdset.add() kwarg &#39;permanent&#39; has changed name to &quot;</span>
+                           <span class="s2">&quot;&#39;persistent&#39; and now defaults to True.&quot;</span><span class="p">)</span>
+            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;permanent&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">)):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Only CmdSets can be added to the cmdsethandler!&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
@@ -498,8 +507,8 @@
             <span class="c1"># this is (maybe) a python path. Try to import from cache.</span>
             <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
-            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">permanent</span>
-            <span class="k">if</span> <span class="n">permanent</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
+            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">persistent</span>  <span class="c1"># TODO change on cmdset too</span>
+            <span class="k">if</span> <span class="n">persistent</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
                 <span class="c1"># store the path permanently</span>
                 <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">default_cmdset</span><span class="p">:</span>
@@ -513,17 +522,21 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut for adding a default cmdset.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cmdset (Cmdset): The Cmdset to add.</span>
 <span class="sd">            emit_to_obj (Object, optional): Gets error messages</span>
-<span class="sd">            permanent (bool, optional): The new Cmdset should survive a server reboot.</span>
+<span class="sd">            persistent (bool, optional): The new Cmdset should survive a server reboot.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">permanent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="s2">&quot;permanent&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;obj.cmdset.add_default() kwarg &#39;permanent&#39; has changed name to &quot;</span>
+                           <span class="s2">&quot;&#39;persistent&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;permanent&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -730,7 +743,6 @@
   <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -749,6 +761,7 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

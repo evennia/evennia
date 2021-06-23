@@ -43,12 +43,12 @@
 <strong>DefaultCharacter</strong>, <strong>DefaultAccount</strong>, <strong>DefaultRoom</strong> and <strong>DefaultExit</strong>.
 These are the (default) starting points for all in-game visible
 entities.</p>
+<p>This is the v1.0 develop version (for ref in doc building).</p>
 <dl class="py class">
 <dt id="evennia.objects.objects.ObjectSessionHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.objects.objects.</code><code class="sig-name descname">ObjectSessionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#ObjectSessionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.ObjectSessionHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Handles the get/setting of the sessid
-comma-separated integer field</p>
+<p>Handles the get/setting of the sessid comma-separated integer field</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.ObjectSessionHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#ObjectSessionHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.ObjectSessionHandler.__init__" title="Permalink to this definition">¶</a></dt>
@@ -198,21 +198,26 @@ currently connected to this object.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.contents_get">
-<code class="sig-name descname">contents_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.contents_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.contents_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">contents_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">content_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.contents_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.contents_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the contents of this object, i.e. all
 objects that has this object set as its location.
 This should be publically available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>exclude</strong> (<em>Object</em>) – Object to exclude from returned
-contents list</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exclude</strong> (<em>Object</em>) – Object to exclude from returned
+contents list</p></li>
+<li><p><strong>content_type</strong> (<em>str</em>) – A content_type to filter by. None for no
+filtering.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>contents (list)</em> – List of contents of this Object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Also available as the <strong>contents</strong> property.</p>
+<p>Also available as the <strong>contents</strong> property, minus exclusion
+and filtering.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -229,15 +234,20 @@ objects that has this object set as its location.
 This should be publically available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>exclude</strong> (<em>Object</em>) – Object to exclude from returned
-contents list</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exclude</strong> (<em>Object</em>) – Object to exclude from returned
+contents list</p></li>
+<li><p><strong>content_type</strong> (<em>str</em>) – A content_type to filter by. None for no
+filtering.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>contents (list)</em> – List of contents of this Object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Also available as the <strong>contents</strong> property.</p>
+<p>Also available as the <strong>contents</strong> property, minus exclusion
+and filtering.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -301,7 +311,7 @@ plural (str): The determined plural form of the key, including the count.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">global_search</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">global_search</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stacked</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an Object matching a search string/condition</p>
 <p>Perform a standard object search in the database, handling
 multiple results and lack thereof gracefully. By default, only
@@ -336,7 +346,9 @@ for a broader search.</p></li>
 to search. Note that this is used to query the <em>contents</em> of a
 location and will not match for the location itself -
 if you want that, don’t set this or use <strong>candidates</strong> to specify
-exactly which objects should be searched.</p></li>
+exactly which objects should be searched. If this nor candidates are
+given, candidates will include caller’s inventory, current location and
+all objects in the current location.</p></li>
 <li><p><strong>attribute_name</strong> (<em>str</em>) – Define which property to search. If set, no
 key+alias search will be performed. This can be used
 to search database fields (<a href="#id1"><span class="problematic" id="id2">db_</span></a> will be automatically
@@ -364,14 +376,22 @@ to find an object (globally) by its database-id 123. If <strong>False</strong>, 
 will be treated like a normal string. If <strong>None</strong> (default), the ability to query by
 #dbref is turned on if <strong>self</strong> has the permission ‘Builder’ and is turned off
 otherwise.</p></li>
+<li><p><strong>stacked</strong> (<em>int</em><em>, </em><em>optional</em>) – If &gt; 0, multimatches will be analyzed to determine if they
+only contains identical objects; these are then assumed ‘stacked’ and no multi-match
+error will be generated, instead <strong>stacked</strong> number of matches will be returned. If
+<strong>stacked</strong> is larger than number of matches, returns that number of matches. If
+the found stack is a mix of objects, return None and handle the multi-match
+error depending on the value of <strong>quiet</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>match (Object, None or list)</em> –</p>
-<dl class="simple">
-<dt>will return an Object/None if <strong>quiet=False</strong>,</dt><dd><p>otherwise it will return a list of 0, 1 or more matches.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><p><em>Object</em> – If finding a match an <strong>quiet=False</strong>
+None: If not finding a unique match and <strong>quiet=False</strong>.
+list: With 0, 1 or more matching objects if <strong>quiet=True</strong>
+list: With 2 or more matching objects if <strong>stacked</strong> is a positive integer and</p>
+<blockquote>
+<div><p>the matched stack has only object-copies.</p>
+</div></blockquote>
 </p>
 </dd>
 </dl>
@@ -526,47 +546,66 @@ function on.</p></li>
 <li><p><strong>text</strong> (<em>str</em><em> or </em><em>tuple</em>) – Message to send. If a tuple, this should be
 on the valid OOB outmessage form <strong>(message, {kwargs})</strong>,
 where kwargs are optional data passed to the <strong>text</strong>
-outputfunc.</p></li>
+outputfunc. The message will be parsed for <strong>{key}</strong> formatting and
+<strong>$You/$you()/$You(key)</strong> and <strong>$conj(verb)</strong> inline function callables.
+The <strong>key</strong> is taken from the <strong>mapping</strong> kwarg {“key”: object, …}**.
+The <strong>mapping[key].get_display_name(looker=recipient)</strong> will be called
+for that key for every recipient of the string.</p></li>
 <li><p><strong>exclude</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of objects not to send to.</p></li>
 <li><p><strong>from_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – An object designated as the
 “sender” of the message. See <strong>DefaultObject.msg()</strong> for
 more info.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – A mapping of formatting keys
-<strong>{“key”:&lt;object&gt;, “key2”:&lt;object2&gt;,…}. The keys
-must match **{key}</strong> markers in the <strong>text</strong> if this is a string or
-in the internal <strong>message</strong> if <strong>text</strong> is a tuple. These
-formatting statements will be
-replaced by the return of <strong>&lt;object&gt;.get_display_name(looker)</strong>
-for every looker in contents that receives the
-message. This allows for every object to potentially
-get its own customized string.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>arguments will be passed on to obj.msg</strong><strong>(</strong><strong>) </strong><strong>for all</strong> (<em>Keyword</em>) – </p></li>
-<li><p><strong>objects.</strong> (<em>messaged</em>) – </p></li>
+<strong>{“key”:&lt;object&gt;, “key2”:&lt;object2&gt;,…}.
+The keys must either match **{key}</strong> or <strong>$You(key)/$you(key)</strong> markers
+in the <strong>text</strong> string. If <strong>&lt;object&gt;</strong> doesn’t have a <strong>get_display_name</strong>
+method, it will be returned as a string. If not set, a key <strong>you</strong> will
+be auto-added to point to <strong>from_obj</strong> if given, otherwise to <strong>self</strong>.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments will be passed on to <strong>obj.msg()</strong> for all
+messaged objects.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The <strong>mapping</strong> argument is required if <strong>message</strong> contains
-{}-style format syntax. The keys of <strong>mapping</strong> should match
-named format tokens, and its values will have their
-<strong>get_display_name()</strong> function called for  each object in
-the room before substitution. If an item in the mapping does
-not have <strong>get_display_name()</strong>, its string value will be used.</p>
-<p class="rubric">Example</p>
-<p>Say Char is a Character object and Npc is an NPC object:</p>
-<dl class="simple">
-<dt>char.location.msg_contents(</dt><dd><p>“{attacker} kicks {defender}”,
-mapping=dict(attacker=char, defender=npc), exclude=(char, npc))</p>
-</dd>
-</dl>
-<p>This will result in everyone in the room seeing ‘Char kicks NPC’
-where everyone may potentially see different results for Char and Npc
-depending on the results of <strong>char.get_display_name(looker)</strong> and
-<strong>npc.get_display_name(looker)</strong> for each particular onlooker</p>
+<p>For ‘actor-stance’ reporting (You say/Name says), use the
+<strong>$You()/$you()/$You(key)</strong> and <strong>$conj(verb)</strong> (verb-conjugation)
+inline callables. This will use the respective <strong>get_display_name()</strong>
+for all onlookers except for <strong>from_obj or self</strong>, which will become
+‘You/you’. If you use <strong>$You/you(key)</strong>, the key must be in <strong>mapping</strong>.</p>
+<p>For ‘director-stance’ reporting (Name says/Name says), use {key}
+syntax directly. For both <strong>{key}</strong> and <strong>You/you(key)</strong>,
+<strong>mapping[key].get_display_name(looker=recipient)</strong> may be called
+depending on who the recipient is.</p>
+<p class="rubric">Examples</p>
+<p>Let’s assume
+- <strong>player1.key -&gt; “Player1”</strong>,</p>
+<blockquote>
+<div><p><strong>player1.get_display_name(looker=player2) -&gt; “The First girl”</strong></p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>player2.key -&gt; “Player2”</strong>,
+<strong>player2.get_display_name(looker=player1) -&gt; “The Second girl”</strong></p></li>
+</ul>
+<p>Actor-stance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+    <span class="s2">&quot;$You() $conj(attack) $you(defender).&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;defender&quot;</span><span class="p">:</span> <span class="n">player2</span><span class="p">})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>player1 will see <strong>You attack The Second girl.</strong></p></li>
+<li><p>player2 will see ‘The First girl attacks you.’</p></li>
+</ul>
+<p>Director-stance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="si">{attacker}</span><span class="s2"> attacks </span><span class="si">{defender}</span><span class="s2">.&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;attacker:player1, &quot;</span><span class="n">defender</span><span class="s2">&quot;:player2})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>player1 will see: ‘Player1 attacks The Second girl.’</p></li>
+<li><p>player2 will see: ‘The First girl attacks Player2’</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -684,8 +723,8 @@ specified, the copy will be named &lt;old_key&gt;_copy by default.</p>
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_object_post_copy">
 <code class="sig-name descname">at_object_post_copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_obj</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_object_post_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_object_post_copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by DefaultObject.copy(). Meant to be overloaded. In case there’s extra data not covered by
-.copy(), this can be used to deal with it.</p>
+<dd><p>Called by DefaultObject.copy(). Meant to be overloaded. In case there’s extra data not
+covered by .copy(), this can be used to deal with it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>new_obj</strong> (<em>Object</em>) – The new Copy of this object.</p>
@@ -1367,7 +1406,8 @@ text from the object. Returning <strong>None</strong> aborts the command.</p>
 a say. This is sent by the whisper command by default.
 Other verbal commands could use this hook in similar
 ways.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the say/whisper.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
+say/whisper.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -1392,8 +1432,8 @@ re-writing it completely.</p>
 <li><p><strong>msg_self</strong> (<em>bool</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – If boolean True, echo <strong>message</strong> to self. If a string,
 return that message. If False or unset, don’t echo to self.</p></li>
 <li><p><strong>msg_location</strong> (<em>str</em><em>, </em><em>optional</em>) – The message to echo to self’s location.</p></li>
-<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the message
-(by default only used by whispers).</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – An eventual receiver or receivers of the
+message (by default only used by whispers).</p></li>
 <li><p><strong>msg_receivers</strong> (<em>str</em>) – Specific message to pass to the receiver(s). This will parsed
 with the {receiver} placeholder replaced with the given receiver.</p></li>
 </ul>
@@ -1491,6 +1531,37 @@ change the default lockset and skip creator attribution.</p></li>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>character (Object)</em> – A newly created Character of the given typeclass.
 errors (list): A list of errors in string form, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultCharacter.normalize_name">
+<em class="property">classmethod </em><code class="sig-name descname">normalize_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.normalize_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.normalize_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the character name prior to creating. Note that this should be refactored to
+support i18n for non-latin scripts, but as we (currently) have no bug reports requesting
+better support of non-latin character sets, requiring character names to be latinified is an
+acceptable option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>latin_name (str)</em> – A valid name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultCharacter.validate_name">
+<em class="property">classmethod </em><code class="sig-name descname">validate_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.validate_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.validate_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the character name prior to creating. Overload this function to add custom validators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>valid (bool)</em> – True if character creation should continue; False if it should fail</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1699,7 +1770,8 @@ overriding the call (unused by default).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A string with identifying information to disambiguate the command, conventionally with a preceding space.</p>
+<dd class="field-even"><p>A string with identifying information to disambiguate the command, conventionally with a
+preceding space.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1722,6 +1794,11 @@ overriding the call (unused by default).</p></li>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.ExitCommand.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.objects.objects.ExitCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.objects.objects.ExitCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    This is a command that simply cause the caller to traverse\n    the object it is attached to.\n\n    '}</em><a class="headerlink" href="#evennia.objects.objects.ExitCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1932,7 +2009,6 @@ read for an error string instead.</p>
   <li><a href="../../1.0-dev/api/evennia.objects.objects.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.objects.objects.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

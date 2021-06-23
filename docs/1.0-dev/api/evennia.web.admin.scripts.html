@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.scripts</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,194 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-admin-scripts">
-<h1>evennia.web.admin.scripts<a class="headerlink" href="#evennia-web-admin-scripts" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.admin.scripts">
+<span id="evennia-web-admin-scripts"></span><h1>evennia.web.admin.scripts<a class="headerlink" href="#module-evennia.web.admin.scripts" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.web.admin.scripts.ScriptForm">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.scripts.</code><code class="sig-name descname">ScriptForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">instance=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptForm.base_fields">
+<code class="sig-name descname">base_fields</code><em class="property"> = {'db_interval': &lt;django.forms.fields.IntegerField object&gt;, 'db_key': &lt;django.forms.fields.CharField object&gt;, 'db_lock_storage': &lt;django.forms.fields.CharField object&gt;, 'db_persistent': &lt;django.forms.fields.BooleanField object&gt;, 'db_repeats': &lt;django.forms.fields.IntegerField object&gt;, 'db_start_delay': &lt;django.forms.fields.BooleanField object&gt;, 'db_typeclass_path': &lt;django.forms.fields.ChoiceField object&gt;}</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptForm.declared_fields">
+<code class="sig-name descname">declared_fields</code><em class="property"> = {'db_interval': &lt;django.forms.fields.IntegerField object&gt;, 'db_key': &lt;django.forms.fields.CharField object&gt;, 'db_lock_storage': &lt;django.forms.fields.CharField object&gt;, 'db_persistent': &lt;django.forms.fields.BooleanField object&gt;, 'db_repeats': &lt;django.forms.fields.IntegerField object&gt;, 'db_start_delay': &lt;django.forms.fields.BooleanField object&gt;, 'db_typeclass_path': &lt;django.forms.fields.ChoiceField object&gt;}</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptForm.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptForm.media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.admin.scripts.ScriptTagInline">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.scripts.</code><code class="sig-name descname">ScriptTagInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptTagInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptTagInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.admin.tags.html#evennia.web.admin.tags.TagInline" title="evennia.web.admin.tags.TagInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.admin.tags.TagInline</span></code></a></p>
+<p>Inline script tags.</p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptTagInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptTagInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.models.ScriptDB_db_tags</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptTagInline.form">
+<code class="sig-name descname">form</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptTagInline.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.scripts.ScriptForm" title="evennia.web.admin.scripts.ScriptForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptTagInline.related_field">
+<code class="sig-name descname">related_field</code><em class="property"> = 'scriptdb'</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptTagInline.related_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptTagInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptTagInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.admin.scripts.ScriptAttributeInline">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.scripts.</code><code class="sig-name descname">ScriptAttributeInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptAttributeInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAttributeInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline" title="evennia.web.admin.attributes.AttributeInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.admin.attributes.AttributeInline</span></code></a></p>
+<p>Inline attribute tags.</p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAttributeInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAttributeInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.models.ScriptDB_db_attributes</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAttributeInline.form">
+<code class="sig-name descname">form</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAttributeInline.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.scripts.ScriptForm" title="evennia.web.admin.scripts.ScriptForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAttributeInline.related_field">
+<code class="sig-name descname">related_field</code><em class="property"> = 'scriptdb'</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAttributeInline.related_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptAttributeInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAttributeInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.admin.scripts.ScriptAdmin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.scripts.</code><code class="sig-name descname">ScriptAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Displaying the main Script page.</p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.list_display">
+<code class="sig-name descname">list_display</code><em class="property"> = ('id', 'db_key', 'db_typeclass_path', 'db_obj', 'db_interval', 'db_repeats', 'db_persistent', 'db_date_created')</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.list_display_links">
+<code class="sig-name descname">list_display_links</code><em class="property"> = ('id', 'db_key')</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.list_display_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.ordering">
+<code class="sig-name descname">ordering</code><em class="property"> = ['-db_date_created', '-id']</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.ordering" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ['=id', '^db_key', 'db_typeclass_path']</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.readonly_fields">
+<code class="sig-name descname">readonly_fields</code><em class="property"> = ['serialized_string']</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.form">
+<code class="sig-name descname">form</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.scripts.ScriptForm" title="evennia.web.admin.scripts.ScriptForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.save_as">
+<code class="sig-name descname">save_as</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.save_as" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.list_select_related">
+<code class="sig-name descname">list_select_related</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.list_select_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.view_on_site">
+<code class="sig-name descname">view_on_site</code><em class="property"> = False</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.raw_id_fields">
+<code class="sig-name descname">raw_id_fields</code><em class="property"> = ('db_obj',)</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.raw_id_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.fieldsets">
+<code class="sig-name descname">fieldsets</code><em class="property"> = ((None, {'fields': (('db_key', 'db_typeclass_path'), ('db_interval', 'db_repeats', 'db_start_delay', 'db_persistent'), 'db_obj', 'db_lock_storage', 'serialized_string')}),)</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.inlines">
+<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'evennia.web.admin.scripts.ScriptTagInline'&gt;, &lt;class 'evennia.web.admin.scripts.ScriptAttributeInline'&gt;]</em><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.serialized_string">
+<code class="sig-name descname">serialized_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptAdmin.serialized_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.serialized_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the serialized version of the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.get_form">
+<code class="sig-name descname">get_form</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptAdmin.get_form"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.get_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides help texts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.save_model">
+<code class="sig-name descname">save_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">form</span></em>, <em class="sig-param"><span class="n">change</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/scripts.html#ScriptAdmin.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model-save hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – Database object.</p></li>
+<li><p><strong>form</strong> (<em>Form</em>) – Form instance.</p></li>
+<li><p><strong>change</strong> (<em>bool</em>) – If this is a change or a new object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.scripts.ScriptAdmin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.scripts.ScriptAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +271,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +287,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.scripts</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

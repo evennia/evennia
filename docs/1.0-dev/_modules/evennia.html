@@ -30,6 +30,7 @@
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -135,7 +136,6 @@
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">CHANNEL_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># Containers</span>
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="kc">None</span>
@@ -189,7 +189,7 @@
     <span class="k">global</span> <span class="n">signals</span>
     <span class="k">global</span> <span class="n">settings</span><span class="p">,</span> <span class="n">lockfuncs</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">spawn</span><span class="p">,</span> <span class="n">managers</span>
     <span class="k">global</span> <span class="n">contrib</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">MONITOR_HANDLER</span><span class="p">,</span> <span class="n">SESSION_HANDLER</span>
-    <span class="k">global</span> <span class="n">CHANNEL_HANDLER</span><span class="p">,</span> <span class="n">TASK_HANDLER</span>
+    <span class="k">global</span> <span class="n">TASK_HANDLER</span>
     <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span>
@@ -252,7 +252,6 @@
     <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
 
     <span class="c1"># containers</span>
@@ -381,7 +380,6 @@
 <span class="sd">        CMD_NOINPUT - no input was given on command line</span>
 <span class="sd">        CMD_NOMATCH - no valid command key was found</span>
 <span class="sd">        CMD_MULTIMATCH - multiple command matches were found</span>
-<span class="sd">        CMD_CHANNEL - the command name is a channel name</span>
 <span class="sd">        CMD_LOGINSTART - this command will be called as the very</span>
 <span class="sd">                         first command when an account connects to</span>
 <span class="sd">                         the server.</span>
@@ -396,7 +394,6 @@
         <span class="n">CMD_NOINPUT</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOINPUT</span>
         <span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOMATCH</span>
         <span class="n">CMD_MULTIMATCH</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_MULTIMATCH</span>
-        <span class="n">CMD_CHANNEL</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_CHANNEL</span>
         <span class="n">CMD_LOGINSTART</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_LOGINSTART</span>
         <span class="k">del</span> <span class="n">cmdhandler</span>
 
@@ -514,7 +511,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -532,6 +528,7 @@
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.

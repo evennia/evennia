@@ -87,7 +87,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="AccountDB"><a class="viewcode-back" href="../../../api/evennia.accounts.models.html#evennia.accounts.admin.AccountDB">[docs]</a><span class="k">class</span> <span class="nc">AccountDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">,</span> <span class="n">AbstractUser</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDB"><a class="viewcode-back" href="../../../api/evennia.accounts.models.html#evennia.accounts.models.AccountDB">[docs]</a><span class="k">class</span> <span class="nc">AccountDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">,</span> <span class="n">AbstractUser</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a special model using Django&#39;s &#39;profile&#39; functionality</span>
 <span class="sd">    and extends the default Django User model. It is defined as such</span>
@@ -135,7 +135,8 @@
         <span class="s2">&quot;cmdset&quot;</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;optional python path to a cmdset class. If creating a Character, this will &quot;</span>
+        <span class="s2">&quot;default to settings.CMDSET_CHARACTER.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># marks if this is a &quot;virtual&quot; bot account object</span>
     <span class="n">db_is_bot</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
@@ -150,8 +151,8 @@
     <span class="n">__applabel__</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
     <span class="n">__settingsclasspath__</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
 
-    <span class="c1">#  class Meta:</span>
-    <span class="c1">#      verbose_name = &quot;Account&quot;</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Account&quot;</span>
 
     <span class="c1"># cmdset_storage property</span>
     <span class="c1"># This seems very sensitive to caching, so leaving it be for now /Griatch</span>
@@ -256,7 +257,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

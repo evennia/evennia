@@ -48,12 +48,10 @@
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">TempMsg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
-
-<span class="n">_CHANNEL_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="DefaultChannel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel">[docs]</a><span class="k">class</span> <span class="nc">DefaultChannel</span><span class="p">(</span><span class="n">ChannelDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
@@ -61,9 +59,36 @@
 <span class="sd">    This is the base class for all Channel Comms. Inherit from this to</span>
 <span class="sd">    create different types of communication channels.</span>
 
+<span class="sd">    Class-level variables:</span>
+<span class="sd">        - `send_to_online_only` (bool, default True) - if set, will only try to</span>
+<span class="sd">          send to subscribers that are actually active. This is a useful optimization.</span>
+<span class="sd">        - `log_file` (str, default `&quot;channel_{channelname}.log&quot;`). This is the</span>
+<span class="sd">          log file to which the channel history will be saved. The `{channelname}` tag</span>
+<span class="sd">          will be replaced by the key of the Channel. If an Attribute &#39;log_file&#39;</span>
+<span class="sd">          is set, this will be used instead. If this is None and no Attribute is found,</span>
+<span class="sd">          no history will be saved.</span>
+<span class="sd">        - `channel_prefix_string` (str, default `&quot;[{channelname} ]&quot;`) - this is used</span>
+<span class="sd">          as a simple template to get the channel prefix with `.channel_prefix()`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ChannelManager</span><span class="p">()</span>
+
+    <span class="c1"># channel configuration</span>
+
+    <span class="c1"># only send to characters/accounts who has an active session (this is a</span>
+    <span class="c1"># good optimization since people can still recover history separately).</span>
+    <span class="n">send_to_online_only</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># store log in log file. `channel_key tag will be replace with key of channel.</span>
+    <span class="c1"># Will use log_file Attribute first, if given</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="s2">&quot;channel_</span><span class="si">{channelname}</span><span class="s2">.log&quot;</span>
+    <span class="c1"># which prefix to use when showing were a message is coming from. Set to</span>
+    <span class="c1"># None to disable and set this later.</span>
+    <span class="n">channel_prefix_string</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{channelname}</span><span class="s2">] &quot;</span>
+
+    <span class="c1"># default nick-alias replacements (default using the &#39;channel&#39; command)</span>
+    <span class="n">channel_msg_nick_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{alias}</span><span class="s2">\s*?|</span><span class="si">{alias}</span><span class="s2">\s+?(?P&lt;arg1&gt;.+?)&quot;</span>
+    <span class="n">channel_msg_nick_replacement</span> <span class="o">=</span> <span class="s2">&quot;channel </span><span class="si">{channelname}</span><span class="s2"> = $1&quot;</span>
 
 <div class="viewcode-block" id="DefaultChannel.at_first_save"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -74,7 +99,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_channel_creation</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_</span><span class="si">%s</span><span class="s2">.log&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_createdict&quot;</span><span class="p">):</span>
             <span class="c1"># this is only set if the channel was created</span>
             <span class="c1"># with the utils.create.create_channel function.</span>
@@ -96,14 +120,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># delayed import of the channelhandler</span>
-        <span class="k">global</span> <span class="n">_CHANNEL_HANDLER</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_CHANNEL_HANDLER</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNEL_HANDLER</span> <span class="k">as</span> <span class="n">_CHANNEL_HANDLER</span>
-        <span class="c1"># register ourselves with the channelhandler.</span>
-        <span class="n">_CHANNEL_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;send:all();listen:all();control:perm(Admin)&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;send:all();listen:all();control:perm(Admin)&quot;</span><span class="p">)</span></div>
+        <span class="c1"># make sure we don&#39;t have access to a same-named old channel&#39;s history.</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_filename</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">rotate_log_file</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_channel_creation"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_channel_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_channel_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -113,6 +134,33 @@
         <span class="k">pass</span></div>
 
     <span class="c1"># helper methods, for easy overloading</span>
+
+    <span class="n">_log_file</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="DefaultChannel.get_log_filename"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.get_log_filename">[docs]</a>    <span class="k">def</span> <span class="nf">get_log_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        File name to use for channel log.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The filename to use (this is always assumed to be inside</span>
+<span class="sd">                settings.LOG_DIR)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.set_log_filename"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.set_log_filename">[docs]</a>    <span class="k">def</span> <span class="nf">set_log_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a custom log filename.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The filename to set. This is a path starting from</span>
+<span class="sd">                inside the settings.LOG_DIR location.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.has_connection"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.has_connection">[docs]</a>    <span class="k">def</span> <span class="nf">has_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -143,6 +191,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mute_list</span> <span class="ow">or</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">banlist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ban_list</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">wholist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">subs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="n">muted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span><span class="p">)</span>
@@ -170,6 +222,10 @@
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if muting was successful, False if we were already</span>
+<span class="sd">                muted.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mutelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span>
         <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mutelist</span><span class="p">:</span>
@@ -180,19 +236,67 @@
 
 <div class="viewcode-block" id="DefaultChannel.unmute"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.unmute">[docs]</a>    <span class="k">def</span> <span class="nf">unmute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes an entity to the list of muted subscribers.  A muted subscriber will no longer see channel messages,</span>
-<span class="sd">        but may use channel commands.</span>
+<span class="sd">        Removes an entity from the list of muted subscribers.  A muted subscriber</span>
+<span class="sd">        will no longer see channel messages, but may use channel commands.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            subscriber (Object or Account): The subscriber to unmute.</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if unmuting was successful, False if we were already</span>
+<span class="sd">                unmuted.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mutelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span>
         <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">mutelist</span><span class="p">:</span>
             <span class="n">mutelist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mute_list</span> <span class="o">=</span> <span class="n">mutelist</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.ban"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.ban">[docs]</a>    <span class="k">def</span> <span class="nf">ban</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ban a given user from connecting to the channel. This will not stop</span>
+<span class="sd">        users already connected, so the user must be booted for this to take</span>
+<span class="sd">        effect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target (Object or Account): The entity to unmute. This need not</span>
+<span class="sd">                be a subscriber.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if banning was successful, False if target was already</span>
+<span class="sd">                banned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">banlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banlist</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">banlist</span><span class="p">:</span>
+            <span class="n">banlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ban_list</span> <span class="o">=</span> <span class="n">banlist</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.unban"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.unban">[docs]</a>    <span class="k">def</span> <span class="nf">unban</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Un-Ban a given user. This will not reconnect them - they will still</span>
+<span class="sd">        have to reconnect and set up aliases anew.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target (Object or Account): The entity to unmute. This need not</span>
+<span class="sd">                be a subscriber.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if unbanning was successful, False if target was not</span>
+<span class="sd">                previously banned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">banlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banlist</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">banlist</span><span class="p">:</span>
+            <span class="n">banlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">banned</span> <span class="k">for</span> <span class="n">banned</span> <span class="ow">in</span> <span class="n">banlist</span> <span class="k">if</span> <span class="n">banned</span> <span class="o">!=</span> <span class="n">target</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ban_list</span> <span class="o">=</span> <span class="n">banlist</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -212,7 +316,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check access</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banlist</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># pre-join hook</span>
         <span class="n">connect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_join_channel</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
@@ -285,7 +389,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.create"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Channel with default parameters, unless otherwise</span>
 <span class="sd">        specified or extended.</span>
@@ -294,7 +398,8 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): This must be unique.</span>
-<span class="sd">            account (Account): Account to attribute this object to.</span>
+<span class="sd">            creator (Account or Object): Entity to associate with this channel</span>
+<span class="sd">                (used for tracking)</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            aliases (list of str): List of alternative (likely shorter) keynames.</span>
@@ -322,8 +427,8 @@
             <span class="c1"># Record creator id and creation IP</span>
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span> <span class="o">=</span> <span class="n">ip</span>
-            <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="n">creator</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_id</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">id</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;An error occurred while creating this &#39;</span><span class="si">%s</span><span class="s2">&#39; object.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
@@ -333,284 +438,189 @@
 
 <div class="viewcode-block" id="DefaultChannel.delete"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Deletes channel while also cleaning up channelhandler.</span>
+<span class="sd">        Deletes channel.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNELHANDLER</span>
+        <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-        <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.message_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.message_transform">[docs]</a>    <span class="k">def</span> <span class="nf">message_transform</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sender_strings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates the formatted string sent to listeners on a channel.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg): Message object to send.</span>
-<span class="sd">            emit (bool, optional): In emit mode the message is not associated</span>
-<span class="sd">                with a specific sender name.</span>
-<span class="sd">            prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.</span>
-<span class="sd">            sender_strings (list, optional): Used by bots etc, one string per external sender.</span>
-<span class="sd">            external (bool, optional): If this is an external sender or not.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">sender_strings</span> <span class="ow">or</span> <span class="n">external</span><span class="p">:</span>
-            <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_external</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">sender_strings</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="n">emit</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_message</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="n">emit</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-            <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_prefix</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="n">emit</span><span class="p">),</span> <span class="n">body</span><span class="p">)</span>
-        <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">body</span>
-        <span class="k">return</span> <span class="n">msgobj</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.distribute_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.distribute_message">[docs]</a>    <span class="k">def</span> <span class="nf">distribute_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for grabbing all listeners that a message should be</span>
-<span class="sd">        sent to on this channel, and sending them a message.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg or TempMsg): Message to distribute.</span>
-<span class="sd">            online (bool): Only send to receivers who are actually online</span>
-<span class="sd">                (not currently used):</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            This is also where logging happens, if enabled.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># get all accounts or objects connected to this channel and send to them</span>
-        <span class="k">if</span> <span class="n">online</span><span class="p">:</span>
-            <span class="n">subs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">online</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">subs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
-            <span class="c1"># if the entity is muted, we don&#39;t send them a message</span>
-            <span class="k">if</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># note our addition of the from_channel keyword here. This could be checked</span>
-                <span class="c1"># by a custom account.msg() to treat channel-receives differently.</span>
-                <span class="n">entity</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">msgobj</span><span class="o">.</span><span class="n">senders</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;from_channel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">Cannot send msg to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">entity</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">keep_log</span><span class="p">:</span>
-            <span class="c1"># log to file</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span>
-                <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;channel_</span><span class="si">%s</span><span class="s2">.log&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-            <span class="p">)</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">msgobj</span><span class="p">,</span>
-        <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">sender_strings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">online</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">external</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Send the given message to all accounts connected to channel. Note that</span>
-<span class="sd">        no permission-checking is done here; it is assumed to have been</span>
-<span class="sd">        done before calling this method. The optional keywords are not used if</span>
-<span class="sd">        persistent is False.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg, TempMsg or str): If a Msg/TempMsg, the remaining</span>
-<span class="sd">                keywords will be ignored (since the Msg/TempMsg object already</span>
-<span class="sd">                has all the data). If a string, this will either be sent as-is</span>
-<span class="sd">                (if persistent=False) or it will be used together with `header`</span>
-<span class="sd">                and `senders` keywords to create a Msg instance on the fly.</span>
-<span class="sd">            header (str, optional): A header for building the message.</span>
-<span class="sd">            senders (Object, Account or list, optional): Optional if persistent=False, used</span>
-<span class="sd">                to build senders for the message.</span>
-<span class="sd">            sender_strings (list, optional): Name strings of senders. Used for external</span>
-<span class="sd">                connections where the sender is not an account or object.</span>
-<span class="sd">                When this is defined, external will be assumed. The list will be </span>
-<span class="sd">                filtered so each sender-string only occurs once.</span>
-<span class="sd">            keep_log (bool or None, optional): This allows to temporarily change the logging status of</span>
-<span class="sd">                this channel message. If `None`, the Channel&#39;s `keep_log` Attribute will</span>
-<span class="sd">                be used. If `True` or `False`, that logging status will be used for this</span>
-<span class="sd">                message only (note that for unlogged channels, a `True` value here will</span>
-<span class="sd">                create a new log file only for this message).</span>
-<span class="sd">            online (bool, optional) - If this is set true, only messages people who are</span>
-<span class="sd">                online. Otherwise, messages all accounts connected. This can</span>
-<span class="sd">                make things faster, but may not trigger listeners on accounts</span>
-<span class="sd">                that are offline.</span>
-<span class="sd">            emit (bool, optional) - Signals to the message formatter that this message is</span>
-<span class="sd">                not to be directly associated with a name.</span>
-<span class="sd">            external (bool, optional): Treat this message as being</span>
-<span class="sd">                agnostic of its sender.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            success (bool): Returns `True` if message sending was</span>
-<span class="sd">                successful, `False` otherwise.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">senders</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span> <span class="k">if</span> <span class="n">senders</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># given msgobj is a string - convert to msgobject (always TempMsg)</span>
-            <span class="n">msgobj</span> <span class="o">=</span> <span class="n">TempMsg</span><span class="p">(</span><span class="n">senders</span><span class="o">=</span><span class="n">senders</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">])</span>
-        <span class="c1"># we store the logging setting for use in distribute_message()</span>
-        <span class="n">msgobj</span><span class="o">.</span><span class="n">keep_log</span> <span class="o">=</span> <span class="n">keep_log</span> <span class="k">if</span> <span class="n">keep_log</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">keep_log</span>
-
-        <span class="c1"># start the sending</span>
-        <span class="n">msgobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_send_message</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">msgobj</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">sender_strings</span><span class="p">:</span>
-            <span class="n">sender_strings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">sender_strings</span><span class="p">)))</span>
-        <span class="n">msgobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_transform</span><span class="p">(</span>
-            <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="n">emit</span><span class="p">,</span> <span class="n">sender_strings</span><span class="o">=</span><span class="n">sender_strings</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="n">external</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">distribute_message</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="n">online</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">post_send_message</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.tempmsg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.tempmsg">[docs]</a>    <span class="k">def</span> <span class="nf">tempmsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A wrapper for sending non-persistent messages.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            message (str): Message to send.</span>
-<span class="sd">            header (str, optional): Header of message to send.</span>
-<span class="sd">            senders (Object or list, optional): Senders of message to send.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="n">senders</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-    <span class="c1"># hooks</span>
-
-<div class="viewcode-block" id="DefaultChannel.channel_prefix"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.channel_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">channel_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultChannel.channel_prefix"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.channel_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">channel_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. How the channel should prefix itself for users.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            msg (str, optional): Prefix text</span>
-<span class="sd">            emit (bool, optional): Switches to emit mode, which usually</span>
-<span class="sd">                means to not prefix the channel&#39;s info.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
 <span class="sd">        Returns:</span>
-<span class="sd">            prefix (str): The created channel prefix.</span>
+<span class="sd">            str: The channel prefix.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">emit</span> <span class="k">else</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">] &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_prefix_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultChannel.format_senders"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_senders">[docs]</a>    <span class="k">def</span> <span class="nf">format_senders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultChannel.add_user_channel_alias"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.add_user_channel_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_user_channel_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method. Function used to format a list of sender names.</span>
+<span class="sd">        Add a personal user-alias for this channel to a given subscriber.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            senders (list): Sender object names.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
+<span class="sd">            user (Object or Account): The one to alias this channel.</span>
+<span class="sd">            alias (str): The desired alias.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            formatted_list (str): The list of names formatted appropriately.</span>
+<span class="sd">        Note:</span>
+<span class="sd">            This is tightly coupled to the default `channel` command. If you</span>
+<span class="sd">            change that, you need to change this as well.</span>
+
+<span class="sd">            We add two nicks - one is a plain `alias -&gt; channel.key` that</span>
+<span class="sd">            users need to be able to reference this channel easily. The other</span>
+<span class="sd">            is a templated nick to easily be able to send messages to the</span>
+<span class="sd">            channel without needing to give the full `channel` command. The</span>
+<span class="sd">            structure of this nick is given by `self.channel_msg_nick_pattern`</span>
+<span class="sd">            and `self.channel_msg_nick_replacement`. By default it maps</span>
+<span class="sd">            `alias &lt;msg&gt; -&gt; channel &lt;channelname&gt; = &lt;msg&gt;`, so that you can</span>
+<span class="sd">            for example just write `pub Hello` to send a message.</span>
+
+<span class="sd">            The alias created is `alias $1 -&gt; channel channel = $1`, to allow</span>
+<span class="sd">            for sending to channel using the main channel command.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chan_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># the message-pattern allows us to type the channel on its own without</span>
+        <span class="c1"># needing to use the `channel` command explicitly.</span>
+        <span class="n">msg_nick_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_msg_nick_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="n">msg_nick_replacement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_msg_nick_replacement</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="n">chan_key</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">msg_nick_pattern</span><span class="p">,</span> <span class="n">msg_nick_replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span>
+                             <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">chan_key</span> <span class="o">!=</span> <span class="n">alias</span><span class="p">:</span>
+            <span class="c1"># this allows for using the alias for general channel lookups</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">chan_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.remove_user_channel_alias"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.remove_user_channel_alias">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">remove_user_channel_alias</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a personal channel alias from a user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">           user (Object or Account): The user to remove an alias from.</span>
+<span class="sd">           alias (str): The alias to remove.</span>
+<span class="sd">           **kwargs: Unused by default. Can be used to pass extra variables</span>
+<span class="sd">                into a custom implementation.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            This function exists separately so that external sources</span>
-<span class="sd">            can use it to format source names in the same manner as</span>
-<span class="sd">            normal object/account names.</span>
+<span class="sd">            The channel-alias actually consists of two aliases - one</span>
+<span class="sd">            channel-based one for searching channels with the alias and one</span>
+<span class="sd">            inputline one for doing the &#39;channelalias msg&#39; - call.</span>
+
+<span class="sd">            This is a classmethod because it doesn&#39;t actually operate on the</span>
+<span class="sd">            channel instance.</span>
+
+<span class="sd">            It sits on the channel because the nick structure for this is</span>
+<span class="sd">            pretty complex and needs to be located in a central place (rather</span>
+<span class="sd">            on, say, the channel command).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">senders</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span></div>
+        <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">msg_nick_pattern</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">channel_msg_nick_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">msg_nick_pattern</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultChannel.pose_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pose_transform">[docs]</a>    <span class="k">def</span> <span class="nf">pose_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">sender_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultChannel.at_pre_msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_pre_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method. Detects if the sender is posing, and modifies the</span>
-<span class="sd">        message accordingly.</span>
+<span class="sd">        Called before the starting of sending the message to a receiver. This</span>
+<span class="sd">        is called before any hooks on the receiver itself. If this returns</span>
+<span class="sd">        None/False, the sending will be aborted.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg or TempMsg): The message to analyze for a pose.</span>
-<span class="sd">            sender_string (str): The name of the sender/poser.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
+<span class="sd">            message (str): The message to send.</span>
+<span class="sd">            **kwargs (any): Keywords passed on from `.msg`. This includes</span>
+<span class="sd">                `senders`.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            string (str): A message that combines the `sender_string`</span>
-<span class="sd">                component with `msg` in different ways depending on if a</span>
-<span class="sd">                pose was performed or not (this must be analyzed by the</span>
-<span class="sd">                hook).</span>
+<span class="sd">            str, False or None: Any custom changes made to the message. If</span>
+<span class="sd">                falsy, no message will be sent.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pose</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span>
-        <span class="n">message_start</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">message_start</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="p">)):</span>
-            <span class="n">pose</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">message</span>
-        <span class="k">if</span> <span class="n">pose</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sender_string</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bypass_mute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send message to channel, causing it to be distributed to all non-muted</span>
+<span class="sd">        subscribed users of that channel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): The message to send.</span>
+<span class="sd">            senders (Object, Account or list, optional): If not given, there is</span>
+<span class="sd">                no way to associate one or more senders with the message (like</span>
+<span class="sd">                a broadcast message or similar).</span>
+<span class="sd">            bypass_mute (bool, optional): If set, always send, regardless of</span>
+<span class="sd">                individual mute-state of subscriber. This can be used for</span>
+<span class="sd">                global announcements or warnings/alerts.</span>
+<span class="sd">            **kwargs (any): This will be passed on to all hooks. Use `no_prefix`</span>
+<span class="sd">                to exclude the channel prefix.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The call hook calling sequence is:</span>
+
+<span class="sd">            - `msg = channel.at_pre_msg(message, **kwargs)` (aborts for all if return None)</span>
+<span class="sd">            - `msg = receiver.at_pre_channel_msg(msg, channel, **kwargs)` (aborts for receiver if return None)</span>
+<span class="sd">            - `receiver.at_channel_msg(msg, channel, **kwargs)`</span>
+<span class="sd">            - `receiver.at_post_channel_msg(msg, channel, **kwargs)``</span>
+<span class="sd">            Called after all receivers are processed:</span>
+<span class="sd">            - `channel.at_post_all_msg(message, **kwargs)`</span>
+
+<span class="sd">            (where the senders/bypass_mute are embedded into **kwargs for</span>
+<span class="sd">            later access in hooks)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">senders</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span> <span class="k">if</span> <span class="n">senders</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_to_online_only</span><span class="p">:</span>
+            <span class="n">receivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">online</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sender_string</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+            <span class="n">receivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bypass_mute</span><span class="p">:</span>
+            <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">receiver</span> <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span> <span class="k">if</span> <span class="n">receiver</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span><span class="p">]</span>
 
-<div class="viewcode-block" id="DefaultChannel.format_external"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_external">[docs]</a>    <span class="k">def</span> <span class="nf">format_external</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">senders</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">send_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;senders&#39;</span><span class="p">:</span> <span class="n">senders</span><span class="p">,</span> <span class="s1">&#39;bypass_mute&#39;</span><span class="p">:</span> <span class="n">bypass_mute</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+
+        <span class="c1"># pre-send hook</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_pre_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">message</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span><span class="p">:</span>
+            <span class="c1"># send to each individual subscriber</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">recv_message</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">at_pre_channel_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">recv_message</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="k">return</span>
+
+                <span class="n">receiver</span><span class="o">.</span><span class="n">channel_msg</span><span class="p">(</span><span class="n">recv_message</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+
+                <span class="n">receiver</span><span class="o">.</span><span class="n">at_post_channel_msg</span><span class="p">(</span><span class="n">recv_message</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending channel message to </span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># post-send hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_post_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.at_post_msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_post_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method. Used for formatting external messages. This is</span>
-<span class="sd">        needed as a separate operation because the senders of external</span>
-<span class="sd">        messages may not be in-game objects/accounts, and so cannot</span>
-<span class="sd">        have things like custom user preferences.</span>
+<span class="sd">        This is called after sending to *all* valid recipients. It is normally</span>
+<span class="sd">        used for logging/channel history.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg or TempMsg): The message to send.</span>
-<span class="sd">            senders (list): Strings, one per sender.</span>
-<span class="sd">            emit (bool, optional): A sender-agnostic message or not.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            transformed (str): A formatted string.</span>
+<span class="sd">            message (str): The message sent.</span>
+<span class="sd">            **kwargs (any): Keywords passed on from `msg`, including `senders`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">emit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">senders</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span>
-        <span class="n">senders</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pose_transform</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">senders</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.format_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_message">[docs]</a>    <span class="k">def</span> <span class="nf">format_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method. Formats a message body for display.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msgobj (Msg or TempMsg): The message object to send.</span>
-<span class="sd">            emit (bool, optional): The message is agnostic of senders.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            transformed (str): The formatted message.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># We don&#39;t want to count things like external sources as senders for</span>
-        <span class="c1"># the purpose of constructing the message string.</span>
-        <span class="n">senders</span> <span class="o">=</span> <span class="p">[</span><span class="n">sender</span> <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">senders</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">senders</span><span class="p">:</span>
-            <span class="n">emit</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">emit</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">message</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">senders</span> <span class="o">=</span> <span class="p">[</span><span class="n">sender</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">msgobj</span><span class="o">.</span><span class="n">senders</span><span class="p">]</span>
-            <span class="n">senders</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">senders</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pose_transform</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">senders</span><span class="p">)</span></div>
+        <span class="c1"># save channel history to log file</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_filename</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">log_file</span><span class="p">:</span>
+            <span class="n">senders</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sender</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;senders&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">senders</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">senders</span><span class="si">}</span><span class="s2">: &quot;</span> <span class="k">if</span> <span class="n">senders</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">senders</span><span class="si">}{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pre_join_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_join_channel">[docs]</a>    <span class="k">def</span> <span class="nf">pre_join_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joiner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -637,8 +647,13 @@
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
 
+<span class="sd">        Notes:</span>
+<span class="sd">            By default this adds the needed channel nicks to the joiner.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="n">key_and_aliases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">+</span> <span class="p">[</span><span class="n">alias</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+        <span class="k">for</span> <span class="n">key_or_alias</span> <span class="ow">in</span> <span class="n">key_and_aliases</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_user_channel_alias</span><span class="p">(</span><span class="n">joiner</span><span class="p">,</span> <span class="n">key_or_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pre_leave_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_leave_channel">[docs]</a>    <span class="k">def</span> <span class="nf">pre_leave_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -666,36 +681,12 @@
 <span class="sd">                overriding the call (unused by default).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.pre_send_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">pre_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method.  Runs before a message is sent to the channel and</span>
-<span class="sd">        should return the message object, after any transformations.</span>
-<span class="sd">        If the message is to be discarded, return a false value.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msg (Msg or TempMsg): Message to send.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            result (Msg, TempMsg or bool): If False, abort send.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">msg</span></div>
-
-<div class="viewcode-block" id="DefaultChannel.post_send_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.post_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">post_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook method. Run after a message is sent to the channel.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msg (Msg or TempMsg): Message sent.</span>
-<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="n">chan_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">key_or_aliases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">+</span> <span class="p">[</span><span class="n">alias</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+        <span class="n">nicktuples</span> <span class="o">=</span> <span class="n">leaver</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">key_or_aliases</span> <span class="o">+=</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">nicktuples</span> <span class="k">if</span> <span class="n">tup</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">chan_key</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key_or_alias</span> <span class="ow">in</span> <span class="n">key_or_aliases</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_user_channel_alias</span><span class="p">(</span><span class="n">leaver</span><span class="p">,</span> <span class="n">key_or_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_init"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -755,7 +746,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-create&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -770,8 +761,10 @@
 <span class="sd">        a named view of &#39;channel-detail&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;,</span>
-<span class="sd">            ChannelDetailView.as_view(), name=&#39;channel-detail&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/$&#39;,</span>
+<span class="sd">                ChannelDetailView.as_view(), name=&#39;channel-detail&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -789,7 +782,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-detail&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -804,8 +797,10 @@
 <span class="sd">        a named view of &#39;channel-update&#39; would be referenced by this method.</span>
 
 <span class="sd">        ex.</span>
-<span class="sd">        url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
-<span class="sd">            ChannelUpdateView.as_view(), name=&#39;channel-update&#39;)</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            url(r&#39;channels/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                ChannelUpdateView.as_view(), name=&#39;channel-update&#39;)</span>
 
 <span class="sd">        If no View has been created and defined in urls.py, returns an</span>
 <span class="sd">        HTML anchor.</span>
@@ -823,7 +818,7 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-update&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -856,11 +851,41 @@
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-delete&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)},</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
     <span class="c1"># Used by Django Sites/Admin</span>
-    <span class="n">get_absolute_url</span> <span class="o">=</span> <span class="n">web_get_detail_url</span></div>
+    <span class="n">get_absolute_url</span> <span class="o">=</span> <span class="n">web_get_detail_url</span>
+
+    <span class="c1"># TODO Evennia 1.0+ removed hooks. Remove in 1.1.</span>
+<div class="viewcode-block" id="DefaultChannel.message_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.message_transform">[docs]</a>    <span class="k">def</span> <span class="nf">message_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.message_transform is no longer used in 1.0+. &quot;</span>
+                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.distribute_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.distribute_message">[docs]</a>    <span class="k">def</span> <span class="nf">distribute_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.distribute_message is no longer used in 1.0+.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.format_senders"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_senders">[docs]</a>    <span class="k">def</span> <span class="nf">format_senders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_senders is no longer used in 1.0+. &quot;</span>
+                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.pose_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pose_transform">[docs]</a>    <span class="k">def</span> <span class="nf">pose_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">sender_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.pose_transform is no longer used in 1.0+. &quot;</span>
+                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.format_external"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_external">[docs]</a>    <span class="k">def</span> <span class="nf">format_external</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">senders</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_external is no longer used in 1.0+. &quot;</span>
+                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.format_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_message">[docs]</a>    <span class="k">def</span> <span class="nf">format_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_message is no longer used in 1.0+. &quot;</span>
+                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.pre_send_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">pre_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.pre_send_message was renamed to Channel.at_pre_msg.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultChannel.post_send_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.post_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">post_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.post_send_message was renamed to Channel.at_post_msg.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -897,7 +922,6 @@
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="comms.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

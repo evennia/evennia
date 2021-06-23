@@ -30,6 +30,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.help</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>  
 
     <div class="document">
@@ -37,8 +38,144 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-web-admin-help">
-<h1>evennia.web.admin.help<a class="headerlink" href="#evennia-web-admin-help" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.web.admin.help">
+<span id="evennia-web-admin-help"></span><h1>evennia.web.admin.help<a class="headerlink" href="#module-evennia.web.admin.help" title="Permalink to this headline">¶</a></h1>
+<p>This defines how to edit help entries in Admin.</p>
+<dl class="py class">
+<dt id="evennia.web.admin.help.HelpTagInline">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.help.</code><code class="sig-name descname">HelpTagInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/help.html#HelpTagInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.help.HelpTagInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.admin.tags.html#evennia.web.admin.tags.TagInline" title="evennia.web.admin.tags.TagInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.admin.tags.TagInline</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpTagInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.admin.help.HelpTagInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry_db_tags</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpTagInline.related_field">
+<code class="sig-name descname">related_field</code><em class="property"> = 'helpentry'</em><a class="headerlink" href="#evennia.web.admin.help.HelpTagInline.related_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.help.HelpTagInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.help.HelpTagInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.admin.help.HelpEntryForm">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.help.</code><code class="sig-name descname">HelpEntryForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">instance=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/help.html#HelpEntryForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
+<p>Defines how to display the help entry</p>
+<dl class="py class">
+<dt id="evennia.web.admin.help.HelpEntryForm.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/evennia/web/admin/help.html#HelpEntryForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryForm.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryForm.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = '__all__'</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryForm.base_fields">
+<code class="sig-name descname">base_fields</code><em class="property"> = {'db_entrytext': &lt;django.forms.fields.CharField object&gt;, 'db_help_category': &lt;django.forms.fields.CharField object&gt;, 'db_key': &lt;django.forms.fields.CharField object&gt;, 'db_lock_storage': &lt;django.forms.fields.CharField object&gt;, 'db_tags': &lt;django.forms.models.ModelMultipleChoiceField object&gt;}</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryForm.declared_fields">
+<code class="sig-name descname">declared_fields</code><em class="property"> = {'db_help_category': &lt;django.forms.fields.CharField object&gt;, 'db_lock_storage': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.help.HelpEntryForm.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.help.HelpEntryForm.media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.admin.help.HelpEntryAdmin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.admin.help.</code><code class="sig-name descname">HelpEntryAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/help.html#HelpEntryAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Sets up the admin manaager for help entries</p>
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.inlines">
+<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'evennia.web.admin.help.HelpTagInline'&gt;]</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.list_display">
+<code class="sig-name descname">list_display</code><em class="property"> = ('id', 'db_key', 'db_help_category', 'db_lock_storage', 'db_date_created')</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.list_display_links">
+<code class="sig-name descname">list_display_links</code><em class="property"> = ('id', 'db_key')</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.list_display_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ['^db_key', 'db_entrytext']</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.ordering">
+<code class="sig-name descname">ordering</code><em class="property"> = ['db_help_category', 'db_key']</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.ordering" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.list_filter">
+<code class="sig-name descname">list_filter</code><em class="property"> = ['db_help_category']</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.save_as">
+<code class="sig-name descname">save_as</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.save_as" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.list_select_related">
+<code class="sig-name descname">list_select_related</code><em class="property"> = True</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.list_select_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.view_on_site">
+<code class="sig-name descname">view_on_site</code><em class="property"> = False</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.form">
+<code class="sig-name descname">form</code><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.help.HelpEntryForm" title="evennia.web.admin.help.HelpEntryForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">HelpEntryForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.fieldsets">
+<code class="sig-name descname">fieldsets</code><em class="property"> = ((None, {'fields': (('db_key', 'db_help_category'), 'db_entrytext', 'db_lock_storage')}),)</em><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.admin.help.HelpEntryAdmin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.web.admin.help.HelpEntryAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,7 +221,6 @@
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -101,6 +237,7 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.help</a></li> 
       </ul>
+        <div class="develop">develop branch</div>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
