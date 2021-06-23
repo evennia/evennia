@@ -441,7 +441,7 @@ class MapLink:
             next_target = xygrid[end_x][end_y]
         except KeyError:
             # check if we have some special action up our sleeve
-            next_target = self.at_empty_target(end_direction, xygrid)
+            next_target = self.at_empty_target(start_direction, end_direction, xygrid)
 
         if not next_target:
             raise MapParserError(
@@ -679,7 +679,7 @@ class TeleporterMapLink(MapLink):
         super().__init__(*args, **kwargs)
         self.paired_teleporter = None
 
-    def at_empty_target(self, start_direction, xygrid):
+    def at_empty_target(self, start_direction, end_direction, xygrid):
         """
         Called during traversal, when finding an unknown direction out of the link (same as
         targeting a link at an empty spot on the grid). This will also search for
@@ -807,7 +807,12 @@ class MapTransitionLink(TeleporterMapLink):
 
         """
         if not self.paired_map_link:
-            grid = self.xymap.grid.grid
+            try:
+                grid = self.xymap.grid.grid
+            except AttributeError:
+                raise MapParserError(f"requires this map being set up within an XYZgrid. No grid "
+                               "was found (maybe it was not passed during XYMap initialization?",
+                               self)
             try:
                 target_map = grid[self.target_map]
             except KeyError:

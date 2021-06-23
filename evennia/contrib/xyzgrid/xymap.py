@@ -467,7 +467,7 @@ class XYMap:
         points, xmin, xmax, ymin, ymax = _scan_neighbors(center_node, [], dist=dist)
         return list(set(points)), xmin, xmax, ymin, ymax
 
-    def _calculate_path_matrix(self):
+    def calculate_path_matrix(self):
         """
         Solve the pathfinding problem using Dijkstra's algorithm. This will try to
         load the solution from disk if possible.
@@ -639,7 +639,7 @@ class XYMap:
                            f"{endnode}. They must both be MapNodes (not Links)")
 
         if self.pathfinding_routes is None:
-            self._calculate_path_matrix()
+            self.calculate_path_matrix()
 
         pathfinding_routes = self.pathfinding_routes
         node_index_map = self.node_index_map

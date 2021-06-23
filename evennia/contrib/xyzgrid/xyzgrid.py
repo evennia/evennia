@@ -29,65 +29,97 @@ class XYZGrid(DefaultScript):
     """
     def at_script_creation(self):
         """
-        What we store persistently is the module-paths to each map.
+        What we store persistently is data used to create each map (the legends, names etc)
 
         """
         self.db.map_data = {}
 
+    @property
+    def grid(self):
+        if self.ndb.grid is None:
+            self.reload()
+        return self.ndb.grid
+
+    def get(self, mapname, default=None):
+        return self.grid.get(mapname, default)
+
     def reload(self):
         """
-        Reload the grid. This is done on a server reload and is also necessary if adding a new map
-        since this may introduce new between-map traversals.
+        Reload and rebuild the grid. This is done on a server reload and is also necessary if adding
+        a new map since this may introduce new between-map traversals.
 
         """
-        # build the nodes of each map
-        for name, xymap in self.grid:
+        logger.log_info("[grid] (Re)loading grid ...")
+        grid = {}
+        nmaps = 0
+        # generate all Maps - this will also initialize their components
+        # and bake any pathfinding paths (or load from disk-cache)
+        for mapname, mapdata in self.db.map_data.items():
+            logger.log_info(f"[grid] Loading map '{mapname}'...")
+            xymap = XYMap(dict(mapdata), name=mapname, grid=self)
             xymap.parse_first_pass()
-        # link everything together
-        for name, xymap in self.grid:
-            xymap.parse_second_pass()
+            grid[mapname] = xymap
+            nmaps += 1
 
-    def add_map(self, mapdata, new=True):
+        # link maps together across grid
+        logger.log_info("[grid] Link {nmaps} maps (may be slow first time a map has changed) ...")
+        for name, xymap in grid.items():
+            xymap.parse_second_pass()
+            xymap.calculate_path_matrix()
+
+        # store
+        self.ndb.grid = grid
+        logger.log_info(f"[grid] Loaded and linked {nmaps} map(s).")
+
+    def at_init(self):
         """
-        Add new map to the grid.
+        Called when the script loads into memory (on creation or after a reload). This will load all
+        map data into memory.
+
+        """
+        self.reload()
+
+    def add_maps(self, *mapdatas):
+        """
+        Add map or maps to the grid.
 
         Args:
-            mapdata (dict): A structure `{"map": <mapstr>, "legend": <legenddict>,
-                "name": <name>, "prototypes": <dict-of-dicts>}`. The `prototypes are
+            *mapdatas (dict): Each argument is a dict structure
+                `{"map": <mapstr>, "legend": <legenddict>, "name": <name>,
+                  "prototypes": <dict-of-dicts>}`. The `prototypes are
                 coordinate-specific overrides for nodes/links on the map, keyed with their
-                (X,Y) coordinate (use .5 for link-positions between nodes).
-            new (bool, optional): If the data should be resaved.
+                (X,Y) coordinate.
 
         Raises:
             RuntimeError: If mapdata is malformed.
 
-
         Notes:
+            This will assume that all added maps produce a complete set (that is, they are correctly
+            and completely linked together with each other and/or with existing maps). So
+            this will automatically trigger `.reload()` to rebuild the grid.
             After this, you need to run `.sync_to_grid` to make the new map actually
             available in-game.
 
         """
-        name = mapdata.get('name')
-        if not name:
-            raise RuntimeError("XYZGrid.add_map data must contain 'name'.")
+        for mapdata in mapdatas:
+            name = mapdata.get('name')
+            if not name:
+                raise RuntimeError("XYZGrid.add_map data must contain 'name'.")
 
-        # this will raise MapErrors if there are issues with the map
-        self.grid[name] = XYMap(mapdata, name=name, grid=self)
-        if new:
             self.db.map_data[name] = mapdata
 
-    def remove_map(self, zcoord, remove_objects=False):
+    def remove_map(self, mapname, remove_objects=False):
         """
         Remove a map from the grid.
 
         Args:
-            name (str): The map to remove.
+            mapname (str): The map to remove.
             remove_objects (bool, optional): If the synced database objects (rooms/exits) should
                 be removed alongside this map.
         """
-        if zcoord in self.grid:
+        if mapname in self.db.map_data:
             self.db.map_data.pop(zcoord)
-            self.grid.pop(zcoord)
+            self.reload()
 
         if remove_objects:
             pass
@@ -116,7 +148,7 @@ class XYZGrid(DefaultScript):
 
         if z is None:
             xymaps = self.grid
-        elif z in self.grid:
+        elif z in self.ndb.grid:
             xymaps = [self.grid[z]]
         else:
             raise RuntimeError(f"The 'z' coordinate/name '{z}' is not found on the grid.")
@@ -132,15 +164,3 @@ class XYZGrid(DefaultScript):
         for node in synced:
             node.sync_links_to_grid()
 
-    def at_init(self):
-        """
-        Called when the script loads into memory after a reload. This will load all map data into
-        memory.
-
-        """
-        nmaps = 0
-        for mapname, mapdata in self.db.map_data:
-            self.add_map(mapdata, new=False)
-            nmaps += 1
-        self.reload()
-        logger.log_info(f"Loaded {nmaps} map(s) onto the grid.")
