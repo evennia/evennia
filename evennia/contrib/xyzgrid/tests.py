@@ -8,7 +8,8 @@ from time import time
 from random import randint
 from unittest import TestCase
 from parameterized import parameterized
-from . import xymap
+from . import xymap, xyzgrid, map_legend
+
 
 MAP1 = """
 
@@ -312,6 +313,31 @@ MAP11_DISPLAY = r"""
      \
     #-#
 """.strip()
+
+MAP12a = r"""
+
++ 0 1
+
+1 #-T
+  |
+0 #-#
+
++ 0 1
+
+"""
+
+
+MAP12b = r"""
+
++ 0 1
+
+1 #-#
+    |
+0 T-#
+
++ 0 1
+
+"""
 
 
 class TestMap1(TestCase):
@@ -946,7 +972,7 @@ class TestMapStressTest(TestCase):
         mapobj.parse()
 
         t0 = time()
-        mapobj._calculate_path_matrix()
+        mapobj.calculate_path_matrix()
         t1 = time()
         # print(f"pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s")
 
@@ -979,7 +1005,7 @@ class TestMapStressTest(TestCase):
         mapobj.parse()
 
         t0 = time()
-        mapobj._calculate_path_matrix()
+        mapobj.calculate_path_matrix()
         t1 = time()
         # print(f"pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s")
 
@@ -999,4 +1025,58 @@ class TestMapStressTest(TestCase):
                         f"Visual Range calculation for ({Xmax}x{Ymax}) grid "
                         f"slower than expected {max_time}s.")
 
+
+# map transitions
+class Map12aTransition(map_legend.MapTransitionLink):
+    symbol = "T"
+    target_map = "map12b"
+
+
+class Map12bTransition(map_legend.MapTransitionLink):
+    symbol = "T"
+    target_map = "map12a"
+
+
+class TestXYZGrid(TestCase):
+    """
+    Test the XYZGrid class and transitions between maps.
+
+    """
+    def setUp(self):
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+        self.map_data12a = {
+            "map": MAP12a,
+            "name": "map12a",
+            "legend": {"T": Map12aTransition}
+        }
+        self.map_data12b = {
+            "map": MAP12b,
+            "name": "map12b",
+            "legend": {"T": Map12bTransition}
+
+        }
+
+        self.grid.add_maps(self.map_data12a, self.map_data12b)
+
+    def tearDown(self):
+        self.grid.delete()
+
+    @parameterized.expand([
+        ((1, 0), (1, 1), ('e', 'nw', 'e')),
+        ((1, 1), (0, 0), ('w', 'se', 'w')),
+    ])
+    def test_shortest_path(self, startcoord, endcoord, expected_directions):
+        """
+        test shortest-path calculations throughout the grid.
+
+        """
+        directions, _ = self.grid.get('map12a').get_shortest_path(startcoord, endcoord)
+        self.assertEqual(expected_directions, tuple(directions))
+
+    def test_transition(self):
+        """
+        Test transition.
+
+        """
 
