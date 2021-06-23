@@ -114,6 +114,7 @@ _CACHE_DIR = settings.CACHE_DIR
 # these are all symbols used for x,y coordinate spots
 DEFAULT_LEGEND = {
     "#": map_legend.BasicMapNode,
+    "T": map_legend.MapTransitionMapNode,
     "I": map_legend.InterruptMapNode,
     "|": map_legend.NSMapLink,
     "-": map_legend.EWMapLink,
@@ -131,7 +132,6 @@ DEFAULT_LEGEND = {
     "b": map_legend.BlockedMapLink,
     "i": map_legend.InterruptMapLink,
     't': map_legend.TeleporterMapLink,
-    'T': map_legend.MapTransitionLink,
 }
 
 # --------------------------------------------
@@ -196,8 +196,7 @@ class XYMap:
                 more than one map. Used when referencing this map during map transitions,
                 baking of pathfinding matrices etc. This will be overridden by any 'name' given
                 in the MAP_DATA itself.
-            grid (xyzgrid.XYZGrid, optional): Reference to the top-level grid object, which
-                stores all maps. This is necessary for transitioning from map to another.
+            grid (.xyzgrid.XYZgrid): A top-level grid this map is a part of.
 
         Notes:
             The map deals with two sets of coorinate systems:
@@ -219,6 +218,7 @@ class XYMap:
 
         self.grid = grid
         self.prototypes = None
+
         # transitional mapping
         self.symbol_map = None
 
@@ -257,7 +257,7 @@ class XYMap:
     def __repr__(self):
         return f"<Map {self.max_X + 1}x{self.max_Y + 1}, {len(self.node_index_map)} nodes>"
 
-    def parse_first_pass(self):
+    def parse(self):
         """
         Parses the numerical grid from the string. The first pass means parsing out
         all nodes. The linking-together of nodes is not happening until the second pass
@@ -368,33 +368,11 @@ class XYMap:
                 # store the symbol mapping for transition lookups
                 symbol_map[char].append(xygrid[ix][iy])
 
-        # store results
-        self.max_x, self.max_y = max_x, max_y
-        self.xygrid = xygrid
+        # second pass - link all nodes of the map except the inter-map traversals.
 
-        self.max_X, self.max_Y = max_X, max_Y
-        self.XYgrid = XYgrid
-
-        self.node_index_map = node_index_map
-        self.symbol_map = symbol_map
-
-    def parse_second_pass(self):
-        """
-        Parsing, second pass. Here we loop over all nodes and have them connect to each other via
-        the detected linkages. For multi-map grids (that links to one another), this must run after
-        all maps have run through the first pass of their parsing.
-
-        This will create the linkages, build the display map for visualization and validate
-        all prototypes for the nodes and their connected links.
-
-        """
-        node_index_map = self.node_index_map
-        max_x, max_y = self.max_x, self.max_y
-        xygrid = self.xygrid
-
-        # build all links
+        # build all links except the transitional links
         for node in node_index_map.values():
-            node.scan_all_directions(xygrid)
+            node.build_links(xygrid)
 
         # build display map
         display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
@@ -412,12 +390,16 @@ class XYMap:
                 maplink.prototype = self.prototypes.get(node_coord + (direction,), maplink.prototype)
 
         # store results
-        self.display_map = display_map
+        self.max_x, self.max_y = max_x, max_y
+        self.xygrid = xygrid
 
-    def parse(self):
-        """Shortcut for running the full parsing of a single map. Useful for testing."""
-        self.parse_first_pass()
-        self.parse_second_pass()
+        self.max_X, self.max_Y = max_X, max_Y
+        self.XYgrid = XYgrid
+
+        self.node_index_map = node_index_map
+        self.symbol_map = symbol_map
+
+        self.display_map = display_map
 
     def _get_topology_around_coord(self, coord, dist=2):
         """

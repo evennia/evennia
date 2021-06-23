@@ -49,6 +49,11 @@ class MapNode:
       (such as a guard or locked gate etc).
     - `prototype` (dict) - The default `prototype` dict to use for reproducing this map component
       on the game grid. This is used if not overridden specifically for this coordinate.
+    - `deferred` (bool): A deferred node is used to indicate a link (currently) pointing to nowhere
+      because the end node is not yet available - usually because that node is on another map
+      and won't be available until the full grid has loaded. A deferred node doesn't need a symbol
+      but is returned from links. Links pointing to deferred nodes will be re-parsed once the entire
+      grid has been built, in order to correctly link maps together.
 
     """
     # symbol used to identify this link on the map
@@ -67,6 +72,7 @@ class MapNode:
     interrupt_path = False
     # the prototype to use for mapping this to the grid.
     prototype = None
+
 
     def __init__(self, x, y, node_index=0, xymap=None):
         """
@@ -118,7 +124,7 @@ class MapNode:
     def __repr__(self):
         return str(self)
 
-    def scan_all_directions(self, xygrid):
+    def build_links(self, xygrid):
         """
         This is called by the map parser when this node is encountered. It tells the node
         to scan in all directions and follow any found links to other nodes. Since there
@@ -286,6 +292,42 @@ class MapNode:
                 maplinks[direction].prototype, objects=[linkobj], exact=False)
 
 
+class TransitionMapNode(MapNode):
+    """
+    Entering this node teleports the user to another Map (this is completely handled by the
+    prototyped Room class). This teleportation is not understood by the pathfinder, so why it will
+    be possible to pathfind to this node, it really represents a map transition. Only a single link
+    must ever be connected to this node.
+
+    Properties:
+    - `linked_map_name` (str) - the map you will move to when entering this node.
+    - `linked_coords` (tuple) - the XY coordinates *on the linked* map this node
+        will teleport to. This must be another node that is not a TransitionMapNode.
+        Note that for the trip to be two-way, a similar set up must be created from the
+        other map.
+
+    Examples:
+    ::
+
+        map1   map2
+
+        #-T    #-    - one-way transition from map1 -> map2.
+        #-T    T-#   - two-way. Both ExternalMapNodes links to the coords of the
+                       `#` (NOT the `T`) on the other map!
+
+    """
+    symbol = 'T'
+    display_symbol = ' '
+    linked_map_name = ""
+    linked_map_coords = None
+
+    def build_links(self, xygrid):
+        """Check so we don't have too many links"""
+        super().build_links(xygrid)
+        if len(self.links) > 1:
+            raise MapParserError("may have at most one link connecting to it.", self)
+
+
 class MapLink:
     """
     This represents one or more links between an 'incoming direction'
@@ -338,6 +380,10 @@ class MapLink:
       on the game grid. This is only relevant for the *first* link out of a Node (the continuation
       of the link is only used to determine its destination). This can be overridden on a
       per-direction basis.
+    - `requires_grid` (bool): If set, it indicates this component requires the full grid (multiple
+      maps to be available before it can be processed. This is usually only needed for
+      inter-map traversal links where the other map must already be ready. Note that this is
+      *only* relevant for the *first* link out of a node.
 
     """
     # symbol for identifying this link on the map
@@ -375,8 +421,7 @@ class MapLink:
     interrupt_path = False
     # prototype for the first link out of a node.
     prototype = None
-    # only traverse this after all of the grid is complete
-    delay_traversal = False
+
 
     def __init__(self, x, y, xymap=None):
         """
@@ -447,10 +492,11 @@ class MapLink:
             raise MapParserError(
                 f"points to empty space in the direction {end_direction}!", self)
 
-        if next_target.xymap.name != self.xymap.name:
-            # this target is on another map. Immediately exit the traversal
-            # and set a high weight.
-            return (next_target, BIGVAL, [start_direction])
+        if ((hasattr(next_target, "deferred") and next_target.deferred)
+                or (next_target.xymap.name != self.xymap.name)):
+            # this target is either deferred until grid exists, or sits on another map. Immediately
+            # exit the traversal and set a high weight.
+            return (next_target, BIGVAL, [self])
 
         _weight += self.get_weight(start_direction, xygrid, _weight)
         if _steps is None:
@@ -576,6 +622,7 @@ class MapLink:
 
         """
         return self.symbol if self.display_symbol is None else self.display_symbol
+
 
 class SmartRerouterMapLink(MapLink):
     r"""
@@ -753,86 +800,6 @@ class TeleporterMapLink(MapLink):
         return self.directions.get(start_direction)
 
 
-class MapTransitionLink(TeleporterMapLink):
-    """
-    This link teleports the user to another map and lets them continue moving
-    from there. Like the TeleporterMapLink, the map-transition symbol must connect to only one other
-    link (not directly to a node).
-
-    The other map will be scanned for a matching `.symbol` that must also be a MapTransitionLink.
-    The link is always two-way, but the link connecting to the transition can be one-way to create
-    a one-way transition. Make new links with different symbols (like A, B, C, ...) to link
-    multiple maps together.
-
-    Note that unlike for teleports, pathfinding will *not* work across the map-transition.
-
-    Examples:
-    ::
-
-        map1    map2
-
-           T
-          /     T-#    - movement to the transition-link will continue on the other map.
-        -#
-
-           T
-          /
-        -#      T>#    - one-way link from map1 to map2
-
-        -#t       - invalid, may only connect to another link
-
-        -#-t-#    - invalid, only one connected link is allowed.
-
-    """
-    symbol = 'T'
-    display_symbol = ' '
-    direction_name = 'transition'
-    interrupt_path = True
-
-    target_map = 'map2'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.paired_map_link = None
-
-    def at_empty_target(self, start_direction, end_direction, xygrid):
-        """
-        This is called by .traverse when it finds this link pointing to nowhere.
-
-        Args:
-            start_direction (str): The direction (n, ne etc) from which
-                this traversal originates for this link.
-            end_direction (str): The direction found from `get_direction` earlier.
-            xygrid (dict): 2D dict with x,y coordinates as keys.
-
-        """
-        if not self.paired_map_link:
-            try:
-                grid = self.xymap.grid.grid
-            except AttributeError:
-                raise MapParserError(f"requires this map being set up within an XYZgrid. No grid "
-                               "was found (maybe it was not passed during XYMap initialization?",
-                               self)
-            try:
-                target_map = grid[self.target_map]
-            except KeyError:
-                raise MapParserError(f"cannot find target_map '{self.target_map}' "
-                                     f"on the grid.", self)
-
-            # find the matching link on the other side
-            link = target_map.get_components_with_symbol(self.symbol)
-            if not link:
-                raise MapParserError(f"must have a matching '{self.symbol}' on "
-                                     f"its target_map `{self.target_map}`.", self)
-            if len(link) > 1:
-                raise MapParserError(f"must have a singl mathing '{self.symbol}' on "
-                                     f"its target_map (found {len(link)}): {link}")
-            # this is a link on another map
-            self.paired_map_link = link[0]
-
-        return self.paired_map_link
-
-
 class SmartMapLink(MapLink):
     """
     A 'smart' link withot visible direction, but which uses its topological surroundings
@@ -983,6 +950,15 @@ class InvisibleSmartMapLink(SmartMapLink):
 class BasicMapNode(MapNode):
     """Basic map Node"""
     symbol = "#"
+
+
+class MapTransitionMapNode(TransitionMapNode):
+    """Teleports entering players to other map"""
+    symbol = "T"
+    display_symbol = " "
+    interrupt_path = True
+    linked_map_name = ""
+    linked_map_coords = None
 
 
 class InterruptMapNode(MapNode):
