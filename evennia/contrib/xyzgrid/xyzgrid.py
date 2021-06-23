@@ -50,25 +50,19 @@ class XYZGrid(DefaultScript):
 
         """
         logger.log_info("[grid] (Re)loading grid ...")
-        grid = {}
+        self.ndb.grid = {}
         nmaps = 0
         # generate all Maps - this will also initialize their components
         # and bake any pathfinding paths (or load from disk-cache)
         for mapname, mapdata in self.db.map_data.items():
             logger.log_info(f"[grid] Loading map '{mapname}'...")
             xymap = XYMap(dict(mapdata), name=mapname, grid=self)
-            xymap.parse_first_pass()
-            grid[mapname] = xymap
+            xymap.parse()
+            xymap.calculate_path_matrix()
+            self.ndb.grid[mapname] = xymap
             nmaps += 1
 
-        # link maps together across grid
-        logger.log_info("[grid] Link {nmaps} maps (may be slow first time a map has changed) ...")
-        for name, xymap in grid.items():
-            xymap.parse_second_pass()
-            xymap.calculate_path_matrix()
-
         # store
-        self.ndb.grid = grid
         logger.log_info(f"[grid] Loaded and linked {nmaps} map(s).")
 
     def at_init(self):

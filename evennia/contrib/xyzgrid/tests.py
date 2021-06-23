@@ -1027,14 +1027,16 @@ class TestMapStressTest(TestCase):
 
 
 # map transitions
-class Map12aTransition(map_legend.MapTransitionLink):
+class Map12aTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    target_map = "map12b"
+    linked_map_name = "map12b"
+    linked_map_coords = (1, 0)
 
 
-class Map12bTransition(map_legend.MapTransitionLink):
+class Map12bTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    target_map = "map12a"
+    linked_map_name= "map12a"
+    linked_map_coords = (0, 1)
 
 
 class TestXYZGrid(TestCase):
@@ -1063,8 +1065,8 @@ class TestXYZGrid(TestCase):
         self.grid.delete()
 
     @parameterized.expand([
-        ((1, 0), (1, 1), ('e', 'nw', 'e')),
-        ((1, 1), (0, 0), ('w', 'se', 'w')),
+        ((1, 0), (1, 1), ('w', 'n', 'e')),
+        ((1, 1), (1, 0), ('w', 's', 'e')),
     ])
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
         """
