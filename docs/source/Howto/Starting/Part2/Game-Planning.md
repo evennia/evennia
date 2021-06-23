@@ -193,7 +193,7 @@ pre-alpha games are allowed in the index so don't be shy)!
 ## Beta Release/Perpetual Beta
 
 Once things stabilize in Alpha you can move to *Beta* and let more people in. Many MUDs are in
-[perpetual beta](http://en.wikipedia.org/wiki/Perpetual_beta), meaning they are never considered
+[perpetual beta](https://en.wikipedia.org/wiki/Perpetual_beta), meaning they are never considered
 "finished", but just repeat the cycle of Planning, Coding, Testing and Building over and over as new
 features get implemented or Players come with suggestions. As the game designer it is now up to you
 to gradually perfect your vision.

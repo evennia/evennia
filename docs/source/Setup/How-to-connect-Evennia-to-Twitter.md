@@ -1,7 +1,7 @@
 # How to connect Evennia to Twitter
 
 
-[Twitter](http://en.wikipedia.org/wiki/twitter) is an online social networking service that enables
+[Twitter](https://en.wikipedia.org/wiki/twitter) is an online social networking service that enables
 users to send and read short 280-character messages called "tweets". Following is a short tutorial
 explaining how to enable users to send tweets from inside Evennia.
 

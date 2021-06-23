@@ -48,21 +48,21 @@ everything in the following sections.
 - Windows (Vista, Win7, Win8, Win10)
 - Mac OSX (>=10.5 recommended)
 
-- [Python](http://www.python.org) (v3.7, 3.8 and 3.9 are tested)
-  - [virtualenv](http://pypi.python.org/pypi/virtualenv) for making isolated
+- [Python](https://www.python.org) (v3.7, 3.8 and 3.9 are tested)
+  - [virtualenv](https://pypi.python.org/pypi/virtualenv) for making isolated
     Python environments. Installed with `pip install virtualenv`.
 
-- [GIT](http://git-scm.com/) - version control software for getting and
+- [GIT](https://git-scm.com/) - version control software for getting and
 updating Evennia itself - Mac users can use the
-[git-osx-installer](http://code.google.com/p/git-osx-installer/) or the
-[MacPorts version](http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
-- [Twisted](http://twistedmatrix.com) (v19.0+)
-  - [ZopeInterface](http://www.zope.org/Products/ZopeInterface) (v3.0+)  - usually included in
+[git-osx-installer](https://code.google.com/p/git-osx-installer/) or the
+[MacPorts version](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
+- [Twisted](https://twistedmatrix.com) (v19.0+)
+  - [ZopeInterface](https://www.zope.org/Products/ZopeInterface) (v3.0+)  - usually included in
 Twisted packages
   - Linux/Mac users may need the `gcc` and `python-dev` packages or equivalent.
   - Windows users need [MS Visual C++](https://aka.ms/vs/16/release/vs_buildtools.exe) and *maybe*
 [pypiwin32](https://pypi.python.org/pypi/pypiwin32).
-- [Django](http://www.djangoproject.com) (v2.2.x), be warned that latest dev
+- [Django](https://www.djangoproject.com) (v2.2.x), be warned that latest dev
   version is usually untested with Evennia)
 
 ## Linux Install
@@ -182,17 +182,17 @@ created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
 The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac
-terminal](http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
+terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
 if you are unsure how it works. If you run into any issues during the
 installation, please check out [Mac Troubleshooting](./Getting-Started#mac-troubleshooting).
 
 * Python should already be installed but you must make sure it's a high enough version.
-([This](http://docs.python-guide.org/en/latest/starting/install/osx/) discusses
+([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses
  how you may upgrade it). Remember that you need Python3.7, not Python2.7!
 * GIT can be obtained with
-[git-osx-installer](http://code.google.com/p/git-osx-installer/) or via
+[git-osx-installer](https://code.google.com/p/git-osx-installer/) or via
 MacPorts [as described
-here](http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
+here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
 * If you run into issues with installing `Twisted` later you may need to
 install gcc and the Python headers.
 
@@ -302,7 +302,7 @@ If you run into any issues during the installation, please check out
 The Evennia server itself is a command line program. In the Windows launch
 menu, start *All Programs -> Accessories -> command prompt* and you will get
 the Windows command line interface. Here is [one of many tutorials on using the Windows command
-line](http://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/)
+line](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/)
 if you are unfamiliar with it.
 
 * Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will
@@ -314,7 +314,7 @@ to check-mark *all* install options, especially the one about making Python
 available on the path (you may have to scroll to see it)**. This allows you to
 just write `python` in any console without first finding where the `python`
 program actually sits on your hard drive.
-* You need to also get [GIT](http://git-scm.com/downloads) and install it. You
+* You need to also get [GIT](https://git-scm.com/downloads) and install it. You
 can use the default install options but when you get asked to "Adjust your PATH
 environment", you should select the second option "Use Git from the Windows
 Command Prompt", which gives you more freedom as to where you can use the
@@ -472,7 +472,7 @@ combat systems. You can find the [growing list of contribs
 here](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md).
 
 If you have any questions, you can always ask in [the developer
-chat](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
+chat](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
 `#evennia` on `irc.freenode.net` or by posting to the [Evennia
 forums](https://groups.google.com/forum/#%21forum/evennia). You can also join the [Discord
 Server](https://discord.gg/NecFePw).

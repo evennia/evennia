@@ -282,7 +282,7 @@ type **A** has, and which relative priorities the two sets have. By convention, 
 statement as "New command set **A** is merged onto the old command set **B** to form **?**".
 
 Below are the available merge types and how they work. Names are partly borrowed from [Set
-theory](http://en.wikipedia.org/wiki/Set_theory).
+theory](https://en.wikipedia.org/wiki/Set_theory).
 
 - **Union** (default) - The two cmdsets are merged so that as many commands as possible from each
 cmdset ends up in the merged cmdset. Same-key commands are merged by priority.

@@ -45,7 +45,7 @@ GAME_INDEX_LISTING = {
     # optional 
     'long_description':
         "Longer description that can use Markdown like *bold*, _italic_"
-        "and [linkname](http://link.com). Use \n for line breaks."
+        "and [linkname](https://link.com). Use \n for line breaks."
     'telnet_hostname': 'dummy.com',            
     'telnet_port': '1234',                     
     'web_client_url': 'dummy.com/webclient',   

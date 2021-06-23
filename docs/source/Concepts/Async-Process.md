@@ -227,7 +227,7 @@ expected, but they may appear with delays or in groups.
 ## Further reading
 
 Technically, `run_async` is just a very thin and simplified wrapper around a
-[Twisted Deferred](http://twistedmatrix.com/documents/9.0.0/core/howto/defer.html) object; the
+[Twisted Deferred](https://twistedmatrix.com/documents/9.0.0/core/howto/defer.html) object; the
 wrapper sets
 up a default errback also if none is supplied. If you know what you are doing there is nothing
 stopping you from bypassing the utility function, building a more sophisticated callback chain after

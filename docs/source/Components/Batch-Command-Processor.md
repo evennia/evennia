@@ -178,5 +178,5 @@ Processor](Batch-Code-Processor))
 *evennia mode*. This is an Emacs major mode found in `evennia/utils/evennia-mode.el`. It offers
 correct syntax highlighting and indentation with `<tab>` when editing `.ev` files in Emacs. See the
 header of that file for installation instructions.
-- [VIM](http://www.vim.org/) users can use amfl's [vim-evennia](https://github.com/amfl/vim-evennia)
+- [VIM](https://www.vim.org/) users can use amfl's [vim-evennia](https://github.com/amfl/vim-evennia)
 mode instead, see its readme for install instructions.
