@@ -1943,6 +1943,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
                     else:
                         row += " " * max(0, width - lrow)
                     rows.append(row)
+                    row = ""
                     ic = 0
                 else:
                     # add a new slot
