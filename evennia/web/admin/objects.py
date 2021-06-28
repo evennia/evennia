@@ -63,7 +63,7 @@ class ObjectCreateForm(forms.ModelForm):
         help_text="This is the Python-path to the class implementing the actual functionality. "
         f"<BR>If you are creating a Character you usually need <B>{settings.BASE_CHARACTER_TYPECLASS}</B> "
         "or a subclass of that. <BR>If your custom class is not found in the list, it may not be imported "
-        "as part of Evennia's startup.",
+        "into Evennia yet.",
         choices=lambda: adminutils.get_and_load_typeclasses(parent=ObjectDB))
 
     db_lock_storage = forms.CharField( label="Locks",
