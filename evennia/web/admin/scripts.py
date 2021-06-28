@@ -23,7 +23,7 @@ class ScriptForm(forms.ModelForm):
         label="Typeclass",
         help_text="This is the Python-path to the class implementing the actual script functionality. "
         "<BR>If your custom class is not found here, it may not be imported as part of Evennia's startup.",
-        choices=adminutils.get_and_load_typeclasses(
+        choices=lambda: adminutils.get_and_load_typeclasses(
             parent=ScriptDB, excluded_parents=["evennia.prototypes.prototypes.DbPrototype"])
     )
 
