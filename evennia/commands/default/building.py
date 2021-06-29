@@ -651,6 +651,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
         if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
             self.caller.msg("You don't have permission to edit the description of %s." % obj.key)
+            return
 
         self.caller.db.evmenu_target = obj
         # launch the editor
