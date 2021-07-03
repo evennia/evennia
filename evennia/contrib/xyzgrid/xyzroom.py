@@ -10,6 +10,7 @@ used as stand-alone XYZ-coordinate-aware rooms.
 from django.db.models import Q
 from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
+from evennia.utils.utils import inherits_from
 
 # name of all tag categories. Note that the Z-coordinate is
 # the `map_name` of the XYZgrid
@@ -185,6 +186,22 @@ class XYZRoom(DefaultRoom):
     # makes the `room.objects.filter_xymap` available
     objects = XYZManager()
 
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        x, y, z = self.xyzcoords
+        return f"<XYZRoom '{self.db_key}', XYZ=({x},{y},{z})>"
+
+    @property
+    def xyzcoords(self):
+        if not hasattr(self, "_xyzcoords"):
+            x = self.tags.get(category=MAP_X_TAG_CATEGORY, return_list=False)
+            y = self.tags.get(category=MAP_Y_TAG_CATEGORY, return_list=False)
+            z = self.tags.get(category=MAP_Z_TAG_CATEGORY, return_list=False)
+            self._xyzcoords = (x, y, z)
+        return self._xyzcoords
+
     @classmethod
     def create(cls, key, account=None, coord=(0, 0, 'map'), **kwargs):
         """
@@ -215,7 +232,7 @@ class XYZRoom(DefaultRoom):
             return None, [f"XYRroom.create got `coord={coord}` - needs a valid (X,Y,Z) "
                           "coordinate of ints/strings."]
 
-        existing_query = cls.objects.filter_xy(x=x, y=y, z=z)
+        existing_query = cls.objects.filter_xyz(coord=(x, y, z))
         if existing_query.exists():
             existing_room = existing_query.first()
             return None, [f"XYRoom XYZ={coord} already exists "
@@ -227,7 +244,7 @@ class XYZRoom(DefaultRoom):
             (str(z), MAP_Z_TAG_CATEGORY),
         )
 
-        return DefaultRoom.create(key, account=account, tags=tags, **kwargs)
+        return DefaultRoom.create(key, account=account, tags=tags, typeclass=cls, **kwargs)
 
 
 class XYZExit(DefaultExit):
@@ -238,6 +255,32 @@ class XYZExit(DefaultExit):
 
     objects = XYZExitManager()
 
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        x, y, z = self.xyzcoords
+        xd, yd, zd = self.xyzdestcoords
+        return f"<XYZExit '{self.db_key}', XYZ=({x},{y},{z})->({xd},{yd},{zd})>"
+
+    @property
+    def xyzcoords(self):
+        if not hasattr(self, "_xyzcoords"):
+            x = self.tags.get(category=MAP_X_TAG_CATEGORY, return_list=False)
+            y = self.tags.get(category=MAP_Y_TAG_CATEGORY, return_list=False)
+            z = self.tags.get(category=MAP_Z_TAG_CATEGORY, return_list=False)
+            self._xyzcoords = (x, y, z)
+        return self._xyzcoords
+
+    @property
+    def xyzdestcoords(self):
+        if not hasattr(self, "_xyzdestcoords"):
+            xd = self.tags.get(category=MAP_XDEST_TAG_CATEGORY, return_list=False)
+            yd = self.tags.get(category=MAP_YDEST_TAG_CATEGORY, return_list=False)
+            zd = self.tags.get(category=MAP_ZDEST_TAG_CATEGORY, return_list=False)
+            self._xyzdestcoords = (xd, yd, zd)
+        return self._xyzdestcoords
+
     @classmethod
     def create(cls, key, account=None, coord=(0, 0, 'map'), destination_coord=(0, 0, 'map'),
                location=None, destination=None, **kwargs):
@@ -246,8 +289,7 @@ class XYZExit(DefaultExit):
 
         Args:
             key (str): New name of object to create.
-            account (Account, optional): Any Account to tie to this entity (usually not used for
-                rooms).
+            account (Account, optional): Any Account to tie to this entity (unused for exits).
             coords (tuple or None, optional): A 3D coordinate (X, Y, Z) for this room's location
                 on a map grid.  Each element can theoretically be either `int` or `str`, but for the
                 XYZgrid contrib, the X, Y are always integers while the `Z` coordinate is used for
@@ -255,15 +297,17 @@ class XYZExit(DefaultExit):
                 `location`.  destination_coord (tuple or None, optional): Works as `coords`, but for
                 destination of
                 the exit. Set to `None` if using the `destination` kwarg to point to room directly.
+            destination_coord (tuple, optional): The XYZ coordinate of the place the exit
+                leads to. Will be ignored if `destination` is given directly.
             location (Object, optional): Only used if `coord` is not given. This can be used
                 to place this exit in any room, including non-XYRoom type rooms.
-            destination (Object, optional): Only used if `destination_coord` is not given. This can
+            destination (Object, optional): If given, overrides `destination_coord`. This can
                 be any room (including non-XYRooms) and is not checked for XY coordinates.
             **kwargs: Will be passed into the normal `DefaultRoom.create` method.
 
         Returns:
-            room (Object): A newly created Room of the given typeclass.
-            errors (list): A list of errors in string form, if any.
+            tuple: A tuple `(exit, errors)`, where the errors is a list containing all found
+                errors (in which case the returned exit will be `None`).
 
         """
         tags = []
@@ -274,22 +318,28 @@ class XYZExit(DefaultExit):
                 return None, ["XYExit.create need either a `coord` or a `location`."]
             source = location
         else:
-            source = cls.objects.get_xyz(x=x, y=y, z=z)
+            print("rooms:", XYZRoom.objects.all().count(), XYZRoom.objects.all())
+            print("exits:", XYZExit.objects.all().count(), XYZExit.objects.all())
+            source = XYZRoom.objects.get_xyz(coord=(x, y, z))
             tags.extend(((str(x), MAP_X_TAG_CATEGORY),
                          (str(y), MAP_Y_TAG_CATEGORY),
                          (str(z), MAP_Z_TAG_CATEGORY)))
-        try:
-            xdest, ydest, zdest = destination_coord
-        except ValueError:
-            if not destination:
-                return None, ["XYExit.create need either a `destination_coord` or a `destination`."]
+        if destination:
             dest = destination
         else:
-            dest = cls.objects.get_xyz(x=xdest, y=ydest, z=zdest)
-            tags.extend(((str(xdest), MAP_XDEST_TAG_CATEGORY),
-                         (str(ydest), MAP_YDEST_TAG_CATEGORY),
-                         (str(zdest), MAP_ZDEST_TAG_CATEGORY)))
+            try:
+                xdest, ydest, zdest = destination_coord
+            except ValueError:
+                if not destination:
+                    return None, ["XYExit.create need either a `destination_coord` or "
+                                  "a `destination`."]
+                dest = destination
+            else:
+                dest = XYZRoom.objects.get_xyz(coord=(xdest, ydest, zdest))
+                tags.extend(((str(xdest), MAP_XDEST_TAG_CATEGORY),
+                             (str(ydest), MAP_YDEST_TAG_CATEGORY),
+                             (str(zdest), MAP_ZDEST_TAG_CATEGORY)))
 
         return DefaultExit.create(
             key, source, dest, account=account,
-            location=location, destination=destination, tags=tags, **kwargs)
+            location=location, tags=tags, typeclass=cls, **kwargs)

@@ -8,6 +8,7 @@ from time import time
 from random import randint
 from unittest import TestCase
 from parameterized import parameterized
+from django.test import override_settings
 from . import xymap, xyzgrid, map_legend
 
 
@@ -346,7 +347,7 @@ class TestMap1(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP1}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP1}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -425,13 +426,14 @@ class TestMap1(TestCase):
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@')
         self.assertEqual(expected, mapstr)
 
+
 class TestMap2(TestCase):
     """
     Test with Map2 - a bigger map with multi-step links
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP2}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP2}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -542,7 +544,7 @@ class TestMap3(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP3}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP3}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -592,7 +594,7 @@ class TestMap4(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP4}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP4}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -623,7 +625,7 @@ class TestMap5(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP5}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP5}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -652,7 +654,7 @@ class TestMap6(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP6}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP6}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -685,7 +687,7 @@ class TestMap7(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP7}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP7}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -714,7 +716,7 @@ class TestMap8(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP8}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP8}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -781,7 +783,7 @@ class TestMap9(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP9}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP9}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -811,7 +813,7 @@ class TestMap10(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP10}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP10}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -860,7 +862,7 @@ class TestMap11(TestCase):
 
     """
     def setUp(self):
-        self.map = xymap.XYMap({"map": MAP11}, name="testmap")
+        self.map = xymap.XYMap({"map": MAP11}, Z="testmap")
         self.map.parse()
 
     def test_str_output(self):
@@ -951,7 +953,7 @@ class TestMapStressTest(TestCase):
         grid = self._get_grid(Xmax, Ymax)
         # print(f"\n\n{grid}\n")
         t0 = time()
-        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, Z="testmap")
         mapobj.parse()
         t1 = time()
         self.assertLess(t1 - t0, max_time, f"Map creation of ({Xmax}x{Ymax}) grid slower "
@@ -968,7 +970,7 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, Z="testmap")
         mapobj.parse()
 
         t0 = time()
@@ -1001,7 +1003,7 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        mapobj = xymap.XYMap({'map': grid}, name="testmap")
+        mapobj = xymap.XYMap({'map': grid}, Z="testmap")
         mapobj.parse()
 
         t0 = time()
@@ -1026,20 +1028,49 @@ class TestMapStressTest(TestCase):
                         f"slower than expected {max_time}s.")
 
 
+class TestXYZGrid(TestCase):
+    """
+    Test base grid class with a single map, including spawning objects.
+    """
+
+    zcoord = "map1"
+
+    def setUp(self):
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+        self.map_data1 = {
+            "map": MAP1,
+            "zcoord": self.zcoord
+        }
+
+        self.grid.add_maps(self.map_data1)
+
+    def tearDown(self):
+        self.grid.delete()
+
+    def test_str_output(self):
+        """Check the display_map"""
+        xymap = self.grid.get(self.zcoord)
+        stripped_map = "\n".join(line.rstrip() for line in str(xymap).split('\n'))
+        self.assertEqual(MAP1_DISPLAY, stripped_map)
+
+    def test_spawn(self):
+        """Spawn objects for the grid"""
+        self.grid.spawn()
+
+
 # map transitions
 class Map12aTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    linked_map_name = "map12b"
-    linked_map_coords = (1, 0)
+    target_map_coords = (1, 0, "map12b")
 
 
 class Map12bTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    linked_map_name= "map12a"
-    linked_map_coords = (0, 1)
+    target_map_coords = (0, 1, "map12a")
 
 
-class TestXYZGrid(TestCase):
+class TestXYZGridTransition(TestCase):
     """
     Test the XYZGrid class and transitions between maps.
 
@@ -1049,12 +1080,12 @@ class TestXYZGrid(TestCase):
 
         self.map_data12a = {
             "map": MAP12a,
-            "name": "map12a",
+            "zcoord": "map12a",
             "legend": {"T": Map12aTransition}
         }
         self.map_data12b = {
             "map": MAP12b,
-            "name": "map12b",
+            "zcoord": "map12b",
             "legend": {"T": Map12bTransition}
 
         }
@@ -1076,9 +1107,9 @@ class TestXYZGrid(TestCase):
         directions, _ = self.grid.get('map12a').get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
-    def test_transition(self):
+    def test_spawn(self):
         """
-        Test transition.
+        Spawn the two maps into actual objects.
 
         """
-
+        self.grid.spawn()

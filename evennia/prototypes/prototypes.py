@@ -144,19 +144,45 @@ def homogenize_prototype(prototype, custom_keys=None):
     return homogenized
 
 
-# module-based prototypes
+# module/dict-based prototypes
 
-def load_module_prototypes():
+def load_module_prototypes(*mod_or_prototypes, override=True):
     """
-    This is called by `evennia.__init__` as Evennia initializes. It's important
-    to do this late so as to not interfere with evennia initialization.
+    Load module prototypes. Also prototype-dicts passed directly to this function are considered
+    'module' prototypes (they are impossible to change) but will have a module of None.
+
+    Args:
+        *mod_or_prototypes (module or dict): Each arg should be a separate module or
+            prototype-dict to load. If none are given, `settings.PROTOTYPE_MODULES` will be used.
+        override (bool, optional): If prototypes should override existing ones already loaded.
+            Disabling this can allow for injecting prototypes into the system dynamically while
+            still allowing same prototype-keys to be overridden from settings (even though settings
+            is usually loaded before dynamic loading).
+
+    Note:
+        This is called (without arguments) by `evennia.__init__` as Evennia initializes. It's
+        important to do this late so as to not interfere with evennia initialization. But it can
+        also be used later to add more prototypes to the library on the fly. This is requried
+        before a module-based prototype can be accessed by prototype-key.
 
     """
-    for mod in settings.PROTOTYPE_MODULES:
-        # to remove a default prototype, override it with an empty dict.
-        # internally we store as (key, desc, locks, tags, prototype_dict)
+    global _MODULE_PROTOTYPE_MODULES, _MODULE_PROTOTYPES
+
+    def _prototypes_from_module(mod):
+        """
+        Load prototypes from a module, first by looking for a global list PROTOTYPE_LIST (a list of
+        dict-prototypes), and if not found, assuming all global-level dicts in the module are
+        prototypes.
+
+        Args:
+            mod (module): The module to load from.evennia
+
+        Returns:
+            list: A list of tuples `(prototype_key, prototype-dict)` where the prototype
+                has been homogenized.
+
+        """
         prots = []
-
         prototype_list = variable_from_module(mod, "PROTOTYPE_LIST")
         if prototype_list:
             # found mod.PROTOTYPE_LIST - this should be a list of valid
@@ -179,27 +205,74 @@ def load_module_prototypes():
                     if "prototype_key" not in prot:
                         prot["prototype_key"] = variable_name.lower()
                     prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+        return prots
 
-        # assign module path to each prototype_key for easy reference
-        _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
-        # make sure the prototype contains all meta info
+    def _cleanup_prototype(prototype_key, prototype, mod=None):
+        """
+        We need to handle externally determined prototype-keys and to make sure
+        the prototype contains all needed meta information.
+
+        Args:
+            prototype_key (str): The determined name of the prototype.
+            prototype (dict): The prototype itself.
+            mod (module, optional): The module the prototype was loaded from, if any.
+
+        Returns:
+            dict: The cleaned up prototype.
+
+        """
+        actual_prot_key = prototype.get("prototype_key", prototype_key).lower()
+        prototype.update(
+            {
+                "prototype_key": actual_prot_key,
+                "prototype_desc": (
+                    prototype["prototype_desc"] if "prototype_desc" in prototype else (mod or "N/A")),
+                "prototype_locks": (
+                    prototype["prototype_locks"]
+                    if "prototype_locks" in prototype
+                    else "use:all();edit:false()"
+                ),
+                "prototype_tags": list(
+                    set(list(make_iter(prototype.get("prototype_tags", []))) + ["module"])
+                ),
+            }
+        )
+        return prototype
+
+    if not mod_or_prototypes:
+        # in principle this means PROTOTYPE_MODULES could also contain prototypes, but that is
+        # rarely useful ...
+        mod_or_prototypes = settings.PROTOTYPE_MODULES
+
+    for mod_or_dict in mod_or_prototypes:
+
+        if isinstance(mod_or_dict, dict):
+            # a single prototype; we must make sure it has its key
+            prototype_key = mod_or_dict.get('prototype_key')
+            if not prototype_key:
+                raise ValidationError(f"The prototype {mod_or_prototype} does not contain a 'prototype_key'")
+            prots = [(prototype_key, mod_or_dict)]
+            mod = None
+        else:
+            # a module (or path to module). This can contain many prototypes; they can be keyed by
+            # variable-name too
+            prots = _prototypes_from_module(mod_or_dict)
+            mod = repr(mod_or_dict)
+
+        # store all found prototypes
         for prototype_key, prot in prots:
-            actual_prot_key = prot.get("prototype_key", prototype_key).lower()
-            prot.update(
-                {
-                    "prototype_key": actual_prot_key,
-                    "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
-                    "prototype_locks": (
-                        prot["prototype_locks"]
-                        if "prototype_locks" in prot
-                        else "use:all();edit:false()"
-                    ),
-                    "prototype_tags": list(
-                        set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
-                    ),
-                }
-            )
-            _MODULE_PROTOTYPES[actual_prot_key] = prot
+            prototype = _cleanup_prototype(prototype_key, prot, mod=mod)
+            # the key can change since in-proto key is given prio over variable-name-based keys
+            actual_prototype_key = prototype['prototype_key']
+
+            if actual_prototype_key in _MODULE_PROTOTYPES and not override:
+                # don't override - useful to still let settings replace dynamic inserts
+                continue
+
+            # make sure the prototype contains all meta info
+            _MODULE_PROTOTYPES[actual_prototype_key] = prototype
+            # track module path for display purposes
+            _MODULE_PROTOTYPE_MODULES[actual_prototype_key.lower()] = mod
 
 
 # Db-based prototypes
@@ -266,11 +339,12 @@ def save_prototype(prototype):
 
     # we can't edit a prototype defined in a module
     if prototype_key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-        raise PermissionError(
-            _("{protkey} is a read-only prototype " "(defined as code in {module}).").format(
-                protkey=prototype_key, module=mod)
-        )
+        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+        if mod:
+            err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+        else:
+            err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+        raise PermissionError(err.format(protkey=prototype_key, module=mod))
 
     # make sure meta properties are included with defaults
     in_prototype["prototype_desc"] = in_prototype.get(
@@ -334,11 +408,12 @@ def delete_prototype(prototype_key, caller=None):
 
     """
     if prototype_key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key.lower(), "N/A")
-        raise PermissionError(
-            _("{protkey} is a read-only prototype " "(defined as code in {module}).").format(
-                protkey=prototype_key, module=mod)
-        )
+        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+        if mod:
+            err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+        else:
+            err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+        raise PermissionError(err.format(protkey=prototype_key, module=mod))
 
     stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
 
@@ -452,7 +527,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         ndbprots = db_matches.count()
         if nmodules + ndbprots != 1:
             raise KeyError(_(
-                "Found {num} matching prototypes {module_prototypes}.").format(
+                "Found {num} matching prototypes among {module_prototypes}.").format(
                     num=nmodules + ndbprots,
                     module_prototypes=module_prototypes)
             )
@@ -906,10 +981,12 @@ def check_permission(prototype_key, action, default=True):
     """
     if action == "edit":
         if prototype_key in _MODULE_PROTOTYPES:
-            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-            logger.log_err(
-                "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
-            )
+            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+            if mod:
+                err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+            else:
+                err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+            logger.log_err(err.format(protkey=prototype_key, module=mod))
             return False
 
     prototype = search_prototype(key=prototype_key)

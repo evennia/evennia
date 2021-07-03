@@ -53,7 +53,7 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
     MAP_DATA = {
         "map": MAP,
         "legend": LEGEND,
-        "name": "City of Foo",
+        "zcoord": "City of Foo",
         "prototypes": {
             (0,1): { ... },
             (1,3): { ... },
@@ -104,12 +104,17 @@ except ImportError as err:
 from django.conf import settings
 from evennia.utils.utils import variable_from_module, mod_import
 from evennia.utils import logger
+from evennia.prototypes import prototypes as protlib
 
 from .utils import MapError, MapParserError, BIGVAL
 from . import map_legend
 
 _CACHE_DIR = settings.CACHE_DIR
+_LOADED_PROTOTYPES = None
 
+MAP_DATA_KEYS = [
+    "zcoord", "map", "legend", "prototypes"
+]
 
 # these are all symbols used for x,y coordinate spots
 DEFAULT_LEGEND = {
@@ -133,6 +138,8 @@ DEFAULT_LEGEND = {
     "i": map_legend.InterruptMapLink,
     't': map_legend.TeleporterMapLink,
 }
+
+
 
 # --------------------------------------------
 # Map parser implementation
@@ -184,7 +191,7 @@ class XYMap:
     # we normally only accept one single character for the legend key
     legend_key_exceptions = ("\\")
 
-    def __init__(self, map_module_or_dict, name="map", grid=None):
+    def __init__(self, map_module_or_dict, Z="map", xyzgrid=None):
         """
         Initialize the map parser by feeding it the map.
 
@@ -192,31 +199,41 @@ class XYMap:
             map_module_or_dict (str, module or dict): Path or module pointing to a map. If a dict,
                 this should be a dict with a MAP_DATA key 'map' and optionally a 'legend'
                 dicts to specify the map structure.
-            name (str, optional): Unique identifier for this map. Needed if the game uses
-                more than one map. Used when referencing this map during map transitions,
-                baking of pathfinding matrices etc. This will be overridden by any 'name' given
-                in the MAP_DATA itself.
-            grid (.xyzgrid.XYZgrid): A top-level grid this map is a part of.
+            Z (int or str, optional): Name or Z-coord for for this map. Needed if the game uses
+                more than one map. If not given, it can also be embedded in the
+                `map_module_or_dict`. Used when referencing this map during map transitions,
+                baking of pathfinding matrices etc.
+            xyzgrid (.xyzgrid.XYZgrid): A top-level grid this map is a part of.
 
         Notes:
-            The map deals with two sets of coorinate systems:
+            Interally, the map deals with two sets of coordinate systems:
             - grid-coordinates x,y are the character positions in the map string.
             - world-coordinates X,Y are the in-world coordinates of nodes/rooms.
               There are fewer of these since they ignore the 'link' spaces between
-              the nodes in the grid, so
+              the nodes in the grid, s
 
                   X = x // 2
                   Y = y // 2
 
+            - The Z-coordinate, if given, is only used when transitioning between maps
+              on the supplied `grid`.
+
         """
-        self.name = name
+        global _LOADED_PROTOTYPES
+        if not _LOADED_PROTOTYPES:
+            # inject default prototypes, but don't override prototype-keys loaded from
+            # settings, if they exist (that means the user wants to replace the defaults)
+            protlib.load_module_prototypes("evennia.contrib.xyzgrid.prototypes", override=False)
+            _LOADED_PROTOTYPES = True
+
+        self.Z = Z
+        self.xyzgrid = xyzgrid
 
         self.mapstring = ""
 
         # store so we can reload
         self.map_module_or_dict = map_module_or_dict
 
-        self.grid = grid
         self.prototypes = None
 
         # transitional mapping
@@ -237,10 +254,10 @@ class XYMap:
         self.pathfinding_routes = None
 
         self.pathfinder_baked_filename = None
-        if name:
+        if Z:
             if not isdir(_CACHE_DIR):
                 mkdir(_CACHE_DIR)
-            self.pathfinder_baked_filename = pathjoin(_CACHE_DIR, f"{name}.P")
+            self.pathfinder_baked_filename = pathjoin(_CACHE_DIR, f"{Z}.P")
 
         # load data and parse it
         self.reload()
@@ -256,6 +273,88 @@ class XYMap:
 
     def __repr__(self):
         return f"<Map {self.max_X + 1}x{self.max_Y + 1}, {len(self.node_index_map)} nodes>"
+
+    def reload(self, map_module_or_dict=None):
+        """
+        (Re)Load a map.
+
+        Args:
+            map_module_or_dict (str, module or dict, optional): See description for the variable
+                in the class' `__init__` function. If given, replace the already loaded
+                map with a new one. If not given, the existing one given on class creation
+                will be reloaded.
+            parse (bool, optional): If set, auto-run `.parse()` on the newly loaded data.
+
+        Notes:
+            This will both (re)load the data and parse it into a new map structure, replacing any
+            existing one. The valid mapstructure is:
+            ::
+
+                {
+                    "map": <str>,
+                    "zcoord": <int or str>, # optional
+                    "legend": <dict>,       # optional
+                    "prototypes": <dict>    # optional
+                }
+
+        """
+        if not map_module_or_dict:
+            map_module_or_dict = self.map_module_or_dict
+
+        mapdata = {}
+        if isinstance(map_module_or_dict, dict):
+            # map-=structure provided directly
+            mapdata = map_module_or_dict
+        else:
+            # read from contents of module
+            mod = mod_import(map_module_or_dict)
+            mapdata = variable_from_module(mod, "MAP_DATA")
+            if not mapdata:
+                # try to read mapdata directly from global variables
+                mapdata['zcoord'] = variable_from_module(mod, "ZCOORD", default=self.name)
+                mapdata['map'] = variable_from_module(mod, "MAP")
+                mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
+                mapdata['prototypes'] = variable_from_module(mod, "PROTOTYPES", default={})
+
+        # validate
+        if any(key for key in mapdata if key not in MAP_DATA_KEYS):
+            raise MapError(f"Mapdata has keys {list(mapdata)}, but only "
+                           f"keys {MAP_DATA_KEYS} are allowed.")
+
+        for key in mapdata.get('legend', DEFAULT_LEGEND):
+            if not key or len(key) > 1:
+                if key not in self.legend_key_exceptions:
+                    raise MapError(f"Map-legend key '{key}' is invalid: All keys must "
+                                   "be exactly one character long. Use the node/link's "
+                                   "`.display_symbol` property to change how it is "
+                                   "displayed.")
+        if 'map' not in mapdata or not mapdata['map']:
+            raise MapError("No map found. Add 'map' key to map-data (MAP_DATA) dict or "
+                           "add variable MAP to a module passed into the parser.")
+        for key, prototype in mapdata.get('prototypes', {}).items():
+            if not is_iter(key) and (2 <= len(key) <= 3):
+                raise MapError(f"Prototype override key {key} is malformed: It must be a "
+                               "coordinate (X, Y) for nodes or (X, Y, direction) for links; "
+                               "where direction is a supported direction string ('n', 'ne', etc).")
+
+        # store/update result
+        self.Z = mapdata.get('zcoord', self.Z)
+        self.mapstring = mapdata['map']
+        self.prototypes = mapdata.get('prototypes', {})
+
+        # merge the custom legend onto the default legend to allow easily
+        # overriding only parts of it
+        self.legend = {**DEFAULT_LEGEND, **map_module_or_dict.get("legend", DEFAULT_LEGEND)}
+
+        # initialize any prototypes on the legend entities
+        for char, node_or_link_class in self.legend.items():
+            prototype = node_or_link_class.prototype
+            if not prototype or isinstance(prototype, dict):
+                # nothing more to do
+                continue
+            # we need to load the prototype dict onto each for ease of access
+            proto = protlib.search_prototype(prototype, require_single=True)[0]
+            node_or_link_class.prototype = proto
 
     def parse(self):
         """
@@ -359,26 +458,33 @@ class XYMap:
                     node_index += 1
 
                     xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = \
-                        mapnode_or_link_class(node_index=node_index, x=ix, y=iy, xymap=self)
+                        mapnode_or_link_class(x=ix, y=iy, Z=self.Z,
+                                              node_index=node_index, xymap=self)
 
                 else:
                     # we have a link at this xygrid position (this is ok everywhere)
-                    xygrid[ix][iy] = mapnode_or_link_class(ix, iy, xymap=self)
+                    xygrid[ix][iy] = mapnode_or_link_class(x=ix, y=iy, Z=self.Z, xymap=self)
 
                 # store the symbol mapping for transition lookups
                 symbol_map[char].append(xygrid[ix][iy])
 
-        # second pass - link all nodes of the map except the inter-map traversals.
+        # store before building links
+        self.max_x, self.max_y = max_x, max_y
+        self.max_X, self.max_Y = max_X, max_Y
+        self.xygrid = xygrid
+        self.XYgrid = XYgrid
+        self.node_index_map = node_index_map
+        self.symbol_map = symbol_map
 
-        # build all links except the transitional links
+        # build all links
         for node in node_index_map.values():
-            node.build_links(xygrid)
+            node.build_links()
 
         # build display map
         display_map = [[" "] * (max_x + 1) for _ in range(max_y + 1)]
         for ix, ydct in xygrid.items():
             for iy, node_or_link in ydct.items():
-                display_map[iy][ix] = node_or_link.get_display_symbol(xygrid, xymap=self)
+                display_map[iy][ix] = node_or_link.get_display_symbol()
 
         # validate and make sure all nodes/links have prototypes
         for node in node_index_map.values():
@@ -389,16 +495,7 @@ class XYMap:
             for direction, maplink in node.first_links.items():
                 maplink.prototype = self.prototypes.get(node_coord + (direction,), maplink.prototype)
 
-        # store results
-        self.max_x, self.max_y = max_x, max_y
-        self.xygrid = xygrid
-
-        self.max_X, self.max_Y = max_X, max_Y
-        self.XYgrid = XYgrid
-
-        self.node_index_map = node_index_map
-        self.symbol_map = symbol_map
-
+        # store
         self.display_map = display_map
 
     def _get_topology_around_coord(self, coord, dist=2):
@@ -494,60 +591,59 @@ class XYMap:
                 pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
                             fil, protocol=4)
 
-    def reload(self, map_module_or_dict=None):
+    def spawn_nodes(self, coord=(None, None)):
         """
-        (Re)Load a map.
+        Convert the nodes of this XYMap into actual in-world rooms by spawning their
+        related prototypes in the correct coordinate positions. This must be done *first*
+        before spawning links (with `spawn_links` because exits require the target destination
+        to exist. It's also possible to only spawn a subset of the map
 
         Args:
-            map_module_or_dict (str, module or dict, optional): See description for the variable
-                in the class' `__init__` function. If given, replace the already loaded
-                map with a new one. If not given, the existing one given on class creation
-                will be reloaded.
-            parse (bool, optional): If set, auto-run `.parse()` on the newly loaded data.
+            coord (tuple, optional): An (X,Y) coordinate of node(s). `None` acts as a wildcard.
 
-        Notes:
-            This will both (re)load the data and parse it into a new map structure, replacing any
-            existing one.
+        Examples:
+            - `coord=(1, 3) - spawn (1,3) coordinate only.
+            - `coord=(None, 1) - spawn all nodes in the first row of the map only.
+            - `coord=(None, None)` - spawn all nodes
+
+        Returns:
+            list: A list of nodes that were spawned.
 
         """
-        if not map_module_or_dict:
-            map_module_or_dict = self.map_module_or_dict
+        x, y = coord
 
-        mapdata = {}
-        if isinstance(map_module_or_dict, dict):
-            mapdata = map_module_or_dict
-        else:
-            mod = mod_import(map_module_or_dict)
-            mapdata = variable_from_module(mod, "MAP_DATA")
-            if not mapdata:
-                # try to read mapdata directly from global variables
-                mapdata['name'] = variable_from_module(mod, "NAME", default=self.name)
-                mapdata['map'] = variable_from_module(mod, "MAP")
-                mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
-                mapdata['rooms'] = variable_from_module(mod, "ROOMS")
-                mapdata['prototypes'] = variable_from_module(mod, "PROTOTYPES", default={})
+        spawned = []
+        for node in self.node_index_map.values():
+            if (x is None or x == node.X) and (y is None or y == node.Y):
+                node.spawn()
+                spawned.append(node)
+        return spawned
 
-        # validate
-        for key in mapdata.get('legend', DEFAULT_LEGEND):
-            if not key or len(key) > 1:
-                if key not in self.legend_key_exceptions:
-                    raise MapError(f"Map-legend key '{key}' is invalid: All keys must "
-                                   "be exactly one character long. Use the node/link's "
-                                   "`.display_symbol` property to change how it is "
-                                   "displayed.")
-        if 'map' not in mapdata or not mapdata['map']:
-            raise MapError("No map found. Add 'map' key to map-data (MAP_DATA) dict or "
-                           "add variable MAP to a module passed into the parser.")
+    def spawn_links(self, coord=(None, None), nodes=None, only_directions=None):
+        """
+        Convert links of this XYMap into actual in-game exits by spawning their related
+        prototypes. It's possible to only spawn a specic exit by specifying the node and
 
-        self.room_prototypes = mapdata.get('rooms')
+        Args:
+            coord (tuple, optional): An (X,Y) coordinate of node(s). `None` acts as a wildcard.
+            nodes (list, optional): If given, only consider links out of these nodes. This also
+                affects `coords`, so that if there are no nodes of given coords in `nodes`, no
+                links will be spawned at all.
+            directions (list, optional): A list of cardinal directions ('n', 'ne' etc). If given,
+                sync only the exit in the given directions (`coords` limits which links out of which
+                nodes should be considered). `None` acts as a wildcard.
+        Examples:
+            - `coord=(1, 3 )`, `direction='ne'` - sync only the north-eastern exit
+                out of the (1, 3) node.
 
-        # store/update result
-        self.name = mapdata.get('name', self.name)
-        self.mapstring = mapdata['map']
-        self.prototypes = mapdata.get('prototypes', {})
-        # merge the custom legend onto the default legend to allow easily
-        # overriding only parts of it
-        self.legend = {**DEFAULT_LEGEND, **map_module_or_dict.get("legend", DEFAULT_LEGEND)}
+        """
+        x, y = coord
+        if not nodes:
+            nodes = self.node_index_map.values()
+
+        for node in nodes:
+            if (x is None or x == node.X) and (y is None or y == node.Y):
+                node.spawn_links(only_directions=only_directions)
 
     def get_node_from_coord(self, coords):
         """
@@ -775,7 +871,7 @@ class XYMap:
 
             def _default_callable(node):
                 return target_path_style.format(
-                    display_symbol=node.get_display_symbol(self.xygrid))
+                    display_symbol=node.get_display_symbol())
 
             if callable(target_path_style):
                 _target_path_style = target_path_style

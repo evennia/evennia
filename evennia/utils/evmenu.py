@@ -244,7 +244,7 @@ callable must be a module-global function on the form
 
         >: start
 
-    # node abort
+    ## node abort
 
     This exits the menu since there is no `## options` section.
 

@@ -797,7 +797,7 @@ class TypeclassManager(TypedObjectManager):
             all_subclasses.extend(self._get_subclasses(subclass))
         return all_subclasses
 
-    def get_family(self, **kwargs):
+    def get_family(self, *args, **kwargs):
         """
         Variation of get that not only returns the current typeclass
         but also all subclasses of that typeclass.
@@ -817,7 +817,7 @@ class TypeclassManager(TypedObjectManager):
             "%s.%s" % (cls.__module__, cls.__name__) for cls in self._get_subclasses(self.model)
         ]
         kwargs.update({"db_typeclass_path__in": paths})
-        return super().get(**kwargs)
+        return super().get(*args, **kwargs)
 
     def filter_family(self, *args, **kwargs):
         """

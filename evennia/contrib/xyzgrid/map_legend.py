@@ -15,6 +15,7 @@ except ImportError as err:
         "the SciPy package. Install with `pip install scipy'.")
 
 from evennia.prototypes import spawner
+from evennia.utils.utils import make_iter
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
 
 NodeTypeclass = None
@@ -48,12 +49,9 @@ class MapNode:
       expected to be able to continue without some further in-game action not covered by the map
       (such as a guard or locked gate etc).
     - `prototype` (dict) - The default `prototype` dict to use for reproducing this map component
-      on the game grid. This is used if not overridden specifically for this coordinate.
-    - `deferred` (bool): A deferred node is used to indicate a link (currently) pointing to nowhere
-      because the end node is not yet available - usually because that node is on another map
-      and won't be available until the full grid has loaded. A deferred node doesn't need a symbol
-      but is returned from links. Links pointing to deferred nodes will be re-parsed once the entire
-      grid has been built, in order to correctly link maps together.
+      on the game grid. This is used if not overridden specifically for this coordinate. If this
+      is not given, nothing will be spawned for this coordinate (a 'virtual' node can be useful
+      for various reasons, mostly map-transitions).
 
     """
     # symbol used to identify this link on the map
@@ -61,26 +59,38 @@ class MapNode:
     # if printing this node should show another symbol. If set
     # to the empty string, use `symbol`.
     display_symbol = None
-
-    # internal use. Set during generation, but is also used for identification of the node
-    node_index = None
-
-    # this should always be left True and avoids inifinite loops during querying.
-    multilink = True
     # this will interrupt a shortest-path step (useful for 'points' of interest, stop before
     # a door etc).
     interrupt_path = False
     # the prototype to use for mapping this to the grid.
     prototype = None
 
+    # internal use. Set during generation, but is also used for identification of the node
+    node_index = None
+    # this should always be left True for Nodes and avoids inifinite loops during querying.
+    multilink = True
+    # default values to use if the exit doesn't have a 'spawn_aliases' iterable
+    direction_spawn_defaults = {
+        'n': ('north', 'n'),
+        'ne': ('northeast', 'ne', 'north-east'),
+        'e': ('east',),
+        'se': ('southeast', 'se', 'south-east'),
+        's': ('south', 's'),
+        'sw': ('southwest', 'sw', 'south-west'),
+        'w': ('west', 'w'),
+        'nw': ('northwest', 'nw', 'north-west'),
+        'd' : ('down', 'd', 'do'),
+        'u' : ('up', 'u'),
+    }
 
-    def __init__(self, x, y, node_index=0, xymap=None):
+    def __init__(self, x, y, Z, node_index=0, xymap=None):
         """
         Initialize the mapnode.
 
         Args:
             x (int): Coordinate on xygrid.
             y (int): Coordinate on xygrid.
+            Z (int or str): Name/Z-pos of this map.
             node_index (int): This identifies this node with a running
                 index number required for pathfinding. This is used
                 internally and should not be set manually.
@@ -97,6 +107,7 @@ class MapNode:
         # XYgrid coordinate
         self.X = x // 2
         self.Y = y // 2
+        self.Z = Z
 
         self.node_index = node_index
 
@@ -124,15 +135,12 @@ class MapNode:
     def __repr__(self):
         return str(self)
 
-    def build_links(self, xygrid):
+    def build_links(self):
         """
         This is called by the map parser when this node is encountered. It tells the node
         to scan in all directions and follow any found links to other nodes. Since there
         could be multiple steps to reach another node, the system will iterate down each
         path and store it once and for all.
-
-        Args:
-            xygrid (dict): A 2d dict-of-dicts with x,y coordinates as keys and nodes as values.
 
         Notes:
             This sets up all data needed for later use of this node in pathfinding and
@@ -140,6 +148,8 @@ class MapNode:
             since a complete parsed xygrid is required.
 
         """
+        xygrid = self.xymap.xygrid
+
         # we must use the xygrid coordinates
         x, y = self.x, self.y
 
@@ -153,7 +163,7 @@ class MapNode:
 
                 # just because there is a link here, doesn't mean it has a
                 # connection in this direction. If so, the `end_node` will be None.
-                end_node, weight, steps = link.traverse(REVERSE_DIRECTIONS[direction], xygrid)
+                end_node, weight, steps = link.traverse(REVERSE_DIRECTIONS[direction])
 
                 if end_node:
                     # the link could be followed to an end node!
@@ -207,13 +217,9 @@ class MapNode:
             link_graph[node_index] = weight
         return link_graph
 
-    def get_display_symbol(self, xygrid, xymap=None, **kwargs):
+    def get_display_symbol(self):
         """
         Hook to override for customizing how the display_symbol is determined.
-
-        Args:
-            xygrid (dict): 2D dict with x,y coordinates as keys.
-            xymap (XYMap): Main Map object.
 
         Returns:
             str: The display-symbol to use. This must visually be a single character
@@ -225,8 +231,21 @@ class MapNode:
         """
         return self.symbol if self.display_symbol is None else self.display_symbol
 
-    def sync_node_to_grid(self):
+    def get_spawn_coords(self):
         """
+        This should return the XYZ-coordinates for spawning this node. This normally
+        the XYZ of the current map, but for traversal-nodes, it can also be the location
+        on another map.
+
+        Returns:
+            tuple: The (X, Y, Z) coords to spawn this node at.
+        """
+        return self.X, self.Y, self.Z
+
+    def spawn(self):
+        """
+        Build an actual in-game room from this node.
+
         This should be called as part of the node-sync step of the map sync. The reason is
         that the exits (next step) requires all nodes to exist before they can link up
         to their destinations.
@@ -234,77 +253,120 @@ class MapNode:
         """
         global NodeTypeclass
         if not NodeTypeclass:
-            from .room import XYZRoom as NodeTypeclass
+            from .xyzroom import XYZRoom as NodeTypeclass
 
-        coord = (self.X, self.Y, self.xymap.name)
+        if not self.prototype:
+            # no prototype means we can't spawn anything -
+            # a 'virtual' node.
+            return
+
+        coord = self.get_spawn_coords()
 
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(coord=coord)
         except NodeTypeclass.DoesNotExist:
             # create a new entity with proper coordinates etc
-            nodeobj = NodeTypeclass.create(
+            nodeobj, err = NodeTypeclass.create(
                 self.prototype.get('key', 'An Empty room'),
                 coord=coord
             )
+            if err:
+                raise RuntimeError(err)
         # apply prototype to node. This will not override the XYZ tags since
         # these are not in the prototype and exact=False
         spawner.batch_update_objects_with_prototype(
             self.prototype, objects=[nodeobj], exact=False)
 
-    def sync_links_to_grid(self):
+    def spawn_links(self, only_directions=None):
         """
+        Build actual in-game exits based on the links out of this room.
+
+        Args:
+            only_directions (list, optional): If given, this should be a list of supported
+                directions (n, ne, etc). Only links in these directions will be spawned
+                for this node.
+
         This should be called after all `sync_node_to_grid` operations have finished across
         the entire XYZgrid. This creates/syncs all exits to their locations and destinations.
 
         """
-        coord = (self.X, self.Y, self.xymap.name)
+        coord = (self.X, self.Y, self.Z)
 
         global ExitTypeclass
         if not ExitTypeclass:
-            from .room import XYZExit as ExitTypeclass
+            from .xyzroom import XYZExit as ExitTypeclass
 
-        maplinks = self.first_links
+        maplinks = {}
+        for direction, link in self.first_links.items():
+            key, *aliases = (
+                make_iter(link.spawn_aliases)
+                if link.spawn_aliases
+                else self.direction_spawn_defaults.get(direction, ('unknown',))
+            )
+            maplinks[key.lower()] = (key, aliases, direction, link)
+
         # we need to search for exits in all directions since some
         # may have been removed since last sync
-        linkobjs = {exi.db_key: exi for exi in ExitTypeclass.filter_xyz(coord=coord)}
+        linkobjs = {exi.db_key.lower(): exi
+                    for exi in ExitTypeclass.objects.filter_xyz(coord=coord)}
 
         # figure out if the topology changed between grid and map (will always
         # build all exits first run)
-        differing_directions = set(maplinks.keys()).symmetric_difference(set(linkobjs.keys()))
-        for direction in differing_directions:
-            if direction in linkobjs:
-                # an exit without a maplink - delete the exit
-                linkobjs.pop(direction).delete()
-            else:
-                # a maplink without an exit - create the exit
+        differing_keys = set(maplinks.keys()).symmetric_difference(set(linkobjs.keys()))
+        for differing_key in differing_keys:
 
-                link = maplinks[direction]
+            if differing_key not in maplinks:
+                # an exit without a maplink - delete the exit-object
+                linkobjs.pop(differing_key).delete()
+            else:
+                # missing in linkobjs - create a new exit
+                key, aliases, direction, link = maplinks[differing_key]
                 exitnode = self.links[direction]
 
                 linkobjs[direction] = ExitTypeclass.create(
-                    link.prototype.get('key', direction),
+                    # either get name from the prototype or use our custom set
+                    key,
                     coord=coord,
-                    destination_coord=(exitnode.X, exitnode.Y, exitnode.xymap.name)
+                    destination_coord=exitnode.get_spawn_coords(),
+                    aliases=aliases,
                 )
+
         # apply prototypes to catch any changes
         for direction, linkobj in linkobjs:
             spawner.batch_update_objects_with_prototype(
                 maplinks[direction].prototype, objects=[linkobj], exact=False)
 
+    def unspawn(self):
+        """
+        Remove all spawned objects related to this node and all links.
+
+        """
+        global NodeTypeclass
+        if not NodeTypeclass:
+            from .room import XYZRoom as NodeTypeclass
+
+        try:
+            nodeobj = NodeTypeclass.objects.get_xyz(coord=coord)
+        except NodeTypeclass.DoesNotExist:
+            # no object exists
+            pass
+        else:
+            nodeobj.delete()
+
 
 class TransitionMapNode(MapNode):
     """
-    Entering this node teleports the user to another Map (this is completely handled by the
-    prototyped Room class). This teleportation is not understood by the pathfinder, so why it will
-    be possible to pathfind to this node, it really represents a map transition. Only a single link
-    must ever be connected to this node.
+    This node acts as an end-node for a link that actually leads to a specific node on another
+    map. It is not actually represented by a separate room in-game.
+
+    This teleportation is not understood by the pathfinder, so why it will be possible to pathfind
+    to this node, it really represents a map transition. Only a single link must ever be connected
+    to this node.
 
     Properties:
-    - `linked_map_name` (str) - the map you will move to when entering this node.
-    - `linked_coords` (tuple) - the XY coordinates *on the linked* map this node
-        will teleport to. This must be another node that is not a TransitionMapNode.
-        Note that for the trip to be two-way, a similar set up must be created from the
-        other map.
+    - `target_map_coord` (tuple) - the (X, Y, Z) coordinate of a node on the other map to teleport
+        to when moving to this node. This should not be another TransitionMapNode (see below for
+        how to make a two-way link).
 
     Examples:
     ::
@@ -312,18 +374,26 @@ class TransitionMapNode(MapNode):
         map1   map2
 
         #-T    #-    - one-way transition from map1 -> map2.
-        #-T    T-#   - two-way. Both ExternalMapNodes links to the coords of the
-                       `#` (NOT the `T`) on the other map!
+        #-T    T-#   - two-way. Both TransitionMapNodes links to the coords of the
+                       actual rooms (`#`) on the other map (NOT to the `T`s)!
 
     """
     symbol = 'T'
     display_symbol = ' '
-    linked_map_name = ""
-    linked_map_coords = None
+    # X,Y,Z coordinates of target node (not a transitionalmapnode)
+    taget_map_coord = (None, None, None)
 
-    def build_links(self, xygrid):
+    def get_spawn_coords(self):
+        """
+        Make sure to return the coord of the *target* - this will be used when building
+        the exit to this node (since the prototype is None, this node itself will not be built).
+
+        """
+        return self.target_map_coord
+
+    def build_links(self):
         """Check so we don't have too many links"""
-        super().build_links(xygrid)
+        super().build_links()
         if len(self.links) > 1:
             raise MapParserError("may have at most one link connecting to it.", self)
 
@@ -349,9 +419,7 @@ class MapLink:
     - `display_symbol` (str or None)  - This is what is used to visualize this node later. This
       symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
       character (be aware of encodings to different clients though) or, commonly, add color
-      tags around it. For further customization, the `.get_display_symbol` method receives
-      the full grid and can return a dynamically determined display symbol. If `None`, the
-      `symbol` is used.
+      tags around it. For further customization, the `.get_display_symbol` can be used.
     - `default_weight` (int) - Each link direction covered by this link can have its seprate weight,
       this is used if none is specified in a particular direction. This value must be >= 1,
       and can be higher than 1 if a link should be less favored.
@@ -380,10 +448,9 @@ class MapLink:
       on the game grid. This is only relevant for the *first* link out of a Node (the continuation
       of the link is only used to determine its destination). This can be overridden on a
       per-direction basis.
-    - `requires_grid` (bool): If set, it indicates this component requires the full grid (multiple
-      maps to be available before it can be processed. This is usually only needed for
-      inter-map traversal links where the other map must already be ready. Note that this is
-      *only* relevant for the *first* link out of a node.
+    - `spawn_aliases` (list): A list of [key, alias, alias, ...] for the node to use when spawning
+      exits from this link. If not given, a sane set of defaults (n=north etc) will be used. This
+      is required if you use any custom directions outside of the cardinal directions + up/down.
 
     """
     # symbol for identifying this link on the map
@@ -421,15 +488,19 @@ class MapLink:
     interrupt_path = False
     # prototype for the first link out of a node.
     prototype = None
+    # used for spawning, if the exit prototype doesn't contain an explicit key.
+    # if neither that nor this is not given, the central node's direction_aliases will be used.
+    # the first element of this list is the key, the others are the aliases.
+    spawn_aliases = []
 
-
-    def __init__(self, x, y, xymap=None):
+    def __init__(self, x, y, Z, xymap=None):
         """
         Initialize the link.
 
         Args:
             x (int): The xygrid x coordinate
             y (int): The xygrid y coordinate.
+            X (int or str): The name/Z-coord of this map we are on.
             xymap (XYMap, optional): The map object this sits on.
 
         """
@@ -440,6 +511,7 @@ class MapLink:
 
         self.X = x / 2
         self.Y = y / 2
+        self.Z = Z
 
     def __str__(self):
         return f"<LinkNode '{self.symbol}' XY=({self.X:g},{self.Y:g})>"
@@ -447,14 +519,13 @@ class MapLink:
     def __repr__(self):
         return str(self)
 
-    def traverse(self, start_direction, xygrid, _weight=0, _linklen=1, _steps=None):
+    def traverse(self, start_direction, _weight=0, _linklen=1, _steps=None):
         """
         Recursively traverse the links out of this LinkNode.
 
         Args:
             start_direction (str): The direction (n, ne etc) from which
                 this traversal originates for this link.
-            xygrid (dict): 2D dict with x,y coordinates as keys.
         Kwargs:
             _weight (int): Internal use.
             _linklen (int): Internal use.
@@ -469,7 +540,9 @@ class MapLink:
             MapParserError: If a link lead to nowhere.
 
         """
-        end_direction = self.get_direction(start_direction, xygrid)
+        xygrid = self.xymap.xygrid
+
+        end_direction = self.get_direction(start_direction)
         if not end_direction:
             if _steps is None:
                 # is perfectly okay to not be linking back on the first step (to a node)
@@ -486,19 +559,13 @@ class MapLink:
             next_target = xygrid[end_x][end_y]
         except KeyError:
             # check if we have some special action up our sleeve
-            next_target = self.at_empty_target(start_direction, end_direction, xygrid)
+            next_target = self.at_empty_target(start_direction, end_direction)
 
         if not next_target:
             raise MapParserError(
                 f"points to empty space in the direction {end_direction}!", self)
 
-        if ((hasattr(next_target, "deferred") and next_target.deferred)
-                or (next_target.xymap.name != self.xymap.name)):
-            # this target is either deferred until grid exists, or sits on another map. Immediately
-            # exit the traversal and set a high weight.
-            return (next_target, BIGVAL, [self])
-
-        _weight += self.get_weight(start_direction, xygrid, _weight)
+        _weight += self.get_weight(start_direction, _weight)
         if _steps is None:
             _steps = []
         _steps.append(self)
@@ -515,15 +582,14 @@ class MapLink:
             # we hit another link. Progress recursively.
             return next_target.traverse(
                 REVERSE_DIRECTIONS.get(end_direction, end_direction),
-                xygrid, _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
+                _weight=_weight, _linklen=_linklen + 1, _steps=_steps)
 
-    def get_linked_neighbors(self, xygrid, directions=None):
+    def get_linked_neighbors(self, directions=None):
         """
         A helper to get all directions to which there appears to be a
         visual link/node. This does not trace the length of the link and check weights etc.
 
         Args:
-            xygrid (dict): 2D dict with x,y coordinates as keys.
             directions (list, optional): Only scan in these directions.
 
         Returns:
@@ -533,6 +599,7 @@ class MapLink:
         if not directions:
             directions = REVERSE_DIRECTIONS.keys()
 
+        xygrid = self.xymap.xygrid
         links = {}
         for direction in directions:
             dx, dy = MAPSCAN[direction]
@@ -542,11 +609,11 @@ class MapLink:
                 # a map node or a link connecting in our direction
                 node_or_link = xygrid[end_x][end_y]
                 if (node_or_link.multilink
-                        or node_or_link.get_direction(direction, xygrid)):
+                        or node_or_link.get_direction(direction)):
                     links[direction] = node_or_link
         return links
 
-    def at_empty_target(self, start_direction, end_direction, xygrid):
+    def at_empty_target(self, start_direction, end_direction):
         """
         This is called by `.traverse` when it finds this link pointing to nowhere.
 
@@ -554,7 +621,6 @@ class MapLink:
             start_direction (str): The direction (n, ne etc) from which
                 this traversal originates for this link.
             end_direction (str): The direction found from `get_direction` earlier.
-            xygrid (dict): 2D dict with x,y coordinates as keys.
 
         Returns:
             MapNode, MapLink or None: The next target to go to from here. `None` if this
@@ -567,14 +633,13 @@ class MapLink:
         """
         return None
 
-    def get_direction(self, start_direction, xygrid, **kwargs):
+    def get_direction(self, start_direction, **kwargs):
         """
         Hook to override for customizing how the directions are
         determined.
 
         Args:
             start_direction (str): The starting direction (n, ne etc).
-            xygrid (dict): 2D dict with x,y coordinates as keys.
 
         Returns:
             str: The 'out' direction side of the link - where the link
@@ -588,13 +653,12 @@ class MapLink:
         """
         return self.directions.get(start_direction)
 
-    def get_weight(self, start_direction, xygrid, current_weight, **kwargs):
+    def get_weight(self, start_direction, current_weight, **kwargs):
         """
         Hook to override for customizing how the weights are determined.
 
         Args:
             start_direction (str): The starting direction (n, ne etc).
-            xygrid (dict): 2D dict with x,y coordinates as keys.
             current_weight (int): This can have an existing value if
                 we are progressing down a multi-step path.
 
@@ -604,14 +668,10 @@ class MapLink:
         """
         return self.weights.get(start_direction, self.default_weight)
 
-    def get_display_symbol(self, xygrid, xymap=None, **kwargs):
+    def get_display_symbol(self):
         """
         Hook to override for customizing how the display_symbol is determined.
         This is called after all other hooks, at map visualization.
-
-        Args:
-            xygrid (dict): 2D dict with x,y coordinates as keys.
-            xymap (XYMap): The map object this sits on.
 
         Returns:
             str: The display-symbol to use. This must visually be a single character
@@ -657,7 +717,7 @@ class SmartRerouterMapLink(MapLink):
     """
     multilink = True
 
-    def get_direction(self, start_direction, xygrid):
+    def get_direction(self, start_direction):
         """
         Dynamically determine the direction based on a source direction and grid topology.
 
@@ -665,7 +725,7 @@ class SmartRerouterMapLink(MapLink):
         # get all visually connected links
         if not self.directions:
             directions = {}
-            unhandled_links = list(self.get_linked_neighbors(xygrid).keys())
+            unhandled_links = list(self.get_linked_neighbors().keys())
 
             # get all straight lines (n-s, sw-ne etc) we can trace through
             # the dynamic link and remove them from the unhandled_links list
@@ -726,7 +786,7 @@ class TeleporterMapLink(MapLink):
         super().__init__(*args, **kwargs)
         self.paired_teleporter = None
 
-    def at_empty_target(self, start_direction, end_direction, xygrid):
+    def at_empty_target(self, start_direction, end_direction):
         """
         Called during traversal, when finding an unknown direction out of the link (same as
         targeting a link at an empty spot on the grid). This will also search for
@@ -735,7 +795,6 @@ class TeleporterMapLink(MapLink):
         Args:
             start_direction (str): The direction (n, ne etc) from which this traversal originates
                 for this link.
-            xygrid (dict): 2D dict with x,y coordinates as keys.
 
         Returns:
             TeleporterMapLink: The paired teleporter.
@@ -746,6 +805,7 @@ class TeleporterMapLink(MapLink):
                 'pointing to an empty space' error we'd get if returning `None`.
 
         """
+        xygrid = self.xymap.xygrid
         if not self.paired_teleporter:
             # scan for another teleporter
             symbol = self.symbol
@@ -769,13 +829,13 @@ class TeleporterMapLink(MapLink):
 
         return self.paired_teleporter
 
-    def get_direction(self, start_direction, xygrid):
+    def get_direction(self, start_direction):
         """
         Figure out the connected link and paired teleport.
 
         """
         if not self.directions:
-            neighbors = self.get_linked_neighbors(xygrid)
+            neighbors = self.get_linked_neighbors()
 
             if len(neighbors) != 1:
                 raise MapParserError("must have exactly one link connected to it.", self)
@@ -846,7 +906,7 @@ class SmartMapLink(MapLink):
     """
     multilink = True
 
-    def get_direction(self, start_direction, xygrid):
+    def get_direction(self, start_direction):
         """
         Figure out the direction from a specific source direction based on grid topology.
 
@@ -854,7 +914,7 @@ class SmartMapLink(MapLink):
         # get all visually connected links
         if not self.directions:
             directions = {}
-            neighbors = self.get_linked_neighbors(xygrid)
+            neighbors = self.get_linked_neighbors()
             nodes = [direction for direction, neighbor in neighbors.items()
                      if hasattr(neighbor, 'node_index')]
 
@@ -914,7 +974,7 @@ class InvisibleSmartMapLink(SmartMapLink):
         (('ne', 'sw'), ('sw', 'ne')): '/',
     }
 
-    def get_display_symbol(self, xygrid, xymap=None, **kwargs):
+    def get_display_symbol(self):
         """
         The SmartMapLink already calculated the directions before this, so we
         just need to figure out what to replace this with in order to make this 'invisible'
@@ -924,7 +984,7 @@ class InvisibleSmartMapLink(SmartMapLink):
 
         """
         if not hasattr(self, "_cached_display_symbol"):
-            legend = xymap.legend
+            legend = self.xymap.legend
             default_symbol = (
                 self.symbol if self.display_symbol is None else self.display_symbol)
             self._cached_display_symbol = default_symbol
@@ -939,8 +999,8 @@ class InvisibleSmartMapLink(SmartMapLink):
                 if node_or_link_class:
                     # initiate class in the current location and run get_display_symbol
                     # to get what it would show.
-                    self._cached_display_symbol = node_or_link_class(
-                        self.x, self.y).get_display_symbol(xygrid, xymap=xymap, **kwargs)
+                    self._cached_display_symbol = (
+                        node_or_link_class(self.x, self.y, self.Z).get_display_symbol())
         return self._cached_display_symbol
 
 
@@ -950,15 +1010,15 @@ class InvisibleSmartMapLink(SmartMapLink):
 class BasicMapNode(MapNode):
     """Basic map Node"""
     symbol = "#"
+    prototype = "xyz_room_prototype"
 
 
 class MapTransitionMapNode(TransitionMapNode):
-    """Teleports entering players to other map"""
+    """Transition-target to other map"""
     symbol = "T"
     display_symbol = " "
-    interrupt_path = True
-    linked_map_name = ""
-    linked_map_coords = None
+    target_map_coords = (0, 0, 'unset')  # must be changed
+    prototype = None  # important!
 
 
 class InterruptMapNode(MapNode):
@@ -966,30 +1026,35 @@ class InterruptMapNode(MapNode):
     symbol = "I"
     display_symbol = "#"
     interrupt_path = True
+    prototype = "xyz_room_prototype"
 
 
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
     symbol = "|"
     directions = {"n": "s", "s": "n"}
+    prototype = "xyz_exit_prototype"
 
 
 class EWMapLink(MapLink):
     """Two-way, East-West link"""
     symbol = "-"
     directions = {"e": "w", "w": "e"}
+    prototype = "xyz_exit_prototype"
 
 
 class NESWMapLink(MapLink):
     """Two-way, NorthWest-SouthWest link"""
     symbol = "/"
     directions = {"ne": "sw", "sw": "ne"}
+    prototype = "xyz_exit_prototype"
 
 
 class SENWMapLink(MapLink):
     """Two-way, SouthEast-NorthWest link"""
     symbol = "\\"
     directions = {"se": "nw", "nw": "se"}
+    prototype = "xyz_exit_prototype"
 
 
 class PlusMapLink(MapLink):
@@ -997,6 +1062,7 @@ class PlusMapLink(MapLink):
     symbol = "+"
     directions = {"s": "n", "n": "s",
                   "e": "w", "w": "e"}
+    prototype = "xyz_exit_prototype"
 
 
 class CrossMapLink(MapLink):
@@ -1004,30 +1070,35 @@ class CrossMapLink(MapLink):
     symbol = "x"
     directions = {"ne": "sw", "sw": "ne",
                   "se": "nw", "nw": "se"}
+    prototype = "xyz_exit_prototype"
 
 
 class NSOneWayMapLink(MapLink):
     """One-way North-South link"""
     symbol = "v"
     directions = {"n": "s"}
+    prototype = "xyz_exit_prototype"
 
 
 class SNOneWayMapLink(MapLink):
     """One-way South-North link"""
     symbol = "^"
     directions = {"s": "n"}
+    prototype = "xyz_exit_prototype"
 
 
 class EWOneWayMapLink(MapLink):
     """One-way East-West link"""
     symbol = "<"
     directions = {"e": "w"}
+    prototype = "xyz_exit_prototype"
 
 
 class WEOneWayMapLink(MapLink):
     """One-way West-East link"""
     symbol = ">"
     directions = {"w": "e"}
+    prototype = "xyz_exit_prototype"
 
 
 class UpMapLink(SmartMapLink):
@@ -1037,6 +1108,7 @@ class UpMapLink(SmartMapLink):
     # all movement over this link is 'up', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+    prototype = "xyz_exit_prototype"
 
 
 class DownMapLink(UpMapLink):
@@ -1045,12 +1117,14 @@ class DownMapLink(UpMapLink):
     # all movement over this link is 'down', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+    prototype = "xyz_exit_prototype"
 
 
 class InterruptMapLink(InvisibleSmartMapLink):
     """A (still passable) link that causes the pathfinder to stop before crossing."""
     symbol = "i"
     interrupt_path = True
+    prototype = "xyz_exit_prototype"
 
 
 class BlockedMapLink(InvisibleSmartMapLink):
@@ -1063,6 +1137,7 @@ class BlockedMapLink(InvisibleSmartMapLink):
     symbol = 'b'
     weights = {'n': BIGVAL, 'ne': BIGVAL, 'e': BIGVAL, 'se': BIGVAL,
                's': BIGVAL, 'sw': BIGVAL, 'w': BIGVAL, 'nw': BIGVAL}
+    prototype = "xyz_exit_prototype"
 
 
 class RouterMapLink(SmartRerouterMapLink):
