@@ -440,6 +440,15 @@ class TestMap1(_MapTest):
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@')
         self.assertEqual(expected, mapstr)
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
+
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 4)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 8)
+
 
 class TestMap2(_MapTest):
     """
@@ -550,8 +559,17 @@ class TestMap2(_MapTest):
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap3(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 24)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 54)
+
+
+class TestMap3(_MapTest):
     """
     Test Map3 - Map with diagonal links
 
@@ -600,6 +618,16 @@ class TestMap3(TestCase):
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
+
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 18)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 44)
+
+
 class TestMap4(_MapTest):
     """
     Test Map4 - Map with + and x crossing links
@@ -629,15 +657,23 @@ class TestMap4(_MapTest):
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap5(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 16)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 44)
+
+
+class TestMap5(_MapTest):
     """
     Test Map5 - Small map with one-way links
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP5}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP5, 'zcoord': "map5"}
+    map_display = MAP5_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -658,15 +694,23 @@ class TestMap5(TestCase):
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap6(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 6)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 8)
+
+
+class TestMap6(_MapTest):
     """
     Test Map6 - Bigger map with one-way links in different directions
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP6}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP6, 'zcoord': "map6"}
+    map_display = MAP6_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -691,15 +735,23 @@ class TestMap6(TestCase):
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap7(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 18)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 38)
+
+
+class TestMap7(_MapTest):
     """
     Test Map7 - Small test of dynamic link node
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP7}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP7, 'zcoord': "map7"}
+    map_display = MAP7_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -720,15 +772,23 @@ class TestMap7(TestCase):
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap8(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 6)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 8)
+
+
+class TestMap8(_MapTest):
     """
     Test Map8 - Small test of dynamic link node
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP8}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP8, 'zcoord': "map8"}
+    map_display = MAP8_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -787,15 +847,23 @@ class TestMap8(TestCase):
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap9(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 12)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 28)
+
+
+class TestMap9(_MapTest):
     """
     Test Map9 - a map with up/down links.
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP9}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP9, 'zcoord': "map9"}
+    map_display = MAP9_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -816,16 +884,24 @@ class TestMap9(TestCase):
         directions, _ = self.map.get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap10(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 12)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 24)
+
+
+class TestMap10(_MapTest):
     """
     Test Map10 - a map with blocked- and interrupt links/nodes. These are
     'invisible' nodes and won't show up in the map display.
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP10}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP10, 'zcoord': "map10"}
+    map_display = MAP10_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -866,15 +942,23 @@ class TestMap10(TestCase):
         strpositions = [(step.X, step.Y) for step in path]
         self.assertEqual(expected_path, tuple(strpositions))
 
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
 
-class TestMap11(TestCase):
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 18)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 42)
+
+
+class TestMap11(_MapTest):
     """
     Test Map11 - a map teleporter links.
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP11}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP11, 'zcoord': "map11"}
+    map_display = MAP11_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -924,6 +1008,15 @@ class TestMap11(TestCase):
                                            character='@',
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
+
+    def test_spawn(self):
+        """
+        Spawn the map into actual objects.
+
+        """
+        self.grid.spawn()
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 4)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 6)
 
 
 class TestMapStressTest(TestCase):
@@ -1042,6 +1135,7 @@ class TestMapStressTest(TestCase):
 class TestXYZGrid(TestCase):
     """
     Test base grid class with a single map, including spawning objects.
+
     """
 
     zcoord = "map1"
@@ -1129,7 +1223,6 @@ class TestXYZGridTransition(TestCase):
         Spawn the two maps into actual objects.
 
         """
-        # from evennia import set_trace;set_trace()
         self.grid.spawn()
 
         self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 6)
