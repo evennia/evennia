@@ -16,11 +16,10 @@ The grid has three main functions:
 
 
 """
-import itertools
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger
 from .xymap import XYMap
-from .xyzroom import XYZRoom, XYZExit
+from .xyzroom import XYZRoom
 
 
 class XYZGrid(DefaultScript):
@@ -41,8 +40,28 @@ class XYZGrid(DefaultScript):
             self.reload()
         return self.ndb.grid
 
-    def get(self, mapname, default=None):
-        return self.grid.get(mapname, default)
+    def get(self, zcoord):
+        """
+        Get a specific xymap.
+
+        Args:
+            zcoord (str): The name/zcoord of the xymap.
+
+        Returns:
+            XYMap: Or None if no map was found.
+
+        """
+        return self.grid.get(zcoord)
+
+    def all(self):
+        """
+        Get all xymaps stored in the grid.
+
+        Returns:
+            dict: All initialized xymaps stored with this grid.
+
+        """
+        return self.grid
 
     def reload(self):
         """
@@ -119,10 +138,11 @@ class XYZGrid(DefaultScript):
 
     def delete(self):
         """
-        Clear the entire grid, including database entities.
+        Clear the entire grid, including database entities, then the grid too.
 
         """
         self.remove_map(*(zcoord for zcoord in self.db.map_data), remove_objects=True)
+        super().delete()
 
     def spawn(self, xyz=('*', '*', '*'), directions=None):
         """
@@ -161,5 +181,24 @@ class XYZGrid(DefaultScript):
 
         # next build all links between nodes (including between maps)
         for zcoord, xymap in xymaps.items():
-           logger.log_info(f"[grid] spawning/updating links for {zcoord} ...")
-           xymap.spawn_links(xy=(x, y), directions=directions)
+            logger.log_info(f"[grid] spawning/updating links for {zcoord} ...")
+            xymap.spawn_links(xy=(x, y), directions=directions)
+
+
+def get_xyzgrid():
+    """
+    Helper for getting the grid. This will create the XYZGrid global script if it didn't
+    previously exist.
+
+    """
+    xyzgrid = XYZGrid.objects.all()
+    if not xyzgrid:
+        # create a new one
+        xyzgrid, err = XYZGrid.create("XYZGrid")
+        if err:
+            raise RuntimeError(err)
+        return xyzgrid
+    elif len(xyzgrid) > 1:
+        ("Warning: More than one XYZGrid instances were found. This is an error and "
+         "only the first one will be used. Delete the other one(s) manually.")
+    return xyzgrid[0]
