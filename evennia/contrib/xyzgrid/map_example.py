@@ -62,3 +62,7 @@ MAP_DATA = {
     "legend": LEGEND,
     "rooms": ROOMS,
 }
+
+XYMAP_LIST = [
+    MAP_DATA
+]
