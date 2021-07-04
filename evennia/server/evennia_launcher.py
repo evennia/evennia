@@ -1913,6 +1913,51 @@ def list_settings(keys):
     print(table)
 
 
+def run_custom_commands(option, *args):
+    """
+    Inject a custom option into the evennia launcher command chain.
+
+    Args:
+        option (str): Incoming option - the first argument after `evennia` on
+            the command line.
+        *args: All args will passed to a found callable.__dict__
+
+    Returns:
+        bool: If a custom command was found and handled the option.
+
+    Notes:
+        Provide new commands in settings with
+
+            CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {"mycmd": "path.to.callable", ...}
+
+        The callable will be passed any `*args` given on the command line and is expected to
+        handle/validate the input correctly. Use like any other evennia command option on
+        in the terminal/console, for example:
+
+            evennia mycmd foo bar
+
+    """
+    from django.conf import settings
+    import importlib
+
+    try:
+        # a dict of {option: callable(*args), ...}
+        custom_commands = settings.EXTRA_LAUNCHER_COMMANDS
+    except AttributeError:
+        return False
+    cmdpath = custom_commands.get(option)
+    if cmdpath:
+        modpath, *cmdname = cmdpath.rsplit('.', 1)
+        if cmdname:
+            cmdname = cmdname[0]
+            mod = importlib.import_module(modpath)
+            command = mod.__dict__.get(cmdname)
+            if command:
+                command(*args)
+                return True
+    return False
+
+
 def run_menu():
     """
     This launches an interactive menu.
@@ -2285,6 +2330,10 @@ def main():
             if not check_database(always_return=True):
                 django.core.management.call_command(*([option] + unknown_args))
                 sys.exit(0)
+
+        if run_custom_commands(option, *unknown_args):
+            # run any custom commands
+            sys.exit()
 
         # pass on to the core django manager - re-parse the entire input line
         # but keep 'evennia' as the name instead of django-admin. This is
