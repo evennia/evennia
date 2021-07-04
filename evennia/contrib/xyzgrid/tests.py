@@ -346,11 +346,7 @@ class _MapTest(TestCase):
     Parent for map tests
 
     """
-    map_data = {
-        'map': MAP1,
-        'zcoord': "map1",
-
-    }
+    map_data = {'map': MAP1, 'zcoord': "map1"}
     map_display = MAP1_DISPLAY
 
     def  setUp(self):
@@ -368,10 +364,6 @@ class TestMap1(_MapTest):
     Test the Map class with a simple 4-node map
 
     """
-    # def setUp(self):
-    #     self.map = xymap.XYMap({"map": MAP1}, Z="testmap")
-    #     self.map.parse()
-
     def test_str_output(self):
         """Check the display_map"""
         self.assertEqual(str(self.map).strip(), MAP1_DISPLAY)
@@ -449,14 +441,13 @@ class TestMap1(_MapTest):
         self.assertEqual(expected, mapstr)
 
 
-class TestMap2(TestCase):
+class TestMap2(_MapTest):
     """
     Test with Map2 - a bigger map with multi-step links
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP2}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP2, 'zcoord': "map2"}
+    map_display = MAP2_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -565,9 +556,8 @@ class TestMap3(TestCase):
     Test Map3 - Map with diagonal links
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP3}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP3, 'zcoord': "map3"}
+    map_display = MAP3_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
@@ -610,14 +600,13 @@ class TestMap3(TestCase):
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
 
-class TestMap4(TestCase):
+class TestMap4(_MapTest):
     """
     Test Map4 - Map with + and x crossing links
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP4}, Z="testmap")
-        self.map.parse()
+    map_data = {'map': MAP4, 'zcoord': "map4"}
+    map_display = MAP4_DISPLAY
 
     def test_str_output(self):
         """Check the display_map"""
