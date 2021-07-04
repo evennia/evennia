@@ -70,6 +70,8 @@ Up requirements to Django 3.2+
 - Added an MXP anchor tag to also support clickable web links.
 - New `tasks` command for managing tasks started with `utils.delay` (PR by davewiththenicehat)
 - Make `help` index output clickable for webclient/clients with MXP (PR by davewiththenicehat)
+- Custom `evennia` launcher commands (e.g. `evennia mycmd foo bar`). Add new commands as callables
+  accepting `*args`, as `settings.EXTRA_LAUNCHER_COMMANDS = {'mycmd': 'path.to.callable', ...}`.
 
 ### Evennia 0.9.5 (2019-2020)
 
