@@ -106,12 +106,15 @@ class XYZGrid(DefaultScript):
             remove_objects (bool, optional): If the synced database objects (rooms/exits) should
                 be removed alongside this map.
         """
+        # from evennia import set_trace;set_trace()
         for zcoord in zcoords:
             if zcoord in self.db.map_data:
                 self.db.map_data.pop(zcoord)
             if remove_objects:
-                # this should also remove all exits automatically
-                XYZRoom.objects.filter_xyz(coord=(None, None, zcoord)).delete()
+                # we can't batch-delete because we want to run the .delete
+                # method that also wipes exits and moves content to save locations
+                for xyzroom in XYZRoom.objects.filter_xyz(xyz=('*', '*', zcoord)):
+                    xyzroom.delete()
         self.reload()
 
     def delete(self):
@@ -121,41 +124,42 @@ class XYZGrid(DefaultScript):
         """
         self.remove_map(*(zcoord for zcoord in self.db.map_data), remove_objects=True)
 
-    def spawn(self, coord=(None, None, None), only_directions=None):
+    def spawn(self, xyz=('*', '*', '*'), directions=None):
         """
         Create/recreate/update the in-game grid based on the stored Maps or for a specific Map
         or coordinate.
 
         Args:
-            coord (tuple, optional): An (X,Y,Z) coordinate, where Z is the name of the map. `None`
+            xyz (tuple, optional): An (X,Y,Z) coordinate, where Z is the name of the map. `'*'`
                 acts as a wildcard.
-            only_directions (list, optional): A list of cardinal directions ('n', 'ne' etc).
-                If given, spawn exits only the given direction. `None` acts as a wildcard.
+            directions (list, optional): A list of cardinal directions ('n', 'ne' etc).
+                Spawn exits only the given direction. If unset, all needed directions are spawned.
 
         Examples:
-            - `coord=(1, 3, 'foo')` - sync a specific element of map 'foo' only.
-            - `coord=(None, None, 'foo') - sync all elements of map 'foo'
-            - `coord=(1, 3, None) - sync all (1,3) coordinates on all maps (rarely useful)
-            - `coord=(None, None, None)` - sync all maps.
-            - `coord=(1, 3, 'foo')`, `direction='ne'` - sync only the north-eastern exit
+            - `xyz=('*', '*', '*')` (default) - spawn/update all maps.
+            - `xyz=(1, 3, 'foo')` - sync a specific element of map 'foo' only.
+            - `xyz=('*', '*', 'foo') - sync all elements of map 'foo'
+            - `xyz=(1, 3, '*') - sync all (1,3) coordinates on all maps (rarely useful)
+            - `xyz=(1, 3, 'foo')`, `direction='ne'` - sync only the north-eastern exit
                 out of the specific node on map 'foo'.
 
         """
-        x, y, z = coord
+        x, y, z = xyz
+        wildcard = '*'
 
-        if z is None:
+        if z == wildcard:
             xymaps = self.grid
-        elif z in self.ndb.grid:
-            xymaps = [self.grid[z]]
+        elif self.ndb.grid and z in self.ndb.grid:
+            xymaps = {z: self.grid[z]}
         else:
             raise RuntimeError(f"The 'z' coordinate/name '{z}' is not found on the grid.")
 
         # first build all nodes/rooms
         for zcoord, xymap in xymaps.items():
             logger.log_info(f"[grid] spawning/updating nodes for {zcoord} ...")
-            xymap.spawn_nodes(coord=(x, y))
+            xymap.spawn_nodes(xy=(x, y))
 
         # next build all links between nodes (including between maps)
         for zcoord, xymap in xymaps.items():
            logger.log_info(f"[grid] spawning/updating links for {zcoord} ...")
-           xymap.spawn_links(coord=(x, y), only_directions=only_directions)
+           xymap.spawn_links(xy=(x, y), directions=directions)

@@ -272,7 +272,8 @@ class XYMap:
         return "\n".join("".join(line) for line in self.display_map[::-1])
 
     def __repr__(self):
-        return f"<Map {self.max_X + 1}x{self.max_Y + 1}, {len(self.node_index_map)} nodes>"
+        return (f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, "
+                f"{len(self.node_index_map)} nodes>")
 
     def reload(self, map_module_or_dict=None):
         """
@@ -498,20 +499,20 @@ class XYMap:
         # store
         self.display_map = display_map
 
-    def _get_topology_around_coord(self, coord, dist=2):
+    def _get_topology_around_coord(self, xy, dist=2):
         """
         Get all links and nodes up to a certain distance from an XY coordinate.
 
         Args:
-            coord (tuple), the X,Y coordinate of the center point.
+            xy (tuple), the X,Y coordinate of the center point.
             dist (int): How many nodes away from center point to find paths for.
 
         Returns:
-            tuple: A tuple of 5 elements `(coords, xmin, xmax, ymin, ymax)`, where the
+            tuple: A tuple of 5 elements `(xy_coords, xmin, xmax, ymin, ymax)`, where the
                 first element is a list of xy-coordinates (on xygrid) for all linked nodes within
                 range. This is meant to be used with the xygrid for extracting a subset
                 for display purposes. The others are the minimum size of the rectangle
-                surrounding the area containing `coords`.
+                surrounding the area containing `xy_coords`.
 
         Notes:
             This performs a depth-first pass down the the given dist.
@@ -542,7 +543,7 @@ class XYMap:
 
             return points, xmin, xmax, ymin, ymax
 
-        center_node = self.get_node_from_coord(coord)
+        center_node = self.get_node_from_coord(xy)
         points, xmin, xmax, ymin, ymax = _scan_neighbors(center_node, [], dist=dist)
         return list(set(points)), xmin, xmax, ymin, ymax
 
@@ -591,7 +592,7 @@ class XYMap:
                 pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
                             fil, protocol=4)
 
-    def spawn_nodes(self, coord=(None, None)):
+    def spawn_nodes(self, xy=('*', '*')):
         """
         Convert the nodes of this XYMap into actual in-world rooms by spawning their
         related prototypes in the correct coordinate positions. This must be done *first*
@@ -599,58 +600,61 @@ class XYMap:
         to exist. It's also possible to only spawn a subset of the map
 
         Args:
-            coord (tuple, optional): An (X,Y) coordinate of node(s). `None` acts as a wildcard.
+            xy (tuple, optional): An (X,Y) coordinate of node(s). `'*'` acts as a wildcard.
 
         Examples:
-            - `coord=(1, 3) - spawn (1,3) coordinate only.
-            - `coord=(None, 1) - spawn all nodes in the first row of the map only.
-            - `coord=(None, None)` - spawn all nodes
+            - `xy=(1, 3) - spawn (1,3) coordinate only.
+            - `xy=('*', 1) - spawn all nodes in the first row of the map only.
+            - `xy=('*', '*')` - spawn all nodes
 
         Returns:
             list: A list of nodes that were spawned.
 
         """
-        x, y = coord
-
+        x, y = xy
+        wildcard = '*'
         spawned = []
+
         for node in self.node_index_map.values():
-            if (x is None or x == node.X) and (y is None or y == node.Y):
+            if (x in (wildcard, node.X)) and (y in (wildcard, node.Y)):
                 node.spawn()
                 spawned.append(node)
         return spawned
 
-    def spawn_links(self, coord=(None, None), nodes=None, only_directions=None):
+    def spawn_links(self, xy=('*', '*'), nodes=None, directions=None):
         """
         Convert links of this XYMap into actual in-game exits by spawning their related
         prototypes. It's possible to only spawn a specic exit by specifying the node and
 
         Args:
-            coord (tuple, optional): An (X,Y) coordinate of node(s). `None` acts as a wildcard.
+            xy (tuple, optional): An (X,Y) coordinate of node(s). `'*'` acts as a wildcard.
             nodes (list, optional): If given, only consider links out of these nodes. This also
-                affects `coords`, so that if there are no nodes of given coords in `nodes`, no
+                affects `xy`, so that if there are no nodes of given coords in `nodes`, no
                 links will be spawned at all.
             directions (list, optional): A list of cardinal directions ('n', 'ne' etc). If given,
-                sync only the exit in the given directions (`coords` limits which links out of which
-                nodes should be considered). `None` acts as a wildcard.
+                sync only the exit in the given directions (`xy` limits which links out of which
+                nodes should be considered). If unset, there are no limits to directions.
         Examples:
-            - `coord=(1, 3 )`, `direction='ne'` - sync only the north-eastern exit
+            - `xy=(1, 3 )`, `direction='ne'` - sync only the north-eastern exit
                 out of the (1, 3) node.
 
         """
-        x, y = coord
+        x, y = xy
+        wildcard = '*'
+
         if not nodes:
             nodes = self.node_index_map.values()
 
         for node in nodes:
-            if (x is None or x == node.X) and (y is None or y == node.Y):
-                node.spawn_links(only_directions=only_directions)
+            if (x in (wildcard, node.X)) and (y in (wildcard, node.Y)):
+                node.spawn_links(directions=directions)
 
-    def get_node_from_coord(self, coords):
+    def get_node_from_coord(self, xy):
         """
         Get a MapNode from a coordinate.
 
         Args:
-            coords (tuple): X,Y coordinates on XYgrid.
+            xy (tuple): X,Y coordinate on XYgrid.
 
         Returns:
             MapNode: The node found at the given coordinates. Returns
@@ -664,12 +668,12 @@ class XYMap:
         if not self.XYgrid:
             self.parse()
 
-        iX, iY = coords
+        iX, iY = xy
         if not ((0 <= iX <= self.max_X) and (0 <= iY <= self.max_Y)):
-            raise MapError(f"get_node_from_coord got coordinate {coords} which is "
+            raise MapError(f"get_node_from_coord got coordinate {xy} which is "
                            f"outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
         try:
-            return self.XYgrid[coords[0]][coords[1]]
+            return self.XYgrid[iX][iY]
         except KeyError:
             return None
 
@@ -686,14 +690,14 @@ class XYMap:
         """
         return self.symbol_map.get(symbol, [])
 
-    def get_shortest_path(self, startcoord, endcoord):
+    def get_shortest_path(self, start_xy, end_xy):
         """
         Get the shortest route between two points on the grid.
 
         Args:
-            startcoord (tuple): A starting (X,Y) coordinate on the XYgrid (in-game coordinate) for
+            start_xy (tuple): A starting (X,Y) coordinate on the XYgrid (in-game coordinate) for
                 where we start from.
-            endcoord (tuple or MapNode): The end (X,Y) coordinate on the XYgrid (in-game coordinate)
+            end_xy (tuple or MapNode): The end (X,Y) coordinate on the XYgrid (in-game coordinate)
                 we want to find the shortest route to.
 
         Returns:
@@ -702,8 +706,8 @@ class XYMap:
             the full path including the start- and end-node.
 
         """
-        startnode = self.get_node_from_coord(startcoord)
-        endnode = self.get_node_from_coord(endcoord)
+        startnode = self.get_node_from_coord(start_xy)
+        endnode = self.get_node_from_coord(end_xy)
 
         if not (startnode and endnode):
             # no node at given coordinate. No path is possible.
@@ -751,7 +755,7 @@ class XYMap:
 
         return directions, path
 
-    def get_visual_range(self, coord, dist=2, mode='nodes',
+    def get_visual_range(self, xy, dist=2, mode='nodes',
                          character='@',
                          target=None, target_path_style="|y{display_symbol}|n",
                          max_size=None,
@@ -761,7 +765,7 @@ class XYMap:
         of nodes or grid points in every direction.
 
         Args:
-            coord (tuple): (X,Y) in-world coordinate location. If this is not the location
+            xy (tuple): (X,Y) in-world coordinate location. If this is not the location
                 of a node on the grid, the `character` or the empty-space symbol (by default
                 an empty space) will be shown.
             dist (int, optional): Number of gridpoints distance to show. Which
@@ -771,7 +775,7 @@ class XYMap:
                 number of xy grid points in all directions and doesn't care about if visible
                 nodes are reachable or not. If 'nodes', distance measure how many linked nodes
                 away from the center coordinate to display.
-            character (str, optional): Place this symbol at the `coord` position
+            character (str, optional): Place this symbol at the `xy` position
                 of the displayed map. The center node' symbol is shown if this is falsy.
             target (tuple, optional): A target XY coordinate to go to. The path to this
                 (or the beginning of said path, if outside of visual range) will be
@@ -823,7 +827,7 @@ class XYMap:
                 # @-#
 
         """
-        iX, iY = coord
+        iX, iY = xy
         # convert inputs to xygrid
         width, height = self.max_x + 1, self.max_y + 1
         ix, iy = max(0, min(iX * 2, width)), max(0, min(iY * 2, height))
@@ -835,14 +839,14 @@ class XYMap:
             gridmap = self.display_map
             ixc, iyc = ix, iy
 
-        elif dist is None or dist <= 0 or not self.get_node_from_coord(coord):
+        elif dist is None or dist <= 0 or not self.get_node_from_coord(xy):
             # There is no node at these coordinates. Show
             # nothing but ourselves or emptiness
             return character if character else self.empty_symbol
 
         elif mode == 'nodes':
             # dist measures only full, reachable nodes.
-            points, xmin, xmax, ymin, ymax = self._get_topology_around_coord(coord, dist=dist)
+            points, xmin, xmax, ymin, ymax = self._get_topology_around_coord(xy, dist=dist)
 
             ixc, iyc = ix - xmin, iy - ymin
             # note - override width/height here since our grid is
@@ -878,7 +882,7 @@ class XYMap:
             else:
                 _target_path_style = _default_callable
 
-            _, path = self.get_shortest_path(coord, target)
+            _, path = self.get_shortest_path(xy, target)
 
             maxstep = dist if mode == 'nodes' else dist / 2
             nsteps = 0
