@@ -30,16 +30,15 @@ class XYZManager(ObjectManager):
     efficiently querying the room in the database based on XY coordinates.
 
     """
-    def filter_xyz(self, coord=(None, None, 'map'), **kwargs):
+    def filter_xyz(self, xyz=('*', '*', '*'), **kwargs):
         """
-        Filter queryset based on map as well as x- or y-coordinate, or both. The map-name is
-        required but not the coordinates - if only one coordinate is given, multiple rooms may be
-        returned from the same coordinate row/column. If both coordinates are omitted (set to
-        `None`), then all rooms of a given map is returned.
+        Filter queryset based on XYZ position on the grid. The Z-position is the name of the XYMap
+        Set a coordinate to `'*'` to act as a wildcard (setting all coords to `*` will thus find
+        *all* XYZ rooms). This will also find children of XYZRooms on the given coordinates.
 
         Kwargs:
-            coord (tuple, optional): A tuple (X, Y, Z) where each element is either
-                an `int`, `str` or `None`. `None` acts as a wild card. Note that
+            xyz (tuple, optional): A coordinate tuple (X, Y, Z) where each element is either
+                an `int` or `str`. The character `'*'` acts as a wild card. Note that
                 the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
             **kwargs: All other kwargs are passed on to the query.
 
@@ -48,25 +47,34 @@ class XYZManager(ObjectManager):
             with further filtering.
 
         """
-        x, y, z = coord
+        x, y, z = xyz
+        wildcard = '*'
 
-        return self.filter_family(
-            (Q() if x is None else Q(db_tags__db_key=str(x),
-                                     db_tags__db_category=MAP_X_TAG_CATEGORY)),
-            (Q() if y is None else Q(db_tags__db_key=str(y),
-                                     db_tags__db_category=MAP_Y_TAG_CATEGORY)),
-            (Q() if z is None else Q(db_tags__db_key=str(z),
-                                     db_tags__db_category=MAP_Z_TAG_CATEGORY)),
-            **kwargs
+
+
+        return (
+            self
+            .filter_family(**kwargs)
+            .filter(
+                Q() if x == wildcard
+                else Q(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY))
+            .filter(
+                Q() if y == wildcard
+                else Q(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY))
+            .filter(
+                Q() if z == wildcard
+                else Q(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY))
         )
 
-    def get_xyz(self, coord=(0, 0, 'map'), **kwargs):
+    def get_xyz(self, xyz=(0, 0, 'map'), **kwargs):
         """
-        Always return a single matched entity directly.
+        Always return a single matched entity directly. This accepts no `*`-wildcards.
+        This will also find children of XYZRooms on the given coordinates.
 
         Kwargs:
-            coord (tuple): A tuple of `int` or `str` (not `None`). The `Z`-coordinate
-                acts as the name (case-sensitive) of the map in the XYZgrid contrib.
+            xyz (tuple): A coordinate tuple of `int` or `str` (not `'*'`, no wildcards are
+                allowed in get).  The `Z`-coordinate acts as the name (case-sensitive) of the map in
+                the XYZgrid contrib.
             **kwargs: All other kwargs are passed on to the query.
 
         Returns:
@@ -78,13 +86,27 @@ class XYZManager(ObjectManager):
                 possible with a unique combination of x,y,z).
 
         """
-        x, y, z = coord
-        return self.get_family(
-            Q(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY),
-            Q(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY),
-            Q(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY),
-            **kwargs
-        )
+        x, y, z = xyz
+
+        # mimic get_family
+        paths = [self.model.path] + [
+            "%s.%s" % (cls.__module__, cls.__name__) for cls in self._get_subclasses(self.model)
+        ]
+        kwargs["db_typeclass_path__in"] = paths
+
+        try:
+            return (
+                self
+                .filter(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY)
+                .get(**kwargs)
+            )
+        except self.model.DoesNotExist:
+            inp = (f"xyz=({x},{y},{z}), " +
+                   ",".join(f"{key}={val}" for key, val in kwargs.items()))
+            raise self.model.DoesNotExist(f"{self.model.__name__} "
+                                          f"matching query {inp} does not exist.")
 
 
 class XYZExitManager(XYZManager):
@@ -94,17 +116,19 @@ class XYZExitManager(XYZManager):
 
     """
 
-    def filter_xyz_exit(self, coord=(None, None, 'map'),
-                        destination_coord=(None, None, 'map'), **kwargs):
+    def filter_xyz_exit(self, xyz=('*', '*', '*'),
+                        xyz_destination=('*', '*', '*'), **kwargs):
         """
         Used by exits (objects with a source and -destination property).
-        Find all exits out of a source or to a particular destination.
+        Find all exits out of a source or to a particular destination. This will also find
+        children of XYZExit on the given coords..
 
         Kwargs:
-            coord (tuple, optional): A tuple (X, Y, Z) for the source location. Each
-                element is either an `int`, `str` or `None`. `None` acts as a wild card. Note that
+            xyz (tuple, optional): A coordinate (X, Y, Z) for the source location. Each
+                element is either an `int` or `str`. The character `'*'` is used as a wildcard -
+                so setting all coordinates to the wildcard will return *all* XYZExits.
                 the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
-            destination_coord (tuple, optional): Same as the `coord` but for the destination of the
+            xyz_destination (tuple, optional): Same as `xyz` but for the destination of the
                 exit.
             **kwargs: All other kwargs are passed on to the query.
 
@@ -113,42 +137,52 @@ class XYZExitManager(XYZManager):
             with further filtering.
 
         Notes:
-            Depending on what coordinates are set to `None`, this can be used to
+            Depending on what coordinates are set to `*`, this can be used to
             e.g. find all exits in a room, or leading to a room or even to rooms
             in a particular X/Y row/column.
 
-            In the XYZgrid, `z != zdest` means a _transit_ between different maps.
+            In the XYZgrid, `z_source != z_destination` means a _transit_ between different maps.
 
         """
-        x, y, z = coord
-        xdest, ydest, zdest = destination_coord
+        x, y, z = xyz
+        xdest, ydest, zdest = xyz_destination
+        wildcard = '*'
 
-        return self.filter_family(
-            (Q() if x is None else Q(db_tags__db_key=str(x),
-                                     db_tags__db_category=MAP_X_TAG_CATEGORY)),
-            (Q() if y is None else Q(db_tags__db_key=str(y),
-                                     db_tags__db_category=MAP_Y_TAG_CATEGORY)),
-            (Q() if z is None else Q(db_tags__db_key=str(z),
-                                     db_tags__db_category=MAP_Z_TAG_CATEGORY)),
-            (Q() if xdest is None else Q(db_tags__db_key=str(xdest),
-                                         db_tags__db_category=MAP_XDEST_TAG_CATEGORY)),
-            (Q() if ydest is None else Q(db_tags__db_key=str(ydest),
-                                         db_tags__db_category=MAP_YDEST_TAG_CATEGORY)),
-            (Q() if zdest is None else Q(db_tags__db_key=str(zdest),
-                                         db_tags__db_category=MAP_ZDEST_TAG_CATEGORY)),
+        return (
+            self
+            .filter_family(**kwargs)
+            .filter(
+                Q() if x == wildcard
+                else Q(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY))
+            .filter(
+                Q() if y == wildcard
+                else Q(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY))
+            .filter(
+                Q() if z == wildcard
+                else Q(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY))
+            .filter(
+                Q() if xdest == wildcard
+                else Q(db_tags__db_key=str(xdest), db_tags__db_category=MAP_XDEST_TAG_CATEGORY))
+            .filter(
+                Q() if ydest == wildcard
+                else Q(db_tags__db_key=str(ydest), db_tags__db_category=MAP_YDEST_TAG_CATEGORY))
+            .filter(
+                Q() if zdest == wildcard
+                else Q(db_tags__db_key=str(zdest), db_tags__db_category=MAP_ZDEST_TAG_CATEGORY))
         )
 
-    def get_xyz_exit(self, coord=(0, 0, 'map'), destination_coord=(0, 0, 'map'), **kwargs):
+    def get_xyz_exit(self, xyz=(0, 0, 'map'), xyz_destination=(0, 0, 'map'), **kwargs):
         """
         Used by exits (objects with a source and -destination property). Get a single
         exit. All source/destination coordinates (as well as the map's name) are required.
+        This will also find children of XYZExits on the given coords.
 
         Kwargs:
-            coord (tuple, optional): A tuple (X, Y, Z) for the source location. Each
-                element is either an `int` or `str` (not `None`).
+            xyz (tuple, optional): A coordinate (X, Y, Z) for the source location. Each
+                element is either an `int` or `str` (not `*`, no wildcards are allowed for get).
                 the `Z`-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.
-            destination_coord (tuple, optional): Same as the `coord` but for the destination of the
-                exit.
+            xyz_destination_coord (tuple, optional): Same as the `xyz` but for the destination of
+                the exit.
             **kwargs: All other kwargs are passed on to the query.
 
         Returns:
@@ -157,29 +191,41 @@ class XYZExitManager(XYZManager):
         Raises:
             DoesNotExist: If no matching query was found.
             MultipleObjectsReturned: If more than one match was found (which should not
-                possible with a unique combination of x,y,x).
+                be possible with a unique combination of x,y,x).
 
         Notes:
             All coordinates are required.
 
         """
-        x, y, z = coord
-        xdest, ydest, zdest = destination_coord
+        x, y, z = xyz
+        xdest, ydest, zdest = xyz_destination
+        # mimic get_family
+        paths = [self.model.path] + [
+            "%s.%s" % (cls.__module__, cls.__name__) for cls in self._get_subclasses(self.model)
+        ]
+        kwargs["db_typeclass_path__in"] = paths
 
-        return self.get_family(
-            Q(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY),
-            Q(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY),
-            Q(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY),
-            Q(db_tags__db_key=str(xdest), db_tags__db_category=MAP_XDEST_TAG_CATEGORY),
-            Q(db_tags__db_key=str(ydest), db_tags__db_category=MAP_YDEST_TAG_CATEGORY),
-            Q(db_tags__db_key=str(zdest), db_tags__db_category=MAP_ZDEST_TAG_CATEGORY),
-            **kwargs
-        )
+        try:
+            return (
+                self
+                .filter(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(xdest), db_tags__db_category=MAP_XDEST_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(ydest), db_tags__db_category=MAP_YDEST_TAG_CATEGORY)
+                .filter(db_tags__db_key=str(zdest), db_tags__db_category=MAP_ZDEST_TAG_CATEGORY)
+                .get(**kwargs)
+            )
+        except self.model.DoesNotExist:
+            inp = (f"xyz=({x},{y},{z}),xyz_destination=({xdest},{ydest},{zdest})," +
+                   ",".join(f"{key}={val}" for key, val in kwargs.items()))
+            raise self.model.DoesNotExist(f"{self.model.__name__} "
+                                          f"matching query {inp} does not exist.")
 
 
 class XYZRoom(DefaultRoom):
     """
-    A game location aware of its XY-coordinate and map.
+    A game location aware of its XYZ-position.
 
     """
 
@@ -190,28 +236,32 @@ class XYZRoom(DefaultRoom):
         return repr(self)
 
     def __repr__(self):
-        x, y, z = self.xyzcoords
+        x, y, z = self.xyz
         return f"<XYZRoom '{self.db_key}', XYZ=({x},{y},{z})>"
 
     @property
-    def xyzcoords(self):
-        if not hasattr(self, "_xyzcoords"):
+    def xyz(self):
+        if not hasattr(self, "_xyz"):
             x = self.tags.get(category=MAP_X_TAG_CATEGORY, return_list=False)
             y = self.tags.get(category=MAP_Y_TAG_CATEGORY, return_list=False)
             z = self.tags.get(category=MAP_Z_TAG_CATEGORY, return_list=False)
-            self._xyzcoords = (x, y, z)
-        return self._xyzcoords
+            if x is None or y is None or z is None:
+                # don't cache unfinished coordinate
+                return (x, y, z)
+            # cache result
+            self._xyz = (x, y, z)
+        return self._xyz
 
     @classmethod
-    def create(cls, key, account=None, coord=(0, 0, 'map'), **kwargs):
+    def create(cls, key, account=None, xyz=(0, 0, 'map'), **kwargs):
         """
-        Creation method aware of coordinates.
+        Creation method aware of XYZ coordinates.
 
         Args:
             key (str): New name of object to create.
             account (Account, optional): Any Account to tie to this entity (usually not used for
                 rooms).
-            coords (tuple, optional): A 3D coordinate (X, Y, Z) for this room's location on a
+            xyz (tuple, optional): A 3D coordinate (X, Y, Z) for this room's location on a
                 map grid. Each element can theoretically be either `int` or `str`, but for the
                 XYZgrid, the X, Y are always integers while the `Z` coordinate is used for the
                 map's name.
@@ -227,15 +277,15 @@ class XYZRoom(DefaultRoom):
 
         """
         try:
-            x, y, z = coord
+            x, y, z = xyz
         except ValueError:
-            return None, [f"XYRroom.create got `coord={coord}` - needs a valid (X,Y,Z) "
+            return None, [f"XYRroom.create got `xyz={xyz}` - needs a valid (X,Y,Z) "
                           "coordinate of ints/strings."]
 
-        existing_query = cls.objects.filter_xyz(coord=(x, y, z))
+        existing_query = cls.objects.filter_xyz(xyz=(x, y, z))
         if existing_query.exists():
             existing_room = existing_query.first()
-            return None, [f"XYRoom XYZ={coord} already exists "
+            return None, [f"XYRoom XYZ=({x},{y},{z}) already exists "
                           f"(existing room is named '{existing_room.db_key}')!"]
 
         tags = (
@@ -249,7 +299,7 @@ class XYZRoom(DefaultRoom):
 
 class XYZExit(DefaultExit):
     """
-    An exit that is aware of the XY coordinate system.
+    An exit that is aware of the XYZ coordinate system.
 
     """
 
@@ -259,30 +309,38 @@ class XYZExit(DefaultExit):
         return repr(self)
 
     def __repr__(self):
-        x, y, z = self.xyzcoords
-        xd, yd, zd = self.xyzdestcoords
+        x, y, z = self.xyz
+        xd, yd, zd = self.xyz_destination
         return f"<XYZExit '{self.db_key}', XYZ=({x},{y},{z})->({xd},{yd},{zd})>"
 
     @property
-    def xyzcoords(self):
-        if not hasattr(self, "_xyzcoords"):
+    def xyz(self):
+        if not hasattr(self, "_xyz"):
             x = self.tags.get(category=MAP_X_TAG_CATEGORY, return_list=False)
             y = self.tags.get(category=MAP_Y_TAG_CATEGORY, return_list=False)
             z = self.tags.get(category=MAP_Z_TAG_CATEGORY, return_list=False)
-            self._xyzcoords = (x, y, z)
-        return self._xyzcoords
+            if x is None or y is None or z is None:
+                # don't cache yet unfinished coordinate
+                return (x, y, z)
+            # cache result
+            self._xyz = (x, y, z)
+        return self._xyz
 
     @property
-    def xyzdestcoords(self):
-        if not hasattr(self, "_xyzdestcoords"):
+    def xyz_destination(self):
+        if not hasattr(self, "_xyz_destination"):
             xd = self.tags.get(category=MAP_XDEST_TAG_CATEGORY, return_list=False)
             yd = self.tags.get(category=MAP_YDEST_TAG_CATEGORY, return_list=False)
             zd = self.tags.get(category=MAP_ZDEST_TAG_CATEGORY, return_list=False)
-            self._xyzdestcoords = (xd, yd, zd)
-        return self._xyzdestcoords
+            if xd is None or yd is None or zd is None:
+                # don't cache unfinished coordinate
+                return (xd, yd, zd)
+            # cache result
+            self._xyz_destination = (xd, yd, zd)
+        return self._xyz_destination
 
     @classmethod
-    def create(cls, key, account=None, coord=(0, 0, 'map'), destination_coord=(0, 0, 'map'),
+    def create(cls, key, account=None, xyz=(0, 0, 'map'), xyz_destination=(0, 0, 'map'),
                location=None, destination=None, **kwargs):
         """
         Creation method aware of coordinates.
@@ -290,19 +348,17 @@ class XYZExit(DefaultExit):
         Args:
             key (str): New name of object to create.
             account (Account, optional): Any Account to tie to this entity (unused for exits).
-            coords (tuple or None, optional): A 3D coordinate (X, Y, Z) for this room's location
+            xyz (tuple or None, optional): A 3D coordinate (X, Y, Z) for this room's location
                 on a map grid.  Each element can theoretically be either `int` or `str`, but for the
                 XYZgrid contrib, the X, Y are always integers while the `Z` coordinate is used for
                 the map's name. Set to `None` if instead using a direct room reference with
-                `location`.  destination_coord (tuple or None, optional): Works as `coords`, but for
-                destination of
-                the exit. Set to `None` if using the `destination` kwarg to point to room directly.
-            destination_coord (tuple, optional): The XYZ coordinate of the place the exit
+                `location`.
+            xyz_destination (tuple, optional): The XYZ coordinate of the place the exit
                 leads to. Will be ignored if `destination` is given directly.
-            location (Object, optional): Only used if `coord` is not given. This can be used
+            location (Object, optional): If given, overrides `xyz` coordinate. This can be used
                 to place this exit in any room, including non-XYRoom type rooms.
-            destination (Object, optional): If given, overrides `destination_coord`. This can
-                be any room (including non-XYRooms) and is not checked for XY coordinates.
+            destination (Object, optional): If given, overrides `xyz_destination`. This can
+                be any room (including non-XYRooms) and is not checked for XYZ coordinates.
             **kwargs: Will be passed into the normal `DefaultRoom.create` method.
 
         Returns:
@@ -311,35 +367,32 @@ class XYZExit(DefaultExit):
 
         """
         tags = []
-        try:
-            x, y, z = coord
-        except ValueError:
-            if not location:
-                return None, ["XYExit.create need either a `coord` or a `location`."]
+        if location:
             source = location
         else:
-            print("rooms:", XYZRoom.objects.all().count(), XYZRoom.objects.all())
-            print("exits:", XYZExit.objects.all().count(), XYZExit.objects.all())
-            source = XYZRoom.objects.get_xyz(coord=(x, y, z))
-            tags.extend(((str(x), MAP_X_TAG_CATEGORY),
-                         (str(y), MAP_Y_TAG_CATEGORY),
-                         (str(z), MAP_Z_TAG_CATEGORY)))
+            try:
+                x, y, z = xyz
+            except ValueError:
+                return None, ["XYExit.create need either `xyz=(X,Y,Z)` coordinate or a `location`."]
+            else:
+                source = XYZRoom.objects.get_xyz(xyz=(x, y, z))
+                tags.extend(((str(x), MAP_X_TAG_CATEGORY),
+                             (str(y), MAP_Y_TAG_CATEGORY),
+                             (str(z), MAP_Z_TAG_CATEGORY)))
         if destination:
             dest = destination
         else:
             try:
-                xdest, ydest, zdest = destination_coord
+                xdest, ydest, zdest = xyz_destination
             except ValueError:
-                if not destination:
-                    return None, ["XYExit.create need either a `destination_coord` or "
-                                  "a `destination`."]
-                dest = destination
+                return None, ["XYExit.create need either `xyz_destination=(X,Y,Z)` coordinate "
+                              "or a `destination`."]
             else:
-                dest = XYZRoom.objects.get_xyz(coord=(xdest, ydest, zdest))
+                dest = XYZRoom.objects.get_xyz(xyz=(xdest, ydest, zdest))
                 tags.extend(((str(xdest), MAP_XDEST_TAG_CATEGORY),
                              (str(ydest), MAP_YDEST_TAG_CATEGORY),
                              (str(zdest), MAP_ZDEST_TAG_CATEGORY)))
 
         return DefaultExit.create(
-            key, source, dest, account=account,
-            location=location, tags=tags, typeclass=cls, **kwargs)
+            key, source, dest,
+            account=account, tags=tags, typeclass=cls, **kwargs)

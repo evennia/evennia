@@ -9,7 +9,7 @@ from random import randint
 from unittest import TestCase
 from parameterized import parameterized
 from django.test import override_settings
-from . import xymap, xyzgrid, map_legend
+from . import xymap, xyzgrid, map_legend, xyzroom
 
 
 MAP1 = """
@@ -341,14 +341,36 @@ MAP12b = r"""
 """
 
 
-class TestMap1(TestCase):
+class _MapTest(TestCase):
+    """
+    Parent for map tests
+
+    """
+    map_data = {
+        'map': MAP1,
+        'zcoord': "map1",
+
+    }
+    map_display = MAP1_DISPLAY
+
+    def  setUp(self):
+        """Set up grid and map"""
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+        self.grid.add_maps(self.map_data)
+        self.map = self.grid.get(self.map_data['zcoord'])
+
+    def tearDown(self):
+        self.grid.delete()
+
+
+class TestMap1(_MapTest):
     """
     Test the Map class with a simple 4-node map
 
     """
-    def setUp(self):
-        self.map = xymap.XYMap({"map": MAP1}, Z="testmap")
-        self.map.parse()
+    # def setUp(self):
+    #     self.map = xymap.XYMap({"map": MAP1}, Z="testmap")
+    #     self.map.parse()
 
     def test_str_output(self):
         """Check the display_map"""
@@ -1057,17 +1079,23 @@ class TestXYZGrid(TestCase):
     def test_spawn(self):
         """Spawn objects for the grid"""
         self.grid.spawn()
+        # import sys
+        # sys.stderr.write("\nrooms: " + repr(xyzroom.XYZRoom.objects.all()))
+        # sys.stderr.write("\n\nexits: " + repr(xyzroom.XYZExit.objects.all()) + "\n")
+
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 4)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 8)
 
 
 # map transitions
 class Map12aTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    target_map_coords = (1, 0, "map12b")
+    target_map_xyz = (1, 0, "map12b")
 
 
 class Map12bTransition(map_legend.MapTransitionMapNode):
     symbol = "T"
-    target_map_coords = (0, 1, "map12a")
+    target_map_xyz = (0, 1, "map12a")
 
 
 class TestXYZGridTransition(TestCase):
@@ -1112,4 +1140,17 @@ class TestXYZGridTransition(TestCase):
         Spawn the two maps into actual objects.
 
         """
+        # from evennia import set_trace;set_trace()
         self.grid.spawn()
+
+        self.assertEqual(xyzroom.XYZRoom.objects.all().count(), 6)
+        self.assertEqual(xyzroom.XYZExit.objects.all().count(), 10)
+
+        room1 = xyzroom.XYZRoom.objects.get_xyz(xyz=(0, 1, 'map12a'))
+        room2 = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 0, 'map12b'))
+        east_exit = [exi for exi in room1.exits if exi.db_key == 'east'][0]
+        west_exit = [exi for exi in room2.exits if exi.db_key == 'west'][0]
+
+        # make sure exits traverse the maps
+        self.assertEqual(east_exit.db_destination, room2)
+        self.assertEqual(west_exit.db_destination, room1)

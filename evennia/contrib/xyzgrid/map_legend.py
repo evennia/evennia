@@ -73,7 +73,7 @@ class MapNode:
     direction_spawn_defaults = {
         'n': ('north', 'n'),
         'ne': ('northeast', 'ne', 'north-east'),
-        'e': ('east',),
+        'e': ('east', 'e'),
         'se': ('southeast', 'se', 'south-east'),
         's': ('south', 's'),
         'sw': ('southwest', 'sw', 'south-west'),
@@ -231,7 +231,7 @@ class MapNode:
         """
         return self.symbol if self.display_symbol is None else self.display_symbol
 
-    def get_spawn_coords(self):
+    def get_spawn_xyz(self):
         """
         This should return the XYZ-coordinates for spawning this node. This normally
         the XYZ of the current map, but for traversal-nodes, it can also be the location
@@ -260,15 +260,15 @@ class MapNode:
             # a 'virtual' node.
             return
 
-        coord = self.get_spawn_coords()
+        xyz = self.get_spawn_xyz()
 
         try:
-            nodeobj = NodeTypeclass.objects.get_xyz(coord=coord)
+            nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except NodeTypeclass.DoesNotExist:
             # create a new entity with proper coordinates etc
             nodeobj, err = NodeTypeclass.create(
                 self.prototype.get('key', 'An Empty room'),
-                coord=coord
+                xyz=xyz
             )
             if err:
                 raise RuntimeError(err)
@@ -277,12 +277,12 @@ class MapNode:
         spawner.batch_update_objects_with_prototype(
             self.prototype, objects=[nodeobj], exact=False)
 
-    def spawn_links(self, only_directions=None):
+    def spawn_links(self, directions=None):
         """
         Build actual in-game exits based on the links out of this room.
 
         Args:
-            only_directions (list, optional): If given, this should be a list of supported
+            directions (list, optional): If given, this should be a list of supported
                 directions (n, ne, etc). Only links in these directions will be spawned
                 for this node.
 
@@ -290,7 +290,12 @@ class MapNode:
         the entire XYZgrid. This creates/syncs all exits to their locations and destinations.
 
         """
-        coord = (self.X, self.Y, self.Z)
+        if not self.prototype:
+            # no exits to spawn out of a 'virtual' node.
+            return
+
+        xyz = (self.X, self.Y, self.Z)
+        direction_limits = directions
 
         global ExitTypeclass
         if not ExitTypeclass:
@@ -308,7 +313,7 @@ class MapNode:
         # we need to search for exits in all directions since some
         # may have been removed since last sync
         linkobjs = {exi.db_key.lower(): exi
-                    for exi in ExitTypeclass.objects.filter_xyz(coord=coord)}
+                    for exi in ExitTypeclass.objects.filter_xyz(xyz=xyz)}
 
         # figure out if the topology changed between grid and map (will always
         # build all exits first run)
@@ -321,20 +326,25 @@ class MapNode:
             else:
                 # missing in linkobjs - create a new exit
                 key, aliases, direction, link = maplinks[differing_key]
-                exitnode = self.links[direction]
 
-                linkobjs[direction] = ExitTypeclass.create(
-                    # either get name from the prototype or use our custom set
+                if direction_limits and direction not in direction_limits:
+                    continue
+
+                exitnode = self.links[direction]
+                exi, err = ExitTypeclass.create(
                     key,
-                    coord=coord,
-                    destination_coord=exitnode.get_spawn_coords(),
+                    xyz=xyz,
+                    xyz_destination=exitnode.get_spawn_xyz(),
                     aliases=aliases,
                 )
+                if err:
+                    raise RuntimeError(err)
+                linkobjs[key.lower()] = exi
 
         # apply prototypes to catch any changes
-        for direction, linkobj in linkobjs:
+        for key, linkobj in linkobjs.items():
             spawner.batch_update_objects_with_prototype(
-                maplinks[direction].prototype, objects=[linkobj], exact=False)
+                maplinks[key.lower()][3].prototype, objects=[linkobj], exact=False)
 
     def unspawn(self):
         """
@@ -345,8 +355,10 @@ class MapNode:
         if not NodeTypeclass:
             from .room import XYZRoom as NodeTypeclass
 
+        xyz = (self.X, self.Y, self.Z)
+
         try:
-            nodeobj = NodeTypeclass.objects.get_xyz(coord=coord)
+            nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except NodeTypeclass.DoesNotExist:
             # no object exists
             pass
@@ -364,7 +376,7 @@ class TransitionMapNode(MapNode):
     to this node.
 
     Properties:
-    - `target_map_coord` (tuple) - the (X, Y, Z) coordinate of a node on the other map to teleport
+    - `target_map_xyz` (tuple) - the (X, Y, Z) coordinate of a node on the other map to teleport
         to when moving to this node. This should not be another TransitionMapNode (see below for
         how to make a two-way link).
 
@@ -380,16 +392,21 @@ class TransitionMapNode(MapNode):
     """
     symbol = 'T'
     display_symbol = ' '
-    # X,Y,Z coordinates of target node (not a transitionalmapnode)
-    taget_map_coord = (None, None, None)
+    # X,Y,Z coordinates of target node
+    taget_map_xyz = (None, None, None)
 
-    def get_spawn_coords(self):
+    def get_spawn_xyz(self):
         """
         Make sure to return the coord of the *target* - this will be used when building
         the exit to this node (since the prototype is None, this node itself will not be built).
 
         """
-        return self.target_map_coord
+        if any(True for coord in self.target_map_xyz if coord in (None, 'unset')):
+            raise MapParserError(f"(Z={self.xymap.Z}) has not defined its "
+                                 "`.target_map_xyz` property. It must point "
+                                 "to another valid xymap (Z coordinate).", self)
+
+        return self.target_map_xyz
 
     def build_links(self):
         """Check so we don't have too many links"""
@@ -449,7 +466,7 @@ class MapLink:
       of the link is only used to determine its destination). This can be overridden on a
       per-direction basis.
     - `spawn_aliases` (list): A list of [key, alias, alias, ...] for the node to use when spawning
-      exits from this link. If not given, a sane set of defaults (n=north etc) will be used. This
+      exits from this link. If not given, a sane set of defaults ((north, n) etc) will be used. This
       is required if you use any custom directions outside of the cardinal directions + up/down.
 
     """
@@ -1017,8 +1034,8 @@ class MapTransitionMapNode(TransitionMapNode):
     """Transition-target to other map"""
     symbol = "T"
     display_symbol = " "
-    target_map_coords = (0, 0, 'unset')  # must be changed
-    prototype = None  # important!
+    prototype = None  # important to leave None!
+    target_map_xyz = (None, None, None)  # must be set manually
 
 
 class InterruptMapNode(MapNode):
