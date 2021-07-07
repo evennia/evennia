@@ -18,8 +18,9 @@ The grid has three main functions:
 """
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger
+from evennia.utils.utils import variable_from_module, make_iter
 from .xymap import XYMap
-from .xyzroom import XYZRoom
+from .xyzroom import XYZRoom, XYZExit
 
 
 class XYZGrid(DefaultScript):
@@ -40,7 +41,7 @@ class XYZGrid(DefaultScript):
             self.reload()
         return self.ndb.grid
 
-    def get(self, zcoord):
+    def get_map(self, zcoord):
         """
         Get a specific xymap.
 
@@ -53,7 +54,7 @@ class XYZGrid(DefaultScript):
         """
         return self.grid.get(zcoord)
 
-    def all(self):
+    def all_maps(self):
         """
         Get all xymaps stored in the grid.
 
@@ -63,20 +64,55 @@ class XYZGrid(DefaultScript):
         """
         return self.grid
 
+    def log(self, msg):
+        logger.log_info(f"|grid| {msg}")
+
+    def get_room(xyz, **kwargs):
+        """
+        Get room object from XYZ coordinate.
+
+        Args:
+            xyz (tuple): X,Y,Z coordinate of room to fetch.
+
+        Returns:
+            XYZRoom: The found room.
+
+        Raises:
+            XYZRoom.DoesNotExist: If room is not found.
+
+        Notes:
+            This assumes the room was previously built.
+
+        """
+        return XYZRoom.objects.get_xyz(xyz=xyz, **kwargs)
+
+    def get_exit(xyz, name='north', **kwargs):
+        """
+        Get exit object at coordinate.
+
+        Args:
+            xyz (tuple): X,Y,Z coordinate of the room the
+                exit leads out of.
+            name (str): The full name of the exit, e.g. 'north' or 'northwest'.
+
+        """
+        kwargs['db_key'] = name
+        return XYZExit.objects.get_xyz_exit(xyz=xyz, **kwargs)
+
     def reload(self):
         """
         Reload and rebuild the grid. This is done on a server reload and is also necessary if adding
         a new map since this may introduce new between-map traversals.
 
         """
-        logger.log_info("[grid] (Re)loading grid ...")
+        self.log("(Re)loading grid ...")
         self.ndb.grid = {}
         nmaps = 0
         # generate all Maps - this will also initialize their components
         # and bake any pathfinding paths (or load from disk-cache)
         for zcoord, mapdata in self.db.map_data.items():
 
-            logger.log_info(f"[grid] Loading map '{zcoord}'...")
+            self.log(f"Loading map '{zcoord}'...")
             xymap = XYMap(dict(mapdata), Z=zcoord, xyzgrid=self)
             xymap.parse()
             xymap.calculate_path_matrix()
@@ -84,7 +120,7 @@ class XYZGrid(DefaultScript):
             nmaps += 1
 
         # store
-        logger.log_info(f"[grid] Loaded and linked {nmaps} map(s).")
+        self.log(f"Loaded and linked {nmaps} map(s).")
 
     def at_init(self):
         """
@@ -93,6 +129,27 @@ class XYZGrid(DefaultScript):
 
         """
         self.reload()
+
+    def maps_from_module(self, module):
+        """
+        Load map data from module. The loader will look for a dict XYMAP_DATA or a list of
+        XYMAP_DATA_LIST (a list of XYMAP_DATA dicts). Each XYMAP_DATA dict should contain
+        `{"xymap": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}`.
+
+        Args:
+            module (module or str): A module or python-path to a module containing
+                map data as either `XYMAP_DATA` or `XYMAP_DATA_LIST` variables.
+
+        Returns:
+            list: List of zero, one or more xy-map data dicts loaded from the module.
+
+        """
+        map_data_list = variable_from_module(module, "XYMAP_DATA_LIST")
+        if not map_data_list:
+            map_data_list = variable_from_module(module, "XYMAP_DATA")
+        if map_data_list:
+            map_data_list = make_iter(map_data_list)
+        return map_data_list
 
     def add_maps(self, *mapdatas):
         """
@@ -176,12 +233,12 @@ class XYZGrid(DefaultScript):
 
         # first build all nodes/rooms
         for zcoord, xymap in xymaps.items():
-            logger.log_info(f"[grid] spawning/updating nodes for {zcoord} ...")
+            self.log(f"spawning/updating nodes for {zcoord} ...")
             xymap.spawn_nodes(xy=(x, y))
 
         # next build all links between nodes (including between maps)
         for zcoord, xymap in xymaps.items():
-            logger.log_info(f"[grid] spawning/updating links for {zcoord} ...")
+            self.log(f"spawning/updating links for {zcoord} ...")
             xymap.spawn_links(xy=(x, y), directions=directions)
 
 

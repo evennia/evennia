@@ -36,7 +36,7 @@ class MapError(RuntimeError):
         prefix = ""
         if node_or_link:
             prefix = (f"{node_or_link.__class__.__name__} '{node_or_link.symbol}' "
-                      f"at XY=({node_or_link.X:g},{node_or_link.Y:g}) ")
+                      f"at XYZ=({node_or_link.X:g},{node_or_link.Y:g},{node_or_link.Z}) ")
         self.node_or_link = node_or_link
         self.message = f"{prefix}{error}"
         super().__init__(self.message)
