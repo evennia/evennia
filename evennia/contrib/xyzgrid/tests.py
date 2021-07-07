@@ -349,11 +349,11 @@ class _MapTest(TestCase):
     map_data = {'map': MAP1, 'zcoord': "map1"}
     map_display = MAP1_DISPLAY
 
-    def  setUp(self):
+    def setUp(self):
         """Set up grid and map"""
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
         self.grid.add_maps(self.map_data)
-        self.map = self.grid.get(self.map_data['zcoord'])
+        self.map = self.grid.get_map(self.map_data['zcoord'])
 
     def tearDown(self):
         self.grid.delete()
@@ -1155,7 +1155,7 @@ class TestXYZGrid(TestCase):
 
     def test_str_output(self):
         """Check the display_map"""
-        xymap = self.grid.get(self.zcoord)
+        xymap = self.grid.get_map(self.zcoord)
         stripped_map = "\n".join(line.rstrip() for line in str(xymap).split('\n'))
         self.assertEqual(MAP1_DISPLAY, stripped_map)
 
@@ -1215,7 +1215,7 @@ class TestXYZGridTransition(TestCase):
         test shortest-path calculations throughout the grid.
 
         """
-        directions, _ = self.grid.get('map12a').get_shortest_path(startcoord, endcoord)
+        directions, _ = self.grid.get_map('map12a').get_shortest_path(startcoord, endcoord)
         self.assertEqual(expected_directions, tuple(directions))
 
     def test_spawn(self):
@@ -1236,3 +1236,41 @@ class TestXYZGridTransition(TestCase):
         # make sure exits traverse the maps
         self.assertEqual(east_exit.db_destination, room2)
         self.assertEqual(west_exit.db_destination, room1)
+
+class TestBuildExampleGrid(TestCase):
+    """
+    Test building the map_example
+
+    """
+    def setUp(self):
+        # build and populate grid
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+    def tearDown(self):
+        self.grid.delete()
+
+    def test_build(self):
+        """
+        Build the map example.
+
+        """
+        mapdatas = self.grid.maps_from_module("evennia.contrib.xyzgrid.map_example")
+        self.assertEqual(len(mapdatas), 2)
+
+        self.grid.add_maps(*mapdatas)
+        self.grid.spawn()
+
+        # testing
+        room1a = xyzroom.XYZRoom.objects.get_xyz(xyz=(3, 0, 'the large tree'))
+        room1b = xyzroom.XYZRoom.objects.get_xyz(xyz=(10, 9, 'the large tree'))
+        room2a = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 0, 'small cave'))
+        room2b = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 3, 'small cave'))
+
+        self.assertEqual(room1a.key, "Dungeon Entrance")
+        self.assertTrue(room1a.desc.startswith("To the west"))
+        self.assertEqual(room1b.key, "A gorgeous view")
+        self.assertTrue(room1b.desc.startswith("The view from here is breathtaking."))
+        self.assertEqual(room2a.key, "The entrance")
+        self.assertTrue(room2a.desc.startswith("This is the entrance to"))
+        self.assertEqual(room2b.key, "North-west corner of the atrium")
+        self.assertTrue(room2b.desc.startswith("Sunlight sifts down"))

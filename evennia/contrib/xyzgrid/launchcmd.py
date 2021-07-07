@@ -16,6 +16,8 @@ Use `evennia xyzgrid help` for usage help.
 
 """
 
+from os.path import join as pathjoin
+from django.conf import settings
 from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
 
 _HELP_SHORT = """
@@ -37,7 +39,7 @@ evennia xyzgrid init
     First start of the grid. This will create the XYZGrid global script. No maps are loaded yet!
     It's safe to run this command multiple times; the grid will only be initialized once.
 
-evennia xyzgrid add path.to.xymap.module
+evennia xyzgrid add path.to.xymap.module [,path, path,...]
 
     Add one or more XYmaps (each a string-map representing one Z position along with prototypes
     etc). The module will be parsed for
@@ -45,11 +47,12 @@ evennia xyzgrid add path.to.xymap.module
     - a XYMAP_DATA a dict
         {"map": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}
         describing one single XYmap, or
-    - a XYMAP_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows to load
+    - a XYMAP_DATA_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows to load
         multiple maps from the same module.
 
     Note that adding a map does *not* build it. If maps are linked to one another, you should add
-    all linked maps before building, or you'll get errors when spawning the linking exits.
+    all linked maps before running 'build', or you'll get errors when creating transitional exits
+    between maps.
 
 evennia xyzgrid build
 
@@ -106,38 +109,77 @@ def _option_list(**suboptions):
             print(str(xymap))
 
 
-def _option_init(**suboptions):
+def _option_init(*suboptions):
     """
     Initialize a new grid. Will fail if a Grid already exists.
 
     """
     grid = get_xyzgrid()
-    print(f"The grid is initalized as the Script 'XYZGrid'({grid.dbref})")
+    print(f"The grid is initalized as the Script '{grid.key}'({grid.dbref})")
 
-def _option_add(**suboptions):
+
+def _option_add(*suboptions):
     """
-    Add a new map to the grid.
+    Add one or more map to the grid. Supports `add path,path,path,...`
 
     """
+    grid = get_xyzgrid()
+    xymap_data_list = []
+    for path in suboptions:
+        xymap_data_list.expand(grid.maps_from_module(path))
+    grid.add_maps(*xymap_data_list)
 
-def _option_build(**suboptions):
+
+def _option_build(*suboptions):
     """
     Build the grid or part of it.
 
     """
+    grid = get_xyzgrid()
 
-def _option_initpath(**suboptions):
+    # override grid's logger to echo directly to console
+    def _log(self, msg):
+        print(msg)
+    grid.log = _log
+
+    if suboptions:
+        opts = ''.join(suboptions).strip('()')
+        # coordinate tuple
+        try:
+            x, y, z = (part.strip() for part in opts.split(","))
+        except ValueError:
+            print("Build coordinate must be given as (X, Y, Z) tuple, where '*' act "
+                  "wild cards and Z is the mapname/z-coord of the map to load.")
+            return
+    else:
+        x, y, z = '*', '*', '*'
+
+    grid.spawn(xyz=(x, y, z))
+
+
+def _option_initpath(*suboptions):
     """
-    Initialize the pathfinding matrices for grid or part of it.
+    (Re)Initialize the pathfinding matrices for grid or part of it.
+
+    """
+    grid = get_xyzgrid()
+    xymaps = grid.all_rooms()
+    nmaps = len(xymaps)
+    for inum, xymap in enumerate(grid.all_rooms()):
+        print(f"Rebuilding pathfinding matrix for xymap Z={xymap.Z} ({inum+1}/{nmaps}) ...")
+        xymap.calculate_path_matrix(force=True)
+
+    cachepath = pathjoin(settings.GAMEDIR, "server", ".cache")
+    print(f"... done. Data cached to {cachepath}.")
+
+
+def _option_delete(*suboptions):
+    """
+    Delete the grid or parts of it. Allows mapname,mapname, ...
 
     """
 
-def _option_delete(**suboptions):
-    """
-    Delete the grid or parts of it.
-
-    """
-
+    grid = get_xyzgrid()
     if not suboptions:
         repl = input("WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!"
                      "\nObjects/Chars inside deleted rooms will be moved to their home locations."
@@ -146,16 +188,35 @@ def _option_delete(**suboptions):
             print("Aborted.")
         else:
             print("Deleting grid ...")
-            grid = get_xyzgrid()
             grid.delete()
+
     else:
-        pass
+        zcoords = (part.strip() for part in suboptions)
+        err = False
+        for zcoord in zcoords:
+            if not grid.get_map(zcoord):
+                print(f"Mapname/zcoord {zcoord} is not a part of the grid.")
+                err = True
+        if err:
+            print("Valid mapnames/zcoords are\n:", "\n ".join(
+                xymap.Z for xymap in grid.all_rooms()))
+            return
+        repl = input("This will delete map(s) {', '.join(zcoords)} and wipe all corresponding "
+                     "rooms/exits!"
+                     "\nObjects/Chars inside deleted rooms will be moved to their home locations."
+                     "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
+        if repl.lower() not in ('yes', 'y'):
+            print("Aborted.")
+        else:
+            print("Deleting selected xymaps ...")
+
+        grid.remove_map(*zcoords, remove_objects=True)
 
 
 def xyzcommand(*args):
     """
     Evennia launcher command. This is made available as `evennia xyzgrid` on the command line,
-    once `settings.EXTRA_LAUNCHER_COMMANDS` is updated.
+    once added to `settings.EXTRA_LAUNCHER_COMMANDS`.
 
     """
     if not args:

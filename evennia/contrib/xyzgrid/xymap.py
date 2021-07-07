@@ -12,9 +12,7 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
 
 
 ```python
-    # in module passed to 'Map' class. It will either a dict
-    # MAP_DATA with keys 'map' and (optionally) 'legend', or
-    # the MAP/LEGEND variables directly.
+    # in module passed to 'Map' class
 
     MAP = r'''
                            1
@@ -47,10 +45,11 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
 
     '''
 
+
     LEGEND = {'#': xyzgrid.MapNode, '|': xyzgrid.NSMapLink,...}
 
-    # optional, for more control
-    MAP_DATA = {
+    # read by parser if XYMAP_DATA_LIST doesn't exist
+    XYMAP_DATA = {
         "map": MAP,
         "legend": LEGEND,
         "zcoord": "City of Foo",
@@ -61,6 +60,11 @@ as up and down. These are indicated in code as 'n', 'ne', 'e', 'se', 's', 'sw', 
         }
 
     }
+
+    # will be parsed first, allows for multiple map-data dicts from one module
+    XYMAP_DATA_LIST = [
+        XYMAP_DATA
+    ]
 
 ```
 
@@ -102,7 +106,7 @@ except ImportError as err:
         f"{err}\nThe XYZgrid contrib requires "
         "the SciPy package. Install with `pip install scipy'.")
 from django.conf import settings
-from evennia.utils.utils import variable_from_module, mod_import
+from evennia.utils.utils import variable_from_module, mod_import, is_iter
 from evennia.utils import logger
 from evennia.prototypes import prototypes as protlib
 
@@ -138,7 +142,6 @@ DEFAULT_LEGEND = {
     "i": map_legend.InterruptMapLink,
     't': map_legend.TeleporterMapLink,
 }
-
 
 
 # --------------------------------------------
@@ -309,13 +312,18 @@ class XYMap:
         else:
             # read from contents of module
             mod = mod_import(map_module_or_dict)
-            mapdata = variable_from_module(mod, "MAP_DATA")
+            mapdata_list = variable_from_module(mod, "XYMAP_DATA_LIST")
+            if mapdata_list and self.Z:
+                # use the stored Z value to figure out which map data we want
+                mapping = {mapdata.get("zcoord") for mapdata in mapdata_list}
+                mapdata = mapping.get(self.Z, {})
+
             if not mapdata:
-                # try to read mapdata directly from global variables
-                mapdata['zcoord'] = variable_from_module(mod, "ZCOORD", default=self.name)
-                mapdata['map'] = variable_from_module(mod, "MAP")
-                mapdata['legend'] = variable_from_module(mod, "LEGEND", default=DEFAULT_LEGEND)
-                mapdata['prototypes'] = variable_from_module(mod, "PROTOTYPES", default={})
+                mapdata = variable_from_module(mod, "XYMAP_DATA")
+
+        if not mapdata:
+            raise MapError("No valid XYMAP_DATA or XYMAP_DATA_LIST could be found from "
+                           f"{map_module_or_dict}.")
 
         # validate
         if any(key for key in mapdata if key not in MAP_DATA_KEYS):
@@ -330,10 +338,9 @@ class XYMap:
                                    "`.display_symbol` property to change how it is "
                                    "displayed.")
         if 'map' not in mapdata or not mapdata['map']:
-            raise MapError("No map found. Add 'map' key to map-data (MAP_DATA) dict or "
-                           "add variable MAP to a module passed into the parser.")
+            raise MapError("No map found. Add 'map' key to map-data dict.")
         for key, prototype in mapdata.get('prototypes', {}).items():
-            if not is_iter(key) and (2 <= len(key) <= 3):
+            if not (is_iter(key) and (2 <= len(key) <= 3)):
                 raise MapError(f"Prototype override key {key} is malformed: It must be a "
                                "coordinate (X, Y) for nodes or (X, Y, direction) for links; "
                                "where direction is a supported direction string ('n', 'ne', etc).")
@@ -491,10 +498,13 @@ class XYMap:
         for node in node_index_map.values():
             node_coord = (node.X, node.Y)
             # load prototype from override, or use default
-            node.prototype = self.prototypes.get(node_coord, node.prototype)
+            node.prototype = self.prototypes.get(
+                node_coord, self.prototypes.get(('*', '*'), node.prototype))
             # do the same for links (x, y, direction) coords
             for direction, maplink in node.first_links.items():
-                maplink.prototype = self.prototypes.get(node_coord + (direction,), maplink.prototype)
+                maplink.prototype = self.prototypes.get(
+                    node_coord + (direction,),
+                    self.prototypes.get(('*', '*', '*'), maplink.prototype))
 
         # store
         self.display_map = display_map
@@ -547,13 +557,16 @@ class XYMap:
         points, xmin, xmax, ymin, ymax = _scan_neighbors(center_node, [], dist=dist)
         return list(set(points)), xmin, xmax, ymin, ymax
 
-    def calculate_path_matrix(self):
+    def calculate_path_matrix(self, force=False):
         """
         Solve the pathfinding problem using Dijkstra's algorithm. This will try to
         load the solution from disk if possible.
 
+        Args:
+            force (bool, optional): If the cache should always be rebuilt.
+
         """
-        if self.pathfinder_baked_filename and isfile(self.pathfinder_baked_filename):
+        if not force and self.pathfinder_baked_filename and isfile(self.pathfinder_baked_filename):
             # check if the solution for this grid was already solved previously.
 
             mapstr, dist_matrix, pathfinding_routes = "", None, None
@@ -569,7 +582,6 @@ class XYMap:
                 # we can re-use the stored data!
                 self.dist_matrix = dist_matrix
                 self.pathfinding_routes = pathfinding_routes
-                return
 
         # build a matrix representing the map graph, with 0s as impassable areas
 
@@ -615,7 +627,7 @@ class XYMap:
         wildcard = '*'
         spawned = []
 
-        for node in self.node_index_map.values():
+        for node in sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X)):
             if (x in (wildcard, node.X)) and (y in (wildcard, node.Y)):
                 node.spawn()
                 spawned.append(node)
@@ -643,7 +655,7 @@ class XYMap:
         wildcard = '*'
 
         if not nodes:
-            nodes = self.node_index_map.values()
+            nodes = sorted(self.node_index_map.values(), key=lambda n: (n.Z, n.Y, n.X))
 
         for node in nodes:
             if (x in (wildcard, node.X)) and (y in (wildcard, node.Y)):

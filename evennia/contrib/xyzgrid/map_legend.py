@@ -79,8 +79,8 @@ class MapNode:
         'sw': ('southwest', 'sw', 'south-west'),
         'w': ('west', 'w'),
         'nw': ('northwest', 'nw', 'north-west'),
-        'd' : ('down', 'd', 'do'),
-        'u' : ('up', 'u'),
+        'd': ('down', 'd', 'do'),
+        'u': ('up', 'u'),
     }
 
     def __init__(self, x, y, Z, node_index=0, xymap=None):
@@ -261,6 +261,7 @@ class MapNode:
             return
 
         xyz = self.get_spawn_xyz()
+        print("xyz:", xyz, self.node_index)
 
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
@@ -944,9 +945,10 @@ class SmartMapLink(MapLink):
                     directions[direction] = REVERSE_DIRECTIONS[direction]
             else:
                 raise MapParserError(
-                    f"must have exactly two connections - either "
-                    f"two nodes or unambiguous link directions. Found neighbor(s) in directions "
-                    f"{list(neighbors.keys())}.", self)
+                    "must have exactly two connections - either directly to "
+                    "two nodes or connecting directly to one node and with exactly one other "
+                    f"link direction. The neighbor(s) in directions {list(neighbors.keys())} do "
+                    "not fulfill these criteria.", self)
 
             self.directions = directions
         return self.directions.get(start_direction)
@@ -1027,7 +1029,7 @@ class InvisibleSmartMapLink(SmartMapLink):
 class BasicMapNode(MapNode):
     """Basic map Node"""
     symbol = "#"
-    prototype = "xyz_room_prototype"
+    prototype = "xyz_room"
 
 
 class MapTransitionMapNode(TransitionMapNode):
@@ -1043,35 +1045,35 @@ class InterruptMapNode(MapNode):
     symbol = "I"
     display_symbol = "#"
     interrupt_path = True
-    prototype = "xyz_room_prototype"
+    prototype = "xyz_room"
 
 
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
     symbol = "|"
     directions = {"n": "s", "s": "n"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class EWMapLink(MapLink):
     """Two-way, East-West link"""
     symbol = "-"
     directions = {"e": "w", "w": "e"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class NESWMapLink(MapLink):
     """Two-way, NorthWest-SouthWest link"""
     symbol = "/"
     directions = {"ne": "sw", "sw": "ne"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class SENWMapLink(MapLink):
     """Two-way, SouthEast-NorthWest link"""
     symbol = "\\"
     directions = {"se": "nw", "nw": "se"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class PlusMapLink(MapLink):
@@ -1079,7 +1081,7 @@ class PlusMapLink(MapLink):
     symbol = "+"
     directions = {"s": "n", "n": "s",
                   "e": "w", "w": "e"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class CrossMapLink(MapLink):
@@ -1087,35 +1089,35 @@ class CrossMapLink(MapLink):
     symbol = "x"
     directions = {"ne": "sw", "sw": "ne",
                   "se": "nw", "nw": "se"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class NSOneWayMapLink(MapLink):
     """One-way North-South link"""
     symbol = "v"
     directions = {"n": "s"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class SNOneWayMapLink(MapLink):
     """One-way South-North link"""
     symbol = "^"
     directions = {"s": "n"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class EWOneWayMapLink(MapLink):
     """One-way East-West link"""
     symbol = "<"
     directions = {"e": "w"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class WEOneWayMapLink(MapLink):
     """One-way West-East link"""
     symbol = ">"
     directions = {"w": "e"}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class UpMapLink(SmartMapLink):
@@ -1125,7 +1127,7 @@ class UpMapLink(SmartMapLink):
     # all movement over this link is 'up', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class DownMapLink(UpMapLink):
@@ -1134,14 +1136,14 @@ class DownMapLink(UpMapLink):
     # all movement over this link is 'down', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class InterruptMapLink(InvisibleSmartMapLink):
     """A (still passable) link that causes the pathfinder to stop before crossing."""
     symbol = "i"
     interrupt_path = True
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class BlockedMapLink(InvisibleSmartMapLink):
@@ -1154,7 +1156,7 @@ class BlockedMapLink(InvisibleSmartMapLink):
     symbol = 'b'
     weights = {'n': BIGVAL, 'ne': BIGVAL, 'e': BIGVAL, 'se': BIGVAL,
                's': BIGVAL, 'sw': BIGVAL, 'w': BIGVAL, 'nw': BIGVAL}
-    prototype = "xyz_exit_prototype"
+    prototype = "xyz_exit"
 
 
 class RouterMapLink(SmartRerouterMapLink):

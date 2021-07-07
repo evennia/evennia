@@ -1,68 +1,263 @@
-MAP = r"""
+"""
+Example xymaps to use with the XYZgrid contrib. Build outside of the game using
+the `evennia xyzgrid` launcher command.
+
+First add the launcher extension in your mygame/server/conf/settings.py:
+
+    EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.xyzgrid.launchcmd.xyzcommand'
+
+Then
+
+    evennia xyzgrid init
+    evennia xyzgrid add evennia.contrib.xyzgrid.map_example
+    evennia xyzgrid build
+
+
+
+
+"""
+
+from evennia.contrib.xyzgrid import map_legend
+
+# default prototype parent. It's important that
+# the typeclass inherits from the XYZRoom (or XYZExit)
+# the map_legend.XYZROOM_PARENT and XYZEXIT_PARENTS can also
+# be used as a shortcut.
+
+PARENT = {
+    "key": "An empty room",
+    "prototype_key": "xyzmap_room_map1",
+    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
+    "desc": "An empty room."
+}
+
+# -------------------- map 1 - the large tree
+# this exemplifies the various map symbols
+# but is not heavily prototyped
+
+MAP1 = r"""
                        1
  + 0 1 2 3 4 5 6 7 8 9 0
 
-10   #-#-#-#-#
-     |   |    \
- 9   #---+---#-#-----I
-      \  |          /
- 8     #-#-#-#-#   #
+ 9   #-------#-#-------I
+      \              /
+ 8     #-#---#       #-t
        |\    |
- 7   #i#-#-#+#-----#-t
+ 7   #i#-#b--#-t
        |     |
- 6   #i#-#---#-#-#-#-#
-       |         |x|x|
- 5     o-#-#-#   #-#-#
-          \ /    |x|x|
- 4     o-o-#-#   #-#-#
-      /         /
- 3   #-#       /   #
-      \       /    d
- 2     o-o-#-#     |
-           | |     u
- 1         #-#-#># #
-           ^       |
- 0   T-----#-#     #-t
+ 5     o-#---#
+          \ /
+ 4     o-o-#-#
+      /    d
+ 3   #-----+-------#
+           |       d
+ 2         |       |
+           v       u
+ 1         #---#>#-#
+          /
+ 0     T-#
 
  + 0 1 2 3 4 5 6 7 8 9 0
                        1
 """
 
-# use default legend
-LEGEND = {
+
+class TransitionToCave(map_legend.MapTransitionMapNode):
+    """
+    A transition from map2 to map1
+
+    """
+    symbol = 'T'
+    target_map_xyz = (2, 3, 'small cave')
 
 
+# extends the default legend
+LEGEND_MAP1 = {
+    'T': TransitionToCave
 }
 
-PARENT = {
-    "key": "An empty dungeon room",
-    "prototype_key": "dungeon_doom_prot",
-    "typeclass": "evennia.contrib.xyzgrid.xyzrooms.XYZRoom",
-    "desc": "Air is cold and stale in this barren room."
-}
 
 # link coordinates to rooms
-ROOMS = {
-    (1, 0): {
+PROTOTYPES_MAP1 = {
+    # node/room prototypes
+    (3, 0): {
         "key": "Dungeon Entrance",
-        "prototype_parent": PARENT,
-        "desc": "A dark entrance."
+        "desc": "To the west, a narrow opening leads into darkness."
     },
-    (4, 0): {
-        "key": "Antechamber",
-        "prototype_parent": PARENT,
-        "desc": "A small antechamber",
+    (4, 1): {
+        "key": "Under the foilage of a giant tree",
+        "desc": "High above the branches of a giant tree blocs out the sunlight. A slide "
+        "leading down from the upper branches ends here."
+    },
+    (4, 4): {
+        "key": "The slide",
+        "desc": "A slide leads down to the ground from here. It looks like a one-way trip."
+    },
+    (6, 1): {
+        "key": "Thorny path",
+        "desc": "To the east is a pathway of thorns. If you get through, you don't think you'll be "
+               "able to get back here the same way."
+    },
+    (8, 1): {
+        "key": "By a large tree",
+        "desc": "You are standing at the root of a great tree."
+    },
+    (8, 3): {
+        "key": "At the top of the tree",
+        "desc": "You are at the top of the tree."
+    },
+    (3, 7): {
+        "key": "Dense foilage",
+        "desc": "The foilage to the east is extra dense. It will take forever to get through it."
+    },
+    (5, 7): {
+        "key": "On a huge branch",
+        "desc": "To the east is a glowing light, may be a teleporter."
+    },
+    (9, 8): {
+        "key": "On an enormous branch",
+        "desc": "To the east is a glowing light, may be a teleporter."
+    },
+    (10, 9): {
+        "key": "A gorgeous view",
+        "desc": "The view from here is breathtaking, showing the forest stretching far and wide."
+    },
+    # default rooms
+    ('*', '*'): {
+        "key": "Among the branches of a giant tree",
+        "desc": "These branches are wide enough to easily walk on. There's green all around."
+    },
+    # directional prototypes
+    (3, 0, 'w'): {
+        "desc": "A dark passage into the underworld."
+    },
+}
+
+for prot in PROTOTYPES_MAP1.values():
+    prot['prototype_parent'] = PARENT
+
+
+XYMAP_DATA_MAP1 = {
+    "zcoord": "the large tree",
+    "map": MAP1,
+    "legend": LEGEND_MAP1,
+    "prototypes": PROTOTYPES_MAP1
+}
+
+# ------------- map2 definitions - small cave
+# this gives prototypes for every room
+
+MAP2 = r"""
++ 0 1 2 3
+
+3   #-#-#
+    |x|
+2 #-#-#
+    |  \
+1   #---#
+    |  /
+0 T-#-#
+
++ 0 1 2 3
+
+"""
+
+# custom map node
+class TransitionToLargeTree(map_legend.MapTransitionMapNode):
+    """
+    A transition from map1 to map2
+
+    """
+    symbol = 'T'
+    target_map_xyz = (3, 0, 'the large tree')
+
+
+# this extends the default legend (that defines #,-+ etc)
+LEGEND_MAP2 = {
+    "T": TransitionToLargeTree
+}
+
+# prototypes for specific locations
+PROTOTYPES_MAP2 = {
+    # node/rooms prototype overrides
+    (1, 0): {
+        "key": "The entrance",
+        "desc": "This is the entrance to a small cave leading into the ground. "
+                "Light sifts in from the outside, while cavernous passages disappear "
+                "into darkness."
+    },
+    (2, 0): {
+        "key": "A gruesome sight.",
+        "desc": "Something was killed here recently. The smell is unbearable."
+    },
+    (1, 1): {
+        "key": "A dark pathway",
+        "desc": "The path splits three ways here. To the north a faint light can be seen."
+    },
+    (3, 2): {
+        "key": "Stagnant water",
+        "desc": "A pool of stagnant, black water dominates this small chamber. To the nortwest "
+                "a faint light can be seen."
+    },
+    (0, 2): {
+        "key": "A dark alcove",
+        "desc": "This alcove is empty."
+    },
+    (1, 2): {
+        "key": "South-west corner of the atrium",
+        "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
+                "between the stones."
+    },
+    (2, 2): {
+        "key": "South-east corner of the atrium",
+        "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
+                "between the stones."
+    },
+    (1, 3): {
+        "key": "North-west corner of the atrium",
+        "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
+                "between the stones."
+    },
+    (2, 3): {
+        "key": "North-east corner of the atrium",
+        "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
+                "between the stones. To the east is a dark passage."
+    },
+    (3, 3): {
+        "key": "Craggy crevice",
+        "desc": "This is the deepest part of the dungeon. The path shrinks away and there "
+                "is no way to continue deeper."
+    },
+    # default fallback for undefined nodes
+    ('*', '*'): {
+        "key": "A dark room",
+        "desc": "A dark, but empty, room."
+    },
+    # directional prototypes
+    (1, 0, 'w'): {
+        "desc": "A narrow path to the fresh air of the outside world."
+    },
+    # directional fallbacks for unset directions
+    ('*', '*', '*'): {
+        "desc": "A dark passage"
     }
 }
 
+# this is required by the prototypes, but we add it all at once so we don't
+# need to add it to every line above
+for prot in PROTOTYPES_MAP2.values():
+    prot['prototype_parent'] = PARENT
 
-MAP_DATA = {
-    "name": "Dungeon of Doom",
-    "map": MAP,
-    "legend": LEGEND,
-    "rooms": ROOMS,
+
+XYMAP_DATA_MAP2 = {
+    "map": MAP2,
+    "zcoord": "the small cave",
+    "legend": LEGEND_MAP2,
+    "prototypes": PROTOTYPES_MAP2
 }
 
-XYMAP_LIST = [
-    MAP_DATA
+# This is read by the parser
+XYMAP_DATA_LIST = [
+    XYMAP_DATA_MAP1,
+    XYMAP_DATA_MAP2
 ]

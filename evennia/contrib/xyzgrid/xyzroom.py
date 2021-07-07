@@ -10,7 +10,6 @@ used as stand-alone XYZ-coordinate-aware rooms.
 from django.db.models import Q
 from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
-from evennia.utils.utils import inherits_from
 
 # name of all tag categories. Note that the Z-coordinate is
 # the `map_name` of the XYZgrid
@@ -49,8 +48,6 @@ class XYZManager(ObjectManager):
         """
         x, y, z = xyz
         wildcard = '*'
-
-
 
         return (
             self
