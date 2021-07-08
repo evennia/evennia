@@ -355,8 +355,15 @@ class _MapTest(TestCase):
         self.grid.add_maps(self.map_data)
         self.map = self.grid.get_map(self.map_data['zcoord'])
 
+        # output to console
+        # def _log(msg):
+        #     print(msg)
+        # self.grid.log = _log
+
     def tearDown(self):
         self.grid.delete()
+        xyzroom.XYZRoom.objects.all().delete()
+        xyzroom.XYZExit.objects.all().delete()
 
 
 class TestMap1(_MapTest):
@@ -1055,7 +1062,6 @@ class TestMapStressTest(TestCase):
         """
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        # print(f"\n\n{grid}\n")
         t0 = time()
         mapobj = xymap.XYMap({'map': grid}, Z="testmap")
         mapobj.parse()
@@ -1239,12 +1245,16 @@ class TestXYZGridTransition(TestCase):
 
 class TestBuildExampleGrid(TestCase):
     """
-    Test building the map_example
+    Test building the map_example (this takes about 30s)
 
     """
     def setUp(self):
         # build and populate grid
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+        def _log(msg):
+            print(msg)
+        self.grid.log = _log
 
     def tearDown(self):
         self.grid.delete()
@@ -1262,15 +1272,15 @@ class TestBuildExampleGrid(TestCase):
 
         # testing
         room1a = xyzroom.XYZRoom.objects.get_xyz(xyz=(3, 0, 'the large tree'))
-        room1b = xyzroom.XYZRoom.objects.get_xyz(xyz=(10, 9, 'the large tree'))
-        room2a = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 0, 'small cave'))
-        room2b = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 3, 'small cave'))
+        room1b = xyzroom.XYZRoom.objects.get_xyz(xyz=(10, 8, 'the large tree'))
+        room2a = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 0, 'the small cave'))
+        room2b = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 3, 'the small cave'))
 
         self.assertEqual(room1a.key, "Dungeon Entrance")
-        self.assertTrue(room1a.desc.startswith("To the west"))
+        self.assertTrue(room1a.db.desc.startswith("To the west"))
         self.assertEqual(room1b.key, "A gorgeous view")
-        self.assertTrue(room1b.desc.startswith("The view from here is breathtaking."))
+        self.assertTrue(room1b.db.desc.startswith("The view from here is breathtaking,"))
         self.assertEqual(room2a.key, "The entrance")
-        self.assertTrue(room2a.desc.startswith("This is the entrance to"))
+        self.assertTrue(room2a.db.desc.startswith("This is the entrance to"))
         self.assertEqual(room2b.key, "North-west corner of the atrium")
-        self.assertTrue(room2b.desc.startswith("Sunlight sifts down"))
+        self.assertTrue(room2b.db.desc.startswith("Sunlight sifts down"))

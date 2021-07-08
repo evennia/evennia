@@ -92,8 +92,8 @@ def homogenize_prototype(prototype, custom_keys=None):
             homogenizations like adding missing prototype_keys and setting a default typeclass.
 
     """
-    if not prototype or not isinstance(prototype, dict):
-        return {}
+    if not prototype or isinstance(prototype, str):
+        return prototype
 
     reserved = _PROTOTYPE_RESERVED_KEYS + (custom_keys or ())
 
