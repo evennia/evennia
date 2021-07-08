@@ -4,6 +4,7 @@ Building and world design commands
 import re
 from django.conf import settings
 from django.db.models import Q, Min, Max
+from evennia import InterruptCommand
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
@@ -1487,40 +1488,33 @@ class CmdOpen(ObjManipCommand):
         caller.msg(string)
         return exit_obj
 
+    def parse(self):
+        super().parse()
+        self.location = self.caller.location
+        if not self.args or not self.rhs:
+            self.caller.msg("Usage: open <new exit>[;alias...][:typeclass]"
+                            "[,<return exit>[;alias..][:typeclass]]] "
+                            "= <destination>")
+            raise InterruptCommand
+        if not self.location:
+            self.caller.msg("You cannot create an exit from a None-location.")
+            raise InterruptCommand
+        self.destination = self.caller.search(self.rhs, global_search=True)
+        if not self.destination:
+            raise InterruptCommand
+        self.exit_name = self.lhs_objs[0]["name"]
+        self.exit_aliases = self.lhs_objs[0]["aliases"]
+        self.exit_typeclass = self.lhs_objs[0]["option"]
+
     def func(self):
         """
         This is where the processing starts.
         Uses the ObjManipCommand.parser() for pre-processing
         as well as the self.create_exit() method.
         """
-        caller = self.caller
-
-        if not self.args or not self.rhs:
-            string = "Usage: open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
-            string += "= <destination>"
-            caller.msg(string)
-            return
-
-        # We must have a location to open an exit
-        location = caller.location
-        if not location:
-            caller.msg("You cannot create an exit from a None-location.")
-            return
-
-        # obtain needed info from cmdline
-
-        exit_name = self.lhs_objs[0]["name"]
-        exit_aliases = self.lhs_objs[0]["aliases"]
-        exit_typeclass = self.lhs_objs[0]["option"]
-        dest_name = self.rhs
-
-        # first, check so the destination exists.
-        destination = caller.search(dest_name, global_search=True)
-        if not destination:
-            return
-
         # Create exit
-        ok = self.create_exit(exit_name, location, destination, exit_aliases, exit_typeclass)
+        ok = self.create_exit(self.exit_name, self.location, self.destination,
+                              self.exit_aliases, self.exit_typeclass)
         if not ok:
             # an error; the exit was not created, so we quit.
             return
@@ -1529,9 +1523,8 @@ class CmdOpen(ObjManipCommand):
             back_exit_name = self.lhs_objs[1]["name"]
             back_exit_aliases = self.lhs_objs[1]["aliases"]
             back_exit_typeclass = self.lhs_objs[1]["option"]
-            self.create_exit(
-                back_exit_name, destination, location, back_exit_aliases, back_exit_typeclass
-            )
+            self.create_exit(back_exit_name, self.destination, self.location, back_exit_aliases,
+                             back_exit_typeclass)
 
 
 def _convert_from_string(cmd, strobj):
@@ -2981,28 +2974,31 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
+    def parse(self):
+        """
+        Breaking out searching here to make this easier to override.
+
+        """
+        super().parse()
+        self.obj_to_teleport = self.caller
+        self.destination = None
+        if self.lhs:
+            self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
+            if not self.obj_to_teleport:
+                self.caller.msg("Did not find object to teleport.")
+                raise InterruptCommand
+        if self.rhs:
+            self.destination = self.caller.search(self.rhs, global_search=True)
+
     def func(self):
         """Performs the teleport"""
 
         caller = self.caller
-        args = self.args
-        lhs, rhs = self.lhs, self.rhs
-        switches = self.switches
+        obj_to_teleport = self.obj_to_teleport
+        destination = self.destination
 
-        # setting switches
-        tel_quietly = "quiet" in switches
-        to_none = "tonone" in switches
-        to_loc = "loc" in switches
-
-        if to_none:
+        if "tonone" in self.switches:
             # teleporting to None
-            if not args:
-                obj_to_teleport = caller
-            else:
-                obj_to_teleport = caller.search(lhs, global_search=True)
-                if not obj_to_teleport:
-                    caller.msg("Did not find object to teleport.")
-                    return
             if obj_to_teleport.has_account:
                 caller.msg(
                     "Cannot teleport a puppeted object "
@@ -3011,53 +3007,44 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                 )
                 return
             caller.msg("Teleported %s -> None-location." % obj_to_teleport)
-            if obj_to_teleport.location and not tel_quietly:
+            if obj_to_teleport.location and "quiet" not in self.switches:
                 obj_to_teleport.location.msg_contents(
                     "%s teleported %s into nothingness." % (caller, obj_to_teleport), exclude=caller
                 )
             obj_to_teleport.location = None
             return
 
-        # not teleporting to None location
-        if not args and not to_none:
-            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>||home")
-            return
-
-        if rhs:
-            obj_to_teleport = caller.search(lhs, global_search=True)
-            destination = caller.search(rhs, global_search=True)
-        else:
-            obj_to_teleport = caller
-            destination = caller.search(lhs, global_search=True)
-        if not obj_to_teleport:
-            caller.msg("Did not find object to teleport.")
+        if not self.args:
+            caller.msg("Usage: teleport[/switches] [<obj> =] <target or (X,Y,Z)>||home")
             return
 
         if not destination:
             caller.msg("Destination not found.")
             return
-        if to_loc:
+
+        if "loc" in self.switches:
             destination = destination.location
             if not destination:
                 caller.msg("Destination has no location.")
                 return
+
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
+
         if obj_to_teleport == destination.location:
             caller.msg("You can't teleport an object inside something it holds!")
             return
+
         if obj_to_teleport.location and obj_to_teleport.location == destination:
             caller.msg("%s is already at %s." % (obj_to_teleport, destination))
             return
-        use_destination = True
-        if "intoexit" in self.switches:
-            use_destination = False
 
         # try the teleport
         if obj_to_teleport.move_to(
-            destination, quiet=tel_quietly, emit_to_obj=caller, use_destination=use_destination
-        ):
+                destination, quiet="quiet" in self.switches,
+                emit_to_obj=caller, use_destination="intoexit" not in self.switches):
+
             if obj_to_teleport == caller:
                 caller.msg("Teleported to %s." % destination)
             else:

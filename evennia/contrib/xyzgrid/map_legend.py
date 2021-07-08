@@ -14,12 +14,16 @@ except ImportError as err:
         f"{err}\nThe XYZgrid contrib requires "
         "the SciPy package. Install with `pip install scipy'.")
 
+import uuid
 from evennia.prototypes import spawner
 from evennia.utils.utils import make_iter
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
 
 NodeTypeclass = None
 ExitTypeclass = None
+
+
+UUID_XYZ_NAMESPACE = uuid.uuid5(uuid.UUID(int=0), "xyzgrid")
 
 
 # Nodes/Links
@@ -134,6 +138,18 @@ class MapNode:
 
     def __repr__(self):
         return str(self)
+
+    def log(self, msg):
+        """log messages using the xygrid parent"""
+        self.xymap.xyzgrid.log(msg)
+
+    def generate_prototype_key(self):
+        """
+        Generate a deterministic prototype key to allow for users to apply prototypes without
+        needing a separate new name for every one.
+
+        """
+        return str(uuid.uuid5(UUID_XYZ_NAMESPACE, str((self.X, self.Y, self.Z))))
 
     def build_links(self):
         """
@@ -261,20 +277,26 @@ class MapNode:
             return
 
         xyz = self.get_spawn_xyz()
-        print("xyz:", xyz, self.node_index)
 
+        self.log(f"  spawning/updating room at xyz={xyz}")
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except NodeTypeclass.DoesNotExist:
             # create a new entity with proper coordinates etc
             nodeobj, err = NodeTypeclass.create(
-                self.prototype.get('key', 'An Empty room'),
+                self.prototype.get('key', 'An empty room'),
                 xyz=xyz
             )
             if err:
                 raise RuntimeError(err)
+
+        if not self.prototype.get('prototype_key'):
+            # make sure there is a prototype_key in prototype
+            self.prototype['prototype_key'] = self.generate_prototype_key()
+
         # apply prototype to node. This will not override the XYZ tags since
         # these are not in the prototype and exact=False
+
         spawner.batch_update_objects_with_prototype(
             self.prototype, objects=[nodeobj], exact=False)
 
@@ -309,6 +331,9 @@ class MapNode:
                 if link.spawn_aliases
                 else self.direction_spawn_defaults.get(direction, ('unknown',))
             )
+            if not link.prototype.get('prototype_key'):
+                # generate a deterministic prototype_key if it doesn't exist
+                link.prototype['prototype_key'] = self.generate_prototype_key()
             maplinks[key.lower()] = (key, aliases, direction, link)
 
         # we need to search for exits in all directions since some
@@ -323,6 +348,8 @@ class MapNode:
 
             if differing_key not in maplinks:
                 # an exit without a maplink - delete the exit-object
+                self.log(f"  deleting exit at xyz={xyz}, direction={direction}")
+
                 linkobjs.pop(differing_key).delete()
             else:
                 # missing in linkobjs - create a new exit
@@ -341,6 +368,7 @@ class MapNode:
                 if err:
                     raise RuntimeError(err)
                 linkobjs[key.lower()] = exi
+            self.log(f"  spawning/updating exit xyz={xyz}, direction={direction}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():
@@ -536,6 +564,17 @@ class MapLink:
 
     def __repr__(self):
         return str(self)
+
+    def generate_prototype_key(self, *args):
+        """
+        Generate a deterministic prototype key to allow for users to apply prototypes without
+        needing a separate new name for every one.
+
+        Args:
+            *args (str): These are used to further seed the key.
+
+        """
+        return str(uuid.uuid5(UUID_XYZ_NAMESPACE, str((self.X, self.Y, self.Z, *args))))
 
     def traverse(self, start_direction, _weight=0, _linklen=1, _steps=None):
         """

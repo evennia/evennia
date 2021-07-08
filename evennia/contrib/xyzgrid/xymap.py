@@ -494,17 +494,19 @@ class XYMap:
             for iy, node_or_link in ydct.items():
                 display_map[iy][ix] = node_or_link.get_display_symbol()
 
-        # validate and make sure all nodes/links have prototypes
         for node in node_index_map.values():
-            node_coord = (node.X, node.Y)
-            # load prototype from override, or use default
-            node.prototype = self.prototypes.get(
-                node_coord, self.prototypes.get(('*', '*'), node.prototype))
-            # do the same for links (x, y, direction) coords
-            for direction, maplink in node.first_links.items():
-                maplink.prototype = self.prototypes.get(
-                    node_coord + (direction,),
-                    self.prototypes.get(('*', '*', '*'), maplink.prototype))
+            # override node-prototypes, ignore if no prototype
+            # is defined (some nodes should not be spawned)
+            if node.prototype:
+                node_coord = (node.X, node.Y)
+                # load prototype from override, or use default
+                node.prototype = self.prototypes.get(
+                    node_coord, self.prototypes.get(('*', '*'), node.prototype))
+                # do the same for links (x, y, direction) coords
+                for direction, maplink in node.first_links.items():
+                    maplink.prototype = self.prototypes.get(
+                        node_coord + (direction,),
+                        self.prototypes.get(('*', '*', '*'), maplink.prototype))
 
         # store
         self.display_map = display_map

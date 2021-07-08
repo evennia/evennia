@@ -21,6 +21,8 @@ MAP_XDEST_TAG_CATEGORY = "exit_dest_x_coordinate"
 MAP_YDEST_TAG_CATEGORY = "exit_dest_y_coordinate"
 MAP_ZDEST_TAG_CATEGORY = "exit_dest_z_coordinate"
 
+GET_XYZGRID = None
+
 
 class XYZManager(ObjectManager):
     """
@@ -237,6 +239,13 @@ class XYZRoom(DefaultRoom):
         return f"<XYZRoom '{self.db_key}', XYZ=({x},{y},{z})>"
 
     @property
+    def xyzgrid(self):
+        global GET_XYZGRID
+        if not GET_XYZGRID:
+            from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
+        return GET_XYZGRID()
+
+    @property
     def xyz(self):
         if not hasattr(self, "_xyz"):
             x = self.tags.get(category=MAP_X_TAG_CATEGORY, return_list=False)
@@ -309,6 +318,13 @@ class XYZExit(DefaultExit):
         x, y, z = self.xyz
         xd, yd, zd = self.xyz_destination
         return f"<XYZExit '{self.db_key}', XYZ=({x},{y},{z})->({xd},{yd},{zd})>"
+
+    @property
+    def xyzgrid(self):
+        global GET_XYZGRID
+        if not GET_XYZGRID:
+            from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
+        return GET_XYZGRID()
 
     @property
     def xyz(self):

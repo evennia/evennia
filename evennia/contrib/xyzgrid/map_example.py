@@ -31,7 +31,10 @@ PARENT = {
     "desc": "An empty room."
 }
 
-# -------------------- map 1 - the large tree
+
+# ---------------------------------------- map1
+# The large tree
+#
 # this exemplifies the various map symbols
 # but is not heavily prototyped
 
@@ -39,11 +42,11 @@ MAP1 = r"""
                        1
  + 0 1 2 3 4 5 6 7 8 9 0
 
- 9   #-------#-#-------I
-      \              /
- 8     #-#---#       #-t
+ 8   #-------#-#-------I
+      \               /
+ 7     #-#---#       #-t
        |\    |
- 7   #i#-#b--#-t
+ 6   #i#-#b--#-t
        |     |
  5     o-#---#
           \ /
@@ -68,7 +71,7 @@ class TransitionToCave(map_legend.MapTransitionMapNode):
 
     """
     symbol = 'T'
-    target_map_xyz = (2, 3, 'small cave')
+    target_map_xyz = (1, 0, 'the small cave')
 
 
 # extends the default legend
@@ -110,15 +113,15 @@ PROTOTYPES_MAP1 = {
         "key": "Dense foilage",
         "desc": "The foilage to the east is extra dense. It will take forever to get through it."
     },
-    (5, 7): {
+    (5, 6): {
         "key": "On a huge branch",
         "desc": "To the east is a glowing light, may be a teleporter."
     },
-    (9, 8): {
+    (9, 7): {
         "key": "On an enormous branch",
         "desc": "To the east is a glowing light, may be a teleporter."
     },
-    (10, 9): {
+    (10, 8): {
         "key": "A gorgeous view",
         "desc": "The view from here is breathtaking, showing the forest stretching far and wide."
     },
@@ -144,7 +147,8 @@ XYMAP_DATA_MAP1 = {
     "prototypes": PROTOTYPES_MAP1
 }
 
-# ------------- map2 definitions - small cave
+# -------------------------------------- map2
+# The small cave
 # this gives prototypes for every room
 
 MAP2 = r"""

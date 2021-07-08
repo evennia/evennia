@@ -228,7 +228,7 @@ COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try aga
 # custom, extra commands to add to the `evennia` launcher. This is a dict
 # of {'cmdname': 'path.to.callable', ...}, where the callable will be passed
 # any extra args given on the command line. For example `evennia cmdname foo bar`.
-CUSTOM_LAUNCHER_COMMANDS = {}
+EXTRA_LAUNCHER_COMMANDS = {}
 
 # Determine how large of a string can be sent to the server in number
 # of characters. If they attempt to enter a string over this character
