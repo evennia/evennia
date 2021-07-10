@@ -8,7 +8,7 @@ the commands with XYZ-aware equivalents.
 """
 
 from evennia import InterruptCommand
-from evennia import MuxCommand, CmdSet
+from evennia import default_cmds, CmdSet
 from evennia.commands.default import building, general
 from evennia.contrib.xyzgrid.xyzroom import XYZRoom
 from evennia.utils.utils import inherits_from
@@ -73,44 +73,51 @@ class CmdXYZTeleport(building.CmdTeleport):
     are given, the target is a location on the XYZGrid.
 
     """
+    def _search_by_xyz(self, inp):
+        X, Y, *Z = inp.split(",", 2)
+        if Z:
+            # Z was specified
+            Z = Z[0]
+        else:
+            # use current location's Z, if it exists
+            try:
+                xyz = self.caller.xyz
+            except AttributeError:
+                self.caller.msg("Z-coordinate is also required since you are not currently "
+                                "in a room with a Z coordinate of its own.")
+                raise InterruptCommand
+            else:
+                Z = xyz[2]
+        # search by coordinate
+        X, Y, Z = str(X).strip(), str(Y).strip(), str(Z).strip()
+        try:
+            self.destination = XYZRoom.objects.get_xyz(xyz=(X, Y, Z))
+        except XYZRoom.DoesNotExist:
+            self.caller.msg("Found no target XYZRoom at ({X},{Y},{Y}).")
+            raise InterruptCommand
 
     def parse(self):
-        MuxCommand.parse(self)
+        default_cmds.MuxCommand.parse(self)
         self.obj_to_teleport = self.caller
         self.destination = None
-        rhs = self.rhs
-        if self.lhs:
+
+        if self.rhs:
             self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
             if not self.obj_to_teleport:
                 self.caller.msg("Did not find object to teleport.")
                 raise InterruptCommand
-        if rhs:
-            if all(char in rhs for char in ("(", ")", ",")):
+            if all(char in self.rhs for char in ("(", ")", ",")):
                 # search by (X,Y) or (X,Y,Z)
-                X, Y, *Z = rhs.split(",", 2)
-                if Z:
-                    # Z was specified
-                    Z = Z[0]
-                else:
-                    # use current location's Z, if it exists
-                    try:
-                        xyz = self.caller.xyz
-                    except AttributeError:
-                        self.caller.msg("Z-coordinate is also required since you are not currently "
-                                        "in a room with a Z coordinate of its own.")
-                        raise InterruptCommand
-                    else:
-                        Z = xyz[2]
-                # search by coordinate
-                X, Y, Z = str(X).strip(), str(Y).strip(), str(Z).strip()
-                try:
-                    self.obj_to_teleport = XYZRoom.objects.get_xyz(xyz=(X, Y, Z))
-                except XYZRoom.DoesNotExist:
-                    self.caller.msg("Found no target XYZRoom at ({X},{Y},{Y}).")
-                    raise InterruptCommand
+                self._search_by_xyz(self.rhs)
             else:
-                # regular search
-                self.destination = self.caller.search(rhs, global_search=True)
+                # fallback to regular search by name/alias
+                self.destination = self.caller.search(self.rhs, global_search=True)
+
+        elif self.lhs:
+            if all(char in self.rhs for char in ("(", ")", ",")):
+                self._search_by_xyz(self.lhs)
+            else:
+                self.destination = self.caller.search(self.lhs, global_search=True)
 
 
 class CmdXYZOpen(building.CmdOpen):
@@ -143,7 +150,7 @@ class CmdXYZOpen(building.CmdOpen):
         if not self.args or not self.rhs:
             self.caller.msg("Usage: open <new exit>[;alias...][:typeclass]"
                             "[,<return exit>[;alias..][:typeclass]]] "
-                            "= <destination>")
+                            "= <destination or (X,Y,Z)>")
             raise InterruptCommand
         if not self.location:
             self.caller.msg("You cannot create an exit from a None-location.")
