@@ -67,7 +67,8 @@ MAP1 = r"""
 
 class TransitionToCave(map_legend.MapTransitionMapNode):
     """
-    A transition from map2 to map1
+    A transition from 'the large tree' to 'the small cave' map. This node is never spawned
+    into a room but only acts as a target for finding the exit's destination.
 
     """
     symbol = 'T'
@@ -169,7 +170,8 @@ MAP2 = r"""
 # custom map node
 class TransitionToLargeTree(map_legend.MapTransitionMapNode):
     """
-    A transition from map1 to map2
+    A transition from 'the small cave' to 'the large tree' map. This node is never spawned
+    into a room by only acts as a target for finding the exit's destination.
 
     """
     symbol = 'T'

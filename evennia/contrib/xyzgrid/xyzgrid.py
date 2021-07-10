@@ -59,23 +59,24 @@ class XYZGrid(DefaultScript):
         Get all xymaps stored in the grid.
 
         Returns:
-            dict: All initialized xymaps stored with this grid.
+            list: All initialized xymaps stored with this grid.
 
         """
-        return self.grid
+        return list(self.grid.values())
 
     def log(self, msg):
         logger.log_info(f"|grid| {msg}")
 
-    def get_room(xyz, **kwargs):
+    def get_room(self, xyz, **kwargs):
         """
-        Get room object from XYZ coordinate.
+        Get one or more room objects from XYZ coordinate.
 
         Args:
-            xyz (tuple): X,Y,Z coordinate of room to fetch.
+            xyz (tuple): X,Y,Z coordinate of room to fetch. '*' acts
+            as wild cards.
 
         Returns:
-            XYZRoom: The found room.
+            Queryset: A queryset of XYZRoom(s) found.
 
         Raises:
             XYZRoom.DoesNotExist: If room is not found.
@@ -84,20 +85,30 @@ class XYZGrid(DefaultScript):
             This assumes the room was previously built.
 
         """
-        return XYZRoom.objects.get_xyz(xyz=xyz, **kwargs)
+        return XYZRoom.objects.filter_xyz(xyz=xyz, **kwargs)
 
-    def get_exit(xyz, name='north', **kwargs):
+    def get_exit(self, xyz, name='north', **kwargs):
         """
-        Get exit object at coordinate.
+        Get one or more exit object at coordinate.
 
         Args:
             xyz (tuple): X,Y,Z coordinate of the room the
-                exit leads out of.
+                exit leads out of. '*' acts as a wildcard.
             name (str): The full name of the exit, e.g. 'north' or 'northwest'.
+                The '*' acts as a wild card.
+
+        Returns:
+            Queryset: A queryset of XYZExit(s) found.
 
         """
         kwargs['db_key'] = name
-        return XYZExit.objects.get_xyz_exit(xyz=xyz, **kwargs)
+        return XYZExit.objects.filter_xyz_exit(xyz=xyz, **kwargs)
+
+    def build_diff(zcoord):
+        """
+        Find out which rooms are built/not built and if some should be deleted. This
+
+        """
 
     def reload(self):
         """
@@ -226,12 +237,12 @@ class XYZGrid(DefaultScript):
 
         # first build all nodes/rooms
         for zcoord, xymap in xymaps.items():
-            self.log(f"spawning/updating nodes for {zcoord} ...")
+            self.log(f"spawning/updating nodes for Z='{zcoord}' ...")
             xymap.spawn_nodes(xy=(x, y))
 
         # next build all links between nodes (including between maps)
         for zcoord, xymap in xymaps.items():
-            self.log(f"spawning/updating links for {zcoord} ...")
+            self.log(f"spawning/updating links for Z='{zcoord}' ...")
             xymap.spawn_links(xy=(x, y), directions=directions)
 
 

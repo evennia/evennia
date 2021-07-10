@@ -810,7 +810,7 @@ class SmartRerouterMapLink(MapLink):
 
         return self.directions.get(start_direction)
 
-class TeleporterMapLink(MapLink):
+class SmartTeleporterMapLink(MapLink):
     """
     The teleport link works by connecting to nowhere - and will then continue
     on another teleport link with the same symbol elsewhere on the map. The teleport
@@ -1066,26 +1066,24 @@ class InvisibleSmartMapLink(SmartMapLink):
 # Default nodes and link classes
 
 class BasicMapNode(MapNode):
-    """Basic map Node"""
+    """A map node/room"""
     symbol = "#"
     prototype = "xyz_room"
 
 
-class MapTransitionMapNode(TransitionMapNode):
-    """Transition-target to other map"""
-    symbol = "T"
-    display_symbol = " "
-    prototype = None  # important to leave None!
-    target_map_xyz = (None, None, None)  # must be set manually
-
-
 class InterruptMapNode(MapNode):
-    """A point of interest, where pathfinder will stop"""
+    """A point of interest node/room. The pathfinder will always stop here if passing through."""
     symbol = "I"
     display_symbol = "#"
     interrupt_path = True
     prototype = "xyz_room"
 
+class MapTransitionMapNode(TransitionMapNode):
+    """Transition-target node to other map. This is not actually spawned in-game."""
+    symbol = "T"
+    display_symbol = " "
+    prototype = None  # important to leave None!
+    target_map_xyz = (None, None, None)  # must be set manually
 
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
@@ -1160,7 +1158,7 @@ class WEOneWayMapLink(MapLink):
 
 
 class UpMapLink(SmartMapLink):
-    """Up direction. Note that this still uses the xygrid!"""
+    """Up direction. Note that this stays on the same z-coord so it's a 'fake' up."""
     symbol = 'u'
 
     # all movement over this link is 'up', regardless of where on the xygrid we move.
@@ -1170,7 +1168,7 @@ class UpMapLink(SmartMapLink):
 
 
 class DownMapLink(UpMapLink):
-    """Works exactly like `UpMapLink` but for the 'down' direction."""
+    """Down direction. Note that this stays on the same z-coord, so it's a 'fake' down."""
     symbol = 'd'
     # all movement over this link is 'down', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
@@ -1179,7 +1177,7 @@ class DownMapLink(UpMapLink):
 
 
 class InterruptMapLink(InvisibleSmartMapLink):
-    """A (still passable) link that causes the pathfinder to stop before crossing."""
+    """A (still passable) link. Pathfinder will always abort before crossing this link."""
     symbol = "i"
     interrupt_path = True
     prototype = "xyz_exit"
@@ -1187,9 +1185,9 @@ class InterruptMapLink(InvisibleSmartMapLink):
 
 class BlockedMapLink(InvisibleSmartMapLink):
     """
-    A high-weight (but still passable) link that causes the shortest-path algorithm to consider this
-    a blocked path. The block will not show up in the map display, paths will just never use this
-    link.
+    Causes the shortest-path algorithm to consider this a blocked path. The block will not show up
+    in the map display (and exit can be traversed normally), pathfinder will just not include this
+    link in any paths.
 
     """
     symbol = 'b'
@@ -1199,5 +1197,13 @@ class BlockedMapLink(InvisibleSmartMapLink):
 
 
 class RouterMapLink(SmartRerouterMapLink):
-    """Connects multiple links to build knees, pass-throughs etc."""
+    """A link that connects other links to build 'knees', pass-throughs etc."""
     symbol = "o"
+
+
+class TeleporterMapLink(SmartTeleporterMapLink):
+    """
+    Teleporter links. Must appear in pairs on the same xy map. To make it one-way, add additional
+    one-way link out of the teleporter on one side.
+    """
+    symbol = 't'

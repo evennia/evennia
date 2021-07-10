@@ -233,6 +233,7 @@ class XYMap:
         self.xyzgrid = xyzgrid
 
         self.mapstring = ""
+        self.raw_mapstring = ""
 
         # store so we can reload
         self.map_module_or_dict = map_module_or_dict
