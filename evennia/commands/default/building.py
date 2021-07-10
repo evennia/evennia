@@ -2982,13 +2982,14 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         super().parse()
         self.obj_to_teleport = self.caller
         self.destination = None
-        if self.lhs:
+        if self.rhs:
             self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
             if not self.obj_to_teleport:
                 self.caller.msg("Did not find object to teleport.")
                 raise InterruptCommand
-        if self.rhs:
             self.destination = self.caller.search(self.rhs, global_search=True)
+        elif self.lhs:
+            self.destination = self.caller.search(self.lhs, global_search=True)
 
     def func(self):
         """Performs the teleport"""
@@ -2999,6 +3000,11 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
         if "tonone" in self.switches:
             # teleporting to None
+
+            if destination:
+                # in this case lhs is always the object to teleport
+                obj_to_teleport = destination
+
             if obj_to_teleport.has_account:
                 caller.msg(
                     "Cannot teleport a puppeted object "
@@ -3041,14 +3047,20 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         # try the teleport
-        if obj_to_teleport.move_to(
+        if not obj_to_teleport.location:
+            # teleporting from none-location
+            obj_to_teleport.location = destination
+            caller.msg(f"Teleported {obj_to_teleport} None -> {destination}")
+        elif obj_to_teleport.move_to(
                 destination, quiet="quiet" in self.switches,
                 emit_to_obj=caller, use_destination="intoexit" not in self.switches):
 
             if obj_to_teleport == caller:
-                caller.msg("Teleported to %s." % destination)
+                caller.msg(f"Teleported to {destination}.")
             else:
-                caller.msg("Teleported %s -> %s." % (obj_to_teleport, destination))
+                caller.msg(f"Teleported {obj_to_teleport} -> {destination}.")
+        else:
+            caller.msg("Teleportation failed.")
 
 
 class CmdScript(COMMAND_DEFAULT_CLASS):

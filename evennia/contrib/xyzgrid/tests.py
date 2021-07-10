@@ -6,9 +6,9 @@ Tests for the XYZgrid system.
 
 from time import time
 from random import randint
-from unittest import TestCase
 from parameterized import parameterized
-from django.test import override_settings
+from django.test import TestCase
+from evennia.utils.test_resources import EvenniaTest
 from . import xymap, xyzgrid, map_legend, xyzroom
 
 
@@ -341,7 +341,7 @@ MAP12b = r"""
 """
 
 
-class _MapTest(TestCase):
+class _MapTest(EvenniaTest):
     """
     Parent for map tests
 
@@ -351,6 +351,7 @@ class _MapTest(TestCase):
 
     def setUp(self):
         """Set up grid and map"""
+        super().setUp()
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
         self.grid.add_maps(self.map_data)
         self.map = self.grid.get_map(self.map_data['zcoord'])
@@ -1138,7 +1139,7 @@ class TestMapStressTest(TestCase):
                         f"slower than expected {max_time}s.")
 
 
-class TestXYZGrid(TestCase):
+class TestXYZGrid(EvenniaTest):
     """
     Test base grid class with a single map, including spawning objects.
 
@@ -1187,12 +1188,13 @@ class Map12bTransition(map_legend.MapTransitionMapNode):
     target_map_xyz = (0, 1, "map12a")
 
 
-class TestXYZGridTransition(TestCase):
+class TestXYZGridTransition(EvenniaTest):
     """
     Test the XYZGrid class and transitions between maps.
 
     """
     def setUp(self):
+        super().setUp()
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
         self.map_data12a = {
@@ -1243,18 +1245,19 @@ class TestXYZGridTransition(TestCase):
         self.assertEqual(east_exit.db_destination, room2)
         self.assertEqual(west_exit.db_destination, room1)
 
-class TestBuildExampleGrid(TestCase):
+class TestBuildExampleGrid(EvenniaTest):
     """
     Test building the map_example (this takes about 30s)
 
     """
     def setUp(self):
         # build and populate grid
+        super().setUp()
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
-        def _log(msg):
-            print(msg)
-        self.grid.log = _log
+        # def _log(msg):
+        #     print(msg)
+        # self.grid.log = _log
 
     def tearDown(self):
         self.grid.delete()

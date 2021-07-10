@@ -816,7 +816,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         use_destination=True,
         to_none=False,
         move_hooks=True,
-        alternative_source=None,
         **kwargs,
     ):
         """
@@ -838,10 +837,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             move_hooks (bool): If False, turn off the calling of move-related hooks
                 (at_before/after_move etc) with quiet=True, this is as quiet a move
                 as can be done.
-            alternative_source (Object, optional): Normally, the current `self.location` is
-                assumed the 'source' of the move. This allows for replacing this
-                with a custom source (for example to create a teleporter room that
-                retains the original source when moving to another place).
 
         Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
@@ -876,8 +871,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not emit_to_obj:
             emit_to_obj = self
 
-        source_location = alternative_source or self.location
-
         if not destination:
             if to_none:
                 # immediately move to None. There can be no hooks called since
@@ -889,15 +882,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if destination.destination and use_destination:
             # traverse exits
             destination = destination.destination
-
         # Before the move, call eventual pre-commands.
         if move_hooks:
             try:
-                if not source_location.at_before_move(destination, **kwargs):
+                if not self.at_before_move(destination, **kwargs):
                     return False
             except Exception as err:
                 logerr(errtxt.format(err="at_before_move()"), err)
                 return False
+
+        # Save the old location
+        source_location = self.location
 
         # Call hook on source location
         if move_hooks and source_location:
@@ -2464,7 +2459,6 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description if description else _("This is a room.")
 
         except Exception as e:
-            raise
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
 
@@ -2671,7 +2665,7 @@ class DefaultExit(DefaultObject):
                 obj.db.desc = description if description else _("This is an exit.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object (%s)." % key)
+            errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
 
         return obj, errors

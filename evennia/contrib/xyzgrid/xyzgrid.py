@@ -121,14 +121,7 @@ class XYZGrid(DefaultScript):
 
         # store
         self.log(f"Loaded and linked {nmaps} map(s).")
-
-    def at_init(self):
-        """
-        Called when the script loads into memory (on creation or after a reload). This will load all
-        map data into memory.
-
-        """
-        self.reload()
+        self.ndb.loaded = True
 
     def maps_from_module(self, module):
         """
@@ -254,8 +247,15 @@ def get_xyzgrid():
         xyzgrid, err = XYZGrid.create("XYZGrid")
         if err:
             raise RuntimeError(err)
+        xyzgrid.reload()
         return xyzgrid
     elif len(xyzgrid) > 1:
         ("Warning: More than one XYZGrid instances were found. This is an error and "
          "only the first one will be used. Delete the other one(s) manually.")
-    return xyzgrid[0]
+    xyzgrid = xyzgrid[0]
+    try:
+        if not xyzgrid.ndb.loaded:
+            xyzgrid.reload()
+    except Exception as err:
+        xyzgrid.log(str(err))
+    return xyzgrid
