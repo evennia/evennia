@@ -119,7 +119,12 @@ class ContentsHandler:
             obj (Object): object to remove
 
         """
-        self._pkcache.remove(obj.pk)
+        try:
+            self._pkcache.remove(obj.pk)
+        except KeyError:
+            # not in pk cache, but can happen deletions happens
+            # remotely from out-of-thread.
+            pass
         for ctype in obj._content_types:
             if obj.pk in self._typecache[ctype]:
                 self._typecache[ctype].remove(obj.pk)
@@ -340,9 +345,11 @@ class ObjectDB(TypedObject):
         except RuntimeError:
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
             raise RuntimeError(errmsg)
-        except Exception as e:
-            errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
-            raise RuntimeError(errmsg)
+        except Exception:
+            # raising here gives more info for now
+            raise
+            # errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
+            # raise RuntimeError(errmsg)
         return
 
     def __location_del(self):

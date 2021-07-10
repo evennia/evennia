@@ -22,77 +22,157 @@ from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
 
 _HELP_SHORT = """
 evennia xyzgrid help|list|init|add|build|initpath|delete [<options>]
-Manages the XYZ grid. Use 'xyzgrid help' for documentation.
+Manages the XYZ grid. Use 'xyzgrid help <option>' for documentation.
 """
 
-_HELP_LONG = """
-evennia xyzgrid list
+_HELP_HELP = """
+evennia xyzgrid <command> [<options>]
+Manages the XYZ grid.
+
+help <command>   - get help about each command:
+    list            - show list
+    init            - initialize grid (only one time)
+    add             - add new maps to grid
+    build           - build added maps into actual db-rooms/exits
+    initpath        - (re)creates pathfinder matrices
+    delete          - delete part or all of grid
+"""
+
+_HELP_LIST = """
+list
 
     Lists the map grid structure and any loaded maps.
 
-evennia xyzgrid list Z|mapname
+list <Z|mapname>
 
-    Display the given XYmap in more detail. Also 'show' works.
+    Display the given XYmap in more detail. Also 'show' works. Use quotes around
+    map-names with spaces.
 
-evennia xyzgrid init
+Examples:
+
+    evennia xyzgrid list
+    evennia xyzgrid list mymap
+    evennia xyzgrid list "the small cave"
+"""
+
+_HELP_INIT = """
+init
 
     First start of the grid. This will create the XYZGrid global script. No maps are loaded yet!
     It's safe to run this command multiple times; the grid will only be initialized once.
 
-evennia xyzgrid add path.to.xymap.module [,path, path,...]
+Example:
 
-    Add one or more XYmaps (each a string-map representing one Z position along with prototypes
-    etc). The module will be parsed for
-
-    - a XYMAP_DATA a dict
-        {"map": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}
-        describing one single XYmap, or
-    - a XYMAP_DATA_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows to load
-        multiple maps from the same module.
-
-    Note that adding a map does *not* build it. If maps are linked to one another, you should add
-    all linked maps before running 'build', or you'll get errors when creating transitional exits
-    between maps.
-
-evennia xyzgrid build
-
-    Builds/updates the entire database grid based on the added maps. For a new grid, this will spawn
-    all new rooms/exits (and may take a good while!). For updating, rooms may be removed/spawned if
-    a map changed since the last build.
-
-evennia xyzgrid build (X,Y,Z|mapname)
-
-    Builds/updates only a part of the grid. This should usually only be used if the full grid has
-    already been built once - otherwise inter-map transitions may fail! Z is the name/z-coordinate
-    of the map.  Use '*' as a wildcard. For example (*, *, mymap) will only update map `mymap` and
-    (12, 6, mymap) will only update position (12, 6) on the map 'mymap'.
-
-evennia xyzgrid initpath
-
-    Recreates the pathfinder matrices for the entire grid. These are used for all shortest-path
-    calculations. The result will be cached to disk (in mygame/server/.cache/). If not run, each map
-    will run this automatically first time it's used. Running this will always force to rebuild the
-    cache.
-
-evennia xyzgrid initpath Z|mapname
-
-    recreate the pathfinder matrix for a specific map only. Z is the name/z-coordinate of the map.
-
-evennia xyzgrid delete Z|mapname
-
-    Remove a previously added XYmap with the name/z-coordinate Z. E.g. 'remove mymap'. If the map
-    was built, this will also wipe all its spawned rooms/exits. You will be asked to confirm before
-    continuing with this operation.
-
-evennia xyzgrid delete
-
-    WARNING: This will delete the entire xyz-grid (all maps), and *all* rooms/exits built to match
-    it (they serve no purpose without the grid). You will be asked to confirm before continuing with
-    this operation.
-
+    evennia xyzgrid init
 """
 
-def _option_list(**suboptions):
+
+_HELP_ADD = """
+add <path.to.xymap.module> [<path> <path>,...]
+
+    Add path(s) to one or more modules containing XYMap definitions. The module will be parsed
+    for
+
+    - a XYMAP_DATA - a dict on this form:
+        {"map": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}
+        describing one single XYmap, or
+    - a XYMAP_DATA_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows for
+        embedding multiple maps in the same module. See evennia/contrib/xyzgrid/map_example.py
+        for an example of how this looks.
+
+    Note that adding a map does *not* build it. If maps are linked to one another, you should
+    add all linked maps before running 'build', or you'll get errors when creating transitional
+    exits between maps.
+
+Examples:
+
+    evennia xyzgrid add evennia.contrib.xyzgrid.map_example
+    evennia xyzgrid add world.mymap1 world.mymap2 world.mymap3
+"""
+
+_HELP_BUILD = """
+build
+
+    Builds/updates the entire database grid based on the added maps. For a new grid, this will
+    spawn all new rooms/exits (and may take a good while!). For updating, rooms may be
+    removed/spawned if a map changed since the last build.
+
+build "(X,Y,Z|mapname)"
+
+    Builds/updates only a part of the grid. Remember the quotes around the coordinate (this
+    is mostly because shells don't like them)! Use '*' as a wild card for XY coordinates.
+    This should usually only be used if the full grid has already been built once - otherwise
+    inter-map transitions may fail! Z is the name/z-coordinate of the map to build.
+
+Examples:
+
+    evennia xyzgrid build                  - build all
+    evennia xyzgrid "(*, *, mymap1)"       - build everything of map/zcoord mymap1
+    evennia xyzgrid "(12, 5, mymap1)"      - build only coordinate (12, 5) on map/zcoord mymap1
+"""
+
+_HELP_INITPATH = """
+initpath
+
+    Recreates the pathfinder matrices for the entire grid. These are used for all shortest-path
+    calculations. The result will be cached to disk (in mygame/server/.cache/). If not run, each
+    map will run this automatically first time it's used. Running this will always force to
+    rebuild the cache.
+
+initpath Z|mapname
+
+    recreate the pathfinder matrix for a specific map only. Z is the name/z-coordinate of the
+    map. If the map name has spaces in it, use quotes.
+
+Examples:
+
+    evennia xyzgrid initpath
+    evennia xyzgrid initpath mymap1
+    evennia xyzgrid initpath "the small cave"
+"""
+
+_HELP_DELETE = """
+delete
+
+    WARNING: This will delete the entire xyz-grid (all maps), and *all* rooms/exits built to
+    match it (they serve no purpose without the grid). You will be asked to confirm before
+    continuing with this operation.
+
+delete Z|mapname
+
+    Remove a previously added XYmap with the name/z-coordinate Z. If the map was built, this
+    will also wipe all its spawned rooms/exits. You will be asked to confirm before continuing
+    with this operation. Use quotes if the Z/mapname contains spaces.
+
+Examples:
+
+    evennia xyzgrid delete
+    evennia xyzgrid delete mymap1
+    evennia xyzgrid delete "the small cave"
+"""
+
+_TOPICS_MAP = {
+    "list": _HELP_LIST,
+    "init": _HELP_INIT,
+    "add": _HELP_ADD,
+    "build": _HELP_BUILD,
+    "initpath": _HELP_INITPATH,
+    "delete": _HELP_DELETE
+}
+
+def _option_help(*suboptions):
+    """
+    Show help <command> aid.
+
+    """
+    if not suboptions:
+        topic = _HELP_HELP
+    else:
+        topic = _TOPICS_MAP.get(suboptions[0], _HELP_HELP)
+    print(topic.strip())
+
+
+def _option_list(*suboptions):
     """
     List/view grid.
 
@@ -106,7 +186,43 @@ def _option_list(**suboptions):
     if not suboptions:
         print("XYMaps stored in grid:")
         for zcoord, xymap in sorted(xymap_data.items(), key=lambda tup: tup[0]):
+            print("\n" + str(repr(xymap)) + ":\n")
             print(str(xymap))
+        return
+
+    for zcoord in suboptions:
+        xymap = xyzgrid.get_map(zcoord)
+        if not xymap:
+            print(f"No XYMap with Z='{zcoord}' was found on grid.")
+        else:
+            nrooms = xyzgrid.get_room(('*', '*', zcoord)).count()
+            nnodes = len(xymap.node_index_map)
+            print("\n" + str(repr(xymap)) + ":\n")
+            checkwarning = True
+            if not nrooms:
+                print(f"{nrooms} / {nnodes} rooms are spawned.")
+                checkwarning = False
+            elif nrooms < nnodes:
+                print(f"{nrooms} / {nnodes} rooms are spawned\n"
+                      "Note: Transitional nodes are *not* spawned (they just point \n"
+                      "to another map), so the 'missing room(s)' may just be from such nodes.")
+            elif nrooms > nnodes:
+                print(f"{nrooms} / {nnodes} rooms are spawned\n"
+                      "Note: Maybe some rooms were removed from map. Run 'build' to re-sync.")
+            else:
+                print(f"{nrooms} / {nnodes} rooms are spawned\n")
+
+            if checkwarning:
+                print("Note: This check is not complete; it does not consider changed map "
+                      "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
+                      "is calculated only during a build.")
+            print("\nDisplayed map (as appearing in-game):\n\n" + str(xymap))
+            print("\nRaw map string (including axes and invisible nodes/links):\n"
+                  + str(xymap.mapstring))
+            legend = []
+            for key, node_or_link in xymap.legend.items():
+                legend.append(f"{key} - {node_or_link.__doc__.strip()}")
+            print("Legend (all elements may not be present on map):\n " + "\n ".join(legend))
 
 
 def _option_init(*suboptions):
@@ -126,8 +242,15 @@ def _option_add(*suboptions):
     grid = get_xyzgrid()
     xymap_data_list = []
     for path in suboptions:
-        xymap_data_list.expand(grid.maps_from_module(path))
+        maps = grid.maps_from_module(path)
+        if not maps:
+            print(f"No maps found with the path {path}.\nSeparate multiple paths with spaces. ")
+            return
+        mapnames = "\n ".join(f"'{m['zcoord']}'" for m in maps)
+        print(f" XYMaps from {path}:\n {mapnames}")
+        xymap_data_list.extend(maps)
     grid.add_maps(*xymap_data_list)
+    print(f"Added (or readded) {len(xymap_data_list)} XYMaps to grid.")
 
 
 def _option_build(*suboptions):
@@ -138,7 +261,7 @@ def _option_build(*suboptions):
     grid = get_xyzgrid()
 
     # override grid's logger to echo directly to console
-    def _log(self, msg):
+    def _log(msg):
         print(msg)
     grid.log = _log
 
@@ -154,7 +277,20 @@ def _option_build(*suboptions):
     else:
         x, y, z = '*', '*', '*'
 
+    if x == y == z == '*':
+        inp = input("This will (re)build the entire grid. If it was built before, it may spawn \n"
+                    "new rooms or delete rooms that no longer matches the grid.\nDo you want to "
+                    "continue? [Y]/N? ")
+    else:
+        inp = input("This will spawn/delete objects in the database matching grid coordinates \n"
+                    f"({x},{y},{z}) (where '*' is a wildcard).\nDo you want to continue? [Y]/N? ")
+    if inp.lower() in ('no', 'n'):
+        print("Aborted.")
+        return
+
+    print("Starting build ...")
     grid.spawn(xyz=(x, y, z))
+    print("... build complete!")
 
 
 def _option_initpath(*suboptions):
@@ -163,13 +299,13 @@ def _option_initpath(*suboptions):
 
     """
     grid = get_xyzgrid()
-    xymaps = grid.all_rooms()
+    xymaps = grid.all_maps()
     nmaps = len(xymaps)
-    for inum, xymap in enumerate(grid.all_rooms()):
-        print(f"Rebuilding pathfinding matrix for xymap Z={xymap.Z} ({inum+1}/{nmaps}) ...")
+    for inum, xymap in enumerate(xymaps):
+        print(f"(Re)building pathfinding matrix for xymap Z={xymap.Z} ({inum+1}/{nmaps}) ...")
         xymap.calculate_path_matrix(force=True)
 
-    cachepath = pathjoin(settings.GAMEDIR, "server", ".cache")
+    cachepath = pathjoin(settings.GAME_DIR, "server", ".cache")
     print(f"... done. Data cached to {cachepath}.")
 
 
@@ -186,31 +322,33 @@ def _option_delete(*suboptions):
                      "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
         if repl.lower() not in ('yes', 'y'):
             print("Aborted.")
-        else:
-            print("Deleting grid ...")
-            grid.delete()
-
-    else:
-        zcoords = (part.strip() for part in suboptions)
-        err = False
-        for zcoord in zcoords:
-            if not grid.get_map(zcoord):
-                print(f"Mapname/zcoord {zcoord} is not a part of the grid.")
-                err = True
-        if err:
-            print("Valid mapnames/zcoords are\n:", "\n ".join(
-                xymap.Z for xymap in grid.all_rooms()))
             return
-        repl = input("This will delete map(s) {', '.join(zcoords)} and wipe all corresponding "
-                     "rooms/exits!"
-                     "\nObjects/Chars inside deleted rooms will be moved to their home locations."
-                     "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
-        if repl.lower() not in ('yes', 'y'):
-            print("Aborted.")
-        else:
-            print("Deleting selected xymaps ...")
+        print("Deleting grid ...")
+        grid.delete()
+        print("... done.")
+        return
 
-        grid.remove_map(*zcoords, remove_objects=True)
+    zcoords = (part.strip() for part in suboptions)
+    err = False
+    for zcoord in zcoords:
+        if not grid.get_map(zcoord):
+            print(f"Mapname/zcoord {zcoord} is not a part of the grid.")
+            err = True
+    if err:
+        print("Valid mapnames/zcoords are\n:", "\n ".join(
+            xymap.Z for xymap in grid.all_rooms()))
+        return
+    repl = input("This will delete map(s) {', '.join(zcoords)} and wipe all corresponding\n"
+                 "rooms/exits!"
+                 "\nObjects/Chars inside deleted rooms will be moved to their home locations."
+                 "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
+    if repl.lower() not in ('yes', 'y'):
+        print("Aborted.")
+        return
+
+    print("Deleting selected xymaps ...")
+    grid.remove_map(*zcoords, remove_objects=True)
+    print("... done. Remember to remove any links from remaining maps pointing to deleted maps.")
 
 
 def xyzcommand(*args):
@@ -226,8 +364,7 @@ def xyzcommand(*args):
     option, *suboptions = args
 
     if option in ('help', 'h'):
-        print(f"{_HELP_SHORT.strip()}\n{_HELP_LONG.rstrip()}")
-
+        _option_help(*suboptions)
     if option in ('list', 'show'):
         _option_list(*suboptions)
     elif option == 'init':
