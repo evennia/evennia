@@ -18,6 +18,7 @@ Use `evennia xyzgrid help` for usage help.
 
 from os.path import join as pathjoin
 from django.conf import settings
+from evennia.utils import ansi
 from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
 
 _HELP_SHORT = """
@@ -187,7 +188,7 @@ def _option_list(*suboptions):
         print("XYMaps stored in grid:")
         for zcoord, xymap in sorted(xymap_data.items(), key=lambda tup: tup[0]):
             print("\n" + str(repr(xymap)) + ":\n")
-            print(str(xymap))
+            print(ansi.parse_ansi(str(xymap)))
         return
 
     for zcoord in suboptions:
@@ -216,7 +217,7 @@ def _option_list(*suboptions):
                 print("Note: This check is not complete; it does not consider changed map "
                       "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
                       "is calculated only during a build.")
-            print("\nDisplayed map (as appearing in-game):\n\n" + str(xymap))
+            print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
             print("\nRaw map string (including axes and invisible nodes/links):\n"
                   + str(xymap.mapstring))
             legend = []

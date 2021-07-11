@@ -34,6 +34,7 @@ class XYZGrid(DefaultScript):
 
         """
         self.db.map_data = {}
+        self.desc = "Manages maps for XYZ-grid"
 
     @property
     def grid(self):
