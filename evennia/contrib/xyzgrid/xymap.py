@@ -774,6 +774,7 @@ class XYMap:
                          character='@',
                          target=None, target_path_style="|y{display_symbol}|n",
                          max_size=None,
+                         indent=0,
                          return_str=True):
         """
         Get a part of the grid centered on a specific point and extended a certain number
@@ -791,7 +792,7 @@ class XYMap:
                 nodes are reachable or not. If 'nodes', distance measure how many linked nodes
                 away from the center coordinate to display.
             character (str, optional): Place this symbol at the `xy` position
-                of the displayed map. The center node' symbol is shown if this is falsy.
+                of the displayed map. The center node's symbol is shown if this is falsy.
             target (tuple, optional): A target XY coordinate to go to. The path to this
                 (or the beginning of said path, if outside of visual range) will be
                 marked according to `target_path_style`.
@@ -802,8 +803,11 @@ class XYMap:
                 will receive the MapNode or MapLink object for every step of the path and and
                 must return the suitable string to display at the position of the node/link.
             max_size (tuple, optional): A max `(width, height)` to crop the displayed
-                return to. Make both odd numbers to get a perfect center.
-                If unset, display-size can grow up to the full size of the grid.
+                return to. Make both odd numbers to get a perfect center. Set either of
+                the tuple values to `None` to make that coordinate unlimited. Set entire
+                tuple to None let display-size able to grow up to full size of grid.
+            indent (int, optional): How far to the right to indent the map area (only
+                applies to `return_str=True`).
             return_str (bool, optional): Return result as an already formatted string
                 or a 2D list.
 
@@ -914,12 +918,15 @@ class XYMap:
         if max_size:
             # crop grid to make sure it doesn't grow too far
             max_x, max_y = max_size
+            max_x = self.max_x if max_x is None else max_x
+            max_y = self.max_y if max_y is None else max_y
             xmin, xmax = max(0, ixc - max_x // 2), min(width, ixc + max_x // 2 + 1)
             ymin, ymax = max(0, iyc - max_y // 2), min(height, iyc + max_y // 2 + 1)
             gridmap = [line[xmin:xmax] for line in gridmap[ymin:ymax]]
 
         if return_str:
             # we must flip the y-axis before returning the string
-            return "\n".join("".join(line) for line in gridmap[::-1])
+            indent = indent * " "
+            return indent + f"\n{indent}".join("".join(line) for line in gridmap[::-1])
         else:
             return gridmap

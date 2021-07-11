@@ -36,7 +36,7 @@ class CmdXYZLook(general.CmdLook):
             maxw = min(xymap.max_x, self.client_width())
             sep = "~" * maxw
             map_display = f"|x{sep}|n\n{map_display}\n|x{sep}"
-            self.msg(map_display, {"type", "xymap"}, options=None)
+            self.msg((map_display, {"type": "xymap"}), options=None)
         # now run the normal look command
         super().func()
 
@@ -55,6 +55,7 @@ class CmdXYZTeleport(building.CmdTeleport):
       tel/tonone box
       tel (3, 3, the small cave)
       tel (4, 1)   # on the same map
+      tel/map Z|mapname
 
     Switches:
       quiet  - don't echo leave/arrive messages to the source/target
@@ -67,6 +68,7 @@ class CmdXYZTeleport(building.CmdTeleport):
                an object from a None location is by direct #dbref
                reference. A puppeted object cannot be moved to None.
       loc - teleport object to the target's location instead of its contents
+      map - show coordinate map of given Zcoord/mapname.
 
     Teleports an object somewhere. If no object is given, you yourself are
     teleported to the target location. If (X,Y) or (X,Y,Z) coordinates
@@ -74,6 +76,7 @@ class CmdXYZTeleport(building.CmdTeleport):
 
     """
     def _search_by_xyz(self, inp):
+        inp = inp.strip("()")
         X, Y, *Z = inp.split(",", 2)
         if Z:
             # Z was specified
@@ -93,7 +96,7 @@ class CmdXYZTeleport(building.CmdTeleport):
         try:
             self.destination = XYZRoom.objects.get_xyz(xyz=(X, Y, Z))
         except XYZRoom.DoesNotExist:
-            self.caller.msg("Found no target XYZRoom at ({X},{Y},{Y}).")
+            self.caller.msg(f"Found no target XYZRoom at ({X},{Y},{Z}).")
             raise InterruptCommand
 
     def parse(self):
@@ -114,7 +117,7 @@ class CmdXYZTeleport(building.CmdTeleport):
                 self.destination = self.caller.search(self.rhs, global_search=True)
 
         elif self.lhs:
-            if all(char in self.rhs for char in ("(", ")", ",")):
+            if all(char in self.lhs for char in ("(", ")", ",")):
                 self._search_by_xyz(self.lhs)
             else:
                 self.destination = self.caller.search(self.lhs, global_search=True)
@@ -189,6 +192,5 @@ class XYZGridCmdSet(CmdSet):
     key = "xyzgrid_cmdset"
 
     def at_cmdset_creation(self):
-        self.add(CmdXYZLook())
         self.add(CmdXYZTeleport())
         self.add(CmdXYZOpen())

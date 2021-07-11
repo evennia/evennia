@@ -1088,6 +1088,7 @@ class MapTransitionMapNode(TransitionMapNode):
 class NSMapLink(MapLink):
     """Two-way, North-South link"""
     symbol = "|"
+    display_symbol = "||"
     directions = {"n": "s", "s": "n"}
     prototype = "xyz_exit"
 
@@ -1164,6 +1165,7 @@ class UpMapLink(SmartMapLink):
     # all movement over this link is 'up', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+    spawn_aliases = {direction: ("up", "u") for direction in direction_aliases}
     prototype = "xyz_exit"
 
 
@@ -1173,6 +1175,7 @@ class DownMapLink(UpMapLink):
     # all movement over this link is 'down', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
+    spawn_aliases = {direction: ("down", "do") for direction in direction_aliases}
     prototype = "xyz_exit"
 
 

@@ -8,6 +8,7 @@ used as stand-alone XYZ-coordinate-aware rooms.
 """
 
 from django.db.models import Q
+from django.conf import settings
 from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
 
@@ -226,10 +227,33 @@ class XYZRoom(DefaultRoom):
     """
     A game location aware of its XYZ-position.
 
+    Special properties:
+        map_display (bool): If the return_appearance of the room should
+            show the map or not.
+        map_mode (str): One of 'nodes' or 'scan'. See `return_apperance`
+            for examples of how they differ.
+        map_visual_range (int): How far on the map one can see. This is a
+            fixed value here, but could also be dynamic based on skills,
+            light etc.
+        map_character_symbol (str): The character symbol to use to show
+            the character position. Can contain color info. Default is
+            the @-character.
+        map_area_client (bool): If True, map area will always fill the entire
+            client width. If False, the map area's width will vary with the
+            width of the currently displayed location description.
+
     """
 
     # makes the `room.objects.filter_xymap` available
     objects = XYZManager()
+
+    # default settings for map visualization
+    map_display = True
+    map_mode = 'nodes'  # or 'scan'
+    map_visual_range = 2
+    map_character_symbol = "@"
+    map_align = 'c'
+    map_area_client = True
 
     def __str__(self):
         return repr(self)
@@ -252,10 +276,12 @@ class XYZRoom(DefaultRoom):
             y = self.tags.get(category=MAP_Y_TAG_CATEGORY, return_list=False)
             z = self.tags.get(category=MAP_Z_TAG_CATEGORY, return_list=False)
             if x is None or y is None or z is None:
-                # don't cache unfinished coordinate
-                return (x, y, z)
-            # cache result
-            self._xyz = (x, y, z)
+                # don't cache unfinished coordinate (probably tags have not finished saving)
+                return tuple(int(coord) if coord is not None and coord.isdigit() else coord
+                             for coord in (x, y, z))
+            # cache result, convert to correct types (tags are strings)
+            self._xyz = tuple(int(coord) if coord.isdigit() else coord for coord in (x, y, z))
+
         return self._xyz
 
     @classmethod
@@ -301,6 +327,106 @@ class XYZRoom(DefaultRoom):
         )
 
         return DefaultRoom.create(key, account=account, tags=tags, typeclass=cls, **kwargs)
+
+    def return_appearance(self, looker, **kwargs):
+        """
+        Displays the map in addition to the room description
+
+        Args:
+            looker (Object): The one looking.
+
+        Keyword Args:
+            map_display (bool): Turn on/off map display.
+            map_visual_range (int): How 'far' one can see on the map. For
+                'nodes' mode, this is how many connected nodes away, for
+                'scan' mode, this is number of characters away on the map.
+                Default is a visual range of 2 (nodes).
+            map_mode (str): One of 'node' (default) or 'scan'.
+            map_character_symbol (str): The character symbol to use. Defaults to '@'.
+                This can also be colored with standard color tags. Set to `None`
+                to just show the current node.
+
+        Examples:
+
+            Assume this is the full map (where '@' is the character location):
+            ::
+                #----------------#
+                |                |
+                |                |
+                # @------------#-#
+                |                |
+                #----------------#
+
+            This is how it will look in 'nodes' mode with `visual_range=2`:
+            ::
+                  @------------#-#
+
+            And in 'scan' mode with `visual_range=2`:
+            ::
+                |
+                |
+                # @--
+                |
+                #----
+
+        Notes:
+            The map kwargs default to values with the same names set on the
+            XYZRoom class; these can be changed by overriding the room.
+
+            We return the map display as a separate msg() call here, in order
+            to make it easier to break this out into a client pane etc. The
+            map is tagged with type='xymap'.
+
+        """
+
+        # normal get_appearance of a room
+        room_desc = super().return_appearance(looker, **kwargs)
+
+        if kwargs.get('map_display', self.map_display):
+            # show the near-area map.
+
+            character_symbol = kwargs.get('map_character_symbol', self.map_character_symbol)
+            visual_range = kwargs.get("visual_range", self.map_visual_range)
+            map_mode = kwargs.get("map_mode", self.map_mode)
+            map_align = kwargs.get("map_align", self.map_align)
+            map_area_client = kwargs.get("fill_width", self.map_area_client)
+            client_width, _ = looker.sessions.get()[0].get_client_size()
+
+            # get current xymap
+            xyz = self.xyz
+            xymap = self.xyzgrid.get_map(xyz[2])
+            map_width = xymap.max_x
+
+            if map_area_client:
+                display_width = client_width
+            else:
+                display_width = max(map_width,
+                                    max(len(line) for line in room_desc.split("\n")))
+
+            # align map
+            map_indent = 0
+            sep_width = display_width
+            if map_align == 'r':
+                map_indent = max(0, display_width - map_width)
+            elif map_align == 'c':
+                map_indent = max(0, (display_width - map_width) // 2)
+
+            # get visual range display from map
+            map_display = xymap.get_visual_range(
+                (xyz[0], xyz[1]),
+                dist=visual_range,
+                mode=map_mode,
+                character=character_symbol,
+                max_size=(display_width, None),
+                indent=map_indent
+            )
+            sep = "~" * sep_width
+            map_display = f"|x{sep}|n\n{map_display}\n|x{sep}"
+
+            # echo directly to make easier to separate in client
+            looker.msg(text=(map_display, {"type": "xymap"}), options=None)
+
+        return room_desc
 
 
 class XYZExit(DefaultExit):

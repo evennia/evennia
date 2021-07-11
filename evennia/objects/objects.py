@@ -2269,7 +2269,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         if self.location.access(self, "view"):
-            self.msg(self.at_look(self.location))
+            self.msg(text=(self.at_look(self.location), {"type": "look"}))
 
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
