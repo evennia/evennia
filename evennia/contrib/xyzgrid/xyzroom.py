@@ -8,9 +8,9 @@ used as stand-alone XYZ-coordinate-aware rooms.
 """
 
 from django.db.models import Q
-from django.conf import settings
 from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
+from evennia.utils.utils import make_iter
 
 # name of all tag categories. Note that the Z-coordinate is
 # the `map_name` of the XYZgrid
@@ -328,6 +328,25 @@ class XYZRoom(DefaultRoom):
 
         return DefaultRoom.create(key, account=account, tags=tags, typeclass=cls, **kwargs)
 
+    def get_display_name(self, looker, **kwargs):
+        """
+        Shows both the #dbref and the xyz coord to staff.
+
+        Args:
+            looker (TypedObject): The object or account that is looking
+                at/getting inforamtion for this object.
+
+        Returns:
+            name (str): A string containing the name of the object,
+                including the DBREF and XYZ coord if this user is
+                privileged to control the room.
+
+        """
+        if self.locks.check_lockstring(looker, "perm(Builder)"):
+            x, y, z = self.xyz
+            return f"{self.name}[#{self.id}({x},{y},{z})]"
+        return self.name
+
     def return_appearance(self, looker, **kwargs):
         """
         Displays the map in addition to the room description
@@ -411,12 +430,16 @@ class XYZRoom(DefaultRoom):
             elif map_align == 'c':
                 map_indent = max(0, (display_width - map_width) // 2)
 
+            goto_target, *current_path = make_iter(looker.ndb.xy_current_goto)
+
             # get visual range display from map
             map_display = xymap.get_visual_range(
                 (xyz[0], xyz[1]),
                 dist=visual_range,
                 mode=map_mode,
-                character=character_symbol,
+                target=goto_target,
+                target_path_style="|y{display_symbol}|n",
+                character=f"|g{character_symbol}|n",
                 max_size=(display_width, None),
                 indent=map_indent
             )

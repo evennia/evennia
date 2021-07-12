@@ -1260,7 +1260,7 @@ class DbHolder:
         _GA(self, _GA(self, "name")).remove(attrname)
 
     def get_all(self):
-        return _GA(self, _GA(self, "name")).get_all_attributes()
+        return _GA(self, _GA(self, "name")).backend.get_all_attributes()
 
     all = property(get_all)
 

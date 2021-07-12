@@ -320,7 +320,7 @@ def _option_delete(*suboptions):
     if not suboptions:
         repl = input("WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!"
                      "\nObjects/Chars inside deleted rooms will be moved to their home locations."
-                     "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
+                     "\nThis can't be undone. Are you sure you want to continue? Y/[N]? ")
         if repl.lower() not in ('yes', 'y'):
             print("Aborted.")
             return
@@ -342,7 +342,7 @@ def _option_delete(*suboptions):
     repl = input("This will delete map(s) {', '.join(zcoords)} and wipe all corresponding\n"
                  "rooms/exits!"
                  "\nObjects/Chars inside deleted rooms will be moved to their home locations."
-                 "\nThis can't be undone. Are you sure you want to continue? Y/[N]?")
+                 "\nThis can't be undone. Are you sure you want to continue? Y/[N]? ")
     if repl.lower() not in ('yes', 'y'):
         print("Aborted.")
         return
@@ -378,3 +378,6 @@ def xyzcommand(*args):
         _option_initpath(*suboptions)
     elif option == 'delete':
         _option_delete(*suboptions)
+    else:
+        print(f"Unknown option '{option}'. Use 'evennia xyzgrid help' for valid arguments.")
+

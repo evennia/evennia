@@ -772,7 +772,8 @@ class XYMap:
 
     def get_visual_range(self, xy, dist=2, mode='nodes',
                          character='@',
-                         target=None, target_path_style="|y{display_symbol}|n",
+                         target=None,
+                         target_path_style="|y{display_symbol}|n",
                          max_size=None,
                          indent=0,
                          return_str=True):
@@ -797,7 +798,7 @@ class XYMap:
                 (or the beginning of said path, if outside of visual range) will be
                 marked according to `target_path_style`.
             target_path_style (str or callable, optional): This is use for marking the path
-                found when `path_to_coord` is given. If a string, it accepts a formatting marker
+                found when `target` is given. If a string, it accepts a formatting marker
                 `display_symbol` which will be filled with the `display_symbol` of each node/link
                 the path passes through. This allows e.g. to color the path. If a callable, this
                 will receive the MapNode or MapLink object for every step of the path and and
