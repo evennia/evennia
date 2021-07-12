@@ -326,8 +326,9 @@ class MapNode:
 
         maplinks = {}
         for direction, link in self.first_links.items():
+
             key, *aliases = (
-                make_iter(link.spawn_aliases)
+                link.spawn_aliases.get(direction, ('unknown',))
                 if link.spawn_aliases
                 else self.direction_spawn_defaults.get(direction, ('unknown',))
             )
@@ -368,7 +369,7 @@ class MapNode:
                 if err:
                     raise RuntimeError(err)
                 linkobjs[key.lower()] = exi
-            self.log(f"  spawning/updating exit xyz={xyz}, direction={direction}")
+            self.log(f"  spawning/updating exit xyz={xyz}, direction={key}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():
@@ -1175,7 +1176,7 @@ class DownMapLink(UpMapLink):
     # all movement over this link is 'down', regardless of where on the xygrid we move.
     direction_aliases = {'n': symbol, 'ne': symbol, 'e': symbol, 'se': symbol,
                          's': symbol, 'sw': symbol, 'w': symbol, 'nw': symbol}
-    spawn_aliases = {direction: ("down", "do") for direction in direction_aliases}
+    spawn_aliases = {direction: ("down", "d") for direction in direction_aliases}
     prototype = "xyz_exit"
 
 

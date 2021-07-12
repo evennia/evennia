@@ -7,38 +7,15 @@ the commands with XYZ-aware equivalents.
 
 """
 
+from django.conf import settings
 from evennia import InterruptCommand
 from evennia import default_cmds, CmdSet
-from evennia.commands.default import building, general
+from evennia.commands.default import building
 from evennia.contrib.xyzgrid.xyzroom import XYZRoom
-from evennia.utils.utils import inherits_from
+from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
+from evennia.utils.utils import list_to_string, class_from_module, make_iter
 
-
-class CmdXYZLook(general.CmdLook):
-
-    character = '@'
-    visual_range = 2
-    map_mode = 'nodes'   # or 'scan'
-
-    def func(self):
-        """
-        Add xymap display before the normal look command.
-
-        """
-        location = self.caller.location
-        if inherits_from(location, XYZRoom):
-            xyz = location.xyz
-            xymap = location.xyzgrid.get_map(xyz[2])
-            map_display = xymap.get_visual_range(
-                (xyz[0], xyz[1]),
-                dist=self.visual_range,
-                mode=self.map_mode)
-            maxw = min(xymap.max_x, self.client_width())
-            sep = "~" * maxw
-            map_display = f"|x{sep}|n\n{map_display}\n|x{sep}"
-            self.msg((map_display, {"type": "xymap"}), options=None)
-        # now run the normal look command
-        super().func()
+COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 
 class CmdXYZTeleport(building.CmdTeleport):
@@ -184,6 +161,106 @@ class CmdXYZOpen(building.CmdOpen):
         self.exit_typeclass = self.lhs_objs[0]["option"]
 
 
+class CmdGoto(COMMAND_DEFAULT_CLASS):
+    """
+    Go to a named location in this area.
+
+    Usage:
+        goto <location>      - get path and start walking
+        path <location>      - just check the path
+        goto                 - abort current goto
+        path                 - show current path
+
+    This will find the shortest route to a location in your current area and
+    start automatically walk you there. Builders can also specify a specific grid
+    coordinate (X,Y).
+
+    """
+    key = "goto"
+    aliases = "path"
+    help_category = "General"
+    locks = "cmd:all()"
+
+    def _search_by_xyz(self, inp, xyz_start):
+        inp = inp.strip("()")
+        X, Y = inp.split(",", 2)
+        Z = xyz_start[2]
+        # search by coordinate
+        X, Y, Z = str(X).strip(), str(Y).strip(), str(Z).strip()
+        try:
+            return XYZRoom.objects.get_xyz(xyz=(X, Y, Z))
+        except XYZRoom.DoesNotExist:
+            self.caller.msg(f"Could not find a room at ({X},{Y}) (Z={Z}).")
+            return None
+
+    def _search_by_key_and_alias(self, inp, xyz_start):
+        Z = xyz_start[2]
+        candidates = list(XYZRoom.objects.filter_xyz(xyz=('*', '*', Z)))
+        return self.caller.search(inp, candidates=candidates)
+
+    def func(self):
+        """
+        Implement command
+        """
+
+        caller = self.caller
+
+        current_target, *current_path = make_iter(caller.ndb.xy_current_goto)
+        goto_mode = self.cmdname == 'goto'
+
+        if not self.args:
+            if current_target:
+                if goto_mode:
+                    caller.ndb.xy_current_goto_target = None
+                    caller.msg("Aborted goto.")
+                else:
+                    caller.msg(f"Remaining steps: {list_to_string(current_path)}")
+            else:
+                caller.msg("Usage: goto <location>")
+            return
+
+        xyzgrid = get_xyzgrid()
+        try:
+            xyz_start = caller.location.xyz
+        except AttributeError:
+            self.caller.msg("Cannot path-find since the current location is not on the grid.")
+            return
+
+        allow_xyz_query = caller.locks.check_lockstring(caller, "perm(Builder)")
+        if allow_xyz_query and all(char in self.args for char in ("(", ")", ",")):
+            # search by (X,Y)
+            target = self._search_by_xyz(self.args, xyz_start)
+            if not target:
+                return
+        else:
+            # search by normal key/alias
+            target = self._search_by_key_and_alias(self.args, xyz_start)
+            if not target:
+                return
+        try:
+            xyz_end = target.xyz
+        except AttributeError:
+            self.caller.msg("Target location is not on the grid and cannot be auto-walked to.")
+            return
+
+        xymap = xyzgrid.get_map(xyz_start[2])
+        # we only need the xy coords once we have the map
+        xy_start = xyz_start[:2]
+        xy_end = xyz_end[:2]
+        shortest_path, _ = xymap.get_shortest_path(xy_start, xy_end)
+
+        caller.msg(f"There are {len(shortest_path)} steps to {target.get_display_name(caller)}: "
+                   f"|w{list_to_string(shortest_path, endsep='|nand finally|w')}|n")
+
+        # store for use by the return_appearance hook on the XYZRoom
+        caller.ndb.xy_current_goto = (xy_end, shortest_path)
+
+        if self.cmdname == "goto":
+            # start actually walking right away
+            self.msg("Walking ... eventually")
+            pass
+
+
 class XYZGridCmdSet(CmdSet):
     """
     Cmdset for easily adding the above cmds to the character cmdset.
@@ -194,3 +271,4 @@ class XYZGridCmdSet(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdXYZTeleport())
         self.add(CmdXYZOpen())
+        self.add(CmdGoto())
