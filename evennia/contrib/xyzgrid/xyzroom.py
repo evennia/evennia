@@ -430,14 +430,16 @@ class XYZRoom(DefaultRoom):
             elif map_align == 'c':
                 map_indent = max(0, (display_width - map_width) // 2)
 
-            goto_target, *current_path = make_iter(looker.ndb.xy_current_goto)
+            # data set by the goto/path-command, for displaying the shortest path
+            path_data = looker.ndb.xy_path_data
+            target_xy = path_data.target.xyz[:2] if path_data else None
 
             # get visual range display from map
             map_display = xymap.get_visual_range(
                 (xyz[0], xyz[1]),
                 dist=visual_range,
                 mode=map_mode,
-                target=goto_target,
+                target=target_xy,
                 target_path_style="|y{display_symbol}|n",
                 character=f"|g{character_symbol}|n",
                 max_size=(display_width, None),

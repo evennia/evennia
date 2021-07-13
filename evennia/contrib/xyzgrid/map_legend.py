@@ -258,6 +258,29 @@ class MapNode:
         """
         return self.X, self.Y, self.Z
 
+    def get_exit_spawn_name(self, direction, return_aliases=True):
+
+        """
+        Retrieve the spawn name for the exit being created by this link.
+
+        Args:
+            direction (str): The cardinal direction (n,ne etc) the want the
+                exit name/aliases for.
+            return_aliases (bool, optional): Also return all aliases.
+
+        Returns:
+            str or tuple: The key of the spawned exit, or a tuple (key, alias, alias, ...)
+
+        """
+        key, *aliases = (
+            self.first_links[direction]
+            .spawn_aliases.get(
+                direction, self.direction_spawn_defaults.get(
+                    direction, ('unknown', ))))
+        if return_aliases:
+            return (key, *aliases)
+        return key
+
     def spawn(self):
         """
         Build an actual in-game room from this node.
@@ -327,11 +350,7 @@ class MapNode:
         maplinks = {}
         for direction, link in self.first_links.items():
 
-            key, *aliases = (
-                link.spawn_aliases.get(direction, ('unknown',))
-                if link.spawn_aliases
-                else self.direction_spawn_defaults.get(direction, ('unknown',))
-            )
+            key, *aliases = self.get_exit_spawn_name(direction)
             if not link.prototype.get('prototype_key'):
                 # generate a deterministic prototype_key if it doesn't exist
                 link.prototype['prototype_key'] = self.generate_prototype_key()
@@ -495,9 +514,11 @@ class MapLink:
       on the game grid. This is only relevant for the *first* link out of a Node (the continuation
       of the link is only used to determine its destination). This can be overridden on a
       per-direction basis.
-    - `spawn_aliases` (list): A list of [key, alias, alias, ...] for the node to use when spawning
-      exits from this link. If not given, a sane set of defaults ((north, n) etc) will be used. This
-      is required if you use any custom directions outside of the cardinal directions + up/down.
+    - `spawn_aliases` (dict): A mapping {direction: (key, alias, alias, ...) to use when spawning
+      actual exits from this link. If not given, a sane set of defaults (n=(north, n) etc) will be
+      used. This is required if you use any custom directions outside of the cardinal directions +
+      up/down. The exit's key (useful for auto-walk) is usually retrieved by calling
+      `node.get_exit_spawn_name(direction)`
 
     """
     # symbol for identifying this link on the map
@@ -535,10 +556,11 @@ class MapLink:
     interrupt_path = False
     # prototype for the first link out of a node.
     prototype = None
-    # used for spawning, if the exit prototype doesn't contain an explicit key.
-    # if neither that nor this is not given, the central node's direction_aliases will be used.
-    # the first element of this list is the key, the others are the aliases.
-    spawn_aliases = []
+    # used for spawning and maps {direction: (key, alias, alias, ...) for use for the exits spawned
+    # in this direction. Used unless the exit's prototype contain an explicit key - then that will
+    # take precedence. If neither that nor this is not given, sane defaults ('n'=('north','n'), etc)
+    # will be used.
+    spawn_aliases = {}
 
     def __init__(self, x, y, Z, xymap=None):
         """

@@ -717,7 +717,7 @@ class XYMap:
 
         Returns:
             tuple: Two lists, first containing the list of directions as strings (n, ne etc) and
-            the second is a mixed list of MapNodes and string-directions in a sequence describing
+            the second is a mixed list of MapNodes and all MapLinks in a sequence describing
             the full path including the start- and end-node.
 
         """
@@ -909,7 +909,7 @@ class XYMap:
             for node_or_link in path[1:]:
                 if hasattr(node_or_link, "node_index"):
                     nsteps += 1
-                if nsteps >= maxstep:
+                if nsteps > maxstep:
                     break
                 # don't decorate current (character?) location
                 ix, iy = node_or_link.x, node_or_link.y
