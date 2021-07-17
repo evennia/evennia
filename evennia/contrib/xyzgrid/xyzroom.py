@@ -251,9 +251,10 @@ class XYZRoom(DefaultRoom):
     map_display = True
     map_mode = 'nodes'  # or 'scan'
     map_visual_range = 2
-    map_character_symbol = "@"
+    map_character_symbol = "|g@|n"
     map_align = 'c'
-    map_area_client = True
+    map_target_path_style = "|y{display_symbol}|n"
+    map_fill_all = True
 
     def __str__(self):
         return repr(self)
@@ -261,13 +262,6 @@ class XYZRoom(DefaultRoom):
     def __repr__(self):
         x, y, z = self.xyz
         return f"<XYZRoom '{self.db_key}', XYZ=({x},{y},{z})>"
-
-    @property
-    def xyzgrid(self):
-        global GET_XYZGRID
-        if not GET_XYZGRID:
-            from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
-        return GET_XYZGRID()
 
     @property
     def xyz(self):
@@ -283,6 +277,21 @@ class XYZRoom(DefaultRoom):
             self._xyz = tuple(int(coord) if coord.isdigit() else coord for coord in (x, y, z))
 
         return self._xyz
+
+    @property
+    def xyzgrid(self):
+        global GET_XYZGRID
+        if not GET_XYZGRID:
+            from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid as GET_XYZGRID
+        return GET_XYZGRID()
+
+    @property
+    def xymap(self):
+        if not hasattr(self, "_xymap"):
+            xyzgrid = self.xyzgrid
+            _, _, Z = self.xyz
+            self._xymap = xyzgrid.get_map(Z)
+        return self._xymap
 
     @classmethod
     def create(cls, key, account=None, xyz=(0, 0, 'map'), **kwargs):
@@ -401,19 +410,30 @@ class XYZRoom(DefaultRoom):
         # normal get_appearance of a room
         room_desc = super().return_appearance(looker, **kwargs)
 
-        if kwargs.get('map_display', self.map_display):
-            # show the near-area map.
+        # get current xymap
+        xyz = self.xyz
+        xymap = self.xyzgrid.get_map(xyz[2])
 
-            character_symbol = kwargs.get('map_character_symbol', self.map_character_symbol)
-            visual_range = kwargs.get("visual_range", self.map_visual_range)
-            map_mode = kwargs.get("map_mode", self.map_mode)
-            map_align = kwargs.get("map_align", self.map_align)
-            map_area_client = kwargs.get("fill_width", self.map_area_client)
+        if xymap and kwargs.get('map_display', xymap.options.get("map_display", self.map_display)):
+
+            # show the near-area map.
+            map_character_symbol = kwargs.get(
+                'map_character_symbol',
+                xymap.options.get("map_character_symbol", self.map_character_symbol))
+            map_visual_range = kwargs.get(
+                "map_visual_range", xymap.options.get("map_visual_range", self.map_visual_range))
+            map_mode = kwargs.get(
+                "map_mode", xymap.options.get("map_mode", self.map_mode))
+            map_align = kwargs.get(
+                "map_align", xymap.options.get("map_align", self.map_align))
+            map_target_path_style = kwargs.get(
+                "map_target_path_style",
+                xymap.options.get("map_target_path_style", self.map_target_path_style))
+            map_area_client = kwargs.get(
+                "map_fill_all", xymap.options.get("map_fill_all", self.map_fill_all))
+
             client_width, _ = looker.sessions.get()[0].get_client_size()
 
-            # get current xymap
-            xyz = self.xyz
-            xymap = self.xyzgrid.get_map(xyz[2])
             map_width = xymap.max_x
 
             if map_area_client:
@@ -437,11 +457,11 @@ class XYZRoom(DefaultRoom):
             # get visual range display from map
             map_display = xymap.get_visual_range(
                 (xyz[0], xyz[1]),
-                dist=visual_range,
+                dist=map_visual_range,
                 mode=map_mode,
                 target=target_xy,
-                target_path_style="|y{display_symbol}|n",
-                character=f"|g{character_symbol}|n",
+                target_path_style=map_target_path_style,
+                character=map_character_symbol,
                 max_size=(display_width, None),
                 indent=map_indent
             )
