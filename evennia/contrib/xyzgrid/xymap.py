@@ -117,7 +117,7 @@ _CACHE_DIR = settings.CACHE_DIR
 _LOADED_PROTOTYPES = None
 
 MAP_DATA_KEYS = [
-    "zcoord", "map", "legend", "prototypes"
+    "zcoord", "map", "legend", "prototypes", "options"
 ]
 
 # these are all symbols used for x,y coordinate spots
@@ -239,6 +239,7 @@ class XYMap:
         self.map_module_or_dict = map_module_or_dict
 
         self.prototypes = None
+        self.options = None
 
         # transitional mapping
         self.symbol_map = None
@@ -300,6 +301,7 @@ class XYMap:
                     "zcoord": <int or str>, # optional
                     "legend": <dict>,       # optional
                     "prototypes": <dict>    # optional
+                    "options": <dict>       # optional
                 }
 
         """
@@ -308,7 +310,7 @@ class XYMap:
 
         mapdata = {}
         if isinstance(map_module_or_dict, dict):
-            # map-=structure provided directly
+            # map-structure provided directly
             mapdata = map_module_or_dict
         else:
             # read from contents of module
@@ -350,6 +352,7 @@ class XYMap:
         self.Z = mapdata.get('zcoord', self.Z)
         self.mapstring = mapdata['map']
         self.prototypes = mapdata.get('prototypes', {})
+        self.options = mapdata.get('options', {})
 
         # merge the custom legend onto the default legend to allow easily
         # overriding only parts of it

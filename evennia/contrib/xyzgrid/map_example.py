@@ -28,7 +28,8 @@ PARENT = {
     "key": "An empty room",
     "prototype_key": "xyzmap_room_map1",
     "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
-    "desc": "An empty room."
+    "desc": "An empty room.",
+    "options": {}
 }
 
 
@@ -259,7 +260,11 @@ XYMAP_DATA_MAP2 = {
     "map": MAP2,
     "zcoord": "the small cave",
     "legend": LEGEND_MAP2,
-    "prototypes": PROTOTYPES_MAP2
+    "prototypes": PROTOTYPES_MAP2,
+    "options": {
+        "map_visual_range": 1,
+        "map_mode": 'scan'
+    }
 }
 
 # This is read by the parser
