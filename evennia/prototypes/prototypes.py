@@ -484,7 +484,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     if key:
         if key in mod_matches:
             # exact match
-            module_prototypes = [mod_matches[key]]
+            module_prototypes = [mod_matches[key].copy()]
             allow_fuzzy = False
         else:
             # fuzzy matching
@@ -494,7 +494,9 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
                 if key in prototype_key
             ]
     else:
-        module_prototypes = [match for match in mod_matches.values()]
+        # note - we return a copy of the prototype dict, otherwise using this with e.g.
+        # prototype_from_object will modify the base prototype for every object
+        module_prototypes = [match.copy() for match in mod_matches.values()]
 
     # search db-stored prototypes
 
@@ -1053,7 +1055,8 @@ def value_to_obj(value, force=True):
     stype = type(value)
     if is_iter(value):
         if stype == dict:
-            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
+            return {value_to_obj_or_any(key): value_to_obj_or_any(val)
+                    for key, val in value.items()}
         else:
             return stype([value_to_obj_or_any(val) for val in value])
     return dbid_to_obj(value, ObjectDB)

@@ -15,6 +15,7 @@ except ImportError as err:
         "the SciPy package. Install with `pip install scipy'.")
 
 import uuid
+from collections import defaultdict
 from evennia.prototypes import spawner
 from evennia.utils.utils import make_iter
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
@@ -141,7 +142,7 @@ class MapNode:
 
     def log(self, msg):
         """log messages using the xygrid parent"""
-        self.xymap.xyzgrid.log(msg)
+        self.xymap.log(msg)
 
     def generate_prototype_key(self):
         """
@@ -301,17 +302,19 @@ class MapNode:
 
         xyz = self.get_spawn_xyz()
 
-        self.log(f"  spawning/updating room at xyz={xyz}")
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except NodeTypeclass.DoesNotExist:
             # create a new entity with proper coordinates etc
+            self.log(f"  spawning room at xyz={xyz}")
             nodeobj, err = NodeTypeclass.create(
                 self.prototype.get('key', 'An empty room'),
                 xyz=xyz
             )
             if err:
                 raise RuntimeError(err)
+        else:
+            self.log(f"  updating existing room (if changed) at xyz={xyz}")
 
         if not self.prototype.get('prototype_key'):
             # make sure there is a prototype_key in prototype
@@ -356,6 +359,17 @@ class MapNode:
                 link.prototype['prototype_key'] = self.generate_prototype_key()
             maplinks[key.lower()] = (key, aliases, direction, link)
 
+        # if xyz == (8, 1, 'the large tree'):
+        #     from evennia import set_trace;set_trace()
+        # remove duplicates
+        linkobjs = defaultdict(list)
+        for exitobj in ExitTypeclass.objects.filter_xyz(xyz=xyz):
+            linkobjs[exitobj.key].append(exitobj)
+        for exitkey, exitobjs in linkobjs.items():
+            for exitobj in exitobjs[1:]:
+                self.log(f"  deleting duplicate {exitkey}")
+                exitobj.delete()
+
         # we need to search for exits in all directions since some
         # may have been removed since last sync
         linkobjs = {exi.db_key.lower(): exi
@@ -365,10 +379,11 @@ class MapNode:
         # build all exits first run)
         differing_keys = set(maplinks.keys()).symmetric_difference(set(linkobjs.keys()))
         for differing_key in differing_keys:
+            # from evennia import set_trace;set_trace()
 
             if differing_key not in maplinks:
                 # an exit without a maplink - delete the exit-object
-                self.log(f"  deleting exit at xyz={xyz}, direction={direction}")
+                self.log(f"  deleting exit at xyz={xyz}, direction={differing_key}")
 
                 linkobjs.pop(differing_key).delete()
             else:
@@ -388,7 +403,7 @@ class MapNode:
                 if err:
                     raise RuntimeError(err)
                 linkobjs[key.lower()] = exi
-            self.log(f"  spawning/updating exit xyz={xyz}, direction={key}")
+                self.log(f"  spawning/updating exit xyz={xyz}, direction={key}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():

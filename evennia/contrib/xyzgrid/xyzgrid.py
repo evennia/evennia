@@ -111,50 +111,76 @@ class XYZGrid(DefaultScript):
 
         """
 
-    def reload(self):
-        """
-        Reload and rebuild the grid. This is done on a server reload and is also necessary if adding
-        a new map since this may introduce new between-map traversals.
-
-        """
-        self.log("(Re)loading grid ...")
-        self.ndb.grid = {}
-        nmaps = 0
-        # generate all Maps - this will also initialize their components
-        # and bake any pathfinding paths (or load from disk-cache)
-        for zcoord, mapdata in self.db.map_data.items():
-
-            self.log(f"Loading map '{zcoord}'...")
-            xymap = XYMap(dict(mapdata), Z=zcoord, xyzgrid=self)
-            xymap.parse()
-            xymap.calculate_path_matrix()
-            self.ndb.grid[zcoord] = xymap
-            nmaps += 1
-
-        # store
-        self.log(f"Loaded and linked {nmaps} map(s).")
-        self.ndb.loaded = True
-
-    def maps_from_module(self, module):
+    def maps_from_module(self, module_path):
         """
         Load map data from module. The loader will look for a dict XYMAP_DATA or a list of
         XYMAP_DATA_LIST (a list of XYMAP_DATA dicts). Each XYMAP_DATA dict should contain
         `{"xymap": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}`.
 
         Args:
-            module (module or str): A module or python-path to a module containing
+            module_path (module_path): A python-path to a module containing
                 map data as either `XYMAP_DATA` or `XYMAP_DATA_LIST` variables.
 
         Returns:
             list: List of zero, one or more xy-map data dicts loaded from the module.
 
         """
-        map_data_list = variable_from_module(module, "XYMAP_DATA_LIST")
+        map_data_list = variable_from_module(module_path, "XYMAP_DATA_LIST")
         if not map_data_list:
-            map_data_list = variable_from_module(module, "XYMAP_DATA")
+            map_data_list = variable_from_module(module_path, "XYMAP_DATA")
         if map_data_list:
             map_data_list = make_iter(map_data_list)
+        # inject the python path in the map data
+        for mapdata in map_data_list:
+            mapdata['module_path'] = module_path
         return map_data_list
+
+    def reload(self):
+        """
+        Reload and rebuild the grid. This is done on a server reload.
+
+        """
+        self.log("(Re)loading grid ...")
+        self.ndb.grid = {}
+        nmaps = 0
+        loaded_mapdata = {}
+        changed = []
+
+        # generate all Maps - this will also initialize their components
+        # and bake any pathfinding paths (or load from disk-cache)
+        for zcoord, old_mapdata in self.db.map_data.items():
+
+            self.log(f"Loading map '{zcoord}'...")
+
+            # we reload the map from module
+            new_mapdata = loaded_mapdata.get(zcoord)
+            if not new_mapdata:
+                if 'module_path' in old_mapdata:
+                    for mapdata in self.maps_from_module(old_mapdata['module_path']):
+                        loaded_mapdata[mapdata['zcoord']] = mapdata
+                else:
+                    # nowhere to reload from - use what we have
+                    loaded_mapdata[zcoord] = old_mapdata
+
+                new_mapdata = loaded_mapdata.get(zcoord)
+
+            if new_mapdata != old_mapdata:
+                self.log(f" XYMap data for Z='{zcoord}' has changed.")
+                changed.append(zcoord)
+
+            xymap = XYMap(dict(new_mapdata), Z=zcoord, xyzgrid=self)
+            xymap.parse()
+            xymap.calculate_path_matrix()
+            self.ndb.grid[zcoord] = xymap
+            nmaps += 1
+
+        # re-store changed data
+        for zcoord in changed:
+            self.db.map_data[zcoord] = loaded_mapdata['zcoord']
+
+        # store
+        self.log(f"Loaded and linked {nmaps} map(s).")
+        self.ndb.loaded = True
 
     def add_maps(self, *mapdatas):
         """
@@ -163,9 +189,10 @@ class XYZGrid(DefaultScript):
         Args:
             *mapdatas (dict): Each argument is a dict structure
                 `{"map": <mapstr>, "legend": <legenddict>, "name": <name>,
-                  "prototypes": <dict-of-dicts>}`. The `prototypes are
+                "prototypes": <dict-of-dicts>, "module_path": <str>}`. The `prototypes are
                 coordinate-specific overrides for nodes/links on the map, keyed with their
-                (X,Y) coordinate within that map.
+                (X,Y) coordinate within that map. The `module_path` is injected automatically
+                by self.maps_from_module.
 
         Raises:
             RuntimeError: If mapdata is malformed.
