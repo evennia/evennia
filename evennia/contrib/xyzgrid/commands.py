@@ -191,6 +191,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
 
     # how quickly to step (seconds)
     auto_step_delay = 2
+    default_xyz_path_interrupt_msg = "Pathfinding interrupted here."
 
     def _search_by_xyz(self, inp, xyz_start):
         inp = inp.strip("()")
@@ -286,10 +287,14 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                     step_sequence=step_sequence,
                     task=None
                 )
+            # the map can itself tell the stepper to stop the auto-step prematurely
+            interrupt_node_or_link = None
 
             # pop any extra links up until the next node - these are
             # not useful when dealing with exits
             while step_sequence:
+                if not interrupt_node_or_link and step_sequence[0].interrupt_path:
+                    interrupt_node_or_link = step_sequence[0]
                 if hasattr(step_sequence[0], "node_index"):
                     break
                 step_sequence.pop(0)
@@ -298,11 +303,26 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
             exit_name, *_ = first_link.spawn_aliases.get(
                 direction, current_node.direction_spawn_defaults.get(direction, ('unknown', )))
 
-            if not caller.search(exit_name):
+            exit_obj = caller.search(exit_name)
+            if not exit_obj:
                 # extra safety measure to avoid trying to walk over and over
                 # if there's something wrong with the exit's name
                 caller.msg(f"No exit '{exit_name}' found at current location. Aborting goto.")
                 caller.ndb.xy_path_data = None
+                return
+
+            if interrupt_node_or_link:
+                # premature stop of pathfind-step because of map node/link of interrupt type
+                if hasattr(interrupt_node_or_link, "node_index"):
+                    message = exit_obj.destination.attributes.get(
+                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg)
+                    # we move into the node/room and then stop
+                    caller.execute_cmd(exit_name, session=session)
+                else:
+                    # if the link is interrupted we don't cross it at all
+                    message = exit_obj.attributes.get(
+                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg)
+                caller.msg(message)
                 return
 
             # do the actual move - we use the command to allow for more obvious overrides

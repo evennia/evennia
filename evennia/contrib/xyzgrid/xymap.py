@@ -115,9 +115,10 @@ from . import map_legend
 
 _CACHE_DIR = settings.CACHE_DIR
 _LOADED_PROTOTYPES = None
+_XYZROOMCLASS = None
 
 MAP_DATA_KEYS = [
-    "zcoord", "map", "legend", "prototypes", "options"
+    "zcoord", "map", "legend", "prototypes", "options", "module_path"
 ]
 
 # these are all symbols used for x,y coordinate spots
@@ -279,6 +280,12 @@ class XYMap:
     def __repr__(self):
         return (f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, "
                 f"{len(self.node_index_map)} nodes>")
+
+    def log(self, msg):
+        if self.xyzgrid:
+            self.xyzgrid.log(msg)
+        else:
+            logger.log_info(msg)
 
     def reload(self, map_module_or_dict=None):
         """
@@ -629,10 +636,23 @@ class XYMap:
             list: A list of nodes that were spawned.
 
         """
+        global _XYZROOMCLASS
+        if not _XYZROOMCLASS:
+            from evennia.contrib.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
         x, y = xy
         wildcard = '*'
         spawned = []
 
+        # find existing nodes, in case some rooms need to be removed
+        map_coords = ((node.X, node.Y) for node in
+                      sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X)))
+        for existing_room in _XYZROOMCLASS.objects.filter_xyz(xyz=(x, y, self.Z)):
+            roomX, roomY, _ = existing_room.xyz
+            if (roomX, roomY) not in map_coords:
+                self.log(f"  deleting room at {existing_room.xyz} (not found on map).")
+                existing_room.delete()
+
+        # (re)build nodes (will not build already existing rooms)
         for node in sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X)):
             if (x in (wildcard, node.X)) and (y in (wildcard, node.Y)):
                 node.spawn()
@@ -757,15 +777,6 @@ class XYMap:
 
             directions.append(shortest_route_to[0])
             path.extend(shortest_route_to[1][::-1] + [nextnode])
-
-            if any(1 for step in shortest_route_to[1] if step.interrupt_path):
-                # detected an interrupt in linkage - discard what we have so far
-                directions = []
-                path = [nextnode]
-
-            if nextnode.interrupt_path and nextnode is not startnode:
-                directions = []
-                path = [nextnode]
 
         # we have the path - reverse to get the correct order
         directions = directions[::-1]

@@ -154,7 +154,8 @@ from evennia.prototypes.prototypes import (
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
-_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
+_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags",
+                         "prototype_locks", "prototype_parent")
 _PROTOTYPE_ROOT_NAMES = (
     "typeclass",
     "key",

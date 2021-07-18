@@ -45,13 +45,13 @@ MAP1 = r"""
 
  8   #-------#-#-------I
       \               /
- 7     #-#---#       #-t
+ 7     #-#---#     t-#
        |\    |
  6   #i#-#b--#-t
        |     |
  5     o-#---#
           \ /
- 4     o-o-#-#
+ 4     o---#-#
       /    d
  3   #-----+-------#
            |       d
@@ -59,7 +59,7 @@ MAP1 = r"""
            v       u
  1         #---#>#-#
           /
- 0     T-#
+ 0       #-T
 
  + 0 1 2 3 4 5 6 7 8 9 0
                        1
@@ -87,11 +87,11 @@ PROTOTYPES_MAP1 = {
     # node/room prototypes
     (3, 0): {
         "key": "Dungeon Entrance",
-        "desc": "To the west, a narrow opening leads into darkness."
+        "desc": "To the east, a narrow opening leads into darkness."
     },
     (4, 1): {
         "key": "Under the foilage of a giant tree",
-        "desc": "High above the branches of a giant tree blocs out the sunlight. A slide "
+        "desc": "High above the branches of a giant tree blocks out the sunlight. A slide "
         "leading down from the upper branches ends here."
     },
     (4, 4): {
@@ -117,11 +117,11 @@ PROTOTYPES_MAP1 = {
     },
     (5, 6): {
         "key": "On a huge branch",
-        "desc": "To the east is a glowing light, may be a teleporter."
+        "desc": "To the east is a glowing light, may be a teleporter to a higher branch."
     },
     (9, 7): {
         "key": "On an enormous branch",
-        "desc": "To the east is a glowing light, may be a teleporter."
+        "desc": "To the west is a glowing light. It may be a teleporter to a lower branch."
     },
     (10, 8): {
         "key": "A gorgeous view",

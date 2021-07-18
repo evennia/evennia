@@ -178,7 +178,14 @@ def _option_list(*suboptions):
     List/view grid.
 
     """
+
     xyzgrid = get_xyzgrid()
+
+    # override grid's logger to echo directly to console
+    def _log(msg):
+        print(msg)
+    xyzgrid.log = _log
+
     xymap_data = xyzgrid.grid
     if not xymap_data:
         print("The XYZgrid is currently empty. Use 'add' to add paths to your map data.")
@@ -220,6 +227,7 @@ def _option_list(*suboptions):
             print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
             print("\nRaw map string (including axes and invisible nodes/links):\n"
                   + str(xymap.mapstring))
+            print(f"\nCustom map options: {xymap.options}\n")
             legend = []
             for key, node_or_link in xymap.legend.items():
                 legend.append(f"{key} - {node_or_link.__doc__.strip()}")
@@ -241,6 +249,12 @@ def _option_add(*suboptions):
 
     """
     grid = get_xyzgrid()
+
+    # override grid's logger to echo directly to console
+    def _log(msg):
+        print(msg)
+    grid.log = _log
+
     xymap_data_list = []
     for path in suboptions:
         maps = grid.maps_from_module(path)
@@ -291,7 +305,8 @@ def _option_build(*suboptions):
 
     print("Starting build ...")
     grid.spawn(xyz=(x, y, z))
-    print("... build complete!")
+    print("... build complete!\nIt's recommended to reload the server to refresh caches if this "
+          "modified an existing grid.")
 
 
 def _option_initpath(*suboptions):
@@ -300,6 +315,12 @@ def _option_initpath(*suboptions):
 
     """
     grid = get_xyzgrid()
+
+    # override grid's logger to echo directly to console
+    def _log(msg):
+        print(msg)
+    grid.log = _log
+
     xymaps = grid.all_maps()
     nmaps = len(xymaps)
     for inum, xymap in enumerate(xymaps):
@@ -317,6 +338,12 @@ def _option_delete(*suboptions):
     """
 
     grid = get_xyzgrid()
+
+    # override grid's logger to echo directly to console
+    def _log(msg):
+        print(msg)
+    grid.log = _log
+
     if not suboptions:
         repl = input("WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!"
                      "\nObjects/Chars inside deleted rooms will be moved to their home locations."
@@ -326,7 +353,8 @@ def _option_delete(*suboptions):
             return
         print("Deleting grid ...")
         grid.delete()
-        print("... done.")
+        print("... done.\nPlease reload the server now; otherwise "
+              "removed rooms may linger in cache.")
         return
 
     zcoords = (part.strip() for part in suboptions)
@@ -349,7 +377,8 @@ def _option_delete(*suboptions):
 
     print("Deleting selected xymaps ...")
     grid.remove_map(*zcoords, remove_objects=True)
-    print("... done. Remember to remove any links from remaining maps pointing to deleted maps.")
+    print("... done.\nPlease reload the server to refresh room caches."
+          "\nAlso remember to remove any links from remaining maps pointing to deleted maps.")
 
 
 def xyzcommand(*args):
