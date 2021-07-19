@@ -9,7 +9,7 @@ from random import randint
 from parameterized import parameterized
 from django.test import TestCase
 from evennia.utils.test_resources import EvenniaTest
-from . import xymap, xyzgrid, map_legend, xyzroom
+from . import xymap, xyzgrid, xymap_legend, xyzroom
 
 
 MAP1 = """
@@ -374,7 +374,7 @@ class TestMap1(_MapTest):
     """
     def test_str_output(self):
         """Check the display_map"""
-        self.assertEqual(str(self.map).strip(), MAP1_DISPLAY)
+        self.assertEqual(str(self.map).replace("||", "|").strip(), MAP1_DISPLAY)
 
     def test_node_from_coord(self):
         node = self.map.get_node_from_coord((1, 1))
@@ -410,7 +410,8 @@ class TestMap1(_MapTest):
         mapstr = self.map.get_visual_range(coord, dist=1, mode='scan', character=None)
         maplst = self.map.get_visual_range(coord, dist=1, mode='scan', return_str=False,
                                            character=None)
-        self.assertEqual(expectstr, mapstr)
+        maplst = [[part.replace("||", "|") for part in partlst] for partlst in maplst]
+        self.assertEqual(expectstr, mapstr.replace("||", "|"))
         self.assertEqual(expectlst, maplst[::-1])
 
     @parameterized.expand([
@@ -429,8 +430,9 @@ class TestMap1(_MapTest):
         mapstr = self.map.get_visual_range(coord, dist=1, mode='scan', character='@')
         maplst = self.map.get_visual_range(coord, dist=1, mode='scan', return_str=False,
                                            character='@')
-        self.assertEqual(expectstr, mapstr)
-        self.assertEqual(expectlst, maplst[::-1])  # flip y-axis to match print direction
+        maplst = [[part.replace("||", "|") for part in partlst] for partlst in maplst]
+        self.assertEqual(expectstr, mapstr.replace("||", "|"))
+        self.assertEqual(expectlst, maplst[::-1])  # flip y-axis for print
 
     @parameterized.expand([
         ((0, 0), 1, '#  \n|  \n@-#'),
@@ -446,7 +448,7 @@ class TestMap1(_MapTest):
 
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@')
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     def test_spawn(self):
         """
@@ -471,7 +473,7 @@ class TestMap2(_MapTest):
         # strip the leftover spaces on the right to better
         # work with text editor stripping this automatically ...
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(stripped_map, MAP2_DISPLAY)
+        self.assertEqual(stripped_map.replace("||", "|"), MAP2_DISPLAY)
 
     def test_node_from_coord(self):
         for mapnode in self.map.node_index_map.values():
@@ -510,7 +512,7 @@ class TestMap2(_MapTest):
 
         """
         mapstr = self.map.get_visual_range(coord, dist=4, mode='scan', character='@')
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     def test_extended_path_tracking__horizontal(self):
         """
@@ -565,7 +567,7 @@ class TestMap2(_MapTest):
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
                                            max_size=max_size)
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     def test_spawn(self):
         """
@@ -588,7 +590,7 @@ class TestMap3(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP3_DISPLAY, stripped_map)
+        self.assertEqual(MAP3_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((0, 0), (1, 0), ()),  # no node at (1, 0)!
@@ -624,7 +626,7 @@ class TestMap3(_MapTest):
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
                                            max_size=max_size)
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     def test_spawn(self):
         """
@@ -647,7 +649,7 @@ class TestMap4(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP4_DISPLAY, stripped_map)
+        self.assertEqual(MAP4_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((1, 0), (1, 2), ('n',)),  # cross + vertically
@@ -686,7 +688,7 @@ class TestMap5(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP5_DISPLAY, stripped_map)
+        self.assertEqual(MAP5_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((0, 0), (1, 0), ('e',)),  # cross one-way
@@ -723,7 +725,7 @@ class TestMap6(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP6_DISPLAY, stripped_map)
+        self.assertEqual(MAP6_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((0, 0), (2, 0), ('e', 'e')),  # cross one-way
@@ -764,7 +766,7 @@ class TestMap7(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP7_DISPLAY, stripped_map)
+        self.assertEqual(MAP7_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((1, 0), (1, 2), ('n', )),
@@ -801,7 +803,7 @@ class TestMap8(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP8_DISPLAY, stripped_map)
+        self.assertEqual(MAP8_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((2, 0), (2, 2), ('n',)),
@@ -831,18 +833,18 @@ class TestMap8(_MapTest):
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes', character='@',
                                            max_size=max_size)
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     @parameterized.expand([
-        ((2, 2), (3, 2), 1, None, '  #-o  \n    |  \n#   o  \n|   |  \no-o-@.#\n    |  \n    o  '
+        ((2, 2), (3, 2), 1, None, '  #-o  \n    |  \n#   o  \n|   |  \no-o-@..\n    |  \n    o  '
             '\n    |  \n    #  '),
         ((2, 2), (5, 3), 1, None, '  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    .  \n    .  '
-            '\n    .  \n    #  '),
-        ((2, 2), (5, 3), 2, None, '#-#-o      \n|  \\|      \n#-o-o-#   #\n|   |\\    .\no-o-@-'
+            '\n    .  \n    ...'),
+        ((2, 2), (5, 3), 2, None, '#-#-o      \n|  \\|      \n#-o-o-#   .\n|   |\\    .\no-o-@-'
             '#   .\n    .    . \n    .   .  \n    .  .   \n#---...    '),
-        ((5, 3), (2, 2), 2, (13, 7), '    o-o\n    | |\n    o-@\n      .\n#     .\n.    . '),
-        ((5, 3), (1, 1), 2, None, '        o-o\n        | |\n        o-@\n          .\n    '
-            '#     .\n    .    . \n    .   .  \n    .  .   \n#---...    ')
+        ((5, 3), (2, 2), 2, (13, 7), '    o-o\n    | |\n    o-@\n      .\n.     .\n.    . '),
+        ((5, 3), (1, 1), 2, None, '        o-o\n        | |\n        o-@\n.         .\n.....     '
+         '.\n    .    . \n    .   .  \n    .  .   \n#---...    ')
     ])
     def test_get_visual_range_with_path(self, coord, target, dist, max_size, expected):
         """
@@ -853,7 +855,7 @@ class TestMap8(_MapTest):
                                            target=target, target_path_style=".",
                                            character='@',
                                            max_size=max_size)
-        self.assertEqual(expected, mapstr)
+        self.assertEqual(expected, mapstr.replace("||", "|"))
 
     def test_spawn(self):
         """
@@ -876,7 +878,7 @@ class TestMap9(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP9_DISPLAY, stripped_map)
+        self.assertEqual(MAP9_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((0, 0), (0, 1), ('u',)),
@@ -914,18 +916,19 @@ class TestMap10(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP10_DISPLAY, stripped_map)
+        self.assertEqual(MAP10_DISPLAY, stripped_map.replace("||", "|"))
 
+    # interrupts are only relevant to the auto-stepper
     @parameterized.expand([
         ((0, 0), (1, 0), ('n', 'e', 's')),
         ((3, 0), (3, 1), ()),  # the blockage hinders this
         ((1, 3), (0, 4), ('e', 'n', 'w', 'w')),
-        ((0, 1), (3, 2), ('e', 'n', 'e')),  # path interrupted by I node
-        ((0, 1), (0, 3), ('e', 'n', 'n')),  # path interrupted by i link
-        ((1, 3), (0, 3), ()),
+        ((0, 1), (3, 2), ('e', 'n', 'e', 'e')),
+        ((0, 1), (0, 3), ('e', 'n', 'n', 'w')),
+        ((1, 3), (0, 3), ('w',)),
         ((3, 2), (2, 2), ('w',)),
-        ((3, 2), (1, 2), ('w',)),
-        ((3, 3), (0, 3), ('w',)),
+        ((3, 2), (1, 2), ('w', 'w')),
+        ((3, 3), (0, 3), ('w', 'w')),
         ((2, 2), (3, 2), ('e',)),
     ])
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
@@ -938,7 +941,8 @@ class TestMap10(_MapTest):
 
     @parameterized.expand([
         ((2, 2), (3, 2), ('e', ), ((2, 2), (2.5, 2), (3, 2))),
-        ((3, 3), (0, 3), ('w', ), ((3, 3), (2.5, 3.0), (2.0, 3.0), (1.5, 3.0), (1, 3))),
+        ((3, 3), (0, 3), ('w', 'w'), ((3, 3), (2.5, 3.0), (2.0, 3.0),
+                                      (1.5, 3.0), (1, 3), (0.5, 3), (0, 3))),
     ])
     def test_paths(self, startcoord, endcoord, expected_directions, expected_path):
         """
@@ -971,7 +975,7 @@ class TestMap11(_MapTest):
     def test_str_output(self):
         """Check the display_map"""
         stripped_map = "\n".join(line.rstrip() for line in str(self.map).split('\n'))
-        self.assertEqual(MAP11_DISPLAY, stripped_map)
+        self.assertEqual(MAP11_DISPLAY, stripped_map.replace("||", "|"))
 
     @parameterized.expand([
         ((2, 0), (1, 2), ('e', 'nw', 'e')),
@@ -1002,8 +1006,8 @@ class TestMap11(_MapTest):
         self.assertEqual(expected_path, tuple(strpositions))
 
     @parameterized.expand([
-        ((2, 0), (1, 2), 3, None, '..#    \n .     \n  . .  \n     . \n    @..'),
-        ((1, 2), (2, 0), 3, None, '..@    \n .     \n  . .  \n     . \n    #..'),
+        ((2, 0), (1, 2), 3, None, '...    \n .     \n  . .  \n     . \n    @..'),
+        ((1, 2), (2, 0), 3, None, '..@    \n .     \n  . .  \n     . \n    ...'),
 
     ])
     def test_get_visual_range_with_path(self, coord, target, dist, max_size, expected):
@@ -1164,7 +1168,7 @@ class TestXYZGrid(EvenniaTest):
         """Check the display_map"""
         xymap = self.grid.get_map(self.zcoord)
         stripped_map = "\n".join(line.rstrip() for line in str(xymap).split('\n'))
-        self.assertEqual(MAP1_DISPLAY, stripped_map)
+        self.assertEqual(MAP1_DISPLAY, stripped_map.replace("||", "|"))
 
     def test_spawn(self):
         """Spawn objects for the grid"""
@@ -1178,12 +1182,12 @@ class TestXYZGrid(EvenniaTest):
 
 
 # map transitions
-class Map12aTransition(map_legend.MapTransitionMapNode):
+class Map12aTransition(xymap_legend.MapTransitionMapNode):
     symbol = "T"
     target_map_xyz = (1, 0, "map12b")
 
 
-class Map12bTransition(map_legend.MapTransitionMapNode):
+class Map12bTransition(xymap_legend.MapTransitionMapNode):
     symbol = "T"
     target_map_xyz = (0, 1, "map12a")
 
@@ -1280,7 +1284,7 @@ class TestBuildExampleGrid(EvenniaTest):
         room2b = xyzroom.XYZRoom.objects.get_xyz(xyz=(1, 3, 'the small cave'))
 
         self.assertEqual(room1a.key, "Dungeon Entrance")
-        self.assertTrue(room1a.db.desc.startswith("To the west"))
+        self.assertTrue(room1a.db.desc.startswith("To the east"))
         self.assertEqual(room1b.key, "A gorgeous view")
         self.assertTrue(room1b.db.desc.startswith("The view from here is breathtaking,"))
         self.assertEqual(room2a.key, "The entrance")

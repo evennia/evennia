@@ -17,11 +17,11 @@ Then
 
 """
 
-from evennia.contrib.xyzgrid import map_legend
+from evennia.contrib.xyzgrid import xymap_legend
 
 # default prototype parent. It's important that
 # the typeclass inherits from the XYZRoom (or XYZExit)
-# the map_legend.XYZROOM_PARENT and XYZEXIT_PARENTS can also
+# the xymap_legend.XYZROOM_PARENT and XYZEXIT_PARENTS can also
 # be used as a shortcut.
 
 PARENT = {
@@ -66,7 +66,7 @@ MAP1 = r"""
 """
 
 
-class TransitionToCave(map_legend.MapTransitionMapNode):
+class TransitionToCave(xymap_legend.MapTransitionMapNode):
     """
     A transition from 'the large tree' to 'the small cave' map. This node is never spawned
     into a room but only acts as a target for finding the exit's destination.
@@ -169,7 +169,7 @@ MAP2 = r"""
 """
 
 # custom map node
-class TransitionToLargeTree(map_legend.MapTransitionMapNode):
+class TransitionToLargeTree(xymap_legend.MapTransitionMapNode):
     """
     A transition from 'the small cave' to 'the large tree' map. This node is never spawned
     into a room by only acts as a target for finding the exit's destination.

@@ -111,7 +111,7 @@ from evennia.utils import logger
 from evennia.prototypes import prototypes as protlib
 
 from .utils import MapError, MapParserError, BIGVAL
-from . import map_legend
+from . import xymap_legend
 
 _CACHE_DIR = settings.CACHE_DIR
 _LOADED_PROTOTYPES = None
@@ -121,29 +121,7 @@ MAP_DATA_KEYS = [
     "zcoord", "map", "legend", "prototypes", "options", "module_path"
 ]
 
-# these are all symbols used for x,y coordinate spots
-DEFAULT_LEGEND = {
-    "#": map_legend.BasicMapNode,
-    "T": map_legend.MapTransitionMapNode,
-    "I": map_legend.InterruptMapNode,
-    "|": map_legend.NSMapLink,
-    "-": map_legend.EWMapLink,
-    "/": map_legend.NESWMapLink,
-    "\\": map_legend.SENWMapLink,
-    "x": map_legend.CrossMapLink,
-    "+": map_legend.PlusMapLink,
-    "v": map_legend.NSOneWayMapLink,
-    "^": map_legend.SNOneWayMapLink,
-    "<": map_legend.EWOneWayMapLink,
-    ">": map_legend.WEOneWayMapLink,
-    "o": map_legend.RouterMapLink,
-    "u": map_legend.UpMapLink,
-    "d": map_legend.DownMapLink,
-    "b": map_legend.BlockedMapLink,
-    "i": map_legend.InterruptMapLink,
-    't': map_legend.TeleporterMapLink,
-}
-
+DEFAULT_LEGEND = xymap_legend.LEGEND
 
 # --------------------------------------------
 # Map parser implementation

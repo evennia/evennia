@@ -1,5 +1,5 @@
 """
-# Map legend components
+# Map legend comhponents
 
 Each map-legend component is either a 'mapnode' - something that represents and actual in-game
 location (usually a room) or a 'maplink' - something connecting nodes together. The start of a link
@@ -1110,7 +1110,8 @@ class BasicMapNode(MapNode):
 
 
 class InterruptMapNode(MapNode):
-    """A point of interest node/room. The pathfinder will always stop here if passing through."""
+    """A point of interest node/room. Pathfinder will ignore but auto-stepper will
+    stop here if passing through. Starting from here is fine."""
     symbol = "I"
     display_symbol = "#"
     interrupt_path = True
@@ -1218,7 +1219,8 @@ class DownMapLink(UpMapLink):
 
 
 class InterruptMapLink(InvisibleSmartMapLink):
-    """A (still passable) link. Pathfinder will always abort before crossing this link."""
+    """A (still passable) link. Pathfinder will treat this as any link, but auto-stepper
+    will always abort before crossing this link - so this must be crossed manually."""
     symbol = "i"
     interrupt_path = True
     prototype = "xyz_exit"
@@ -1248,3 +1250,29 @@ class TeleporterMapLink(SmartTeleporterMapLink):
     one-way link out of the teleporter on one side.
     """
     symbol = 't'
+
+
+# all map components; used as base if not overridden
+LEGEND = {
+    # nodes
+    "#": BasicMapNode,
+    "T": MapTransitionMapNode,
+    "I": InterruptMapNode,
+    # links
+    "|": NSMapLink,
+    "-": EWMapLink,
+    "/": NESWMapLink,
+    "\\": SENWMapLink,
+    "x": CrossMapLink,
+    "+": PlusMapLink,
+    "v": NSOneWayMapLink,
+    "^": SNOneWayMapLink,
+    "<": EWOneWayMapLink,
+    ">": WEOneWayMapLink,
+    "o": RouterMapLink,
+    "u": UpMapLink,
+    "d": DownMapLink,
+    "b": BlockedMapLink,
+    "i": InterruptMapLink,
+    't': TeleporterMapLink,
+}
