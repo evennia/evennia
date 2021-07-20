@@ -1,5 +1,5 @@
 # Toc
-- [API root](api/evennia-api.rst)
+
 - [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
@@ -82,6 +82,7 @@
 - [Contribs/Dialogues in events](Contribs/Dialogues-in-events)
 - [Contribs/Dynamic In Game Map](Contribs/Dynamic-In-Game-Map)
 - [Contribs/Static In Game Map](Contribs/Static-In-Game-Map)
+- [Contribs/XYZGrid](Contribs/XYZGrid)
 - [./Contributing](./Contributing)
 - [./Contributing Docs](./Contributing-Docs)
 - [./Evennia API](./Evennia-API)

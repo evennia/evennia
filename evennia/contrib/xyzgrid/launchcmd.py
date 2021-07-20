@@ -1,6 +1,6 @@
 """
-Custom Evennia launcher command option for building/rebuilding the grid in a separate process than
-the main server (since this can be slow).
+Custom Evennia launcher command option for maintaining the grid in a separate process than the main
+server (since this can be slow).
 
 To use, add to the settings:
 ::
@@ -22,7 +22,7 @@ from evennia.utils import ansi
 from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
 
 _HELP_SHORT = """
-evennia xyzgrid help|list|init|add|build|initpath|delete [<options>]
+evennia xyzgrid help|list|init|add|spawn|initpath|delete [<options>]
 Manages the XYZ grid. Use 'xyzgrid help <option>' for documentation.
 """
 
@@ -34,7 +34,7 @@ help <command>   - get help about each command:
     list            - show list
     init            - initialize grid (only one time)
     add             - add new maps to grid
-    build           - build added maps into actual db-rooms/exits
+    spawn           - spawn added maps into actual db-rooms/exits
     initpath        - (re)creates pathfinder matrices
     delete          - delete part or all of grid
 """
@@ -78,38 +78,38 @@ add <path.to.xymap.module> [<path> <path>,...]
         {"map": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}
         describing one single XYmap, or
     - a XYMAP_DATA_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows for
-        embedding multiple maps in the same module. See evennia/contrib/xyzgrid/map_example.py
+        embedding multiple maps in the same module. See evennia/contrib/xyzgrid/example.py
         for an example of how this looks.
 
-    Note that adding a map does *not* build it. If maps are linked to one another, you should
-    add all linked maps before running 'build', or you'll get errors when creating transitional
+    Note that adding a map does *not* spawn it. If maps are linked to one another, you should
+    add all linked maps before running 'spawn', or you'll get errors when creating transitional
     exits between maps.
 
 Examples:
 
-    evennia xyzgrid add evennia.contrib.xyzgrid.map_example
+    evennia xyzgrid add evennia.contrib.xyzgrid.example
     evennia xyzgrid add world.mymap1 world.mymap2 world.mymap3
 """
 
-_HELP_BUILD = """
-build
+_HELP_SPAWN = """
+spawn
 
-    Builds/updates the entire database grid based on the added maps. For a new grid, this will
+    spawns/updates the entire database grid based on the added maps. For a new grid, this will
     spawn all new rooms/exits (and may take a good while!). For updating, rooms may be
-    removed/spawned if a map changed since the last build.
+    removed/spawned if a map changed since the last spawn.
 
-build "(X,Y,Z|mapname)"
+spawn "(X,Y,Z|mapname)"
 
-    Builds/updates only a part of the grid. Remember the quotes around the coordinate (this
+    spawns/updates only a part of the grid. Remember the quotes around the coordinate (this
     is mostly because shells don't like them)! Use '*' as a wild card for XY coordinates.
     This should usually only be used if the full grid has already been built once - otherwise
-    inter-map transitions may fail! Z is the name/z-coordinate of the map to build.
+    inter-map transitions may fail! Z is the name/z-coordinate of the map to spawn.
 
 Examples:
 
-    evennia xyzgrid build                  - build all
-    evennia xyzgrid "(*, *, mymap1)"       - build everything of map/zcoord mymap1
-    evennia xyzgrid "(12, 5, mymap1)"      - build only coordinate (12, 5) on map/zcoord mymap1
+    evennia xyzgrid spawn                  - spawn all
+    evennia xyzgrid "(*, *, mymap1)"       - spawn everything of map/zcoord mymap1
+    evennia xyzgrid "(12, 5, mymap1)"      - spawn only coordinate (12, 5) on map/zcoord mymap1
 """
 
 _HELP_INITPATH = """
@@ -118,7 +118,7 @@ initpath
     Recreates the pathfinder matrices for the entire grid. These are used for all shortest-path
     calculations. The result will be cached to disk (in mygame/server/.cache/). If not run, each
     map will run this automatically first time it's used. Running this will always force to
-    rebuild the cache.
+    respawn the cache.
 
 initpath Z|mapname
 
@@ -156,7 +156,7 @@ _TOPICS_MAP = {
     "list": _HELP_LIST,
     "init": _HELP_INIT,
     "add": _HELP_ADD,
-    "build": _HELP_BUILD,
+    "spawn": _HELP_SPAWN,
     "initpath": _HELP_INITPATH,
     "delete": _HELP_DELETE
 }
@@ -216,14 +216,14 @@ def _option_list(*suboptions):
                       "to another map), so the 'missing room(s)' may just be from such nodes.")
             elif nrooms > nnodes:
                 print(f"{nrooms} / {nnodes} rooms are spawned\n"
-                      "Note: Maybe some rooms were removed from map. Run 'build' to re-sync.")
+                      "Note: Maybe some rooms were removed from map. Run 'spawn' to re-sync.")
             else:
                 print(f"{nrooms} / {nnodes} rooms are spawned\n")
 
             if checkwarning:
                 print("Note: This check is not complete; it does not consider changed map "
                       "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
-                      "is calculated only during a build.")
+                      "is calculated only during a spawn.")
             print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
             print("\nRaw map string (including axes and invisible nodes/links):\n"
                   + str(xymap.mapstring))
@@ -268,9 +268,9 @@ def _option_add(*suboptions):
     print(f"Added (or readded) {len(xymap_data_list)} XYMaps to grid.")
 
 
-def _option_build(*suboptions):
+def _option_spawn(*suboptions):
     """
-    Build the grid or part of it.
+    spawn the grid or part of it.
 
     """
     grid = get_xyzgrid()
@@ -286,14 +286,14 @@ def _option_build(*suboptions):
         try:
             x, y, z = (part.strip() for part in opts.split(","))
         except ValueError:
-            print("Build coordinate must be given as (X, Y, Z) tuple, where '*' act "
+            print("spawn coordinate must be given as (X, Y, Z) tuple, where '*' act "
                   "wild cards and Z is the mapname/z-coord of the map to load.")
             return
     else:
         x, y, z = '*', '*', '*'
 
     if x == y == z == '*':
-        inp = input("This will (re)build the entire grid. If it was built before, it may spawn \n"
+        inp = input("This will (re)spawn the entire grid. If it was built before, it may spawn \n"
                     "new rooms or delete rooms that no longer matches the grid.\nDo you want to "
                     "continue? [Y]/N? ")
     else:
@@ -303,9 +303,9 @@ def _option_build(*suboptions):
         print("Aborted.")
         return
 
-    print("Starting build ...")
+    print("Starting spawn ...")
     grid.spawn(xyz=(x, y, z))
-    print("... build complete!\nIt's recommended to reload the server to refresh caches if this "
+    print("... spawn complete!\nIt's recommended to reload the server to refresh caches if this "
           "modified an existing grid.")
 
 

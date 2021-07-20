@@ -45,14 +45,13 @@ class MapNode:
     - `display_symbol` (str or `None`) - This is what is used to visualize this node later. This
       symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
       character (be aware of encodings to different clients though) or, commonly, add color
-      tags around it. For further customization, the `.get_display_symbol` method receives
-      the full grid and can return a dynamically determined display symbol. If set to `None`,
-      the `symbol` is used.
+      tags around it. For further customization, the `.get_display_symbol` method
+      can return a dynamically determined display symbol. If set to `None`, the `symbol` is used.
     - `interrupt_path` (bool): If this is set, the shortest-path algorithm will include this
-      node as normally, but stop when reaching it, even if not having reached its target yet. This
-      is useful for marking 'points of interest' along a route, or places where you are not
-      expected to be able to continue without some further in-game action not covered by the map
-      (such as a guard or locked gate etc).
+      node as normally, but the auto-stepper will stop when reaching it, even if not having reached
+      its target yet. This is useful for marking 'points of interest' along a route, or places where
+      you are not expected to be able to continue without some further in-game action not covered by
+      the map (such as a guard or locked gate etc).
     - `prototype` (dict) - The default `prototype` dict to use for reproducing this map component
       on the game grid. This is used if not overridden specifically for this coordinate. If this
       is not given, nothing will be spawned for this coordinate (a 'virtual' node can be useful
@@ -88,7 +87,7 @@ class MapNode:
         'u': ('up', 'u'),
     }
 
-    def __init__(self, x, y, Z, node_index=0, xymap=None):
+    def __init__(self, x, y, Z, node_index=0, symbol=None, xymap=None):
         """
         Initialize the mapnode.
 
@@ -99,6 +98,8 @@ class MapNode:
             node_index (int): This identifies this node with a running
                 index number required for pathfinding. This is used
                 internally and should not be set manually.
+            symbol (str, optional): Set during parsing - allows to override
+                the symbol based on what's set in the legend.
             xymap (XYMap, optional): The map object this sits on.
 
         """
@@ -115,6 +116,8 @@ class MapNode:
         self.Z = Z
 
         self.node_index = node_index
+        if symbol is not None:
+            self.symbol = symbol
 
         # this indicates linkage in 8 cardinal directions on the string-map,
         # n,ne,e,se,s,sw,w,nw and link that to a node (always)
@@ -501,8 +504,8 @@ class MapLink:
       symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
       character (be aware of encodings to different clients though) or, commonly, add color
       tags around it. For further customization, the `.get_display_symbol` can be used.
-    - `default_weight` (int) - Each link direction covered by this link can have its seprate weight,
-      this is used if none is specified in a particular direction. This value must be >= 1,
+    - `default_weight` (int) - Each link direction covered by this link can have its separate
+      weight, this is used if none is specified in a particular direction. This value must be >= 1,
       and can be higher than 1 if a link should be less favored.
     - `directions` (dict) - this specifies which link edge to which other link-edge this link
       is connected; A link connecting the link's sw edge to its easted edge would be written
@@ -577,7 +580,7 @@ class MapLink:
     # will be used.
     spawn_aliases = {}
 
-    def __init__(self, x, y, Z, xymap=None):
+    def __init__(self, x, y, Z, symbol=None, xymap=None):
         """
         Initialize the link.
 
@@ -585,6 +588,8 @@ class MapLink:
             x (int): The xygrid x coordinate
             y (int): The xygrid y coordinate.
             X (int or str): The name/Z-coord of this map we are on.
+            symbol (str, optional): Set during parsing, allows to override
+                the default symbol with the one set in the legend.
             xymap (XYMap, optional): The map object this sits on.
 
         """
@@ -596,6 +601,9 @@ class MapLink:
         self.X = x / 2
         self.Y = y / 2
         self.Z = Z
+
+        if symbol is not None:
+            self.symbol = symbol
 
     def __str__(self):
         return f"<LinkNode '{self.symbol}' XY=({self.X:g},{self.Y:g})>"
@@ -1117,7 +1125,7 @@ class InterruptMapNode(MapNode):
     interrupt_path = True
     prototype = "xyz_room"
 
-class MapTransitionMapNode(TransitionMapNode):
+class MapTransitionNode(TransitionMapNode):
     """Transition-target node to other map. This is not actually spawned in-game."""
     symbol = "T"
     display_symbol = " "
@@ -1256,7 +1264,7 @@ class TeleporterMapLink(SmartTeleporterMapLink):
 LEGEND = {
     # nodes
     "#": BasicMapNode,
-    "T": MapTransitionMapNode,
+    "T": MapTransitionNode,
     "I": InterruptMapNode,
     # links
     "|": NSMapLink,

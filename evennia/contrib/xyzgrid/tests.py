@@ -1182,12 +1182,12 @@ class TestXYZGrid(EvenniaTest):
 
 
 # map transitions
-class Map12aTransition(xymap_legend.MapTransitionMapNode):
+class Map12aTransition(xymap_legend.TransitionMapNode):
     symbol = "T"
     target_map_xyz = (1, 0, "map12b")
 
 
-class Map12bTransition(xymap_legend.MapTransitionMapNode):
+class Map12bTransition(xymap_legend.TransitionMapNode):
     symbol = "T"
     target_map_xyz = (0, 1, "map12a")
 
@@ -1251,7 +1251,7 @@ class TestXYZGridTransition(EvenniaTest):
 
 class TestBuildExampleGrid(EvenniaTest):
     """
-    Test building the map_example (this takes about 30s)
+    Test building the map-example (this takes about 30s)
 
     """
     def setUp(self):
@@ -1271,7 +1271,7 @@ class TestBuildExampleGrid(EvenniaTest):
         Build the map example.
 
         """
-        mapdatas = self.grid.maps_from_module("evennia.contrib.xyzgrid.map_example")
+        mapdatas = self.grid.maps_from_module("evennia.contrib.xyzgrid.example")
         self.assertEqual(len(mapdatas), 2)
 
         self.grid.add_maps(*mapdatas)
