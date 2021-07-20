@@ -241,6 +241,9 @@ class XYZRoom(DefaultRoom):
         map_area_client (bool): If True, map area will always fill the entire
             client width. If False, the map area's width will vary with the
             width of the currently displayed location description.
+        map_fill_all (bool): I the map area should fill the client width or not.
+        map_separator_char (str): The char to use to separate the map area from
+            the room description.
 
     """
 
@@ -255,6 +258,7 @@ class XYZRoom(DefaultRoom):
     map_align = 'c'
     map_target_path_style = "|y{display_symbol}|n"
     map_fill_all = True
+    map_separator_char = "|x~|n"
 
     def __str__(self):
         return repr(self)
@@ -431,6 +435,9 @@ class XYZRoom(DefaultRoom):
                 xymap.options.get("map_target_path_style", self.map_target_path_style))
             map_area_client = kwargs.get(
                 "map_fill_all", xymap.options.get("map_fill_all", self.map_fill_all))
+            map_separator_char = kwargs.get(
+                "map_separator_char",
+                xymap.options.get("map_separator_char", self.map_separator_char))
 
             client_width, _ = looker.sessions.get()[0].get_client_size()
 
@@ -465,8 +472,8 @@ class XYZRoom(DefaultRoom):
                 max_size=(display_width, None),
                 indent=map_indent
             )
-            sep = "~" * sep_width
-            map_display = f"|x{sep}|n\n{map_display}\n|x{sep}"
+            sep = map_separator_char * sep_width
+            map_display = f"{sep}|n\n{map_display}\n{sep}"
 
             # echo directly to make easier to separate in client
             looker.msg(text=(map_display, {"type": "xymap"}), options=None)

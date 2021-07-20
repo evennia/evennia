@@ -16,7 +16,7 @@ your current visual-range and a lot of related features.
 The rooms of the grid are entirely controlled from outside the game, using
 python modules with strings and dicts defining the map(s) of the game. It's
 possible to combine grid- with non-grid rooms, and you can decorate
-grid rooms as much as you like in-game, but you cannot build new grid
+grid rooms as much as you like in-game, but you cannot spawn new grid
 rooms without editing the map files outside of the game.
 
 The full docs are found as
@@ -33,7 +33,7 @@ in the docs.
 
         EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.launchcmd.xyzcommand'
 
-3. Run the new `evennia xyzgrid help` for instructions on how to build the grid.
+3. Run the new `evennia xyzgrid help` for instructions on how to spawn the grid.
 
 ## Example usage
 
@@ -41,14 +41,14 @@ After installation, do the following (from your command line, where the
 `evennia` command is available) to install an example grid:
 
     evennia xyzgrid init
-    evennia xyzgrid add evennia.contrib.xyzgrid.map_example
+    evennia xyzgrid add evennia.contrib.xyzgrid.example
     evennia xyzgrid list
     evennia xyzgrid show "the large tree"
     evennia xyzgrid show "the small cave"
-    evennia xyzgrid build
+    evennia xyzgrid spawn
     evennia reload
 
-(remember to reload the server after build operations).
+(remember to reload the server after spawn operations).
 
 Now you can log into the
 server and do `teleport (3,0,the large tree)` to teleport into the map.

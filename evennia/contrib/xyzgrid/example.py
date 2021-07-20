@@ -21,15 +21,16 @@ from evennia.contrib.xyzgrid import xymap_legend
 
 # default prototype parent. It's important that
 # the typeclass inherits from the XYZRoom (or XYZExit)
-# the xymap_legend.XYZROOM_PARENT and XYZEXIT_PARENTS can also
-# be used as a shortcut.
+# if adding the evennia.contrib.xyzgrid.prototypes to
+# settings.PROTOTYPE_MODULES, one could just set the
+# prototype_parent to 'xyz_room' and 'xyz_exit' respectively
+# instead.
 
 PARENT = {
     "key": "An empty room",
     "prototype_key": "xyzmap_room_map1",
     "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
     "desc": "An empty room.",
-    "options": {}
 }
 
 
@@ -66,7 +67,7 @@ MAP1 = r"""
 """
 
 
-class TransitionToCave(xymap_legend.MapTransitionMapNode):
+class TransitionToCave(xymap_legend.TransitionMapNode):
     """
     A transition from 'the large tree' to 'the small cave' map. This node is never spawned
     into a room but only acts as a target for finding the exit's destination.
@@ -169,7 +170,7 @@ MAP2 = r"""
 """
 
 # custom map node
-class TransitionToLargeTree(xymap_legend.MapTransitionMapNode):
+class TransitionToLargeTree(xymap_legend.TransitionMapNode):
     """
     A transition from 'the small cave' to 'the large tree' map. This node is never spawned
     into a room by only acts as a target for finding the exit's destination.

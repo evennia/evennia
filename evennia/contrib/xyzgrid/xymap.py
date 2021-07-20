@@ -88,7 +88,7 @@ The nodes and links can be customized by add your own implementation of `MapNode
 the LEGEND dict, mapping them to a particular character symbol. A `MapNode` can only be added
 on an even XY coordinate while `MapLink`s can be added anywhere on the xygrid.
 
-See `./map_example.py` for some empty grid areas to start from.
+See `./example.py` for a full grid example.
 
 ----
 """
@@ -456,11 +456,12 @@ class XYMap:
 
                     xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = \
                         mapnode_or_link_class(x=ix, y=iy, Z=self.Z,
-                                              node_index=node_index, xymap=self)
+                                              node_index=node_index, symbol=char, xymap=self)
 
                 else:
                     # we have a link at this xygrid position (this is ok everywhere)
-                    xygrid[ix][iy] = mapnode_or_link_class(x=ix, y=iy, Z=self.Z, xymap=self)
+                    xygrid[ix][iy] = mapnode_or_link_class(x=ix, y=iy, Z=self.Z, symbol=char,
+                                                           xymap=self)
 
                 # store the symbol mapping for transition lookups
                 symbol_map[char].append(xygrid[ix][iy])
