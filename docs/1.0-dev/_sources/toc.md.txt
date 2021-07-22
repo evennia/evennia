@@ -82,6 +82,7 @@
 - [Contribs/Dialogues in events](Contribs/Dialogues-in-events)
 - [Contribs/Dynamic In Game Map](Contribs/Dynamic-In-Game-Map)
 - [Contribs/Static In Game Map](Contribs/Static-In-Game-Map)
+- [Contribs/XYZGrid](Contribs/XYZGrid)
 - [./Contributing](./Contributing)
 - [./Contributing Docs](./Contributing-Docs)
 - [./Evennia API](./Evennia-API)

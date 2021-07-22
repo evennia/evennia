@@ -45,6 +45,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Max</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">get_and_merge_cmdsets</span>
@@ -1528,40 +1529,33 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exit_obj</span></div>
 
+<div class="viewcode-block" id="CmdOpen.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: open &lt;new exit&gt;[;alias...][:typeclass]&quot;</span>
+                            <span class="s2">&quot;[,&lt;return exit&gt;[;alias..][:typeclass]]] &quot;</span>
+                            <span class="s2">&quot;= &lt;destination&gt;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InterruptCommand</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot create an exit from a None-location.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InterruptCommand</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InterruptCommand</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_aliases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;option&quot;</span><span class="p">]</span></div>
+
 <div class="viewcode-block" id="CmdOpen.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is where the processing starts.</span>
 <span class="sd">        Uses the ObjManipCommand.parser() for pre-processing</span>
 <span class="sd">        as well as the self.create_exit() method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: open &lt;new exit&gt;[;alias...][:typeclass][,&lt;return exit&gt;[;alias..][:typeclass]]] &quot;</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;= &lt;destination&gt;&quot;</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># We must have a location to open an exit</span>
-        <span class="n">location</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot create an exit from a None-location.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># obtain needed info from cmdline</span>
-
-        <span class="n">exit_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-        <span class="n">exit_aliases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span>
-        <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
-        <span class="n">dest_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
-
-        <span class="c1"># first, check so the destination exists.</span>
-        <span class="n">destination</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">dest_name</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">destination</span><span class="p">:</span>
-            <span class="k">return</span>
-
         <span class="c1"># Create exit</span>
-        <span class="n">ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span><span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="p">,</span> <span class="n">exit_typeclass</span><span class="p">)</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">exit_aliases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_typeclass</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
             <span class="c1"># an error; the exit was not created, so we quit.</span>
             <span class="k">return</span>
@@ -1570,9 +1564,8 @@
             <span class="n">back_exit_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
             <span class="n">back_exit_aliases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span>
             <span class="n">back_exit_typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span>
-                <span class="n">back_exit_name</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">back_exit_aliases</span><span class="p">,</span> <span class="n">back_exit_typeclass</span>
-            <span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span><span class="n">back_exit_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">back_exit_aliases</span><span class="p">,</span>
+                             <span class="n">back_exit_typeclass</span><span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_convert_from_string</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">strobj</span><span class="p">):</span>
@@ -3022,28 +3015,37 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(teleport) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
+<div class="viewcode-block" id="CmdTeleport.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Breaking out searching here to make this easier to override.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Did not find object to teleport.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">InterruptCommand</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="CmdTeleport.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the teleport&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
-        <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
-        <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span>
 
-        <span class="c1"># setting switches</span>
-        <span class="n">tel_quietly</span> <span class="o">=</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">in</span> <span class="n">switches</span>
-        <span class="n">to_none</span> <span class="o">=</span> <span class="s2">&quot;tonone&quot;</span> <span class="ow">in</span> <span class="n">switches</span>
-        <span class="n">to_loc</span> <span class="o">=</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">switches</span>
-
-        <span class="k">if</span> <span class="n">to_none</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;tonone&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="c1"># teleporting to None</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-                <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="n">caller</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_to_teleport</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Did not find object to teleport.&quot;</span><span class="p">)</span>
-                    <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">destination</span><span class="p">:</span>
+                <span class="c1"># in this case lhs is always the object to teleport</span>
+                <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="n">destination</span>
+
             <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                     <span class="s2">&quot;Cannot teleport a puppeted object &quot;</span>
@@ -3052,57 +3054,54 @@
                 <span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleported </span><span class="si">%s</span><span class="s2"> -&gt; None-location.&quot;</span> <span class="o">%</span> <span class="n">obj_to_teleport</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tel_quietly</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
                     <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> teleported </span><span class="si">%s</span><span class="s2"> into nothingness.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj_to_teleport</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span>
                 <span class="p">)</span>
             <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
 
-        <span class="c1"># not teleporting to None location</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">to_none</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: teleport[/switches] [&lt;obj&gt; =] &lt;target_loc&gt;||home&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="n">rhs</span><span class="p">:</span>
-            <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">destination</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="n">caller</span>
-            <span class="n">destination</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_to_teleport</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Did not find object to teleport.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: teleport[/switches] [&lt;obj&gt; =] &lt;target or (X,Y,Z)&gt;||home&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">destination</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Destination not found.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">to_loc</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">destination</span> <span class="o">=</span> <span class="n">destination</span><span class="o">.</span><span class="n">location</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">destination</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Destination has no location.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">obj_to_teleport</span> <span class="o">==</span> <span class="n">destination</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t teleport an object inside of itself!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">obj_to_teleport</span> <span class="o">==</span> <span class="n">destination</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t teleport an object inside something it holds!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">destination</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="n">destination</span><span class="p">))</span>
             <span class="k">return</span>
-        <span class="n">use_destination</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="s2">&quot;intoexit&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-            <span class="n">use_destination</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># try the teleport</span>
-        <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span>
-            <span class="n">destination</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">tel_quietly</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">use_destination</span><span class="o">=</span><span class="n">use_destination</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="c1"># teleporting from none-location</span>
+            <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">destination</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> None -&gt; </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span>
+                <span class="n">destination</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="s2">&quot;quiet&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">,</span>
+                <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">use_destination</span><span class="o">=</span><span class="s2">&quot;intoexit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">obj_to_teleport</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleported to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">destination</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleported </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="n">destination</span><span class="p">))</span></div></div>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleportation failed.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdScript"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScript">[docs]</a><span class="k">class</span> <span class="nc">CmdScript</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>

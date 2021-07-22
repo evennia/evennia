@@ -1,0 +1,1300 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.xyzgrid.xymap_legend &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.xyzgrid.xymap_legend</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.xyzgrid.xymap_legend">
+<span id="evennia-contrib-xyzgrid-xymap-legend"></span><h1>evennia.contrib.xyzgrid.xymap_legend<a class="headerlink" href="#module-evennia.contrib.xyzgrid.xymap_legend" title="Permalink to this headline">¶</a></h1>
+<section id="map-legend-components">
+<h2>Map legend components<a class="headerlink" href="#map-legend-components" title="Permalink to this headline">¶</a></h2>
+<p>Each map-legend component is either a ‘mapnode’ - something that represents and actual in-game
+location (usually a room) or a ‘maplink’ - something connecting nodes together. The start of a link
+usually shows as an Exit, but the length of the link has no in-game equivalent.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">MapNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This represents a ‘room’ node on the map. Note that the map system deals with two grids, the
+finer <strong>xygrid</strong>, which is the per-character grid on the map, and the <strong>XYgrid</strong> which contains only
+the even-integer coordinates and also represents in-game coordinates/rooms. MapNodes are always
+located on even X,Y coordinates on the map grid and in-game.</p>
+<p>MapNodes will also handle the syncing of themselves and all outgoing links to the grid.</p>
+<p>Attributes on the node class:</p>
+<ul class="simple">
+<li><p><strong>symbol</strong> (str) - The character to parse from the map into this node. By default this
+is ‘#’ and must be a single character, with the exception of <a href="#id1"><span class="problematic" id="id2">**</span></a></p></li>
+<li><p><strong>display_symbol</strong> (str or <strong>None</strong>) - This is what is used to visualize this node later. This
+symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
+character (be aware of encodings to different clients though) or, commonly, add color
+tags around it. For further customization, the <strong>.get_display_symbol</strong> method
+can return a dynamically determined display symbol. If set to <strong>None</strong>, the <strong>symbol</strong> is used.</p></li>
+<li><p><strong>interrupt_path</strong> (bool): If this is set, the shortest-path algorithm will include this
+node as normally, but the auto-stepper will stop when reaching it, even if not having reached
+its target yet. This is useful for marking ‘points of interest’ along a route, or places where
+you are not expected to be able to continue without some further in-game action not covered by
+the map (such as a guard or locked gate etc).</p></li>
+<li><p><strong>prototype</strong> (dict) - The default <strong>prototype</strong> dict to use for reproducing this map component
+on the game grid. This is used if not overridden specifically for this coordinate. If this
+is not given, nothing will be spawned for this coordinate (a ‘virtual’ node can be useful
+for various reasons, mostly map-transitions).</p></li>
+</ul>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.interrupt_path">
+<code class="sig-name descname">interrupt_path</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.interrupt_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.multilink">
+<code class="sig-name descname">multilink</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.multilink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.direction_spawn_defaults">
+<code class="sig-name descname">direction_spawn_defaults</code><em class="property"> = {'d': ('down', 'd', 'do'), 'e': ('east', 'e'), 'n': ('north', 'n'), 'ne': ('northeast', 'ne', 'north-east'), 'nw': ('northwest', 'nw', 'north-west'), 's': ('south', 's'), 'se': ('southeast', 'se', 'south-east'), 'sw': ('southwest', 'sw', 'south-west'), 'u': ('up', 'u'), 'w': ('west', 'w')}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.direction_spawn_defaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the mapnode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – Coordinate on xygrid.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Coordinate on xygrid.</p></li>
+<li><p><strong>Z</strong> (<em>int</em><em> or </em><em>str</em>) – Name/Z-pos of this map.</p></li>
+<li><p><strong>node_index</strong> (<em>int</em>) – This identifies this node with a running
+index number required for pathfinding. This is used
+internally and should not be set manually.</p></li>
+<li><p><strong>symbol</strong> (<em>str</em><em>, </em><em>optional</em>) – Set during parsing - allows to override
+the symbol based on what’s set in the legend.</p></li>
+<li><p><strong>xymap</strong> (<a class="reference internal" href="evennia.contrib.xyzgrid.xymap.html#evennia.contrib.xyzgrid.xymap.XYMap" title="evennia.contrib.xyzgrid.xymap.XYMap"><em>XYMap</em></a><em>, </em><em>optional</em>) – The map object this sits on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.node_index">
+<code class="sig-name descname">node_index</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.node_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '#'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>log messages using the xygrid parent</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.generate_prototype_key">
+<code class="sig-name descname">generate_prototype_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.generate_prototype_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.generate_prototype_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a deterministic prototype key to allow for users to apply prototypes without
+needing a separate new name for every one.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.build_links">
+<code class="sig-name descname">build_links</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.build_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.build_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by the map parser when this node is encountered. It tells the node
+to scan in all directions and follow any found links to other nodes. Since there
+could be multiple steps to reach another node, the system will iterate down each
+path and store it once and for all.</p>
+<p class="rubric">Notes</p>
+<p>This sets up all data needed for later use of this node in pathfinding and
+other operations. The method can’t run immediately when the node is created
+since a complete parsed xygrid is required.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.linkweights">
+<code class="sig-name descname">linkweights</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nnodes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.linkweights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.linkweights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all the weights for the direct links to all other nodes. This is
+used for the efficient generation of shortest-paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nnodes</strong> (<em>int</em>) – The total number of nodes</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>scipy.array</em> –</p>
+<dl class="simple">
+<dt>Array of weights of the direct links to other nodes.</dt><dd><p>The weight will be 0 for nodes not directly connected to one another.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A node can at most have 8 connections (the cardinal directions).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.get_display_symbol">
+<code class="sig-name descname">get_display_symbol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.get_display_symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.get_display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override for customizing how the display_symbol is determined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The display-symbol to use. This must visually be a single character
+but could have color markers, use a unicode font etc.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, just setting .display_symbol is enough.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.get_spawn_xyz">
+<code class="sig-name descname">get_spawn_xyz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.get_spawn_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.get_spawn_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should return the XYZ-coordinates for spawning this node. This normally
+the XYZ of the current map, but for traversal-nodes, it can also be the location
+on another map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>tuple</em> – The (X, Y, Z) coords to spawn this node at.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.get_exit_spawn_name">
+<code class="sig-name descname">get_exit_spawn_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction</span></em>, <em class="sig-param"><span class="n">return_aliases</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.get_exit_spawn_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.get_exit_spawn_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the spawn name for the exit being created by this link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>str</em>) – The cardinal direction (n,ne etc) the want the
+exit name/aliases for.</p></li>
+<li><p><strong>return_aliases</strong> (<em>bool</em><em>, </em><em>optional</em>) – Also return all aliases.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str or tuple</em> – The key of the spawned exit, or a tuple (key, alias, alias, …)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.spawn">
+<code class="sig-name descname">spawn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.spawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build an actual in-game room from this node.</p>
+<p>This should be called as part of the node-sync step of the map sync. The reason is
+that the exits (next step) requires all nodes to exist before they can link up
+to their destinations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.spawn_links">
+<code class="sig-name descname">spawn_links</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directions</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.spawn_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.spawn_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build actual in-game exits based on the links out of this room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directions</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, this should be a list of supported
+directions (n, ne, etc). Only links in these directions will be spawned
+for this node.</p>
+</dd>
+</dl>
+<p>This should be called after all <strong>sync_node_to_grid</strong> operations have finished across
+the entire XYZgrid. This creates/syncs all exits to their locations and destinations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapNode.unspawn">
+<code class="sig-name descname">unspawn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapNode.unspawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode.unspawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all spawned objects related to this node and all links.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">TransitionMapNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#TransitionMapNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.xyzgrid.xymap_legend.MapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapNode</span></code></a></p>
+<p>This node acts as an end-node for a link that actually leads to a specific node on another
+map. It is not actually represented by a separate room in-game.</p>
+<p>This teleportation is not understood by the pathfinder, so why it will be possible to pathfind
+to this node, it really represents a map transition. Only a single link must ever be connected
+to this node.</p>
+<p>Properties:
+- <strong>target_map_xyz</strong> (tuple) - the (X, Y, Z) coordinate of a node on the other map to teleport</p>
+<blockquote>
+<div><p>to when moving to this node. This should not be another TransitionMapNode (see below for
+how to make a two-way link).</p>
+</div></blockquote>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">map1</span>   <span class="n">map2</span>
+
+<span class="c1">#-T    #-    - one-way transition from map1 -&gt; map2.</span>
+<span class="c1">#-T    T-#   - two-way. Both TransitionMapNodes links to the coords of the</span>
+               <span class="n">actual</span> <span class="n">rooms</span> <span class="p">(</span><span class="o">**</span><span class="c1">#**) on the other map (NOT to the **T**s)!</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'T'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.taget_map_xyz">
+<code class="sig-name descname">taget_map_xyz</code><em class="property"> = (None, None, None)</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.taget_map_xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.get_spawn_xyz">
+<code class="sig-name descname">get_spawn_xyz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#TransitionMapNode.get_spawn_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.get_spawn_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure to return the coord of the <em>target</em> - this will be used when building
+the exit to this node (since the prototype is None, this node itself will not be built).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.build_links">
+<code class="sig-name descname">build_links</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#TransitionMapNode.build_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode.build_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check so we don’t have too many links</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">MapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This represents one or more links between an ‘incoming direction’
+and an ‘outgoing direction’. It’s like a railway track between
+MapNodes. A Link can be placed on any location in the grid, but even when
+on an integer XY position they still don’t represent an actual in-game place
+but just a link between such places (the Nodes).</p>
+<p>Each link has a ‘weight’ &gt;=1,  this indicates how ‘slow’
+it is to traverse that link. This is used by the Dijkstra algorithm
+to find the ‘fastest’ route to a point. By default this weight is 1
+for every link, but a locked door, terrain etc could increase this
+and have the shortest-path algorithm prefer to use another route.</p>
+<p>Attributes on the link class:</p>
+<ul class="simple">
+<li><p><strong>symbol</strong> (str) - The character to parse from the map into this node. This must be a single
+character, with the exception of <a href="#id3"><span class="problematic" id="id4">**</span></a>**.</p></li>
+<li><p><strong>display_symbol</strong> (str or None)  - This is what is used to visualize this node later. This
+symbol must still only have a visual size of 1, but you could e.g. use some fancy unicode
+character (be aware of encodings to different clients though) or, commonly, add color
+tags around it. For further customization, the <strong>.get_display_symbol</strong> can be used.</p></li>
+<li><p><strong>default_weight</strong> (int) - Each link direction covered by this link can have its separate
+weight, this is used if none is specified in a particular direction. This value must be &gt;= 1,
+and can be higher than 1 if a link should be less favored.</p></li>
+<li><p><strong>directions</strong> (dict) - this specifies which link edge to which other link-edge this link
+is connected; A link connecting the link’s sw edge to its easted edge would be written
+as <strong>{‘sw’: ‘e’}</strong> and read ‘connects from southwest to east’. Note that if you want the
+link to go both ways, also the inverse (east to southwest) must also be added.</p></li>
+<li><p><strong>weights (dict)</strong> This maps a link’s start direction to a weight. So for the
+<strong>{‘sw’: ‘e’}</strong> link, a weight would be given as <strong>{‘sw’: 2}</strong>. If not given, a link will
+use the <strong>default_weight</strong>.</p></li>
+<li><p><strong>average_long_link_weights</strong> (bool): This applies to the <em>first</em> link out of a node only.
+When tracing links to another node, multiple links could be involved, each with a weight.
+So for a link chain with default weights, <strong>#—#</strong> would give a total weight of 3. With this
+setting, the weight will be 3 / 3 = 1. That is, for evenly weighted links, the length
+of the link doesn’t matter.</p></li>
+<li><p><strong>direction_aliases</strong> (dict): When displaying a direction during pathfinding, one may want
+to display a different ‘direction’ than the cardinal on-map one. For example ‘up’ may be
+visualized on the map as a ‘n’ movement, but the found path over this link should show
+as ‘u’. In that case, the alias would be <strong>{‘n’: ‘u’}</strong>.</p></li>
+<li><p><strong>multilink</strong> (bool): If set, this link accepts links from all directions. It will usually
+use a custom get_direction to determine what these are based on surrounding topology. This
+setting is necessary to avoid infinite loops when such multilinks are next to each other.</p></li>
+<li><p><strong>interrupt_path</strong> (bool): If set, a shortest-path solution will include this link as normal,
+but will stop short of actually moving past this link.</p></li>
+<li><p><strong>prototype</strong> (dict) - The default <strong>prototype</strong> dict to use for reproducing this map component
+on the game grid. This is only relevant for the <em>first</em> link out of a Node (the continuation
+of the link is only used to determine its destination). This can be overridden on a
+per-direction basis.</p></li>
+<li><p><strong>spawn_aliases</strong> (dict): A mapping {direction: (key, alias, alias, …) to use when spawning
+actual exits from this link. If not given, a sane set of defaults (n=(north, n) etc) will be
+used. This is required if you use any custom directions outside of the cardinal directions +
+up/down. The exit’s key (useful for auto-walk) is usually retrieved by calling
+<strong>node.get_exit_spawn_name(direction)</strong></p></li>
+</ul>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.default_weight">
+<code class="sig-name descname">default_weight</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.default_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.average_long_link_weights">
+<code class="sig-name descname">average_long_link_weights</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.average_long_link_weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.direction_aliases">
+<code class="sig-name descname">direction_aliases</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.direction_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.weights">
+<code class="sig-name descname">weights</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.multilink">
+<code class="sig-name descname">multilink</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.multilink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.interrupt_path">
+<code class="sig-name descname">interrupt_path</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.interrupt_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.spawn_aliases">
+<code class="sig-name descname">spawn_aliases</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.spawn_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – The xygrid x coordinate</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – The xygrid y coordinate.</p></li>
+<li><p><strong>X</strong> (<em>int</em><em> or </em><em>str</em>) – The name/Z-coord of this map we are on.</p></li>
+<li><p><strong>symbol</strong> (<em>str</em><em>, </em><em>optional</em>) – Set during parsing, allows to override
+the default symbol with the one set in the legend.</p></li>
+<li><p><strong>xymap</strong> (<a class="reference internal" href="evennia.contrib.xyzgrid.xymap.html#evennia.contrib.xyzgrid.xymap.XYMap" title="evennia.contrib.xyzgrid.xymap.XYMap"><em>XYMap</em></a><em>, </em><em>optional</em>) – The map object this sits on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.generate_prototype_key">
+<code class="sig-name descname">generate_prototype_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.generate_prototype_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.generate_prototype_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a deterministic prototype key to allow for users to apply prototypes without
+needing a separate new name for every one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>str</em>) – These are used to further seed the key.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.traverse">
+<code class="sig-name descname">traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em>, <em class="sig-param"><span class="n">_weight</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">_linklen</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">_steps</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.traverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively traverse the links out of this LinkNode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>start_direction</strong> (<em>str</em>) – The direction (n, ne etc) from which
+this traversal originates for this link.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><p>_weight (int): Internal use.
+_linklen (int): Internal use.
+_steps (list): Internal use.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>tuple</em> –</p>
+<dl class="simple">
+<dt>The (node, weight, links) result of the traversal, where links</dt><dd><p>is a list of directions (n, ne etc) that describes how to to get
+to the node on the grid. This includes the first direction.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="evennia.contrib.xyzgrid.utils.html#evennia.contrib.xyzgrid.utils.MapParserError" title="evennia.contrib.xyzgrid.utils.MapParserError"><strong>MapParserError</strong></a> – If a link lead to nowhere.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.get_linked_neighbors">
+<code class="sig-name descname">get_linked_neighbors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directions</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.get_linked_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.get_linked_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper to get all directions to which there appears to be a
+visual link/node. This does not trace the length of the link and check weights etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directions</strong> (<em>list</em><em>, </em><em>optional</em>) – Only scan in these directions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dict</em> – Mapping {direction: node_or_link} wherever such was found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.at_empty_target">
+<code class="sig-name descname">at_empty_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em>, <em class="sig-param"><span class="n">end_direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.at_empty_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.at_empty_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by <strong>.traverse</strong> when it finds this link pointing to nowhere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_direction</strong> (<em>str</em>) – The direction (n, ne etc) from which
+this traversal originates for this link.</p></li>
+<li><p><strong>end_direction</strong> (<em>str</em>) – The direction found from <strong>get_direction</strong> earlier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>MapNode, MapLink or None</em> – The next target to go to from here. <strong>None</strong> if this
+is an error that should be reported.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is usually a mapping error (returning <strong>None</strong>) but may have practical use, such as
+teleporting or transitioning to another map.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.get_direction">
+<code class="sig-name descname">get_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.get_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.get_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override for customizing how the directions are
+determined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>start_direction</strong> (<em>str</em>) – The starting direction (n, ne etc).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>The ‘out’ direction side of the link - where the link</dt><dd><p>leads to.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>With the default legend, if the link is a straght vertical link
+(<strong>|</strong>) and <strong>start_direction</strong> is <strong>s</strong> (link is approached from
+from the south side), then this function will return <a href="#id5"><span class="problematic" id="id6">**</span></a>n’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.get_weight">
+<code class="sig-name descname">get_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em>, <em class="sig-param"><span class="n">current_weight</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override for customizing how the weights are determined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_direction</strong> (<em>str</em>) – The starting direction (n, ne etc).</p></li>
+<li><p><strong>current_weight</strong> (<em>int</em>) – This can have an existing value if
+we are progressing down a multi-step path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The weight to use for a link from <strong>start_direction</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapLink.get_display_symbol">
+<code class="sig-name descname">get_display_symbol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapLink.get_display_symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink.get_display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override for customizing how the display_symbol is determined.
+This is called after all other hooks, at map visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The display-symbol to use. This must visually be a single character
+but could have color markers, use a unicode font etc.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, just setting .display_symbol is enough.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">SmartRerouterMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartRerouterMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>A ‘smart’ link without visible direction, but which uses its topological surroundings
+to figure out how it connects. All such links are two-way. It can be used to create ‘knees’ and
+multi-crossings of links. Remember that this is still a link, so user will not ‘stop’ at it,
+even if placed on an XY position!</p>
+<p>If there are links on cardinally opposite sites, these are considered pass-throughs, and
+If determining the path of a set of input/output directions this is not possible, or there is an
+uneven number of links, an <strong>MapParserError</strong> is raised.</p>
+<p>Example with the RedirectLink:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">/</span>
+<span class="o">-</span><span class="n">o</span>    <span class="o">-</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">ok</span><span class="p">,</span> <span class="n">there</span> <span class="n">can</span> <span class="n">only</span> <span class="n">be</span> <span class="n">one</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="o">-</span><span class="n">ne</span>
+
+ <span class="o">|</span>
+<span class="o">-</span><span class="n">o</span><span class="o">-</span>   <span class="o">-</span> <span class="n">equivalent</span> <span class="n">to</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">one</span> <span class="n">n</span><span class="o">-</span><span class="n">s</span> <span class="ow">and</span> <span class="n">one</span> <span class="n">w</span><span class="o">-</span><span class="n">e</span> <span class="n">link</span> <span class="n">crossing</span>
+ <span class="o">|</span>
+
+\<span class="o">|/</span>
+<span class="o">-</span><span class="n">o</span><span class="o">-</span>   <span class="o">-</span> <span class="nb">all</span> <span class="n">are</span> <span class="n">passing</span> <span class="n">straight</span> <span class="n">through</span>
+<span class="o">/|</span>\
+
+<span class="o">-</span><span class="n">o</span><span class="o">-</span>   <span class="o">-</span> <span class="n">w</span><span class="o">-</span><span class="n">e</span> <span class="k">pass</span> <span class="n">straight</span> <span class="n">through</span><span class="p">,</span> <span class="n">other</span> <span class="n">link</span> <span class="ow">is</span> <span class="n">sw</span><span class="o">-</span><span class="n">s</span>
+<span class="o">/|</span>
+
+<span class="o">-</span><span class="n">o</span>    <span class="o">-</span> <span class="n">invalid</span><span class="p">;</span> <span class="n">impossible</span> <span class="n">to</span> <span class="n">know</span> <span class="n">which</span> <span class="nb">input</span> <span class="n">goes</span> <span class="n">to</span> <span class="n">which</span> <span class="n">output</span>
+<span class="o">/|</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink.multilink">
+<code class="sig-name descname">multilink</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink.multilink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink.get_direction">
+<code class="sig-name descname">get_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartRerouterMapLink.get_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink.get_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynamically determine the direction based on a source direction and grid topology.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">SmartTeleporterMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartTeleporterMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>The teleport link works by connecting to nowhere - and will then continue
+on another teleport link with the same symbol elsewhere on the map. The teleport
+symbol must connect to only one other link (not to a node).</p>
+<p>For this to work, there must be exactly one other teleport with the same <strong>.symbol</strong> on the map.
+The two teleports will always operate as two-way connections, but by making the ‘out-link’ on
+one side one-way, the effect will be that of a one-way teleport.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">t</span> <span class="c1">#</span>
+  <span class="o">/</span>  <span class="o">|</span>   <span class="o">-</span>  <span class="n">moving</span> <span class="n">ne</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">left</span> <span class="n">node</span> <span class="n">will</span> <span class="n">bring</span> <span class="n">the</span> <span class="n">user</span> <span class="n">to</span> <span class="n">the</span> <span class="n">rightmost</span> <span class="n">node</span>
+<span class="o">-</span><span class="c1">#   t      as if the two teleporters were connected (two way).</span>
+
+<span class="o">-</span><span class="c1">#-t t&gt;# - one-way teleport from left to right.</span>
+
+<span class="o">-</span><span class="c1">#t       - invalid, may only connect to another link</span>
+
+<span class="o">-</span><span class="c1">#-t-#    - invalid, only one connected link is allowed.</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 't'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.direction_name">
+<code class="sig-name descname">direction_name</code><em class="property"> = 'teleport'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.direction_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartTeleporterMapLink.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – The xygrid x coordinate</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – The xygrid y coordinate.</p></li>
+<li><p><strong>X</strong> (<em>int</em><em> or </em><em>str</em>) – The name/Z-coord of this map we are on.</p></li>
+<li><p><strong>symbol</strong> (<em>str</em><em>, </em><em>optional</em>) – Set during parsing, allows to override
+the default symbol with the one set in the legend.</p></li>
+<li><p><strong>xymap</strong> (<a class="reference internal" href="evennia.contrib.xyzgrid.xymap.html#evennia.contrib.xyzgrid.xymap.XYMap" title="evennia.contrib.xyzgrid.xymap.XYMap"><em>XYMap</em></a><em>, </em><em>optional</em>) – The map object this sits on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.at_empty_target">
+<code class="sig-name descname">at_empty_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em>, <em class="sig-param"><span class="n">end_direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartTeleporterMapLink.at_empty_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.at_empty_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called during traversal, when finding an unknown direction out of the link (same as
+targeting a link at an empty spot on the grid). This will also search for
+a unique, matching teleport to send to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>start_direction</strong> (<em>str</em>) – The direction (n, ne etc) from which this traversal originates
+for this link.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>TeleporterMapLink</em> – The paired teleporter.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.contrib.xyzgrid.utils.html#evennia.contrib.xyzgrid.utils.MapParserError" title="evennia.contrib.xyzgrid.utils.MapParserError"><strong>MapParserError</strong></a> – We raise this explicitly rather than returning <strong>None</strong> if we don’t find
+another teleport. This avoids us getting the default (and in this case confusing)
+‘pointing to an empty space’ error we’d get if returning <strong>None</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.get_direction">
+<code class="sig-name descname">get_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartTeleporterMapLink.get_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink.get_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figure out the connected link and paired teleport.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">SmartMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>A ‘smart’ link withot visible direction, but which uses its topological surroundings
+to figure out how it connects. Unlike the <strong>SmartRerouterMapLink</strong>, this link type is
+also a ‘direction’ of its own and can thus connect directly to nodes. It can only describe
+one transition and will prefer connecting two nodes if there are other possibilities. If the
+linking is unclear or there are more than two nodes directly neighboring, a MapParserError will
+be raised.  If two nodes are not found, it will link to any combination of links- or nodes as
+long as it can un-ambiguously determine which direction they lead.</p>
+<p>Placing a smart-link directly between two nodes/links will always be a two-way connection,
+whereas if it connects a node with another link, it will be a one-way connection in the
+direction of the link.</p>
+<p>Example with the up-down directions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="n">u</span>     <span class="o">-</span> <span class="n">moving</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">BOTH</span> <span class="n">directions</span> <span class="n">will</span> <span class="n">bring</span> <span class="n">you</span> <span class="n">to</span> <span class="n">the</span> <span class="n">other</span> <span class="n">node</span> <span class="p">(</span><span class="n">two</span><span class="o">-</span><span class="n">way</span><span class="p">)</span>
+<span class="c1">#</span>
+
+<span class="c1">#</span>
+<span class="n">d</span>     <span class="o">-</span> <span class="n">this</span> <span class="n">better</span> <span class="n">represents</span> <span class="n">the</span> <span class="s1">&#39;real&#39;</span> <span class="n">up</span><span class="o">/</span><span class="n">down</span> <span class="n">behavior</span><span class="o">.</span>
+<span class="n">u</span>
+<span class="c1">#</span>
+
+<span class="c1">#</span>
+<span class="o">|</span>     <span class="o">-</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">lower</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">upper</span>
+<span class="n">u</span>
+<span class="c1">#</span>
+
+<span class="c1">#-#</span>
+<span class="n">u</span>     <span class="o">-</span> <span class="n">okay</span> <span class="n">since</span> <span class="n">the</span> <span class="n">up</span><span class="o">-</span><span class="n">link</span> <span class="n">prioritizes</span> <span class="n">the</span> <span class="n">nodes</span>
+<span class="c1">#</span>
+
+<span class="c1">#u#</span>
+<span class="n">u</span>    <span class="o">-</span> <span class="n">invalid</span> <span class="n">since</span> <span class="n">top</span><span class="o">-</span><span class="n">left</span> <span class="n">node</span> <span class="n">has</span> <span class="n">two</span> <span class="s1">&#39;up&#39;</span> <span class="n">directions</span> <span class="n">to</span> <span class="n">go</span> <span class="n">to</span>
+<span class="c1">#</span>
+
+<span class="c1">#     |</span>
+<span class="n">u</span><span class="c1"># or u-   - invalid.</span>
+<span class="c1">#     |</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartMapLink.multilink">
+<code class="sig-name descname">multilink</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartMapLink.multilink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SmartMapLink.get_direction">
+<code class="sig-name descname">get_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SmartMapLink.get_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SmartMapLink.get_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figure out the direction from a specific source direction based on grid topology.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">InvisibleSmartMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#InvisibleSmartMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.SmartMapLink" title="evennia.contrib.xyzgrid.xymap_legend.SmartMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.SmartMapLink</span></code></a></p>
+<p>This is a smart maplink that does not show as such on the map - instead it will figure out
+how it should look had it been one of the ‘normal’ cardinal-direction links and display
+itself as that instead. This doesn’t change its functionality, only the symbol shown
+on the map display. This only works for cardinal-direction links.</p>
+<p>It makes use of <strong>display_symbol_aliases</strong> mapping, which maps a sorted set of
+<strong>((start, end), (end, start))</strong> (two-way) or <strong>((start, end),)</strong> (one-way) directions
+to a symbol in the current map legend - this is the symbol alias to use. The matching
+MapLink or MapNode will be initialized at the current position only for the purpose of getting
+its display_symbol.</p>
+<p class="rubric">Example</p>
+<p>display_symbol_aliases = <strong>{((‘n’, ‘s’), (‘s’, n’)): ‘|’, …}</strong></p>
+<p>If no <strong>display_symbol_aliases</strong> are given, the regular display_symbol is used.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.direction_aliases">
+<code class="sig-name descname">direction_aliases</code><em class="property"> = {'e': 'e', 'n': 'n', 'ne': 'ne', 'nw': 'nw', 's': 's', 'se': 'se', 'sw': 'sw', 'w': 'w'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.direction_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.display_symbol_aliases">
+<code class="sig-name descname">display_symbol_aliases</code><em class="property"> = {(('n', 's'), ('s', 'n')): '|', (('n', 's'),): 'v', ('s', 'n'): '^', (('e', 'w'), ('w', 'e')): '-', (('e', 'w'),): '&gt;', (('w', 'e'),): '&lt;', (('nw', 'se'), ('sw', 'ne')): '\\', (('ne', 'sw'), ('sw', 'ne')): '/'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.display_symbol_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.get_display_symbol">
+<code class="sig-name descname">get_display_symbol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#InvisibleSmartMapLink.get_display_symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink.get_display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SmartMapLink already calculated the directions before this, so we
+just need to figure out what to replace this with in order to make this ‘invisible’</p>
+<p>Depending on how we are connected, we figure out how the ‘normal’ link
+should look and use that instead.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BasicMapNode">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">BasicMapNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#BasicMapNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BasicMapNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.xyzgrid.xymap_legend.MapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapNode</span></code></a></p>
+<p>A map node/room</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BasicMapNode.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '#'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BasicMapNode.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BasicMapNode.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_room'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BasicMapNode.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">InterruptMapNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#InterruptMapNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.xyzgrid.xymap_legend.MapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapNode</span></code></a></p>
+<p>A point of interest node/room. Pathfinder will ignore but auto-stepper will
+stop here if passing through. Starting from here is fine.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'I'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = '#'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.interrupt_path">
+<code class="sig-name descname">interrupt_path</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.interrupt_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_room'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapNode.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">MapTransitionNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#MapTransitionNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode" title="evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.TransitionMapNode</span></code></a></p>
+<p>Transition-target node to other map. This is not actually spawned in-game.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'T'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.target_map_xyz">
+<code class="sig-name descname">target_map_xyz</code><em class="property"> = (None, None, None)</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.MapTransitionNode.target_map_xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">NSMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#NSMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, North-South link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '|'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSMapLink.display_symbol">
+<code class="sig-name descname">display_symbol</code><em class="property"> = '||'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSMapLink.display_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'n': 's', 's': 'n'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">EWMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#EWMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, East-West link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '-'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'e': 'w', 'w': 'e'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NESWMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">NESWMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#NESWMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NESWMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, NorthWest-SouthWest link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '/'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'ne': 'sw', 'sw': 'ne'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NESWMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SENWMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">SENWMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SENWMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SENWMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, SouthEast-NorthWest link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '\\'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'nw': 'se', 'se': 'nw'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SENWMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.PlusMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">PlusMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#PlusMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.PlusMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, crossing North-South and East-West links</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '+'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'e': 'w', 'n': 's', 's': 'n', 'w': 'e'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.PlusMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.CrossMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">CrossMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#CrossMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.CrossMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>Two-way, crossing NorthEast-SouthWest and SouthEast-NorthWest links</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'x'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'ne': 'sw', 'nw': 'se', 'se': 'nw', 'sw': 'ne'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.CrossMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">NSOneWayMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#NSOneWayMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>One-way North-South link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'v'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'n': 's'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.NSOneWayMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">SNOneWayMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#SNOneWayMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>One-way South-North link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '^'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'s': 'n'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.SNOneWayMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">EWOneWayMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#EWOneWayMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>One-way East-West link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '&lt;'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'e': 'w'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.EWOneWayMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">WEOneWayMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#WEOneWayMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.xyzgrid.xymap_legend.MapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.MapLink</span></code></a></p>
+<p>One-way West-East link</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = '&gt;'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'w': 'e'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.WEOneWayMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.UpMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">UpMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#UpMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.SmartMapLink" title="evennia.contrib.xyzgrid.xymap_legend.SmartMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.SmartMapLink</span></code></a></p>
+<p>Up direction. Note that this stays on the same z-coord so it’s a ‘fake’ up.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.UpMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'u'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.UpMapLink.direction_aliases">
+<code class="sig-name descname">direction_aliases</code><em class="property"> = {'e': 'u', 'n': 'u', 'ne': 'u', 'nw': 'u', 's': 'u', 'se': 'u', 'sw': 'u', 'w': 'u'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink.direction_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.UpMapLink.spawn_aliases">
+<code class="sig-name descname">spawn_aliases</code><em class="property"> = {'e': ('up', 'u'), 'n': ('up', 'u'), 'ne': ('up', 'u'), 'nw': ('up', 'u'), 's': ('up', 'u'), 'se': ('up', 'u'), 'sw': ('up', 'u'), 'w': ('up', 'u')}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink.spawn_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.UpMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.DownMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">DownMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#DownMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.DownMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.UpMapLink" title="evennia.contrib.xyzgrid.xymap_legend.UpMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.UpMapLink</span></code></a></p>
+<p>Down direction. Note that this stays on the same z-coord, so it’s a ‘fake’ down.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.DownMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'd'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.DownMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.DownMapLink.direction_aliases">
+<code class="sig-name descname">direction_aliases</code><em class="property"> = {'e': 'd', 'n': 'd', 'ne': 'd', 'nw': 'd', 's': 'd', 'se': 'd', 'sw': 'd', 'w': 'd'}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.DownMapLink.direction_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.DownMapLink.spawn_aliases">
+<code class="sig-name descname">spawn_aliases</code><em class="property"> = {'e': ('down', 'd'), 'n': ('down', 'd'), 'ne': ('down', 'd'), 'nw': ('down', 'd'), 's': ('down', 'd'), 'se': ('down', 'd'), 'sw': ('down', 'd'), 'w': ('down', 'd')}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.DownMapLink.spawn_aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.DownMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.DownMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">InterruptMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#InterruptMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink" title="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink</span></code></a></p>
+<p>A (still passable) link. Pathfinder will treat this as any link, but auto-stepper
+will always abort before crossing this link - so this must be crossed manually.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'i'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.interrupt_path">
+<code class="sig-name descname">interrupt_path</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.interrupt_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.InterruptMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">BlockedMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#BlockedMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink" title="evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.InvisibleSmartMapLink</span></code></a></p>
+<p>Causes the shortest-path algorithm to consider this a blocked path. The block will not show up
+in the map display (and exit can be traversed normally), pathfinder will just not include this
+link in any paths.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'b'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.weights">
+<code class="sig-name descname">weights</code><em class="property"> = {'e': 999999999999, 'n': 999999999999, 'ne': 999999999999, 'nw': 999999999999, 's': 999999999999, 'se': 999999999999, 'sw': 999999999999, 'w': 999999999999}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = 'xyz_exit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.BlockedMapLink.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.RouterMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">RouterMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#RouterMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.RouterMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink" title="evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.SmartRerouterMapLink</span></code></a></p>
+<p>A link that connects other links to build ‘knees’, pass-throughs etc.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.RouterMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 'o'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.RouterMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TeleporterMapLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xymap_legend.</code><code class="sig-name descname">TeleporterMapLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xymap_legend.html#TeleporterMapLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TeleporterMapLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink" title="evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend.SmartTeleporterMapLink</span></code></a></p>
+<p>Teleporter links. Must appear in pairs on the same xy map. To make it one-way, add additional
+one-way link out of the teleporter on one side.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xymap_legend.TeleporterMapLink.symbol">
+<code class="sig-name descname">symbol</code><em class="property"> = 't'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xymap_legend.TeleporterMapLink.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.xyzgrid.xymap_legend</a><ul>
+<li><a class="reference internal" href="#map-legend-components">Map legend components</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.xyzgrid.xymap_legend.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.xyzgrid.xymap_legend.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.xyzgrid.xymap_legend</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

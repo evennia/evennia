@@ -1,0 +1,542 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.xyzgrid.xyzroom &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.xyzgrid.xyzroom</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.xyzgrid.xyzroom">
+<span id="evennia-contrib-xyzgrid-xyzroom"></span><h1>evennia.contrib.xyzgrid.xyzroom<a class="headerlink" href="#module-evennia.contrib.xyzgrid.xyzroom" title="Permalink to this headline">¶</a></h1>
+<p>XYZ-aware rooms and exits.</p>
+<p>These are intended to be used with the XYZgrid - which interprets the <strong>Z</strong> ‘coordinate’ as
+different (named) 2D XY  maps. But if not wanting to use the XYZgrid gridding, these can also be
+used as stand-alone XYZ-coordinate-aware rooms.</p>
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZManager">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xyzroom.</code><code class="sig-name descname">XYZManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectManager" title="evennia.objects.manager.ObjectManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.manager.ObjectManager</span></code></a></p>
+<p>This is accessed as <strong>.objects</strong> on the coordinate-aware typeclasses (<strong>XYZRoom</strong>, <strong>XYZExit</strong>). It
+has all the normal Object/Room manager methods (filter/get etc) but also special helpers for
+efficiently querying the room in the database based on XY coordinates.</p>
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZManager.filter_xyz">
+<code class="sig-name descname">filter_xyz</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">'*', '*', '*'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZManager.filter_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZManager.filter_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter queryset based on XYZ position on the grid. The Z-position is the name of the XYMap
+Set a coordinate to <strong>‘*’</strong> to act as a wildcard (setting all coords to <strong>*</strong> will thus find
+<em>all</em> XYZ rooms). This will also find children of XYZRooms on the given coordinates.</p>
+<dl>
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>xyz (tuple, optional): A coordinate tuple (X, Y, Z) where each element is either</dt><dd><p>an <strong>int</strong> or <strong>str</strong>. The character <strong>‘*’</strong> acts as a wild card. Note that
+the <strong>Z</strong>-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.</p>
+</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: All other kwargs are passed on to the query.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>django.db.queryset.Queryset</em> – A queryset that can be combined
+with further filtering.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZManager.get_xyz">
+<code class="sig-name descname">get_xyz</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZManager.get_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZManager.get_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Always return a single matched entity directly. This accepts no <strong>*</strong>-wildcards.
+This will also find children of XYZRooms on the given coordinates.</p>
+<dl>
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>xyz (tuple): A coordinate tuple of <strong>int</strong> or <strong>str</strong> (not <strong>‘*’</strong>, no wildcards are</dt><dd><p>allowed in get).  The <strong>Z</strong>-coordinate acts as the name (case-sensitive) of the map in
+the XYZgrid contrib.</p>
+</dd>
+</dl>
+<p><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: All other kwargs are passed on to the query.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>XYRoom</em> – A single room instance found at the combination of x, y and z given.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.DoesNotExist" title="evennia.contrib.xyzgrid.xyzroom.XYZRoom.DoesNotExist"><strong>XYZRoom.DoesNotExist</strong></a> – If no matching query was found.</p></li>
+<li><p><a class="reference internal" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.MultipleObjectsReturned" title="evennia.contrib.xyzgrid.xyzroom.XYZRoom.MultipleObjectsReturned"><strong>XYZRoom.MultipleObjectsReturned</strong></a> – If more than one match was found (which should not
+possible with a unique combination of x,y,z).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExitManager">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xyzroom.</code><code class="sig-name descname">XYZExitManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZExitManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExitManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.xyzgrid.xyzroom.XYZManager" title="evennia.contrib.xyzgrid.xyzroom.XYZManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xyzroom.XYZManager</span></code></a></p>
+<p>Used by Exits.
+Manager that also allows searching for destinations based on XY coordinates.</p>
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit">
+<code class="sig-name descname">filter_xyz_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">'*', '*', '*'</span></em>, <em class="sig-param"><span class="n">xyz_destination</span><span class="o">=</span><span class="default_value">'*', '*', '*'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZExitManager.filter_xyz_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by exits (objects with a source and -destination property).
+Find all exits out of a source or to a particular destination. This will also find
+children of XYZExit on the given coords..</p>
+<dl>
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>xyz (tuple, optional): A coordinate (X, Y, Z) for the source location. Each</dt><dd><p>element is either an <strong>int</strong> or <strong>str</strong>. The character <strong>‘*’</strong> is used as a wildcard -
+so setting all coordinates to the wildcard will return <em>all</em> XYZExits.
+the <strong>Z</strong>-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.</p>
+</dd>
+<dt>xyz_destination (tuple, optional): Same as <strong>xyz</strong> but for the destination of the</dt><dd><p>exit.</p>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs: All other kwargs are passed on to the query.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>django.db.queryset.Queryset</em> – A queryset that can be combined
+with further filtering.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Depending on what coordinates are set to <strong>*</strong>, this can be used to
+e.g. find all exits in a room, or leading to a room or even to rooms
+in a particular X/Y row/column.</p>
+<p>In the XYZgrid, <strong>z_source != z_destination</strong> means a _transit_ between different maps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit">
+<code class="sig-name descname">get_xyz_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="n">xyz_destination</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZExitManager.get_xyz_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by exits (objects with a source and -destination property). Get a single
+exit. All source/destination coordinates (as well as the map’s name) are required.
+This will also find children of XYZExits on the given coords.</p>
+<dl>
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>xyz (tuple, optional): A coordinate (X, Y, Z) for the source location. Each</dt><dd><p>element is either an <strong>int</strong> or <strong>str</strong> (not <strong>*</strong>, no wildcards are allowed for get).
+the <strong>Z</strong>-coordinate is the name of the map (case-sensitive) in the XYZgrid contrib.</p>
+</dd>
+<dt>xyz_destination_coord (tuple, optional): Same as the <strong>xyz</strong> but for the destination of</dt><dd><p>the exit.</p>
+</dd>
+</dl>
+<p><a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs: All other kwargs are passed on to the query.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>XYZExit</em> – A single exit instance found at the combination of x, y and xgiven.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.DoesNotExist" title="evennia.contrib.xyzgrid.xyzroom.XYZExit.DoesNotExist"><strong>XYZExit.DoesNotExist</strong></a> – If no matching query was found.</p></li>
+<li><p><a class="reference internal" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.MultipleObjectsReturned" title="evennia.contrib.xyzgrid.xyzroom.XYZExit.MultipleObjectsReturned"><strong>XYZExit.MultipleObjectsReturned</strong></a> – If more than one match was found (which should not
+be possible with a unique combination of x,y,x).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>All coordinates are required.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xyzroom.</code><code class="sig-name descname">XYZRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom</span></code></a></p>
+<p>A game location aware of its XYZ-position.</p>
+<dl>
+<dt>Special properties:</dt><dd><dl class="simple">
+<dt>map_display (bool): If the return_appearance of the room should</dt><dd><p>show the map or not.</p>
+</dd>
+<dt>map_mode (str): One of ‘nodes’ or ‘scan’. See <strong>return_apperance</strong></dt><dd><p>for examples of how they differ.</p>
+</dd>
+<dt>map_visual_range (int): How far on the map one can see. This is a</dt><dd><p>fixed value here, but could also be dynamic based on skills,
+light etc.</p>
+</dd>
+<dt>map_character_symbol (str): The character symbol to use to show</dt><dd><p>the character position. Can contain color info. Default is
+the &#64;-character.</p>
+</dd>
+<dt>map_area_client (bool): If True, map area will always fill the entire</dt><dd><p>client width. If False, the map area’s width will vary with the
+width of the currently displayed location description.</p>
+</dd>
+</dl>
+<p>map_fill_all (bool): I the map area should fill the client width or not.
+map_separator_char (str): The char to use to separate the map area from</p>
+<blockquote>
+<div><p>the room description.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.contrib.xyzgrid.xyzroom.XYZManager object&gt;</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_display">
+<code class="sig-name descname">map_display</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_mode">
+<code class="sig-name descname">map_mode</code><em class="property"> = 'nodes'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_visual_range">
+<code class="sig-name descname">map_visual_range</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_visual_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_character_symbol">
+<code class="sig-name descname">map_character_symbol</code><em class="property"> = '|g&#64;|n'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_character_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_align">
+<code class="sig-name descname">map_align</code><em class="property"> = 'c'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_align" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_target_path_style">
+<code class="sig-name descname">map_target_path_style</code><em class="property"> = '|y{display_symbol}|n'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_target_path_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_fill_all">
+<code class="sig-name descname">map_fill_all</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_fill_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_separator_char">
+<code class="sig-name descname">map_separator_char</code><em class="property"> = '|x~|n'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.map_separator_char" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.xyz">
+<em class="property">property </em><code class="sig-name descname">xyz</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.xyzgrid">
+<em class="property">property </em><code class="sig-name descname">xyzgrid</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.xyzgrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.xymap">
+<em class="property">property </em><code class="sig-name descname">xymap</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.xymap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.create">
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation method aware of XYZ coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – New name of object to create.</p></li>
+<li><p><strong>account</strong> (<em>Account</em><em>, </em><em>optional</em>) – Any Account to tie to this entity (usually not used for
+rooms).</p></li>
+<li><p><strong>xyz</strong> (<em>tuple</em><em>, </em><em>optional</em>) – A 3D coordinate (X, Y, Z) for this room’s location on a
+map grid. Each element can theoretically be either <strong>int</strong> or <strong>str</strong>, but for the
+XYZgrid, the X, Y are always integers while the <strong>Z</strong> coordinate is used for the
+map’s name.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed into the normal <strong>DefaultRoom.create</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>room (Object)</em> – A newly created Room of the given typeclass.
+errors (list): A list of errors in string form, if any.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The (X, Y, Z) coordinate must be unique across the game. If trying to create
+a room at a coordinate that already exists, an error will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.get_display_name">
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZRoom.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.get_display_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows both the #dbref and the xyz coord to staff.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking
+at/getting inforamtion for this object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>name (str)</em> –</p>
+<dl class="simple">
+<dt>A string containing the name of the object,</dt><dd><p>including the DBREF and XYZ coord if this user is
+privileged to control the room.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.return_appearance">
+<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZRoom.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.return_appearance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the map in addition to the room description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>looker</strong> (<em>Object</em>) – The one looking.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>map_display</strong> (<em>bool</em>) – Turn on/off map display.</p></li>
+<li><p><strong>map_visual_range</strong> (<em>int</em>) – How ‘far’ one can see on the map. For
+‘nodes’ mode, this is how many connected nodes away, for
+‘scan’ mode, this is number of characters away on the map.
+Default is a visual range of 2 (nodes).</p></li>
+<li><p><strong>map_mode</strong> (<em>str</em>) – One of ‘node’ (default) or ‘scan’.</p></li>
+<li><p><strong>map_character_symbol</strong> (<em>str</em>) – The character symbol to use. Defaults to ‘&#64;’.
+This can also be colored with standard color tags. Set to <strong>None</strong>
+to just show the current node.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Assume this is the full map (where ‘&#64;’ is the character location):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#----------------#</span>
+<span class="o">|</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">|</span>
+<span class="c1"># @------------#-#</span>
+<span class="o">|</span>                <span class="o">|</span>
+<span class="c1">#----------------#</span>
+</pre></div>
+</div>
+<p>This is how it will look in ‘nodes’ mode with <strong>visual_range=2</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">@------------</span><span class="c1">#-#</span>
+</pre></div>
+</div>
+<p>And in ‘scan’ mode with <strong>visual_range=2</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span>
+<span class="o">|</span>
+<span class="c1"># @--</span>
+<span class="o">|</span>
+<span class="c1">#----</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>The map kwargs default to values with the same names set on the
+XYZRoom class; these can be changed by overriding the room.</p>
+<p>We return the map display as a separate msg() call here, in order
+to make it easier to break this out into a client pane etc. The
+map is tagged with type=’xymap’.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.DoesNotExist" title="evennia.objects.objects.DefaultRoom.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.MultipleObjectsReturned" title="evennia.objects.objects.DefaultRoom.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.xyzgrid.xyzroom.XYZRoom'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZRoom.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'XYZRoom'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZRoom.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.xyzroom.</code><code class="sig-name descname">XYZExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
+<p>An exit that is aware of the XYZ coordinate system.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.contrib.xyzgrid.xyzroom.XYZExitManager object&gt;</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.xyzgrid">
+<em class="property">property </em><code class="sig-name descname">xyzgrid</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.xyzgrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.xyz">
+<em class="property">property </em><code class="sig-name descname">xyz</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.xyz_destination">
+<em class="property">property </em><code class="sig-name descname">xyz_destination</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.xyz_destination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.create">
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="n">xyz_destination</span><span class="o">=</span><span class="default_value">0, 0, 'map'</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destination</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/xyzroom.html#XYZExit.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation method aware of coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – New name of object to create.</p></li>
+<li><p><strong>account</strong> (<em>Account</em><em>, </em><em>optional</em>) – Any Account to tie to this entity (unused for exits).</p></li>
+<li><p><strong>xyz</strong> (<em>tuple</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – A 3D coordinate (X, Y, Z) for this room’s location
+on a map grid.  Each element can theoretically be either <strong>int</strong> or <strong>str</strong>, but for the
+XYZgrid contrib, the X, Y are always integers while the <strong>Z</strong> coordinate is used for
+the map’s name. Set to <strong>None</strong> if instead using a direct room reference with
+<strong>location</strong>.</p></li>
+<li><p><strong>xyz_destination</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The XYZ coordinate of the place the exit
+leads to. Will be ignored if <strong>destination</strong> is given directly.</p></li>
+<li><p><strong>location</strong> (<em>Object</em><em>, </em><em>optional</em>) – If given, overrides <strong>xyz</strong> coordinate. This can be used
+to place this exit in any room, including non-XYRoom type rooms.</p></li>
+<li><p><strong>destination</strong> (<em>Object</em><em>, </em><em>optional</em>) – If given, overrides <strong>xyz_destination</strong>. This can
+be any room (including non-XYRooms) and is not checked for XYZ coordinates.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed into the normal <strong>DefaultRoom.create</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tuple</em> –</p>
+<dl class="simple">
+<dt>A tuple <strong>(exit, errors)</strong>, where the errors is a list containing all found</dt><dd><p>errors (in which case the returned exit will be <strong>None</strong>).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.xyzgrid.xyzroom.XYZExit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.xyzgrid.xyzroom.XYZExit.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'XYZExit'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.xyzroom.XYZExit.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.xyzgrid.xyzroom.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.xyzgrid.xyzroom.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.xyzgrid.xyzroom</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -134,8 +134,8 @@
 <span class="sd">            homogenizations like adding missing prototype_keys and setting a default typeclass.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">prototype</span>
 
     <span class="n">reserved</span> <span class="o">=</span> <span class="n">_PROTOTYPE_RESERVED_KEYS</span> <span class="o">+</span> <span class="p">(</span><span class="n">custom_keys</span> <span class="ow">or</span> <span class="p">())</span>
 
@@ -186,19 +186,45 @@
     <span class="k">return</span> <span class="n">homogenized</span></div>
 
 
-<span class="c1"># module-based prototypes</span>
+<span class="c1"># module/dict-based prototypes</span>
 
-<div class="viewcode-block" id="load_module_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.load_module_prototypes">[docs]</a><span class="k">def</span> <span class="nf">load_module_prototypes</span><span class="p">():</span>
+<div class="viewcode-block" id="load_module_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.load_module_prototypes">[docs]</a><span class="k">def</span> <span class="nf">load_module_prototypes</span><span class="p">(</span><span class="o">*</span><span class="n">mod_or_prototypes</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is called by `evennia.__init__` as Evennia initializes. It&#39;s important</span>
-<span class="sd">    to do this late so as to not interfere with evennia initialization.</span>
+<span class="sd">    Load module prototypes. Also prototype-dicts passed directly to this function are considered</span>
+<span class="sd">    &#39;module&#39; prototypes (they are impossible to change) but will have a module of None.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *mod_or_prototypes (module or dict): Each arg should be a separate module or</span>
+<span class="sd">            prototype-dict to load. If none are given, `settings.PROTOTYPE_MODULES` will be used.</span>
+<span class="sd">        override (bool, optional): If prototypes should override existing ones already loaded.</span>
+<span class="sd">            Disabling this can allow for injecting prototypes into the system dynamically while</span>
+<span class="sd">            still allowing same prototype-keys to be overridden from settings (even though settings</span>
+<span class="sd">            is usually loaded before dynamic loading).</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is called (without arguments) by `evennia.__init__` as Evennia initializes. It&#39;s</span>
+<span class="sd">        important to do this late so as to not interfere with evennia initialization. But it can</span>
+<span class="sd">        also be used later to add more prototypes to the library on the fly. This is requried</span>
+<span class="sd">        before a module-based prototype can be accessed by prototype-key.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROTOTYPE_MODULES</span><span class="p">:</span>
-        <span class="c1"># to remove a default prototype, override it with an empty dict.</span>
-        <span class="c1"># internally we store as (key, desc, locks, tags, prototype_dict)</span>
-        <span class="n">prots</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">global</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="p">,</span> <span class="n">_MODULE_PROTOTYPES</span>
 
+    <span class="k">def</span> <span class="nf">_prototypes_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load prototypes from a module, first by looking for a global list PROTOTYPE_LIST (a list of</span>
+<span class="sd">        dict-prototypes), and if not found, assuming all global-level dicts in the module are</span>
+<span class="sd">        prototypes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mod (module): The module to load from.evennia</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tuples `(prototype_key, prototype-dict)` where the prototype</span>
+<span class="sd">                has been homogenized.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">prototype_list</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;PROTOTYPE_LIST&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">prototype_list</span><span class="p">:</span>
             <span class="c1"># found mod.PROTOTYPE_LIST - this should be a list of valid</span>
@@ -221,27 +247,74 @@
                     <span class="k">if</span> <span class="s2">&quot;prototype_key&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prot</span><span class="p">:</span>
                         <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                     <span class="n">prots</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">],</span> <span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">prots</span>
 
-        <span class="c1"># assign module path to each prototype_key for easy reference</span>
-        <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">prototype_key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">mod</span> <span class="k">for</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">prots</span><span class="p">})</span>
-        <span class="c1"># make sure the prototype contains all meta info</span>
+    <span class="k">def</span> <span class="nf">_cleanup_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">prototype</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We need to handle externally determined prototype-keys and to make sure</span>
+<span class="sd">        the prototype contains all needed meta information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prototype_key (str): The determined name of the prototype.</span>
+<span class="sd">            prototype (dict): The prototype itself.</span>
+<span class="sd">            mod (module, optional): The module the prototype was loaded from, if any.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The cleaned up prototype.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">actual_prot_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">prototype</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">actual_prot_key</span><span class="p">,</span>
+                <span class="s2">&quot;prototype_desc&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;prototype_desc&quot;</span> <span class="ow">in</span> <span class="n">prototype</span> <span class="k">else</span> <span class="p">(</span><span class="n">mod</span> <span class="ow">or</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)),</span>
+                <span class="s2">&quot;prototype_locks&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;prototype_locks&quot;</span> <span class="ow">in</span> <span class="n">prototype</span>
+                    <span class="k">else</span> <span class="s2">&quot;use:all();edit:false()&quot;</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;prototype_tags&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[])))</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">prototype</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mod_or_prototypes</span><span class="p">:</span>
+        <span class="c1"># in principle this means PROTOTYPE_MODULES could also contain prototypes, but that is</span>
+        <span class="c1"># rarely useful ...</span>
+        <span class="n">mod_or_prototypes</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROTOTYPE_MODULES</span>
+
+    <span class="k">for</span> <span class="n">mod_or_dict</span> <span class="ow">in</span> <span class="n">mod_or_prototypes</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod_or_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># a single prototype; we must make sure it has its key</span>
+            <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">mod_or_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prototype_key&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_key</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The prototype </span><span class="si">{</span><span class="n">mod_or_prototype</span><span class="si">}</span><span class="s2"> does not contain a &#39;prototype_key&#39;&quot;</span><span class="p">)</span>
+            <span class="n">prots</span> <span class="o">=</span> <span class="p">[(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">mod_or_dict</span><span class="p">)]</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># a module (or path to module). This can contain many prototypes; they can be keyed by</span>
+            <span class="c1"># variable-name too</span>
+            <span class="n">prots</span> <span class="o">=</span> <span class="n">_prototypes_from_module</span><span class="p">(</span><span class="n">mod_or_dict</span><span class="p">)</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">mod_or_dict</span><span class="p">)</span>
+
+        <span class="c1"># store all found prototypes</span>
         <span class="k">for</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prots</span><span class="p">:</span>
-            <span class="n">actual_prot_key</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="n">prot</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">actual_prot_key</span><span class="p">,</span>
-                    <span class="s2">&quot;prototype_desc&quot;</span><span class="p">:</span> <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;prototype_desc&quot;</span> <span class="ow">in</span> <span class="n">prot</span> <span class="k">else</span> <span class="n">mod</span><span class="p">,</span>
-                    <span class="s2">&quot;prototype_locks&quot;</span><span class="p">:</span> <span class="p">(</span>
-                        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="s2">&quot;prototype_locks&quot;</span> <span class="ow">in</span> <span class="n">prot</span>
-                        <span class="k">else</span> <span class="s2">&quot;use:all();edit:false()&quot;</span>
-                    <span class="p">),</span>
-                    <span class="s2">&quot;prototype_tags&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
-                        <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[])))</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
-                    <span class="p">),</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-            <span class="n">_MODULE_PROTOTYPES</span><span class="p">[</span><span class="n">actual_prot_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">prot</span></div>
+            <span class="n">prototype</span> <span class="o">=</span> <span class="n">_cleanup_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">prot</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
+            <span class="c1"># the key can change since in-proto key is given prio over variable-name-based keys</span>
+            <span class="n">actual_prototype_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;prototype_key&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">actual_prototype_key</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
+                <span class="c1"># don&#39;t override - useful to still let settings replace dynamic inserts</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># make sure the prototype contains all meta info</span>
+            <span class="n">_MODULE_PROTOTYPES</span><span class="p">[</span><span class="n">actual_prototype_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">prototype</span>
+            <span class="c1"># track module path for display purposes</span>
+            <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="p">[</span><span class="n">actual_prototype_key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">mod</span></div>
 
 
 <span class="c1"># Db-based prototypes</span>
@@ -308,11 +381,12 @@
 
     <span class="c1"># we can&#39;t edit a prototype defined in a module</span>
     <span class="k">if</span> <span class="n">prototype_key</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span><span class="p">:</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
-            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype &quot;</span> <span class="s2">&quot;(defined as code in </span><span class="si">{module}</span><span class="s2">).&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">protkey</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mod</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (defined as code in </span><span class="si">{module}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (passed directly as a dict).&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">mod</span><span class="p">))</span>
 
     <span class="c1"># make sure meta properties are included with defaults</span>
     <span class="n">in_prototype</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -376,11 +450,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">prototype_key</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span><span class="p">:</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
-            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype &quot;</span> <span class="s2">&quot;(defined as code in </span><span class="si">{module}</span><span class="s2">).&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">protkey</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mod</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (defined as code in </span><span class="si">{module}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (passed directly as a dict).&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">mod</span><span class="p">))</span>
 
     <span class="n">stored_prototype</span> <span class="o">=</span> <span class="n">DbPrototype</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
 
@@ -451,7 +526,7 @@
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mod_matches</span><span class="p">:</span>
             <span class="c1"># exact match</span>
-            <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod_matches</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+            <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod_matches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
             <span class="n">allow_fuzzy</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># fuzzy matching</span>
@@ -461,7 +536,9 @@
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">prototype_key</span>
             <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">mod_matches</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="c1"># note - we return a copy of the prototype dict, otherwise using this with e.g.</span>
+        <span class="c1"># prototype_from_object will modify the base prototype for every object</span>
+        <span class="n">module_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">mod_matches</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
     <span class="c1"># search db-stored prototypes</span>
 
@@ -494,7 +571,7 @@
         <span class="n">ndbprots</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
-                <span class="s2">&quot;Found </span><span class="si">{num}</span><span class="s2"> matching prototypes </span><span class="si">{module_prototypes}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;Found </span><span class="si">{num}</span><span class="s2"> matching prototypes among </span><span class="si">{module_prototypes}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">num</span><span class="o">=</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="p">,</span>
                     <span class="n">module_prototypes</span><span class="o">=</span><span class="n">module_prototypes</span><span class="p">)</span>
             <span class="p">)</span>
@@ -948,10 +1025,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;edit&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">prototype_key</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span><span class="p">:</span>
-            <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is a read-only prototype &quot;</span> <span class="s2">&quot;(defined as code in </span><span class="si">{}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mod</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (defined as code in </span><span class="si">{module}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> is a read-only prototype (passed directly as a dict).&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">mod</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
@@ -1018,7 +1097,8 @@
     <span class="n">stype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">stype</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">iter</span><span class="p">()}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">stype</span><span class="p">([</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)</span></div>

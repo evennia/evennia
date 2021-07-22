@@ -79,9 +79,28 @@ the default reserved keys.</p></li>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.load_module_prototypes">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">load_module_prototypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#load_module_prototypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.load_module_prototypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called by <strong>evennia.__init__</strong> as Evennia initializes. It’s important
-to do this late so as to not interfere with evennia initialization.</p>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">load_module_prototypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">mod_or_prototypes</span></em>, <em class="sig-param"><span class="n">override</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#load_module_prototypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.load_module_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load module prototypes. Also prototype-dicts passed directly to this function are considered
+‘module’ prototypes (they are impossible to change) but will have a module of None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*mod_or_prototypes</strong> (<em>module</em><em> or </em><em>dict</em>) – Each arg should be a separate module or
+prototype-dict to load. If none are given, <strong>settings.PROTOTYPE_MODULES</strong> will be used.</p></li>
+<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>optional</em>) – If prototypes should override existing ones already loaded.
+Disabling this can allow for injecting prototypes into the system dynamically while
+still allowing same prototype-keys to be overridden from settings (even though settings
+is usually loaded before dynamic loading).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is called (without arguments) by <strong>evennia.__init__</strong> as Evennia initializes. It’s
+important to do this late so as to not interfere with evennia initialization. But it can
+also be used later to add more prototypes to the library on the fly. This is requried
+before a module-based prototype can be accessed by prototype-key.</p>
+</div>
 </dd></dl>
 
 <dl class="py class">

@@ -247,6 +247,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;session flags:&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
         <span class="n">width</span> <span class="o">=</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span><span class="p">)</span>
         <span class="n">height</span> <span class="o">=</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span></div>
