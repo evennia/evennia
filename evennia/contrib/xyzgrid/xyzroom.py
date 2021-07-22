@@ -81,8 +81,8 @@ class XYZManager(ObjectManager):
             XYRoom: A single room instance found at the combination of x, y and z given.
 
         Raises:
-            DoesNotExist: If no matching query was found.
-            MultipleObjectsReturned: If more than one match was found (which should not
+            XYZRoom.DoesNotExist: If no matching query was found.
+            XYZRoom.MultipleObjectsReturned: If more than one match was found (which should not
                 possible with a unique combination of x,y,z).
 
         """
@@ -189,8 +189,8 @@ class XYZExitManager(XYZManager):
             XYZExit: A single exit instance found at the combination of x, y and xgiven.
 
         Raises:
-            DoesNotExist: If no matching query was found.
-            MultipleObjectsReturned: If more than one match was found (which should not
+            XYZExit.DoesNotExist: If no matching query was found.
+            XYZExit.MultipleObjectsReturned: If more than one match was found (which should not
                 be possible with a unique combination of x,y,x).
 
         Notes:

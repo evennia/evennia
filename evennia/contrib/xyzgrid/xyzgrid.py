@@ -105,12 +105,6 @@ class XYZGrid(DefaultScript):
         kwargs['db_key'] = name
         return XYZExit.objects.filter_xyz_exit(xyz=xyz, **kwargs)
 
-    def build_diff(zcoord):
-        """
-        Find out which rooms are built/not built and if some should be deleted. This
-
-        """
-
     def maps_from_module(self, module_path):
         """
         Load map data from module. The loader will look for a dict XYMAP_DATA or a list of

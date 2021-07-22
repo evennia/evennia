@@ -22,8 +22,8 @@ from evennia.utils import ansi
 from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
 
 _HELP_SHORT = """
-evennia xyzgrid help|list|init|add|spawn|initpath|delete [<options>]
-Manages the XYZ grid. Use 'xyzgrid help <option>' for documentation.
+evennia xyzgrid help | list | init | add | spawn | initpath | delete [<options>]
+ Manages the XYZ grid. Use 'xyzgrid help <option>' for documentation.
 """
 
 _HELP_HELP = """
@@ -198,40 +198,40 @@ def _option_list(*suboptions):
             print(ansi.parse_ansi(str(xymap)))
         return
 
-    for zcoord in suboptions:
-        xymap = xyzgrid.get_map(zcoord)
-        if not xymap:
-            print(f"No XYMap with Z='{zcoord}' was found on grid.")
+    zcoord = " ".join(suboptions)
+    xymap = xyzgrid.get_map(zcoord)
+    if not xymap:
+        print(f"No XYMap with Z='{zcoord}' was found on grid.")
+    else:
+        nrooms = xyzgrid.get_room(('*', '*', zcoord)).count()
+        nnodes = len(xymap.node_index_map)
+        print("\n" + str(repr(xymap)) + ":\n")
+        checkwarning = True
+        if not nrooms:
+            print(f"{nrooms} / {nnodes} rooms are spawned.")
+            checkwarning = False
+        elif nrooms < nnodes:
+            print(f"{nrooms} / {nnodes} rooms are spawned\n"
+                  "Note: Transitional nodes are *not* spawned (they just point \n"
+                  "to another map), so the 'missing room(s)' may just be from such nodes.")
+        elif nrooms > nnodes:
+            print(f"{nrooms} / {nnodes} rooms are spawned\n"
+                  "Note: Maybe some rooms were removed from map. Run 'spawn' to re-sync.")
         else:
-            nrooms = xyzgrid.get_room(('*', '*', zcoord)).count()
-            nnodes = len(xymap.node_index_map)
-            print("\n" + str(repr(xymap)) + ":\n")
-            checkwarning = True
-            if not nrooms:
-                print(f"{nrooms} / {nnodes} rooms are spawned.")
-                checkwarning = False
-            elif nrooms < nnodes:
-                print(f"{nrooms} / {nnodes} rooms are spawned\n"
-                      "Note: Transitional nodes are *not* spawned (they just point \n"
-                      "to another map), so the 'missing room(s)' may just be from such nodes.")
-            elif nrooms > nnodes:
-                print(f"{nrooms} / {nnodes} rooms are spawned\n"
-                      "Note: Maybe some rooms were removed from map. Run 'spawn' to re-sync.")
-            else:
-                print(f"{nrooms} / {nnodes} rooms are spawned\n")
+            print(f"{nrooms} / {nnodes} rooms are spawned\n")
 
-            if checkwarning:
-                print("Note: This check is not complete; it does not consider changed map "
-                      "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
-                      "is calculated only during a spawn.")
-            print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
-            print("\nRaw map string (including axes and invisible nodes/links):\n"
-                  + str(xymap.mapstring))
-            print(f"\nCustom map options: {xymap.options}\n")
-            legend = []
-            for key, node_or_link in xymap.legend.items():
-                legend.append(f"{key} - {node_or_link.__doc__.strip()}")
-            print("Legend (all elements may not be present on map):\n " + "\n ".join(legend))
+        if checkwarning:
+            print("Note: This check is not complete; it does not consider changed map "
+                  "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
+                  "is calculated only during a spawn.")
+        print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
+        print("\nRaw map string (including axes and invisible nodes/links):\n"
+              + str(xymap.mapstring))
+        print(f"\nCustom map options: {xymap.options}\n")
+        legend = []
+        for key, node_or_link in xymap.legend.items():
+            legend.append(f"{key} - {node_or_link.__doc__.strip()}")
+        print("Legend (all elements may not be present on map):\n " + "\n ".join(legend))
 
 
 def _option_init(*suboptions):
@@ -401,8 +401,8 @@ def xyzcommand(*args):
         _option_init(*suboptions)
     elif option == 'add':
         _option_add(*suboptions)
-    elif option == 'build':
-        _option_build(*suboptions)
+    elif option == 'spawn':
+        _option_spawn(*suboptions)
     elif option == 'initpath':
         _option_initpath(*suboptions)
     elif option == 'delete':

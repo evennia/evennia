@@ -206,6 +206,7 @@ class ServerSession(_BASE_SESSION_CLASS):
 
         """
         flags = self.protocol_flags
+        print("session flags:", flags)
         width = flags.get("SCREENWIDTH", {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
         height = flags.get("SCREENHEIGHT", {}).get(0, settings.CLIENT_DEFAULT_HEIGHT)
         return width, height

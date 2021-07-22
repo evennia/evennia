@@ -72,6 +72,8 @@ Up requirements to Django 3.2+
 - Make `help` index output clickable for webclient/clients with MXP (PR by davewiththenicehat)
 - Custom `evennia` launcher commands (e.g. `evennia mycmd foo bar`). Add new commands as callables
   accepting `*args`, as `settings.EXTRA_LAUNCHER_COMMANDS = {'mycmd': 'path.to.callable', ...}`.
+- New `XYZGrid` contrib, adding x,y,z grid coordinates with in-game map and
+  pathfinding. Controlled outside of the game via custom evennia launcher command.
 
 ### Evennia 0.9.5 (2019-2020)
 
