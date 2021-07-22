@@ -1954,6 +1954,51 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="run_custom_commands"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_custom_commands">[docs]</a><span class="k">def</span> <span class="nf">run_custom_commands</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inject a custom option into the evennia launcher command chain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        option (str): Incoming option - the first argument after `evennia` on</span>
+<span class="sd">            the command line.</span>
+<span class="sd">        *args: All args will passed to a found callable.__dict__</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: If a custom command was found and handled the option.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Provide new commands in settings with</span>
+
+<span class="sd">            CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {&quot;mycmd&quot;: &quot;path.to.callable&quot;, ...}</span>
+
+<span class="sd">        The callable will be passed any `*args` given on the command line and is expected to</span>
+<span class="sd">        handle/validate the input correctly. Use like any other evennia command option on</span>
+<span class="sd">        in the terminal/console, for example:</span>
+
+<span class="sd">            evennia mycmd foo bar</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">import</span> <span class="nn">importlib</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># a dict of {option: callable(*args), ...}</span>
+        <span class="n">custom_commands</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EXTRA_LAUNCHER_COMMANDS</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">cmdpath</span> <span class="o">=</span> <span class="n">custom_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cmdpath</span><span class="p">:</span>
+        <span class="n">modpath</span><span class="p">,</span> <span class="o">*</span><span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdpath</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmdname</span><span class="p">:</span>
+            <span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">modpath</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+                <span class="n">command</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="run_menu"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_menu">[docs]</a><span class="k">def</span> <span class="nf">run_menu</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This launches an interactive menu.</span>
@@ -2326,6 +2371,10 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="o">*</span><span class="p">([</span><span class="n">option</span><span class="p">]</span> <span class="o">+</span> <span class="n">unknown_args</span><span class="p">))</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">run_custom_commands</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">unknown_args</span><span class="p">):</span>
+            <span class="c1"># run any custom commands</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="c1"># pass on to the core django manager - re-parse the entire input line</span>
         <span class="c1"># but keep &#39;evennia&#39; as the name instead of django-admin. This is</span>

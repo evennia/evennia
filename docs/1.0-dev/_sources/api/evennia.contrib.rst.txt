@@ -52,3 +52,4 @@ evennia.contrib
    evennia.contrib.turnbattle
    evennia.contrib.tutorial_examples
    evennia.contrib.tutorial_world
+   evennia.contrib.xyzgrid

@@ -160,7 +160,12 @@
 <span class="sd">            obj (Object): object to remove</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># not in pk cache, but can happen deletions happens</span>
+            <span class="c1"># remotely from out-of-thread.</span>
+            <span class="k">pass</span>
         <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
@@ -381,9 +386,11 @@
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2">.location = </span><span class="si">%s</span><span class="s2"> creates a location loop.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error (</span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2"> is not a valid location.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">location</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># raising here gives more info for now</span>
+            <span class="k">raise</span>
+            <span class="c1"># errmsg = &quot;Error (%s): %s is not a valid location.&quot; % (str(e), location)</span>
+            <span class="c1"># raise RuntimeError(errmsg)</span>
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">__location_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
