@@ -397,14 +397,23 @@ The map string consists of two main classes of entities - _nodes_ and _links_.
 
 ### Map legend
 
-There can be many different types of _nodes_ and _links_.  Whereas the map
-string describes where they are located. The _Map Legend_ connects each symbol
+There can be many different types of _nodes_ and _links_. Whereas the map
+string describes where they are located, the _Map Legend_ connects each symbol
 on the map to Python code.
 
-The legend is a `dict` added as the key 'legend' to the `XYMAP_DATA` dict. It is
-optional, and any symbol not explicitly given in your legend will fall back to
-its value in the default legend found in
-`evennia.contrib.xyzgrid.xymap_legend`).
+```
+
+LEGEND = {
+    '#': xymap_legend.MapNode,
+    '-': xymap_legende.EWMapLink
+}
+
+# added to XYMAP_DATA dict as 'legend': LEGEND below
+
+```
+
+The legend is optional, and any symbol not explicitly given in your legend will
+fall back to its value in the default legend [outlined below](#default-legend).
 
 - [MapNode](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapNode)
   is the base class for all nodes.
@@ -614,16 +623,21 @@ up-down links (it'd be unclear which leads where) and if adjacent to a node, the
 link will prioritize connecting to the node. Here are some examples:
 
         #
-        u     - moving up in BOTH directions will bring you to the other node (two-way)
+        u    - moving up in BOTH directions will bring you to the other node (two-way)
         #
 
         #
-        | - one-way up from the lower node to the upper
+        |    - one-way up from the lower node to the upper, south to go back
         u
         #
 
         #
-        d     - one-way up, one-way down again (expected up/down behavior)
+        ^    - true one-way up movement, combined with a one-way 'n' link
+        u
+        #
+
+        #
+        d    - one-way up, one-way down again (standard up/down behavior)
         u
         #
 
@@ -1187,13 +1201,13 @@ These are new custom [Typeclasses](../Components/Typeclasses) located in
 
     You should usually **not** create XYZRooms/Exits manually. They are intended
     to be created/deleted based on the layout of the grid. So to add a new room, add
-    a new node to your map. To delete it, you remove it. Then rerun `evennia xyzgrid
-    spawn`. This may lead to manually created rooms being deleted or confusing the
-    system.
+    a new node to your map. To delete it, you remove it. Then rerun
+    **evennia xyzgrid spawn**. Having manually created XYZRooms/exits in the mix
+    can lead to them getting deleted or the system getting confused.
 
-    If you **still** want to create such rooms manually (don't say we didn't warn you!),
-    you should do it with their `XYZRoom.create()` and `XYZExit.create()` methods.
-    This makes sure the XYZ they use are unique.
+    If you **still** want to create XYZRoom/Exits manually (don't say we didn't
+    warn you!), you should do it with their `XYZRoom.create()` and
+    `XYZExit.create()` methods. This makes sure the XYZ they use are unique.
 
 ```
 

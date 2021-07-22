@@ -416,13 +416,20 @@ to move from leftmost to the rightmost node/room).</p>
 </section>
 <section id="map-legend">
 <h3>Map legend<a class="headerlink" href="#map-legend" title="Permalink to this headline">¶</a></h3>
-<p>There can be many different types of <em>nodes</em> and <em>links</em>.  Whereas the map
-string describes where they are located. The <em>Map Legend</em> connects each symbol
+<p>There can be many different types of <em>nodes</em> and <em>links</em>. Whereas the map
+string describes where they are located, the <em>Map Legend</em> connects each symbol
 on the map to Python code.</p>
-<p>The legend is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> added as the key ‘legend’ to the <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> dict. It is
-optional, and any symbol not explicitly given in your legend will fall back to
-its value in the default legend found in
-<code class="docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xymap_legend</span></code>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;#&#39;</span><span class="p">:</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapNode</span><span class="p">,</span>
+    <span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="n">xymap_legende</span><span class="o">.</span><span class="n">EWMapLink</span>
+<span class="p">}</span>
+
+<span class="c1"># added to XYMAP_DATA dict as &#39;legend&#39;: LEGEND below</span>
+</pre></div>
+</div>
+<p>The legend is optional, and any symbol not explicitly given in your legend will
+fall back to its value in the default legend <a class="reference external" href="#default-legend">outlined below</a>.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="../api/evennia.contrib.xyzgrid.xymap_legend.html#evennia.contrib.xyzgrid.xymap_legend.MapNode">MapNode</a>
 is the base class for all nodes.</p></li>
@@ -730,16 +737,21 @@ directions are visually clear. For example, multiple links cannot connect to the
 up-down links (it’d be unclear which leads where) and if adjacent to a node, the
 link will prioritize connecting to the node. Here are some examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
-    <span class="n">u</span>     <span class="o">-</span> <span class="n">moving</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">BOTH</span> <span class="n">directions</span> <span class="n">will</span> <span class="n">bring</span> <span class="n">you</span> <span class="n">to</span> <span class="n">the</span> <span class="n">other</span> <span class="n">node</span> <span class="p">(</span><span class="n">two</span><span class="o">-</span><span class="n">way</span><span class="p">)</span>
+    <span class="n">u</span>    <span class="o">-</span> <span class="n">moving</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">BOTH</span> <span class="n">directions</span> <span class="n">will</span> <span class="n">bring</span> <span class="n">you</span> <span class="n">to</span> <span class="n">the</span> <span class="n">other</span> <span class="n">node</span> <span class="p">(</span><span class="n">two</span><span class="o">-</span><span class="n">way</span><span class="p">)</span>
     <span class="c1">#</span>
 
     <span class="c1">#</span>
-    <span class="o">|</span> <span class="o">-</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">lower</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">upper</span>
+    <span class="o">|</span>    <span class="o">-</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">lower</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">upper</span><span class="p">,</span> <span class="n">south</span> <span class="n">to</span> <span class="n">go</span> <span class="n">back</span>
     <span class="n">u</span>
     <span class="c1">#</span>
 
     <span class="c1">#</span>
-    <span class="n">d</span>     <span class="o">-</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span><span class="p">,</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">down</span> <span class="n">again</span> <span class="p">(</span><span class="n">expected</span> <span class="n">up</span><span class="o">/</span><span class="n">down</span> <span class="n">behavior</span><span class="p">)</span>
+    <span class="o">^</span>    <span class="o">-</span> <span class="n">true</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span> <span class="n">movement</span><span class="p">,</span> <span class="n">combined</span> <span class="k">with</span> <span class="n">a</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="s1">&#39;n&#39;</span> <span class="n">link</span>
+    <span class="n">u</span>
+    <span class="c1">#</span>
+
+    <span class="c1">#</span>
+    <span class="n">d</span>    <span class="o">-</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">up</span><span class="p">,</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="n">down</span> <span class="n">again</span> <span class="p">(</span><span class="n">standard</span> <span class="n">up</span><span class="o">/</span><span class="n">down</span> <span class="n">behavior</span><span class="p">)</span>
     <span class="n">u</span>
     <span class="c1">#</span>
 
@@ -1362,12 +1374,12 @@ details.</p>
 <p class="admonition-title">Warning</p>
 <p>You should usually <strong>not</strong> create XYZRooms/Exits manually. They are intended
 to be created/deleted based on the layout of the grid. So to add a new room, add
-a new node to your map. To delete it, you remove it. Then rerun <cite>evennia xyzgrid
-spawn</cite>. This may lead to manually created rooms being deleted or confusing the
-system.</p>
-<p>If you <strong>still</strong> want to create such rooms manually (don’t say we didn’t warn you!),
-you should do it with their <cite>XYZRoom.create()</cite> and <cite>XYZExit.create()</cite> methods.
-This makes sure the XYZ they use are unique.</p>
+a new node to your map. To delete it, you remove it. Then rerun
+<strong>evennia xyzgrid spawn</strong>. Having manually created XYZRooms/exits in the mix
+can lead to them getting deleted or the system getting confused.</p>
+<p>If you <strong>still</strong> want to create XYZRoom/Exits manually (don’t say we didn’t
+warn you!), you should do it with their <cite>XYZRoom.create()</cite> and
+<cite>XYZExit.create()</cite> methods. This makes sure the XYZ they use are unique.</p>
 </div>
 <p>Useful (extra) properties on <code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code>, <code class="docutils literal notranslate"><span class="pre">XYZExit</span></code>:</p>
 <ul class="simple">
