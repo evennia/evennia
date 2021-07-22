@@ -1,9 +1,11 @@
 """
-# Map legend comhponents
+# Map legend components
 
 Each map-legend component is either a 'mapnode' - something that represents and actual in-game
 location (usually a room) or a 'maplink' - something connecting nodes together. The start of a link
 usually shows as an Exit, but the length of the link has no in-game equivalent.
+
+----
 
 """
 

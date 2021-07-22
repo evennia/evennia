@@ -1,4 +1,4 @@
-# XYZGrid contribution
+# XYZGrid contrib
 
 ```versionadded:: 1.0
 ```
@@ -7,8 +7,10 @@ This optional contrib adds a 'coordinate grid' to Evennia. It allows for
 defining the grid as simple ascii maps that are then spawned into rooms that are
 aware of their X, Y, Z coordinates. The system includes shortest-path
 pathfinding, auto-stepping and in-game map visualization (with visibility
-range).
+range). Grid-management is done outside of the game using a new evennia-launcher
+option.
 
+<script id="asciicast-Zz36JuVAiPF0fSUR09Ii7lcxc" src="https://asciinema.org/a/Zz36JuVAiPF0fSUR09Ii7lcxc.js" async></script>
 
 ```
 #-#-#-#   #
@@ -35,8 +37,6 @@ To the east, a narrow opening leads into darkness.
 Exits: northeast and east
 
 ```
-
-
 
 ## Installation
 
@@ -406,10 +406,10 @@ optional, and any symbol not explicitly given in your legend will fall back to
 its value in the default legend found in
 `evennia.contrib.xyzgrid.xymap_legend`).
 
-- [MapNode](api:evennia.contrib.xyzgrid.xymap_legend#MapNode) is the base
-  class for all nodes.
-- [MapLink](api:evennia.contrib.xyzgrid.xymap_legend#MapLink) is the base
-  class for all links.
+- [MapNode](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapNode)
+  is the base class for all nodes.
+- [MapLink](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapLink)
+  is the base class for all links.
 
 As the _Map String_ is parsed, each found symbol is looked up in the legend and
 initialized into the corresponding MapNode/Link instance.
@@ -421,7 +421,7 @@ with a full set of map elements that use these properties in various ways
 (described in the next section).
 
 Some useful properties of the
-[MapNode](api:evennia.contrib.xyzgrid.xymap_legend#MapNode)
+[MapNode](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapNode)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. By default this
@@ -449,7 +449,7 @@ class (see class doc for hook methods):
   useful for various reasons, mostly map-transitions).
 
 Some useful properties of the
-[MapLink](api:evennia.contrib.xyzgrid.xymap_legend#MapLink)
+[MapLink](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapLink)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. This must
@@ -1207,11 +1207,50 @@ Useful (extra) properties on `XYZRoom`, `XYZExit`:
   `XYZRoom`, to display the map. The `options` given in `XYMAP_DATA` will appear
   as `**kwargs` to this method and if you override this you can customize the
   map display in depth.
+- `xyz_destination` (only for `XYZExits`) - this gives the xyz-coordinate of
+  the exit's destination.
 
-To use your own overridden version of `XYZRoom/Exit`, you need to override
-the prototype used to spawn rooms on the grid. You can modify the base prototype
-parents in settings (see the [Extending the base prototypes](#extending-the-base-prototypes)
-section above).
+The coordinates are stored as [Tags](../Components/Tags) where both rooms and exits tag
+categories `room_x_coordinate`, `room_y_coordinate` and `room_z_coordinate`
+while exits use the same in addition to tags for their destination, with tag
+categories `exit_dest_x_coordinate`, `exit_dest_y_coordinate` and
+`exit_dest_z_coordinate`.
+
+The make it easier to query the database by coordinates, each typeclass offers
+custom manager methods. The filter methods allow for `'*'` as a wildcard.
+
+```python
+
+# find a list of all rooms in map foo
+rooms = XYZRoom.objects.filter_xyz(('*', '*', 'foo'))
+
+# find list of all rooms with name "Tunnel" on map foo
+rooms = XYZRoom.objects.filter_xyz(('*', '*', 'foo'), db_key="Tunnel")
+
+# find all rooms in the first column of map footer
+rooms = XYZRoom.objects.filter_xyz((0, '*', 'foo'))
+
+# find exactly one room at given coordinate (no wildcards allowed)
+room = XYZRoom.objects.get_xyz((13, 2, foo))
+
+# find all exits in a given room
+exits = XYZExit.objects.filter_xyz((10, 4, foo))
+
+# find all exits pointing to a specific destination (from all maps)
+exits = XYZExit.objects.filter_xyz_exit(xyz_destination=(13,5,'bar'))
+
+# find exits from a room to anywhere on another map
+exits = XYZExit.objects.filter_xyz_exit(xyz=(1, 5, 'foo'), xyz_destination=('*', '*', 'bar'))
+
+# find exactly one exit to specific destination (no wildcards allowed)
+exit = XYZExit.objects.get_xyz_exit(xyz=(0, 12, 'foo'), xyz_destination=(5, 2, 'foo'))
+
+```
+
+You can customize the XYZRoom/Exit by having the grid spawn your own subclasses
+of them. To do this you need to override the prototype used to spawn rooms on
+the grid. Easiest is to modify the base prototype-parents in settings (see the
+[Extending the base prototypes](#extending-the-base-prototypes) section above).
 
 ## Working with the grid
 
