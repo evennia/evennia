@@ -385,7 +385,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['stats', 'db', 'listobjs', 'listobjects']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['db', 'listobjects', 'stats', 'listobjs']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -411,7 +411,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'stats db listobjs listobjects', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'db listobjects stats listobjs', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -612,7 +612,7 @@ the released memory will instead be re-used by the program.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdServerLoad.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['serverload', 'serverprocess']</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['serverprocess', 'serverload']</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -643,7 +643,7 @@ the released memory will instead be re-used by the program.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdServerLoad.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'serverload serverprocess', 'category': 'system', 'key': 'server', 'tags': '', 'text': &quot;\n    show server load and memory statistics\n\n    Usage:\n       server[/mem]\n\n    Switches:\n        mem - return only a string of the current memory usage\n        flushmem - flush the idmapper cache\n\n    This command shows server load statistics and dynamic memory\n    usage. It also allows to flush the cache of accessed database\n    objects.\n\n    Some Important statistics in the table:\n\n    |wServer load|n is an average of processor usage. It's usually\n    between 0 (no usage) and 1 (100% usage), but may also be\n    temporarily higher if your computer has multiple CPU cores.\n\n    The |wResident/Virtual memory|n displays the total memory used by\n    the server process.\n\n    Evennia |wcaches|n all retrieved database entities when they are\n    loaded by use of the idmapper functionality. This allows Evennia\n    to maintain the same instances of an entity and allowing\n    non-persistent storage schemes. The total amount of cached objects\n    are displayed plus a breakdown of database object types.\n\n    The |wflushmem|n switch allows to flush the object cache. Please\n    note that due to how Python's memory management works, releasing\n    caches may not show you a lower Residual/Virtual memory footprint,\n    the released memory will instead be re-used by the program.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'serverprocess serverload', 'category': 'system', 'key': 'server', 'tags': '', 'text': &quot;\n    show server load and memory statistics\n\n    Usage:\n       server[/mem]\n\n    Switches:\n        mem - return only a string of the current memory usage\n        flushmem - flush the idmapper cache\n\n    This command shows server load statistics and dynamic memory\n    usage. It also allows to flush the cache of accessed database\n    objects.\n\n    Some Important statistics in the table:\n\n    |wServer load|n is an average of processor usage. It's usually\n    between 0 (no usage) and 1 (100% usage), but may also be\n    temporarily higher if your computer has multiple CPU cores.\n\n    The |wResident/Virtual memory|n displays the total memory used by\n    the server process.\n\n    Evennia |wcaches|n all retrieved database entities when they are\n    loaded by use of the idmapper functionality. This allows Evennia\n    to maintain the same instances of an entity and allowing\n    non-persistent storage schemes. The total amount of cached objects\n    are displayed plus a breakdown of database object types.\n\n    The |wflushmem|n switch allows to flush the object cache. Please\n    note that due to how Python's memory management works, releasing\n    caches may not show you a lower Residual/Virtual memory footprint,\n    the released memory will instead be re-used by the program.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
