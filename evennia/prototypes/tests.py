@@ -86,6 +86,10 @@ class TestSpawner(EvenniaTest):
             ["goblin grunt", "goblin archwizard"],
         )
 
+    def test_spawn_attr_merging(self):
+        o = spawner.spawn(_PROTPARENTS["GOBLIN_ARCHER"], prototype_parents=_PROTPARENTS)[0]
+        self.assertEqual(o.db.attacks, ["short bow"])
+
 
 class TestUtils(EvenniaTest):
     def test_prototype_from_object(self):

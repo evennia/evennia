@@ -970,7 +970,7 @@ def spawn(*prototypes, **kwargs):
                     (key, init_spawn_value(value, value_to_obj_or_any), None, None)
                 )
 
-        attributes = attributes + simple_attributes
+        attributes = simple_attributes + attributes
         attributes = [tup for tup in attributes if not tup[0] in _NON_CREATE_KWARGS]
 
         # pack for call into _batch_create_object
