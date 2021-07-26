@@ -1775,9 +1775,10 @@ class DefaultGuest(DefaultAccount):
         """
         super().at_server_shutdown()
         characters = self.db._playable_characters
-        for character in characters:
-            if character:
-                character.delete()
+        if characters:
+            for character in characters:
+                if character:
+                    character.delete()
 
     def at_post_disconnect(self, **kwargs):
         """
