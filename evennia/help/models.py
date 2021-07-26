@@ -56,6 +56,7 @@ class HelpEntry(SharedMemoryModel):
     db_key = models.CharField(
         "help key", max_length=255, unique=True, help_text="key to search for"
     )
+
     # help category
     db_help_category = models.CharField(
         "help category",
@@ -63,6 +64,7 @@ class HelpEntry(SharedMemoryModel):
         default="General",
         help_text="organizes help entries in lists",
     )
+
     # the actual help entry text, in any formatting.
     db_entrytext = models.TextField(
         "help entry", blank=True, help_text="the main body of help text"
@@ -221,6 +223,7 @@ class HelpEntry(SharedMemoryModel):
             path (str): URI path to object detail page, if defined.
 
         """
+
         try:
             return reverse(
                 "%s-detail" % slugify(self._meta.verbose_name),

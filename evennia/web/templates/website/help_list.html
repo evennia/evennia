@@ -18,12 +18,12 @@
         </ol>
         <hr />
         <div class="row">
-          {% regroup object_list by help_category as category_list %}
-          
+          {% regroup object_list by web_help_category as category_list %}
+
           {% if category_list %}
           <!-- left column -->
           <div class="col-lg-9 col-sm-12">
-            
+
             <!-- intro -->
             <div class="card border-light">
               <div class="card-body">
@@ -33,23 +33,30 @@
             </div>
             <hr />
             <!-- end intro -->
-            
+
             <!-- index list -->
             <div class="mx-3">
-              {% for help_category in category_list %}
-              <h5><a id="{{ help_category.grouper }}"></a>{{ help_category.grouper|title }}</h5>
+              {% for web_help_category in category_list %}
+              <h5><a id="{{ web_help_category.grouper }}"></a>{{ web_help_category.grouper|title }}</h5>
               <ul>
-                  {% for object in help_category.list %}
-                  <li><a href="{{ object.web_get_detail_url }}">{{ object|title }}</a></li>
+                  {% for object in web_help_category.list %}
+                  <li>
+                      <a href="{{ object.web_get_detail_url }}">{{ object|title }}</a>
+                      {% if object.web_get_admin_url %}
+                          {% if user.is_staff %}
+                              <a href="{{ object.web_get_admin_url }}">-edit-</a>
+                          {% endif %}
+                      {% endif %}
+                  </li>
                   {% endfor %}
               </ul>
               {% endfor %}
               <!-- end index list -->
             </div>
-            
+
           </div>
           <!-- end left column -->
-          
+
           <!-- right column (index) -->
           <div class="col-lg-3 col-sm-12">
             {% if user.is_staff %}
@@ -58,16 +65,16 @@
             <!-- end admin button -->
             <hr />
             {% endif %}
-            
+
             <div class="card mb-3">
               <div class="card-header">Category Index</div>
-              
+
               <ul class="list-group list-group-flush">
                 {% for category in category_list %}
                 <a href="#{{ category.grouper }}" class="list-group-item">{{ category.grouper|title }}</a>
                 {% endfor %}
               </ul>
-              
+
             </div>
           </div>
           <!-- end right column -->
@@ -81,14 +88,14 @@
               <p>You're missing out on an opportunity to attract visitors (and potentially new players) to {{ game_name }}!</p>
               <p>Use Evennia's <a href="https://github.com/evennia/evennia/wiki/Help-System#database-help-entries" class="alert-link" target="_blank">Help System</a> to tell the world about the universe you've created, its lore and legends, its people and creatures, and their customs and conflicts!</p>
               <p>You don't even need coding skills-- writing Help Entries is no more complicated than writing an email or blog post. Once you publish your first entry, these ugly boxes go away and this page will turn into an index of everything you've written about {{ game_name }}.</p>
-              <p>The documentation you write is eventually picked up by search engines, so the more you write about how {{ game_name }} works, the larger your web presence will be-- and the more traffic you'll attract. 
+              <p>The documentation you write is eventually picked up by search engines, so the more you write about how {{ game_name }} works, the larger your web presence will be-- and the more traffic you'll attract.
               <p>Everything you write can be viewed either on this site or within the game itself, using the in-game help commands.</p>
               <hr>
               <p class="mb-0"><a href="/admin/help/helpentry/add/" class="alert-link">Click here</a> to start writing about {{ game_name }}!</p>
             </div>
           </div>
           {% endif %}
-          
+
           <div class="col-lg-12 col-sm-12">
             <div class="alert alert-secondary" role="alert">
               <h4 class="alert-heading">Under Construction!</h4>
@@ -99,7 +106,7 @@
             </div>
           </div>
           {% endif %}
-          
+
         </div>
         <hr />
       </div>
