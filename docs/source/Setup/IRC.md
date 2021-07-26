@@ -5,12 +5,12 @@ _Disambiguation: This page is related to using IRC inside an Evennia game. To jo
 Evennia IRC chat, connect to irc.freenode.net and join #evennia. Alternatively, you can [join our
 Discord](https://discord.gg/NecFePw), which is mirrored to IRC._
 
-[IRC (Internet Relay Chat)](http://en.wikipedia.org/wiki/Internet_Relay_Chat) is a long standing
+[IRC (Internet Relay Chat)](https://en.wikipedia.org/wiki/Internet_Relay_Chat) is a long standing
 chat protocol used by many open-source projects for communicating in real time. By connecting one of
 Evennia's [Channels](../Components/Communications) to an IRC channel you can communicate also with people not on
 an mud themselves. You can also use IRC if you are only running your Evennia MUD locally on your
 computer (your game doesn't need to be open to the public)! All you need is an internet connection.
-For IRC operation you also need [twisted.words](http://twistedmatrix.com/trac/wiki/TwistedWords).
+For IRC operation you also need [twisted.words](https://twistedmatrix.com/trac/wiki/TwistedWords).
 This is available simply as a package *python-twisted-words* in many Linux distros, or directly
 downloadable from the link.
 
@@ -40,7 +40,7 @@ if you like), but for testing, let's set up a new channel `irc`.
 You will automatically join the new channel.
 
 Next we will create a connection to an external IRC network and channel. There are many, many IRC
-nets. [Here is a list](http://www.irchelp.org/irchelp/networks/popular.html) of some of the biggest
+nets. [Here is a list](https://www.irchelp.org/networks/popular.html) of some of the biggest
 ones, the one you choose is not really very important unless you want to connect to a particular
 channel (also make sure that the network allows for "bots" to connect).
 

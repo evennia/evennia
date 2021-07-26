@@ -1,7 +1,7 @@
 # Licensing
 
 
-Evennia is licensed under the very friendly [BSD](http://en.wikipedia.org/wiki/BSD_license)
+Evennia is licensed under the very friendly [BSD](https://en.wikipedia.org/wiki/BSD_license)
 (3-clause) license.  You can find the license as
 [LICENSE.txt](https://github.com/evennia/evennia/blob/master/LICENSE.txt) in the Evennia
 repository's root.

@@ -32,7 +32,7 @@ terminal.
 > Note: If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to
 start tailing the logs again.
  - Make sure you can connect with your web browser to `http://localhost:4001` or, alternatively,
-`http:127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to
+`http://127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to
 play the game in the web client. Also check so that you can connect with a mud client to host
 `localhost`, port `4000` or host `127.0.0.1`, port `4000`.
 - [Google for "my ip"](https://www.google.se/search?q=my+ip) or use any online service to figure out
@@ -294,7 +294,7 @@ your game. What you need is to alias it to a more sensible domain name - an alia
 around also when the IP changes.
 
 1. To set up a domain name alias, we recommend starting with a free domain name from
-[FreeDNS](http://freedns.afraid.org/). Once you register there (it's free) you have access to tens
+[FreeDNS](https://freedns.afraid.org/). Once you register there (it's free) you have access to tens
 of thousands domain names that people have "donated" to allow you to use for your own sub domain.
 For example, `strangled.net` is one of those available domains. So tying our IP address to
 `strangled.net` using the subdomain `evennia` would mean that one could henceforth direct people to
@@ -305,7 +305,7 @@ and tell FreeDNS that. There are many alternatives to be found from FreeDNS:s ho
 works on multiple platforms is [inadyn](http://www.inatech.eu/inadyn/). Get it from their page or,
 in Linux, through something like `apt-get install inadyn`.
 1. Next, you login to your account on FreeDNS and go to the
-[Dynamic](http://freedns.afraid.org/dynamic/) page. You should have a list of your subdomains. Click
+[Dynamic](https://freedns.afraid.org/dynamic/) page. You should have a list of your subdomains. Click
 the `Direct URL` link and you'll get a page with a text message. Ignore that and look at the URL of
 the page. It should be ending in a lot of random letters. Everything after the question mark is your
 unique "hash". Copy this string.
@@ -405,10 +405,10 @@ servers with this option as they don't have a lot of support.
 [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM
 *Please help us expand this list.*
 
-[1]: http:silvren.com
+[1]: https://silvren.com
 [2](https://www.digitalocean.com/pricing)
 [3](https://aws.amazon.com/pricing/)
-[4](http://www.genesismuds.com/)
+[4](https://www.genesismuds.com/)
 [5](https://www.host1plus.com/)
 [6](https://www.scaleway.com/)
 [7](https://lowendbox.com/)

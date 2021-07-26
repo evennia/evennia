@@ -56,7 +56,7 @@ above. But for small, well isolated fixes you are also welcome to submit your su
 fixes/addendums as a [patch][patch].
 
 You can include your patch in an Issue or a Mailing list post. Please avoid pasting the full patch
-text directly in your post though, best is to use a site like [Pastebin](http://pastebin.com/) and
+text directly in your post though, best is to use a site like [Pastebin](https://pastebin.com/) and
 just supply the link. 
 
 ## Contributing with Contribs

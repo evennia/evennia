@@ -1,7 +1,7 @@
 # Grapevine
 
 
-[Grapevine](http://grapevine.haus) is a new chat network for `MU*`*** games. By
+[Grapevine](https://grapevine.haus) is a new chat network for `MU*`*** games. By
 connecting an in-game channel to the grapevine network, players on your game
 can chat with players in other games, also non-Evennia ones.
 

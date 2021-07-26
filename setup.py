@@ -117,7 +117,7 @@ setup(
         "Issue tracker": "https://github.com/evennia/evennia/issues",
         "Chat": "http://www.evennia.com/chat-redirect-3",
         "Forum": "https://groups.google.com/forum/#%21forum/evennia",
-        "Dev Blog": "http://evennia.blogspot.com/",
+        "Dev Blog": "https://evennia.blogspot.com/",
         "Patreon": "https://www.patreon.com/griatch",
     },
 )

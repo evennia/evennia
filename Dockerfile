@@ -2,7 +2,7 @@
 # Base docker image for running Evennia-based games in a container.
 #
 # Install:
-#   install `docker` (http://docker.com)
+#   install `docker` (https://docker.com)
 #
 # Usage:
 #    cd to a folder where you want your game data to be (or where it already is).

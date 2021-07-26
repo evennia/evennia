@@ -218,9 +218,9 @@ from this method will be returned from the execution as a Twisted Deferred.
 - `at_post_cmd()` is called after `func()` to handle eventual cleanup.
 
 Finally, you should always make an informative [doc
-string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your
-class. This string is dynamically read by the [Help System](./Help-System) to create the help entry
-for this command. You should decide on a way to format your help and stick to that.
+string](https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of
+your class. This string is dynamically read by the [Help System](./Help-System) to create the help
+entry for this command. You should decide on a way to format your help and stick to that.
 
 Below is how you define a simple alternative "`smile`" command:
 
@@ -288,7 +288,7 @@ that will be used). If you want to tell the parser to require a certain separato
 command name and its arguments (so that `get stone` works but `getstone` gives you a 'command not
 found' error) you can do so with the `arg_regex` property.
 
-The `arg_regex` is a [raw regular expression string](http://docs.python.org/library/re.html). The
+The `arg_regex` is a [raw regular expression string](https://docs.python.org/library/re.html). The
 regex will be compiled by the system at runtime. This allows you to customize how the part
 *immediately following* the command name (or alias) must look in order for the parser to match for
 this command. Some examples:
@@ -644,7 +644,7 @@ doing useful things.
 ## Assorted notes
 
 The return value of `Command.func()` is a Twisted
-[deferred](http://twistedmatrix.com/documents/current/core/howto/defer.html).
+[deferred](https://twistedmatrix.com/documents/current/core/howto/defer.html).
 Evennia does not use this return value at all by default. If you do, you must
 thus do so asynchronously, using callbacks.
 

@@ -63,4 +63,4 @@ Note that having to try several different encodings every input/output adds
 unneccesary overhead. Try to guess the most common encodings you players will
 use and make sure these are tried first. The International *UTF-8* encoding is
 what Evennia assumes by default (and also what Python/Django use normally). See
-the Wikipedia article [here](http://en.wikipedia.org/wiki/Text_encodings) for more help.
+the Wikipedia article [here](https://en.wikipedia.org/wiki/Text_encodings) for more help.

@@ -55,11 +55,11 @@ Our map will be in-game text but that doesn't mean we're restricted to the norma
 you've ever selected the [Wingdings font](https://en.wikipedia.org/wiki/Wingdings) in Microsoft Word
 you will know there are a multitude of other characters around to use. When creating your game with
 Evennia you have access to the [UTF-8 character encoding](https://en.wikipedia.org/wiki/UTF-8) which
-put at your disposal [thousands of letters, number and geometric shapes](http://mcdlr.com/utf-8/#1).
+put at your disposal [thousands of letters, number and geometric shapes](https://mcdlr.com/utf-8/#1).
 
 For this exercise, we've copy-and-pasted from the pallet of special characters used over at 
-[Dwarf Fortress](http://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully a
-pleasing and easy to understood landscape:
+[Dwarf Fortress](https://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully
+a pleasing and easy to understood landscape:
 
 ```
 ≈≈↑↑↑↑↑∩∩

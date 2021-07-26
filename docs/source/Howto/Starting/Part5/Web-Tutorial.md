@@ -18,10 +18,10 @@ you might have an app for conducting polls, or an app for showing news posts or,
 creating a web client.
 
 Each of these applications has a `urls.py` file, which specifies what
-[URL](http://en.wikipedia.org/wiki/Uniform_resource_locator)s are used by the app, a `views.py` file
+[URL](https://en.wikipedia.org/wiki/Uniform_resource_locator)s are used by the app, a `views.py` file
 for the code that the URLs activate, a `templates` directory for displaying the results of that code
-in [HTML](http://en.wikipedia.org/wiki/Html) for the user, and a `static` folder that holds assets
-like [CSS](http://en.wikipedia.org/wiki/CSS), [Javascript](http://en.wikipedia.org/wiki/Javascript),
+in [HTML](https://en.wikipedia.org/wiki/Html) for the user, and a `static` folder that holds assets
+like [CSS](https://en.wikipedia.org/wiki/CSS), [Javascript](https://en.wikipedia.org/wiki/Javascript),
 and Image files (You may note your mygame/web folder does not have a `static` or `template` folder.
 This is intended and explained further below). Django applications may also have a `models.py` file
 for storing information in the database. We will not change any models here, take a look at the 
