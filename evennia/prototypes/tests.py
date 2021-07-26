@@ -45,7 +45,6 @@ _PROTPARENTS = {
     },
 }
 
-
 class TestSpawner(EvenniaTest):
     def setUp(self):
         super(TestSpawner, self).setUp()
@@ -898,3 +897,43 @@ class PrototypeCrashTest(EvenniaTest):
             # start_time = time()
             self.char1.execute_cmd("spawn/list")
             # print(f"Prototypes listed in {time()-start_time} seconds.")
+
+
+class Test2474(EvenniaTest):
+    """
+    Test bug #2474 (https://github.com/evennia/evennia/issues/2474),
+    where the prototype's attribute fails to take precedence over
+    that of its prototype_parent.
+
+    """
+    prototypes = {
+        "WEAPON": {
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "Weapon",
+            "desc": "A generic blade.",
+            "magic": False,
+        },
+        "STING": {
+            "prototype_parent": "WEAPON",
+            "key": "Sting",
+            "desc": "A dagger that shines with a cold light if Orcs are near.",
+            "magic": True,
+        },
+    }
+
+    def test_magic_spawn(self):
+        """
+        Test magic is inherited.
+
+        """
+        sting = spawner.spawn(self.prototypes["STING"], prototype_parents=self.prototypes)[0]
+        self.assertEqual(sting.db.magic, True)
+
+    def test_non_magic_spawn(self):
+        """
+        Test inverse - no magic.
+
+        """
+        sting = spawner.spawn(self.prototypes["WEAPON"], prototype_parents=self.prototypes)[0]
+        self.assertEqual(sting.db.magic, False)
+

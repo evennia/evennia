@@ -892,7 +892,7 @@ def spawn(*prototypes, caller=None, **kwargs):
     for key, protparent in kwargs.get("prototype_parents", {}).items():
         key = str(key).lower()
         protparent["prototype_key"] = str(protparent.get("prototype_key", key)).lower()
-        protparents[key] = protparent
+        protparents[key] = protlib.homogenize_prototype(protparent)
 
     if "return_parents" in kwargs:
         # only return the parents
