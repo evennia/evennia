@@ -685,7 +685,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
                 return
             desc = self.rhs or ""
         else:
-            obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
+            obj = caller.location or self.msg("|rYou don't have a location to describe.|n")
             if not obj:
                 return
             desc = self.args
