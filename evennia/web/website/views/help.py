@@ -39,6 +39,7 @@ def get_help_category(help_entry, slugify_cat=True):
     # if one does not exist, create a category for ease of use with web views html templates
     if not hasattr(help_entry, 'web_help_category'):
         setattr(help_entry, 'web_help_category', slugify(help_category))
+    help_category = help_category.lower()
     return slugify(help_category) if slugify_cat else help_category
 
 
@@ -58,7 +59,7 @@ def get_help_topic(help_entry):
     # if one does not exist, create a key for ease of use with web views html templates
     if not hasattr(help_entry, 'web_help_key'):
         setattr(help_entry, 'web_help_key', slugify(help_topic))
-    return help_topic
+    return help_topic.lower()
 
 
 def can_read_topic(cmd_or_topic, account):
@@ -187,7 +188,7 @@ class HelpMixin():
         all_entries = list(all_topics.values())
 
         # sort the entries
-        all_entries = sorted(all_entries, key=get_help_topic)  # sort alphabetically
+        all_entries.sort(key=get_help_topic)  # sort alphabetically
         all_entries.sort(key=get_help_category)  # group by categories
 
         return all_entries

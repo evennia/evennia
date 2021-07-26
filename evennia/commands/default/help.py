@@ -816,9 +816,9 @@ class CmdSetHelp(CmdHelp):
                                "with access to that command.")
                 elif inherits_from(match, "evennia.help.filehelp.FileHelpEntry"):
                     warning = (f"'{querystr}' matches (or partially matches) the name/alias of the "
-                               "file-based help file '{match.key}'. File-help entries cannot be "
+                               f"file-based help topic '{match.key}'. File-help entries cannot be "
                                "modified from in-game (they are files on-disk). If you continue, "
-                               "your help entry *may* shadow the file-based one's name partly or "
+                               "your help entry may shadow the file-based one's name partly or "
                                "completely.")
                 if warning:
                     # show a warning for a clashing help-entry type. Even if user accepts this
