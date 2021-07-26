@@ -202,7 +202,7 @@ will only catch immediate dependence). This function also accepts as input any c
 classes, instances or python-paths-to-classes.
 
 Note that Python code should usually work with [duck
-typing](http://en.wikipedia.org/wiki/Duck_typing). But in Evennia's case it can sometimes be useful
+typing](https://en.wikipedia.org/wiki/Duck_typing). But in Evennia's case it can sometimes be useful
 to check if an object inherits from a given [Typeclass](./Typeclasses) as a way of identification. Say
 for example that we have a typeclass *Animal*. This has a subclass *Felines* which in turn has a
 subclass *HouseCat*. Maybe there are a bunch of other animal types too, like horses and dogs. Using

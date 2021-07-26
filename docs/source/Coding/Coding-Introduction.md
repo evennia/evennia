@@ -20,7 +20,7 @@ take a look at our [Python introduction](../Howto/Starting/Part1/Python-basic-in
 
 When new to Evennia it can be hard to find things or figure out what is available. Evennia offers a
 special interactive python shell that allows you to experiment and try out things. It's recommended
-to use [ipython](http://ipython.org/) for this since the vanilla python prompt is very limited. Here
+to use [ipython](https://ipython.org/) for this since the vanilla python prompt is very limited. Here
 are some simple commands to get started:
 
     # [open a new console/terminal]
@@ -84,7 +84,7 @@ should just gracefully tell you what errors it finds, it can nevertheless be a g
 check your code for simple syntax errors *before* you load it into the running server.  There are
 many python syntax checkers out there. A fast and easy one is
 [pyflakes](https://pypi.python.org/pypi/pyflakes), a more verbose one is
-[pylint](http://www.pylint.org/). You can also check so that your code looks up to snuff using
+[pylint](https://www.pylint.org/). You can also check so that your code looks up to snuff using
 [pep8](https://pypi.python.org/pypi/pep8). Even with a syntax checker you will not be able to catch
 every possible problem - some bugs or problems will only appear when you actually run the code. But
 using such a checker can be a good start to weed out the simple problems.
@@ -131,7 +131,7 @@ call, but reading docs really *does* help you, promise! Evennia's documentation 
 and knowing what is possible can often give you a lot of new cool game ideas. That said, if you
 can't find the answer in the docs, don't be shy to ask questions! The [discussion
 group](https://sites.google.com/site/evenniaserver/discussions) and the [irc
-chat](http://webchat.freenode.net/?channels=evennia) are also there for you.
+chat](https://webchat.freenode.net/?channels=evennia) are also there for you.
 
 ### The most important point
 

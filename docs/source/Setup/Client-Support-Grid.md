@@ -71,22 +71,22 @@ new [documentation issue](github:issue) for it. Everyone's encouraged to report 
 .. _Evennia Webclient: ../Components/Webclient.html
 .. _tintin++: http://tintin.sourceforge.net/
 .. _tinyfugue: http://tinyfugue.sourceforge.net/
-.. _MUSHclient: http://mushclient.com/
+.. _MUSHclient: https://mushclient.com/
 .. _Zmud: http://forums.zuggsoft.com/index.php?page=4&action=file&file_id=65
 .. _Cmud: http://forums.zuggsoft.com/index.php?page=4&action=category&cat_id=11
-.. _Potato: http://www.potatomushclient.com/
-.. _Mudlet: http://www.mudlet.org/
+.. _Potato: https://www.potatomushclient.com/
+.. _Mudlet: https://www.mudlet.org/
 .. _SimpleMU: https://archive.org/details/tucows_196173_SimpleMU_MU_Client
-.. _Atlantis: http://www.riverdark.net/atlantis/
+.. _Atlantis: https://www.riverdark.net/atlantis/
 .. _GMUD: https://sourceforge.net/projects/g-mud/
 .. _BeipMU: http://www.beipmu.com/
 .. _MudRammer: https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072
 .. _MUDMaster: https://itunes.apple.com/us/app/mudmaster/id341160033
-.. _BlowTorch: http://bt.happygoatstudios.com/
+.. _BlowTorch: https://bt.happygoatstudios.com/
 .. _Mukluk: https://play.google.com/store/apps/details?id=com.crap.mukluk
 .. _Gnome-MUD: https://github.com/GNOME/gnome-mud
 .. _Spyrit: https://spyrit.ierne.eu.org/
-.. _JamochaMUD: http://jamochamud.org/
+.. _JamochaMUD: https://jamochamud.org/
 .. _DuckClient: http://duckclient.com/
 .. _KildClient: https://www.kildclient.org/
 

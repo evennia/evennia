@@ -119,7 +119,7 @@ Looking at it you might think that `utils.delay(10, callback)` in the code above
 alternative to some more familiar thing like `time.sleep(10)`. This is *not* the case. If you do
 `time.sleep(10)` you will in fact freeze the *entire server* for ten seconds! The `utils.delay()`is
 a thin wrapper around a Twisted
-[Deferred](http://twistedmatrix.com/documents/11.0.0/core/howto/defer.html) that will delay
+[Deferred](https://twistedmatrix.com/documents/11.0.0/core/howto/defer.html) that will delay
 execution until 10 seconds have passed, but will do so asynchronously, without bothering anyone else
 (not even you - you can continue to do stuff normally while it waits to continue).
 

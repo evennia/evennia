@@ -1,7 +1,7 @@
 # Starting to code Evennia
 
-Time to dip our toe into some coding! Evennia is written and extended in [Python](http://python.org), which
-is a mature and professional programming language that is very fast to work with.
+Time to dip our toe into some coding! Evennia is written and extended in [Python](https://python.org),
+which is a mature and professional programming language that is very fast to work with.
 
 That said, even though Python is widely considered easy to learn, we can only cover the most immediately
 important aspects of Python in this series of starting tutorials. Hopefully we can get you started

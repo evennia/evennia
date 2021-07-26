@@ -8,13 +8,13 @@
 This tutorial will provide a step-by-step process to installing a wiki on your website.
 Fortunately, you don't have to create the features manually, since it has been done by others, and
 we can integrate their work quite easily with Django.  I have decided to focus on
-the [Django-wiki](http://django-wiki.readthedocs.io/).
+the [Django-wiki](https://django-wiki.readthedocs.io/).
 
 > Note: this article has been updated for Evennia 0.9.  If you're not yet using this version, be
 careful, as the django wiki doesn't support Python 2 anymore.  (Remove this note when enough time
 has passed.)
 
-The [Django-wiki](http://django-wiki.readthedocs.io/) offers a lot of features associated with
+The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with
 wikis, is
 actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
 see a [demonstration of Django-wiki here](https://demo.django.wiki).

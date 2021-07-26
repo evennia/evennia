@@ -4,7 +4,7 @@
 *Unit testing* means testing components of a program in isolation from each other to make sure every
 part works on its own before using it with others. Extensive testing helps avoid new updates causing
 unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia
-article on unit testing can be found [here](http://en.wikipedia.org/wiki/Unit_test)).
+article on unit testing can be found [here](https://en.wikipedia.org/wiki/Unit_test)).
 
 A typical unit test set calls some function or method with a given input, looks at the result and
 makes sure that this result looks as expected. Rather than having lots of stand-alone test programs,
@@ -99,7 +99,7 @@ Example of a `TestCase` class:
 ```
 
 You might also want to read the [documentation for the unittest
-module](http://docs.python.org/library/unittest.html).
+module](https://docs.python.org/library/unittest.html).
 
 ### Using the EvenniaTest class
 
