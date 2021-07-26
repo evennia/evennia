@@ -58,8 +58,8 @@ class AccountChangeForm(UserChangeForm):
         label="Typeclass",
         help_text="This is the Python-path to the class implementing the actual account functionality. "
         "You usually don't need to change this from the default.<BR>"
-        "If your custom class is not found here, it may not be imported as part of Evennia's startup.",
-        choices=adminutils.get_and_load_typeclasses(parent=AccountDB),
+        "If your custom class is not found here, it may not be imported into Evennia yet.",
+        choices=lambda: adminutils.get_and_load_typeclasses(parent=AccountDB),
     )
 
     db_lock_storage = forms.CharField(
