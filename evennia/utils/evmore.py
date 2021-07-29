@@ -39,7 +39,8 @@ the `caller.msg()` construct every time the page is updated.
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.core.paginator import Paginator
-from evennia import Command, CmdSet
+from evennia.commands.command import Command
+from evennia.commands.cmdset import CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import make_iter, inherits_from, justify, dedent

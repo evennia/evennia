@@ -883,7 +883,8 @@ def spawn(*prototypes, caller=None, **kwargs):
     protparents = {prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()}
 
     if not kwargs.get("only_validate"):
-        # homogenization to be more lenient about prototype format when entering the prototype manually
+        # homogenization to be more lenient about prototype format when entering the prototype
+        # manually
         prototypes = [protlib.homogenize_prototype(prot) for prot in prototypes]
 
     # overload module's protparents with specifically given protparents
