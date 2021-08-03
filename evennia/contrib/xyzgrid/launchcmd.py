@@ -188,7 +188,10 @@ def _option_list(*suboptions):
 
     xymap_data = xyzgrid.grid
     if not xymap_data:
-        print("The XYZgrid is currently empty. Use 'add' to add paths to your map data.")
+        if xyzgrid.db.map_data:
+            print("Grid could not load due to errors.")
+        else:
+            print("The XYZgrid is currently empty. Use 'add' to add paths to your map data.")
         return
 
     if not suboptions:
@@ -265,7 +268,12 @@ def _option_add(*suboptions):
         print(f" XYMaps from {path}:\n {mapnames}")
         xymap_data_list.extend(maps)
     grid.add_maps(*xymap_data_list)
-    print(f"Added (or readded) {len(xymap_data_list)} XYMaps to grid.")
+    try:
+        grid.reload()
+    except Exception as err:
+        print(err)
+    else:
+        print(f"Added (or readded) {len(xymap_data_list)} XYMaps to grid.")
 
 
 def _option_spawn(*suboptions):

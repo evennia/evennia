@@ -266,10 +266,13 @@ class XYZGrid(DefaultScript):
             xymap.spawn_links(xy=(x, y), directions=directions)
 
 
-def get_xyzgrid():
+def get_xyzgrid(print_errors=True):
     """
     Helper for getting the grid. This will create the XYZGrid global script if it didn't
     previously exist.
+
+    Args:
+        print_errors (bool, optional): Print errors directly to console rather than to log.
 
     """
     xyzgrid = XYZGrid.objects.all()
@@ -288,5 +291,8 @@ def get_xyzgrid():
         if not xyzgrid.ndb.loaded:
             xyzgrid.reload()
     except Exception as err:
-        xyzgrid.log(str(err))
+        if print_errors:
+            print(err)
+        else:
+            xyzgrid.log(str(err))
     return xyzgrid

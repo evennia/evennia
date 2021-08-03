@@ -256,8 +256,10 @@ class XYMap:
         return "\n".join("".join(line) for line in self.display_map[::-1])
 
     def __repr__(self):
-        return (f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, "
-                f"{len(self.node_index_map)} nodes>")
+        nnodes = 0
+        if self.node_index_map:
+            nnodes = len(self.node_index_map)
+        return (f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, {nnodes} nodes>")
 
     def log(self, msg):
         if self.xyzgrid:
