@@ -60,7 +60,6 @@ class ScriptTagInline(TagInline):
     """
 
     model = ScriptDB.db_tags.through
-    form = ScriptForm
     related_field = "scriptdb"
 
 
@@ -69,9 +68,7 @@ class ScriptAttributeInline(AttributeInline):
     Inline attribute tags.
 
     """
-
     model = ScriptDB.db_attributes.through
-    form = ScriptForm
     related_field = "scriptdb"
 
 
