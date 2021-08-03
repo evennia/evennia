@@ -334,11 +334,15 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             bool: If command should be listed or not.
 
         Notes:
-            By default, the 'view' lock will be checked, and if no such lock is defined, the 'read'
+            The `.auto_help` propery is checked for commands. For all help entries,
+            the 'view' lock will be checked, and if no such lock is defined, the 'read'
             lock will be used. If neither lock is defined, the help entry is assumed to be
             accessible to all.
 
         """
+        if hasattr(cmd_or_topic, "auto_help") and not cmd_or_topic.auto_help:
+            return False
+
         has_view = (
             "view:" in cmd_or_topic.locks
             if inherits_from(cmd_or_topic, "evennia.commands.command.Command")
