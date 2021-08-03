@@ -74,6 +74,8 @@ Up requirements to Django 3.2+
   accepting `*args`, as `settings.EXTRA_LAUNCHER_COMMANDS = {'mycmd': 'path.to.callable', ...}`.
 - New `XYZGrid` contrib, adding x,y,z grid coordinates with in-game map and
   pathfinding. Controlled outside of the game via custom evennia launcher command.
+- `Script.delete` has new kwarg `stop_task=True`, that can be used to avoid
+  infinite recursion when wanting to set up Script to delete-on-stop.
 
 ### Evennia 0.9.5 (2019-2020)
 

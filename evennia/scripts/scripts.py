@@ -436,12 +436,20 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
                 # autostart the script
                 self._start_task(force_restart=True)
 
-    def delete(self):
+    def delete(self, stop_task=True):
         """
-        Delete the Script. Makes sure to stop any timer tasks first.
+        Delete the Script. Normally stops any timer task. This fires at_script_delete before
+        deletion.
+
+        Args:
+            stop_task (bool, optional): If unset, the task will not be stopped
+                when this method is called. The main reason for setting this to False
+                is if wanting to delete the script from the at_stop method - setting
+                this will then avoid an infinite recursion.
 
         """
-        self._stop_task()
+        if stop_task:
+            self._stop_task()
         self.at_script_delete()
         super().delete()
 
