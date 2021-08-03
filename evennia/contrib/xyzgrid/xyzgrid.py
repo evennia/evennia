@@ -121,9 +121,7 @@ class XYZGrid(DefaultScript):
         """
         map_data_list = variable_from_module(module_path, "XYMAP_DATA_LIST")
         if not map_data_list:
-            map_data_list = variable_from_module(module_path, "XYMAP_DATA")
-        if map_data_list:
-            map_data_list = make_iter(map_data_list)
+            map_data_list = [variable_from_module(module_path, "XYMAP_DATA")]
         # inject the python path in the map data
         for mapdata in map_data_list:
             mapdata['module_path'] = module_path
