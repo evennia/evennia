@@ -41,19 +41,94 @@
   <section id="module-evennia.web.website.views.help">
 <span id="evennia-web-website-views-help"></span><h1>evennia.web.website.views.help<a class="headerlink" href="#module-evennia.web.website.views.help" title="Permalink to this headline">¶</a></h1>
 <p>Views to manipulate help entries.</p>
+<dl class="simple">
+<dt>Multi entry object type supported added by DaveWithTheNiceHat 2021</dt><dd><p>Pull Request #2429</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt id="evennia.web.website.views.help.get_help_category">
+<code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">get_help_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">help_entry</span></em>, <em class="sig-param"><span class="n">slugify_cat</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#get_help_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.get_help_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns help category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>help_entry</strong> (<a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><em>HelpEntry</em></a><em>, </em><a class="reference internal" href="evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry" title="evennia.help.filehelp.FileHelpEntry"><em>FileHelpEntry</em></a><em> or </em><a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – Help entry instance.</p></li>
+<li><p><strong>slugify_cat</strong> (<em>bool</em>) – If true the return string is slugified. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If an entry does not have a <strong>help_category</strong> attribute, DEFAULT_HELP_CATEGORY from the
+settings file is used.
+If the entry does not have attribute ‘web_help_entries’. One is created with a slugified
+copy of the attribute help_category. This attribute is used for sorting the entries for the
+help index (ListView) page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>help_category (str)</em> – The category for the help entry.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.website.views.help.get_help_topic">
+<code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">get_help_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">help_entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#get_help_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.get_help_topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the topic of the help entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>help_entry</strong> (<a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><em>HelpEntry</em></a><em>, </em><a class="reference internal" href="evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry" title="evennia.help.filehelp.FileHelpEntry"><em>FileHelpEntry</em></a><em> or </em><a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – Help entry instance.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>help_topic (str)</em> – The topic of the help entry. Default is ‘unknown_topic’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.website.views.help.can_read_topic">
+<code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">can_read_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd_or_topic</span></em>, <em class="sig-param"><span class="n">account</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#can_read_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.can_read_topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an account or puppet has read access to a help entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd_or_topic</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><em>HelpEntry</em></a><em> or </em><a class="reference internal" href="evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry" title="evennia.help.filehelp.FileHelpEntry"><em>FileHelpEntry</em></a>) – The topic/command to test.</p></li>
+<li><p><strong>account</strong> – the account or puppet checking for access.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – If command can be viewed or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This uses the ‘read’ lock. If no ‘read’ lock is defined, the topic is assumed readable
+by all.
+Even if this returns False, the entry will still be visible in the help index unless
+<strong>can_list_topic</strong> is also returning False.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.website.views.help.collect_topics">
+<code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">collect_topics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#collect_topics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.collect_topics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect help topics from all sources (cmd/db/file).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>account</strong> (<em>Character</em><em> or </em><em>Account</em>) – Account or Character to collect help topics from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>cmd_help_topics (dict)</em> – contains Command instances.
+db_help_topics (dict): contains HelpEntry instances.
+file_help_topics (dict): contains FileHelpEntry instances</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt id="evennia.web.website.views.help.HelpMixin">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">HelpMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.TypeclassMixin</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is a “mixin”, a modifier of sorts.</p>
 <p>Any view class with this in its inheritance list will be modified to work
 with HelpEntry objects instead of generic Objects or otherwise.</p>
-<dl class="py attribute">
-<dt id="evennia.web.website.views.help.HelpMixin.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="evennia.web.website.views.help.HelpMixin.page_title">
 <code class="sig-name descname">page_title</code><em class="property"> = 'Help'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpMixin.page_title" title="Permalink to this definition">¶</a></dt>
@@ -66,7 +141,7 @@ with HelpEntry objects instead of generic Objects or otherwise.</p>
 and other documentation that the current user is allowed to see.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>queryset (QuerySet)</em> – List of Help entries available to the user.</p>
+<dd class="field-odd"><p><em>queryset (list)</em> – List of Help entries available to the user.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -99,12 +174,26 @@ or not.</p>
 <dl class="py class">
 <dt id="evennia.web.website.views.help.HelpDetailView">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.help.</code><code class="sig-name descname">HelpDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/help.html#HelpDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.help.HelpMixin" title="evennia.web.website.views.help.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.help.HelpMixin</span></code></a>, <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.EvenniaDetailView" title="evennia.web.website.views.mixins.EvenniaDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.EvenniaDetailView</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.help.HelpMixin" title="evennia.web.website.views.help.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.help.HelpMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.detail.DetailView</span></code></p>
 <p>Returns the detail page for a given help entry.</p>
 <dl class="py attribute">
 <dt id="evennia.web.website.views.help.HelpDetailView.template_name">
 <code class="sig-name descname">template_name</code><em class="property"> = 'website/help_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.help.HelpDetailView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.help.HelpDetailView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.web.website.views.help.HelpDetailView.get_context_data">
@@ -124,8 +213,11 @@ or previous entry in the help list.</p>
 <dd><p>Override of Django hook that retrieves an object by category and topic
 instead of pk and slug.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>entry (HelpEntry)</em> – HelpEntry requested in the URL.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>queryset</strong> (<em>list</em>) – A list of help entry objects.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>entry (HelpEntry, FileHelpEntry or Command)</em> – HelpEntry requested in the URL.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -165,11 +257,11 @@ instead of pk and slug.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

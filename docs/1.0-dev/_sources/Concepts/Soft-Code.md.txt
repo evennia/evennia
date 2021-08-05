@@ -42,8 +42,8 @@ The `v()` function returns the `HELLO_VALUE.D` attribute on the object that the 
 
 If you are still curious about how Softcode works, take a look at some external resources:
 
-- http://www.tinymux.com/wiki/index.php/Softcode
-- http://www.duh.com/discordia/mushman/man2x1
+- https://wiki.tinymux.org/index.php/Softcode
+- https://www.duh.com/discordia/mushman/man2x1
 
 ## Problems with Softcode
 

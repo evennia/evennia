@@ -44,7 +44,7 @@ encodings* below.
 ## A note on File Encodings
 
 As mentioned, both the processors take text files as input and then proceed to process them. As long
-as you stick to the standard [ASCII](http://en.wikipedia.org/wiki/Ascii) character set (which means
+as you stick to the standard [ASCII](https://en.wikipedia.org/wiki/Ascii) character set (which means
 the normal English characters, basically) you should not have to worry much about this section.
 
 Many languages however use characters outside the simple `ASCII` table. Common examples are various
@@ -52,7 +52,7 @@ apostrophes and umlauts but also completely different symbols like those of the 
 alphabets.
 
 First, we should make it clear that Evennia itself handles international characters just fine. It
-(and Django) uses [unicode](http://en.wikipedia.org/wiki/Unicode) strings internally.
+(and Django) uses [unicode](https://en.wikipedia.org/wiki/Unicode) strings internally.
 
 The problem is that when reading a text file like the batchfile, we need to know how to decode the
 byte-data stored therein to universal unicode. That means we need an *encoding* (a mapping) for how
@@ -74,7 +74,7 @@ file with lots of non-ASCII letters in the editor of your choice, then import to
 as it should.
 
 More help with encodings can be found in the entry [Text Encodings](../Concepts/Text-Encodings) and also in the
-Wikipedia article [here](http://en.wikipedia.org/wiki/Text_encodings).
+Wikipedia article [here](https://en.wikipedia.org/wiki/Text_encodings).
 
 **A footnote for the batch-code processor**: Just because *Evennia* can parse your file and your
 fancy special characters, doesn't mean that *Python* allows their use. Python syntax only allows

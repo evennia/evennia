@@ -478,12 +478,20 @@
                 <span class="c1"># autostart the script</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">(</span><span class="n">force_restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stop_task</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete the Script. Makes sure to stop any timer tasks first.</span>
+<span class="sd">        Delete the Script. Normally stops any timer task. This fires at_script_delete before</span>
+<span class="sd">        deletion.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stop_task (bool, optional): If unset, the task will not be stopped</span>
+<span class="sd">                when this method is called. The main reason for setting this to False</span>
+<span class="sd">                is if wanting to delete the script from the at_stop method - setting</span>
+<span class="sd">                this will then avoid an infinite recursion.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">stop_task</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_script_delete</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
@@ -842,11 +850,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

@@ -373,6 +373,44 @@ commands the caller can use.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.commands.command.Command.web_get_detail_url">
+<code class="sig-name descname">web_get_detail_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.web_get_detail_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.web_get_detail_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to view details for
+this object.</p>
+<p>ex. Oscar (Character) = ‘/characters/oscar/1/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-detail’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
+    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can view this object is the developer’s
+responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object detail page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.command.Command.web_get_admin_url">
+<code class="sig-name descname">web_get_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.web_get_admin_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.web_get_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the URI path for the Django Admin page for this object.</p>
+<p>ex. Account#1 = ‘/admin/accounts/accountdb/1/change/’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to Django Admin page for object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.commands.command.Command.client_width">
 <code class="sig-name descname">client_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.client_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.client_width" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the client screenwidth for the session using this command.</p>
@@ -475,11 +513,11 @@ detailing the contents of the table.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

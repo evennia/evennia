@@ -78,10 +78,10 @@ you often have to register with) in order to display what kind of game you are r
 - `portal_services_plugin.py` - this allows for adding your own custom services/protocols to the
 Portal. It must define one particular function that will be called by Evennia at startup. There can
 be any number of service plugin modules, all will be imported and used if defined. More info can be
-found [here](http://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols).
+found [here](https://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols).
 - `server_services_plugin.py` - this is equivalent to the previous one, but used for adding new
 services to the Server instead. More info can be found
-[here](http://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols).
+[here](https://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols).
 
 Some other Evennia systems can be customized by plugin modules but has no explicit template in
 `conf/`:

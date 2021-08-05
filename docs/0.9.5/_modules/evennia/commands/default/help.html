@@ -375,11 +375,15 @@
 <span class="sd">            bool: If command should be listed or not.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            By default, the &#39;view&#39; lock will be checked, and if no such lock is defined, the &#39;read&#39;</span>
+<span class="sd">            The `.auto_help` propery is checked for commands. For all help entries,</span>
+<span class="sd">            the &#39;view&#39; lock will be checked, and if no such lock is defined, the &#39;read&#39;</span>
 <span class="sd">            lock will be used. If neither lock is defined, the help entry is assumed to be</span>
 <span class="sd">            accessible to all.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd_or_topic</span><span class="p">,</span> <span class="s2">&quot;auto_help&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">auto_help</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="n">has_view</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;view:&quot;</span> <span class="ow">in</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">locks</span>
             <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">cmd_or_topic</span><span class="p">,</span> <span class="s2">&quot;evennia.commands.command.Command&quot;</span><span class="p">)</span>
@@ -857,9 +861,9 @@
                                <span class="s2">&quot;with access to that command.&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="s2">&quot;evennia.help.filehelp.FileHelpEntry&quot;</span><span class="p">):</span>
                     <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">querystr</span><span class="si">}</span><span class="s2">&#39; matches (or partially matches) the name/alias of the &quot;</span>
-                               <span class="s2">&quot;file-based help file &#39;</span><span class="si">{match.key}</span><span class="s2">&#39;. File-help entries cannot be &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;file-based help topic &#39;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. File-help entries cannot be &quot;</span>
                                <span class="s2">&quot;modified from in-game (they are files on-disk). If you continue, &quot;</span>
-                               <span class="s2">&quot;your help entry *may* shadow the file-based one&#39;s name partly or &quot;</span>
+                               <span class="s2">&quot;your help entry may shadow the file-based one&#39;s name partly or &quot;</span>
                                <span class="s2">&quot;completely.&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">warning</span><span class="p">:</span>
                     <span class="c1"># show a warning for a clashing help-entry type. Even if user accepts this</span>
@@ -997,11 +1001,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

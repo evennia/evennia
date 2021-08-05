@@ -64,8 +64,8 @@
     <span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Typeclass&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;This is the Python-path to the class implementing the actual script functionality. &quot;</span>
-        <span class="s2">&quot;&lt;BR&gt;If your custom class is not found here, it may not be imported as part of Evennia&#39;s startup.&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">adminutils</span><span class="o">.</span><span class="n">get_and_load_typeclasses</span><span class="p">(</span>
+        <span class="s2">&quot;&lt;BR&gt;If your custom class is not found here, it may not be imported into Evennia yet.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">adminutils</span><span class="o">.</span><span class="n">get_and_load_typeclasses</span><span class="p">(</span>
             <span class="n">parent</span><span class="o">=</span><span class="n">ScriptDB</span><span class="p">,</span> <span class="n">excluded_parents</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.prototypes.prototypes.DbPrototype&quot;</span><span class="p">])</span>
     <span class="p">)</span>
 
@@ -102,7 +102,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
-    <span class="n">form</span> <span class="o">=</span> <span class="n">ScriptForm</span>
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;scriptdb&quot;</span></div>
 
 
@@ -111,9 +110,7 @@
 <span class="sd">    Inline attribute tags.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">through</span>
-    <span class="n">form</span> <span class="o">=</span> <span class="n">ScriptForm</span>
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;scriptdb&quot;</span></div>
 
 
@@ -225,11 +222,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

@@ -6,7 +6,7 @@ able to easily backtrack these changes, share your development efforts and more.
 contributing to Evennia itself, and only wish to develop your own MU* using Evennia, having a
 version control system in place is a good idea (and standard coding practice). For an introduction
 to the concept, start with the Wikipedia article
-[here](http://en.wikipedia.org/wiki/Version_control). Evennia uses the version control system
+[here](https://en.wikipedia.org/wiki/Version_control). Evennia uses the version control system
 [Git](https://git-scm.com/) and this is what will be covered henceforth. Note that this page also
 deals with commands for Linux operating systems, and the steps below may vary for other systems,
 however where possible links will be provided for alternative instructions.
@@ -18,7 +18,7 @@ documentation](https://help.github.com/articles/set-up-git#platform-all).
 
 If you have gotten Evennia installed, you will have Git already and can skip to **Step 2** below.
 Otherwise you will need to install Git on your platform. You can find expanded instructions for
-installation [here](http://git-scm.com/book/en/Getting-Started-Installing-Git).
+installation [here](https://git-scm.com/book/en/Getting-Started-Installing-Git).
 
 ### Step 1: Install Git
 
@@ -30,9 +30,9 @@ installation [here](http://git-scm.com/book/en/Getting-Started-Installing-Git).
 
         apt-get install git    
 
-- **Windows**: It is recommended to use [Git for Windows](http://msysgit.github.io/). 
+- **Windows**: It is recommended to use [Git for Windows](https://gitforwindows.org/). 
 - **Mac**:  Mac platforms offer two methods for installation, one via MacPorts, which you can find
-out about [here](http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac), or
+out about [here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac), or
 you can use the [Git OSX Installer](https://sourceforge.net/projects/git-osx-installer/).
  
 ### Step 2: Define user/e-mail Settings for Git
@@ -282,7 +282,7 @@ git merge master
 If everything went well, your `myfixes` branch will now have the latest version of Evennia merged
 with whatever changes you have done.  Use `git log` to see what has changed. You may need to restart
 the server or run `manage.py migrate` if the database schema changed (this will be seen in the
-commit log and on the mailing list). See the [Git manuals](http://git-scm.com/documentation) for
+commit log and on the mailing list). See the [Git manuals](https://git-scm.com/documentation) for
 learning more about useful day-to-day commands, and special situations such as dealing with merge
 collisions.
 

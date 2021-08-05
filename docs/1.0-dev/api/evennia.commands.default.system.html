@@ -386,7 +386,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['listobjects', 'listobjs', 'db', 'stats']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['listobjs', 'stats', 'listobjects', 'db']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -412,7 +412,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdObjects.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjects listobjs db stats', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjs stats listobjects db', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -687,7 +687,7 @@ See <a href="#id11"><span class="problematic" id="id12">|</span></a>luhttps://ww
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdTasks.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['delays', 'task']</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['task', 'delays']</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -733,7 +733,7 @@ to all the variables defined therein.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdTasks.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delays task', 'category': 'system', 'key': 'tasks', 'tags': '', 'text': &quot;\n    Display or terminate active tasks (delays).\n\n    Usage:\n        tasks[/switch] [task_id or function_name]\n\n    Switches:\n        pause   - Pause the callback of a task.\n        unpause - Process all callbacks made since pause() was called.\n        do_task - Execute the task (call its callback).\n        call    - Call the callback of this task.\n        remove  - Remove a task without executing it.\n        cancel  - Stop a task from automatically executing.\n\n    Notes:\n        A task is a single use method of delaying the call of a function. Calls are created\n        in code, using `evennia.utils.delay`.\n        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.\n\n        By default, tasks that are canceled and never called are cleaned up after one minute.\n\n    Examples:\n        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.\n            In this example slow exits creates it's tasks with\n            `utils.delay(move_delay, move_callback)`\n        - `tasks/cancel 2` - Cancel task id 2.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'task delays', 'category': 'system', 'key': 'tasks', 'tags': '', 'text': &quot;\n    Display or terminate active tasks (delays).\n\n    Usage:\n        tasks[/switch] [task_id or function_name]\n\n    Switches:\n        pause   - Pause the callback of a task.\n        unpause - Process all callbacks made since pause() was called.\n        do_task - Execute the task (call its callback).\n        call    - Call the callback of this task.\n        remove  - Remove a task without executing it.\n        cancel  - Stop a task from automatically executing.\n\n    Notes:\n        A task is a single use method of delaying the call of a function. Calls are created\n        in code, using `evennia.utils.delay`.\n        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.\n\n        By default, tasks that are canceled and never called are cleaned up after one minute.\n\n    Examples:\n        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.\n            In this example slow exits creates it's tasks with\n            `utils.delay(move_delay, move_callback)`\n        - `tasks/cancel 2` - Cancel task id 2.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -771,11 +771,11 @@ to all the variables defined therein.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

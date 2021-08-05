@@ -277,10 +277,10 @@ do whatever the command is supposed to do. This is the main body of the command.
 from this method will be returned from the execution as a Twisted Deferred.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_post_cmd()</span></code> is called after <code class="docutils literal notranslate"><span class="pre">func()</span></code> to handle eventual cleanup.</p></li>
 </ul>
-<p>Finally, you should always make an informative <a class="reference external" href="http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">doc
-string</a> (<code class="docutils literal notranslate"><span class="pre">__doc__</span></code>) at the top of your
-class. This string is dynamically read by the <a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a> to create the help entry
-for this command. You should decide on a way to format your help and stick to that.</p>
+<p>Finally, you should always make an informative <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">doc
+string</a> (<code class="docutils literal notranslate"><span class="pre">__doc__</span></code>) at the top of
+your class. This string is dynamically read by the <a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a> to create the help
+entry for this command. You should decide on a way to format your help and stick to that.</p>
 <p>Below is how you define a simple alternative “<code class="docutils literal notranslate"><span class="pre">smile</span></code>” command:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
@@ -381,7 +381,7 @@ that the alias <code class="docutils literal notranslate"><span class="pre">:</s
 that will be used). If you want to tell the parser to require a certain separator between the
 command name and its arguments (so that <code class="docutils literal notranslate"><span class="pre">get</span> <span class="pre">stone</span></code> works but <code class="docutils literal notranslate"><span class="pre">getstone</span></code> gives you a ‘command not
 found’ error) you can do so with the <code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> property.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> is a <a class="reference external" href="http://docs.python.org/library/re.html">raw regular expression string</a>. The
+<p>The <code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> is a <a class="reference external" href="https://docs.python.org/library/re.html">raw regular expression string</a>. The
 regex will be compiled by the system at runtime. This allows you to customize how the part
 <em>immediately following</em> the command name (or alias) must look in order for the parser to match for
 this command. Some examples:</p>
@@ -780,7 +780,7 @@ doing useful things.</p></li>
 <section id="assorted-notes">
 <h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
 <p>The return value of <code class="docutils literal notranslate"><span class="pre">Command.func()</span></code> is a Twisted
-<a class="reference external" href="http://twistedmatrix.com/documents/current/core/howto/defer.html">deferred</a>.
+<a class="reference external" href="https://twistedmatrix.com/documents/current/core/howto/defer.html">deferred</a>.
 Evennia does not use this return value at all by default. If you do, you must
 thus do so asynchronously, using callbacks.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
@@ -860,11 +860,11 @@ on.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
