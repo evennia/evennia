@@ -358,8 +358,14 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # started when the autoconnects starts sending menu commands.
 DELAY_CMD_LOGINSTART = 0.3
 # A module that must exist - this holds the instructions Evennia will use to
-# first prepare the database for use. Generally should not be changed. If this
-# cannot be imported, bad things will happen.
+# first prepare the database for use (create user #1 and Limbo etc). Only override if
+# you really know what # you are doing. If replacing, it must contain a function
+# handle_setup(stepname=None). The function will start being called with no argument
+# and is expected to maintain a named sequence of steps. Once each step is completed, it
+# should be saved with ServerConfig.objects.conf('last_initial_setup_step', stepname)
+# on a crash, the system will continue by calling handle_setup with the last completed
+# step. The last step in the sequence must be named 'done'. Once this key is saved,
+# initialization will not run again.
 INITIAL_SETUP_MODULE = "evennia.server.initial_setup"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize

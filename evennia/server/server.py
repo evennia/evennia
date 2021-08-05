@@ -10,6 +10,7 @@ evennia/server/server_runner.py).
 import time
 import sys
 import os
+import traceback
 
 from twisted.web import static
 from twisted.application import internet, service
@@ -331,25 +332,60 @@ class Evennia:
         to the portal has been established.
         This attempts to run the initial_setup script of the server.
         It returns if this is not the first time the server starts.
-        Once finished the last_initial_setup_step is set to -1.
+        Once finished the last_initial_setup_step is set to 'done'
+
         """
         global INFO_DICT
         initial_setup = importlib.import_module(settings.INITIAL_SETUP_MODULE)
         last_initial_setup_step = ServerConfig.objects.conf("last_initial_setup_step")
-        if not last_initial_setup_step:
-            # None is only returned if the config does not exist,
-            # i.e. this is an empty DB that needs populating.
-            INFO_DICT["info"] = " Server started for the first time. Setting defaults."
-            initial_setup.handle_setup(0)
-        elif int(last_initial_setup_step) >= 0:
-            # a positive value means the setup crashed on one of its
-            # modules and setup will resume from this step, retrying
-            # the last failed module. When all are finished, the step
-            # is set to -1 to show it does not need to be run again.
-            INFO_DICT["info"] = " Resuming initial setup from step {last}.".format(
-                last=last_initial_setup_step
-            )
-            initial_setup.handle_setup(int(last_initial_setup_step))
+        try:
+            if not last_initial_setup_step:
+                # None is only returned if the config does not exist,
+                # i.e. this is an empty DB that needs populating.
+                INFO_DICT["info"] = " Server started for the first time. Setting defaults."
+                initial_setup.handle_setup()
+            elif last_initial_setup_step not in ('done', -1):
+                # last step crashed, so we weill resume from this step.
+                # modules and setup will resume from this step, retrying
+                # the last failed module. When all are finished, the step
+                # is set to 'done' to show it does not need to be run again.
+                INFO_DICT["info"] = " Resuming initial setup from step '{last}'.".format(
+                    last=last_initial_setup_step
+                )
+                initial_setup.handle_setup(last_initial_setup_step)
+        except Exception:
+            # stop server if this happens.
+            print(traceback.format_exc())
+            print("Error in initial setup. Stopping Server + Portal.")
+            self.sessions.portal_shutdown()
+
+    def create_default_channels(self):
+        """
+        check so default channels exist on every restart, create if not.
+
+        """
+
+        from evennia.comms.models import ChannelDB
+        from evennia.accounts.models import AccountDB
+        from evennia.utils.create import create_channel
+
+        superuser = AccountDB.objects.get(id=1)
+        # mudinfo
+        mudinfo_chan = settings.CHANNEL_MUDINFO
+        if mudinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
+                channel = create_channel(**mudinfo_chan)
+                channel.connect(superuser)
+        # connectinfo
+        connectinfo_chan = settings.CHANNEL_MUDINFO
+        if connectinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
+                channel = create_channel(**connectinfo_chan)
+        # default channels
+        for chan_info in settings.DEFAULT_CHANNELS:
+            if not ChannelDB.objects.filter(db_key=chan_info["key"]):
+                channel = create_channel(**chan_info)
+                channel.connect(superuser)
 
     def run_init_hooks(self, mode):
         """
@@ -534,28 +570,8 @@ class Evennia:
         TASK_HANDLER.load()
         TASK_HANDLER.create_delays()
 
-        # check so default channels exist
-        from evennia.comms.models import ChannelDB
-        from evennia.accounts.models import AccountDB
-        from evennia.utils.create import create_channel
-
-        god_account = AccountDB.objects.get(id=1)
-        # mudinfo
-        mudinfo_chan = settings.CHANNEL_MUDINFO
-        if mudinfo_chan:
-            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-                channel = create_channel(**mudinfo_chan)
-                channel.connect(god_account)
-        # connectinfo
-        connectinfo_chan = settings.CHANNEL_MUDINFO
-        if connectinfo_chan:
-            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-                channel = create_channel(**connectinfo_chan)
-        # default channels
-        for chan_info in settings.DEFAULT_CHANNELS:
-            if not ChannelDB.objects.filter(db_key=chan_info["key"]):
-                channel = create_channel(**chan_info)
-                channel.connect(god_account)
+        # create/update channels
+        self.create_default_channels()
 
         # delete the temporary setting
         ServerConfig.objects.conf("server_restart_mode", delete=True)
