@@ -50,6 +50,8 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
@@ -555,6 +557,53 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span></div>
 
+<div class="viewcode-block" id="Command.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for a View that allows users to view details for</span>
+<span class="sd">        this object.</span>
+
+<span class="sd">        ex. Oscar (Character) = &#39;/characters/oscar/1/&#39;</span>
+
+<span class="sd">        For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">        in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">        a named view of &#39;character-detail&#39; would be referenced by this method.</span>
+
+<span class="sd">        ex.</span>
+<span class="sd">        ::</span>
+<span class="sd">            url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;,</span>
+<span class="sd">                CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
+
+<span class="sd">        If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">        HTML anchor.</span>
+
+<span class="sd">        This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">        the actual view and limiting who can view this object is the developer&#39;s</span>
+<span class="sd">        responsibility.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object detail page, if defined.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+                <span class="s1">&#39;help-entry-detail&#39;</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="p">),</span> <span class="s2">&quot;topic&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)},</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+<div class="viewcode-block" id="Command.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
+
+<span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to Django Admin page for object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
 <div class="viewcode-block" id="Command.client_width"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.client_width">[docs]</a>    <span class="k">def</span> <span class="nf">client_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the client screenwidth for the session using this command.</span>
@@ -742,11 +791,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

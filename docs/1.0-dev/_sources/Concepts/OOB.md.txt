@@ -79,16 +79,16 @@ translations described below.
 
 #### Telnet + GMCP
 
-[GMCP](http://www.gammon.com.au/gmcp), the *Generic Mud Communication Protocol* sends data on the
+[GMCP](https://www.gammon.com.au/gmcp), the *Generic Mud Communication Protocol* sends data on the
 form `cmdname + JSONdata`. Here the cmdname is expected to be on the form "Package.Subpackage".
 There could also be additional Sub-sub packages etc. The names of these 'packages' and 'subpackages'
 are not that well standardized beyond what individual MUDs or companies have chosen to go with over
 the years. You can decide on your own package names, but here are what others are using:
 
-- [Aardwolf GMCP](http://www.aardwolf.com/wiki/index.php/Clients/GMCP)
-- [Discworld GMCP](http://discworld.starturtle.net/lpc/playing/documentation.c?path=/concepts/gmcp)
-- [Avatar GMCP](http://www.outland.org/infusions/wiclear/index.php?title=MUD%20Protocols&lang=en)
-- [IRE games GMCP](http://nexus.ironrealms.com/GMCP)
+- [Aardwolf GMCP](https://www.aardwolf.com/wiki/index.php/Clients/GMCP)
+- [Discworld GMCP](https://discworld.starturtle.net/lpc/playing/documentation.c?path=/concepts/gmcp)
+- [Avatar GMCP](https://www.outland.org/infusions/wiclear/index.php?title=MUD%20Protocols&lang=en)
+- [IRE games GMCP](https://nexus.ironrealms.com/GMCP)
 
 Evennia will translate underscores to `.` and capitalize to fit the specification. So the
 outputcommand `foo_bar` will become a GMCP command-name `Foo.Bar`. A GMCP command "Foo.Bar" will be

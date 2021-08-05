@@ -230,7 +230,10 @@
 
     <span class="n">xymap_data</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">grid</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">xymap_data</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The XYZgrid is currently empty. Use &#39;add&#39; to add paths to your map data.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Grid could not load due to errors.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The XYZgrid is currently empty. Use &#39;add&#39; to add paths to your map data.&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">suboptions</span><span class="p">:</span>
@@ -307,7 +310,12 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; XYMaps from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">mapnames</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">xymap_data_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">maps</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">add_maps</span><span class="p">(</span><span class="o">*</span><span class="n">xymap_data_list</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added (or readded) </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">xymap_data_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> XYMaps to grid.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added (or readded) </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">xymap_data_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> XYMaps to grid.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_option_spawn</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
@@ -477,11 +485,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

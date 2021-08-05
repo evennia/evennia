@@ -8,7 +8,7 @@ the [Getting Started guide](../Setup/Setup-Quickstart) and get everything runnin
 
 Very commonly we make changes to the Evennia code to improve things. There are many ways to get told
 when to update: You can subscribe to the RSS feed or manually check up on the feeds from
-http://www.evennia.com. You can also simply fetch the latest regularly.
+https://www.evennia.com. You can also simply fetch the latest regularly.
 
 When you're wanting to apply updates, simply `cd` to your cloned `evennia` root directory and type:
 

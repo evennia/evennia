@@ -688,8 +688,8 @@ to understand our friendly Google-style docstrings used in classes and functions
 [recommonmark](https://recommonmark.readthedocs.io/en/latest/index.html)
 [commonmark](https://spec.commonmark.org/current/)
 [commonmark-help](https://commonmark.org/help/)
-[sphinx-autodoc](http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
-[sphinx-napoleon](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
+[sphinx-autodoc](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
+[sphinx-napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
 [getting-started]: Setup/Setup-Quickstart
 [contributing]: ./Contributing
 [ReST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)

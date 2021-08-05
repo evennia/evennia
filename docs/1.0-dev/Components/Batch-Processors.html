@@ -80,13 +80,13 @@ encodings</em> below.</p>
 <section id="a-note-on-file-encodings">
 <h2>A note on File Encodings<a class="headerlink" href="#a-note-on-file-encodings" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned, both the processors take text files as input and then proceed to process them. As long
-as you stick to the standard <a class="reference external" href="http://en.wikipedia.org/wiki/Ascii">ASCII</a> character set (which means
+as you stick to the standard <a class="reference external" href="https://en.wikipedia.org/wiki/Ascii">ASCII</a> character set (which means
 the normal English characters, basically) you should not have to worry much about this section.</p>
 <p>Many languages however use characters outside the simple <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> table. Common examples are various
 apostrophes and umlauts but also completely different symbols like those of the greek or cyrillic
 alphabets.</p>
 <p>First, we should make it clear that Evennia itself handles international characters just fine. It
-(and Django) uses <a class="reference external" href="http://en.wikipedia.org/wiki/Unicode">unicode</a> strings internally.</p>
+(and Django) uses <a class="reference external" href="https://en.wikipedia.org/wiki/Unicode">unicode</a> strings internally.</p>
 <p>The problem is that when reading a text file like the batchfile, we need to know how to decode the
 byte-data stored therein to universal unicode. That means we need an <em>encoding</em> (a mapping) for how
 the file stores its data. There are many, many byte-encodings used around the world, with opaque
@@ -104,7 +104,7 @@ need to add the editor’s encoding to Evennia’s <code class="docutils literal
 file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works
 as it should.</p>
 <p>More help with encodings can be found in the entry <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc">Text Encodings</span></a> and also in the
-Wikipedia article <a class="reference external" href="http://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
+Wikipedia article <a class="reference external" href="https://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
 <p><strong>A footnote for the batch-code processor</strong>: Just because <em>Evennia</em> can parse your file and your
 fancy special characters, doesn’t mean that <em>Python</em> allows their use. Python syntax only allows
 international characters inside <em>strings</em>. In all other source code only <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> set characters are
@@ -151,11 +151,11 @@ allowed.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

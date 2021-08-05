@@ -1816,9 +1816,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_server_shutdown</span><span class="p">()</span>
         <span class="n">characters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
-        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
-                <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
+                    <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DefaultGuest.at_post_disconnect"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_post_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1860,11 +1861,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

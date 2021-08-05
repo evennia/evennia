@@ -925,7 +925,8 @@
     <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()}</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;only_validate&quot;</span><span class="p">):</span>
-        <span class="c1"># homogenization to be more lenient about prototype format when entering the prototype manually</span>
+        <span class="c1"># homogenization to be more lenient about prototype format when entering the prototype</span>
+        <span class="c1"># manually</span>
         <span class="n">prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">]</span>
 
     <span class="c1"># overload module&#39;s protparents with specifically given protparents</span>
@@ -934,7 +935,7 @@
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">protparent</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_parents&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">protparent</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">protparent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">protparents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">protparent</span>
+        <span class="n">protparents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">protparent</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;return_parents&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="c1"># only return the parents</span>
@@ -1074,11 +1075,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

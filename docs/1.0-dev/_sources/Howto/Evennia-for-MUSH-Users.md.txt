@@ -1,7 +1,7 @@
 # Evennia for MUSH Users
 
 *This page is adopted from an article originally posted for the MUSH community [here on
-musoapbox.net](http://musoapbox.net/topic/1150/evennia-for-mushers).*
+musoapbox.net](https://musoapbox.net/topic/1150/evennia-for-mushers).*
 
 [MUSH](https://en.wikipedia.org/wiki/MUSH)es are text multiplayer games traditionally used for
 heavily roleplay-focused game styles. They are often (but not always) utilizing game masters and
@@ -138,7 +138,7 @@ Note that Python cares about indentation, so make sure to indent with the same n
 shown above!
 
 So what happens above? We [import the
-module](http://www.linuxtopia.org/online_books/programming_books/python_programming/python_ch28s03.html)
+module](https://www.linuxtopia.org/online_books/programming_books/python_programming/python_ch28s03.html)
 `evennia/contrib/multidescer.py` at the top. Once imported we can access stuff inside that module
 using full stop (`.`). The multidescer is defined as a class `CmdMultiDesc` (we could find this out
 by opening said module in a text editor). At the bottom we create a new instance of this class and
@@ -217,5 +217,5 @@ to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).
 
 … And of course, if you need further help you can always drop into the [Evennia
-chatroom](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
+chatroom](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
 or post a question in our [forum/mailing list](https://groups.google.com/forum/#%21forum/evennia)!

@@ -163,9 +163,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">map_data_list</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="s2">&quot;XYMAP_DATA_LIST&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">map_data_list</span><span class="p">:</span>
-            <span class="n">map_data_list</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="s2">&quot;XYMAP_DATA&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">map_data_list</span><span class="p">:</span>
-            <span class="n">map_data_list</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">map_data_list</span><span class="p">)</span>
+            <span class="n">map_data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">variable_from_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="s2">&quot;XYMAP_DATA&quot;</span><span class="p">)]</span>
         <span class="c1"># inject the python path in the map data</span>
         <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="n">map_data_list</span><span class="p">:</span>
             <span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;module_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_path</span>
@@ -310,10 +308,13 @@
             <span class="n">xymap</span><span class="o">.</span><span class="n">spawn_links</span><span class="p">(</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="n">directions</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="get_xyzgrid"><a class="viewcode-back" href="../../../../api/evennia.contrib.xyzgrid.xyzgrid.html#evennia.contrib.xyzgrid.xyzgrid.get_xyzgrid">[docs]</a><span class="k">def</span> <span class="nf">get_xyzgrid</span><span class="p">():</span>
+<div class="viewcode-block" id="get_xyzgrid"><a class="viewcode-back" href="../../../../api/evennia.contrib.xyzgrid.xyzgrid.html#evennia.contrib.xyzgrid.xyzgrid.get_xyzgrid">[docs]</a><span class="k">def</span> <span class="nf">get_xyzgrid</span><span class="p">(</span><span class="n">print_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for getting the grid. This will create the XYZGrid global script if it didn&#39;t</span>
 <span class="sd">    previously exist.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        print_errors (bool, optional): Print errors directly to console rather than to log.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">xyzgrid</span> <span class="o">=</span> <span class="n">XYZGrid</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -332,7 +333,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
             <span class="n">xyzgrid</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">xyzgrid</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">print_errors</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xyzgrid</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">xyzgrid</span></div>
 </pre></div>
 
@@ -359,11 +363,11 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Dev blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>

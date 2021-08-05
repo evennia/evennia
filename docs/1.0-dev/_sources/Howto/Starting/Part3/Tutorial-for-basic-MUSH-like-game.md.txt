@@ -2,7 +2,7 @@
 
 
 This tutorial lets you code a small but complete and functioning MUSH-like game in Evennia. A
-[MUSH](http://en.wikipedia.org/wiki/MUSH) is, for our purposes, a class of roleplay-centric games
+[MUSH](https://en.wikipedia.org/wiki/MUSH) is, for our purposes, a class of roleplay-centric games
 focused on free form storytelling. Even if you are not interested in MUSH:es, this is still a good
 first game-type to try since it's not so code heavy. You will be able to use the same principles for
 building other types of games.

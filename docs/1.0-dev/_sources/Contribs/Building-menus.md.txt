@@ -170,7 +170,7 @@ probably not appear in your MUD client):
 ```
 > look
 Limbo(#2)
-Welcome to your new Evennia-based game! Visit http://www.evennia.com if you need
+Welcome to your new Evennia-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_world.build.
 
@@ -222,7 +222,7 @@ Closing the building menu.
 
 > look
 A beautiful meadow(#2)
-Welcome to your new Evennia-based game! Visit http://www.evennia.com if you need
+Welcome to your new Evennia-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_world.build.
 ```
@@ -329,7 +329,7 @@ Building menu: A beautiful meadow
 
  [K]ey: A beautiful meadow
  [D]escription: 
-   Welcome to your new Evennia-based game! Visit http://www.evennia.com if you need
+   Welcome to your new Evennia-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_world.build.
  [Q]uit this editor
@@ -337,7 +337,7 @@ As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_wo
 > d
 
 ----------Line Editor [editor]----------------------------------------------------
-01| Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
+01| Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need
 02| help, want to contribute, report issues or just join the community.
 03| As Account #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
 
