@@ -250,6 +250,7 @@ class SessionHandler(dict):
             elif isinstance(data, dict):
                 rkwargs[key] = [[], _validate(data)]
             elif is_iter(data):
+                data = tuple(data)
                 if isinstance(data[-1], dict):
                     if len(data) == 2:
                         if is_iter(data[0]):
