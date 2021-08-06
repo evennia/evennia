@@ -485,6 +485,23 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
+    @classmethod
+    def search(cls, query, **kwargs):
+        """
+        Overridden by class children. This implements a common API.
+
+        Args:
+            query (str): A search query.
+            **kwargs: Other search parameters.
+
+        Returns:
+            list: A list of 0, 1 or more matches, only of this typeclass.
+
+        """
+        if cls.objects.dbref(query):
+            return [cls.objects.get_id(query)]
+        return list(cls.objects.filter(db_key__lower=query))
+
     def is_typeclass(self, typeclass, exact=False):
         """
         Returns true if this object has this type OR has a typeclass

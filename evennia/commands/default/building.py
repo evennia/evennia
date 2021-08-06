@@ -1914,7 +1914,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       typeclass[/switch] <object> [= typeclass.path]
       typeclass/prototype <object> = prototype_key
 
-      typeclass/list/show [typeclass.path]
+      typeclasses or typeclass/list/show [typeclass.path]
       swap - this is a shorthand for using /force/reset flags.
       update - this is a shorthand for using the /force/reload flag.
 
@@ -1956,17 +1956,63 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     """
 
     key = "typeclass"
-    aliases = ["type", "parent", "swap", "update"]
+    aliases = ["type", "parent", "swap", "update", "typeclasses"]
     switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
+
+    def _generic_search(self, query, typeclass_path):
+
+        caller = self.caller
+        if typeclass_path:
+            # make sure we search the right database table
+            try:
+                new_typeclass = class_from_module(typeclass_path)
+            except ImportError:
+                # this could be a prototype and not a typeclass at all
+                return caller.search(query)
+
+            dbclass = new_typeclass.__dbclass__
+
+            if caller.__dbclass__ == dbclass:
+                # object or account match
+                obj = caller.search(query)
+                if not obj:
+                    return
+            elif (self.account and self.account.__dbclass__ == dbclass):
+                # applying account while caller is object
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = self.account.search(query)
+                if not obj:
+                    return
+            elif hasattr(caller, "puppet") and caller.puppet.__dbclass__ == dbclass:
+                # applying object while caller is account
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = caller.puppet.search(query)
+                if not obj:
+                    return
+            else:
+                # other mismatch between caller and specified typeclass
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = new_typeclass.search(query)
+                if not obj:
+                    if isinstance(obj, list):
+                        caller.msg(f"Could not find {new_typeclass} with query '{self.lhs}'.")
+                    return
+        else:
+            # no rhs, use caller's typeclass
+            obj = caller.search(query)
+            if not obj:
+                return
+
+        return obj
 
     def func(self):
         """Implements command"""
 
         caller = self.caller
 
-        if "list" in self.switches:
+        if "list" in self.switches or self.cmdname == 'typeclasses':
             tclasses = get_all_typeclasses()
             contribs = [key for key in sorted(tclasses) if key.startswith("evennia.contrib")] or [
                 "<None loaded>"
@@ -2029,8 +2075,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 )
             return
 
-        # get object to swap on
-        obj = caller.search(self.lhs)
+        obj = self._generic_search(self.lhs, self.rhs)
         if not obj:
             return
 
@@ -2084,10 +2129,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         is_same = obj.is_typeclass(new_typeclass, exact=True)
         if is_same and "force" not in self.switches:
-            string = "%s already has the typeclass '%s'. Use /force to override." % (
-                obj.name,
-                new_typeclass,
-            )
+            string = (f"{obj.name} already has the typeclass '{new_typeclass}'. "
+                      "Use /force to override.")
         else:
             update = "update" in self.switches
             reset = "reset" in self.switches
