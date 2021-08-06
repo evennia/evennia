@@ -60,8 +60,10 @@ class TimeScript(DefaultScript):
     def at_repeat(self):
         """Call the callback and reset interval."""
         callback = self.db.callback
+        args = self.db.schedule_args or []
+        kwargs = self.db.schedule_kwargs or {}
         if callback:
-            callback()
+            callback(*args, **kwargs)
 
         seconds = real_seconds_until(**self.db.gametime)
         self.restart(interval=seconds)
@@ -216,7 +218,8 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year
 
 
 def schedule(
-    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None
+    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None,
+    *args, **kwargs
 ):
     """
     Call a callback at a given in-game time.
@@ -224,7 +227,8 @@ def schedule(
     Args:
         callback (function): The callback function that will be called. Note
             that the callback must be a module-level function, since the script will
-            be persistent.
+            be persistent. The callable should be on form `callable(*args, **kwargs)`
+            where args/kwargs are passed into this schedule.
         repeat (bool, optional): Defines if the callback should be called regularly
             at the specified time.
         sec (int or None): Number of absolute game seconds at which to run repeat.
@@ -233,6 +237,8 @@ def schedule(
         day (int or None): Number of absolute days.
         month (int or None): Number of absolute months.
         year (int or None): Number of absolute years.
+        *args, **kwargs: Will be passed into the callable. These must be possible
+            to store in Attributes on the generated scheduling Script.
 
     Returns:
         script (Script): The created Script handling the sceduling.
@@ -259,6 +265,8 @@ def schedule(
         "month": month,
         "year": year,
     }
+    script.db.schedule_args = args
+    script.db.schedule_kwargs = kwargs
     return script
 
 
