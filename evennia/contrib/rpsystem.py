@@ -1550,7 +1550,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         self.db._recog_obj2regex = {}
         self.db._recog_obj2recog = {}
 
-        self.cmdset.add(RPSystemCmdSet, permanent=True)
+        self.cmdset.add(RPSystemCmdSet, persistent=True)
         # initializing sdesc
         self.sdesc.add("A normal person")
 

@@ -56,8 +56,8 @@ class Character(DefaultCharacter):
      [...]
     """
     def at_object_creation(self):
-        "This is called when object is first created, only."   
-        self.db.power = 1         
+        "This is called when object is first created, only."
+        self.db.power = 1
         self.db.combat_score = 1
 ```
 
@@ -94,10 +94,10 @@ check it. Using this method however will make it easy to add more functionality 
 
 What we need are the following:
 
-- One character generation [Command](../../../Components/Commands) to set the "Power" on the `Character`.  
-- A chargen [CmdSet](../../../Components/Command-Sets) to hold this command. Lets call it `ChargenCmdset`.  
-- A custom `ChargenRoom` type that makes this set of commands available to players in such rooms.  
-- One such room to test things in.  
+- One character generation [Command](../../../Components/Commands) to set the "Power" on the `Character`.
+- A chargen [CmdSet](../../../Components/Command-Sets) to hold this command. Lets call it `ChargenCmdset`.
+- A custom `ChargenRoom` type that makes this set of commands available to players in such rooms.
+- One such room to test things in.
 
 ### The +setpower command
 
@@ -114,7 +114,7 @@ Open `command.py` file. It contains documented empty templates for the base comm
 `MuxCommand` class offers some extra features like stripping whitespace that may be useful - if so,
 just import from that instead.
 
-Add the following to the end of the `command.py` file: 
+Add the following to the end of the `command.py` file:
 
 ```python
 # end of command.py
@@ -124,13 +124,13 @@ class CmdSetPower(Command):
     """
     set the power of a character
 
-    Usage: 
+    Usage:
       +setpower <1-10>
 
-    This sets the power of the current character. This can only be 
-    used during character generation.    
+    This sets the power of the current character. This can only be
+    used during character generation.
     """
-    
+
     key = "+setpower"
     help_category = "mush"
 
@@ -138,10 +138,10 @@ class CmdSetPower(Command):
         "This performs the actual command"
         errmsg = "You must supply a number between 1 and 10."
         if not self.args:
-            self.caller.msg(errmsg)      
+            self.caller.msg(errmsg)
             return
         try:
-            power = int(self.args)  
+            power = int(self.args)
         except ValueError:
             self.caller.msg(errmsg)
             return
@@ -180,7 +180,7 @@ class ChargenCmdset(CmdSet):
     key = "Chargen"
     def at_cmdset_creation(self):
         "This is called at initialization"
-        self.add(command.CmdSetPower()) 
+        self.add(command.CmdSetPower())
 ```
 
 In the future you can add any number of commands to this cmdset, to expand your character generation
@@ -193,10 +193,10 @@ It's cleaner to put it on a room, so it's only available when players are in tha
 We will create a simple Room typeclass to act as a template for all our Chargen areas. Edit
 `mygame/typeclasses/rooms.py` next:
 
-```python 
+```python
 from commands.default_cmdsets import ChargenCmdset
 
-# ... 
+# ...
 # down at the end of rooms.py
 
 class ChargenRoom(Room):
@@ -206,10 +206,10 @@ class ChargenRoom(Room):
     """
     def at_object_creation(self):
         "this is called only at first creation"
-        self.cmdset.add(ChargenCmdset, permanent=True)
+        self.cmdset.add(ChargenCmdset, persistent=True)
 ```
 Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves.
-Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For
+Don't forget the `persistent=True` keyword or you will lose the cmdset after a server reload. For
 more information about [Command Sets](../../../Components/Command-Sets) and [Commands](../../../Components/Commands), see the respective
 links.
 
@@ -235,7 +235,7 @@ as `chargen;character generation`.
 So in summary, this will create a new room of type ChargenRoom and open an exit `chargen` to it and
 an exit back here named `finish`. If you see errors at this stage, you must fix them in your code.
 `@reload`
-between fixes. Don't continue until the creation seems to have worked okay. 
+between fixes. Don't continue until the creation seems to have worked okay.
 
      chargen
 
@@ -263,19 +263,19 @@ set during Character generation:
     > +attack
     You +attack with a combat score of 12!
 
-Go back to `mygame/commands/command.py` and add the command to the end like this: 
+Go back to `mygame/commands/command.py` and add the command to the end like this:
 
-```python    
+```python
 import random
 
-# ... 
+# ...
 
 class CmdAttack(Command):
     """
-    issues an attack 
+    issues an attack
 
-    Usage: 
-        +attack 
+    Usage:
+        +attack
 
     This will calculate a new combat score based on your Power.
     Your combat score is visible to everyone in the same location.
@@ -288,8 +288,8 @@ class CmdAttack(Command):
         caller = self.caller
         power = caller.db.power
         if not power:
-            # this can happen if caller is not of 
-            # our custom Character typeclass 
+            # this can happen if caller is not of
+            # our custom Character typeclass
             power = 1
         combat_score = random.randint(1, 10 * power)
         caller.db.combat_score = combat_score
@@ -297,10 +297,10 @@ class CmdAttack(Command):
         # announce
         message = "%s +attack%s with a combat score of %s!"
         caller.msg(message % ("You", "", combat_score))
-        caller.location.msg_contents(message % 
+        caller.location.msg_contents(message %
                                      (caller.key, "s", combat_score),
                                      exclude=caller)
-```            
+```
 
 What we do here is simply to generate a "combat score" using Python's inbuilt `random.randint()`
 function. We then store that and echo the result to everyone involved.
@@ -349,8 +349,8 @@ class Character(DefaultCharacter):
      [...]
     """
     def at_object_creation(self):
-        "This is called when object is first created, only."   
-        self.db.power = 1         
+        "This is called when object is first created, only."
+        self.db.power = 1
         self.db.combat_score = 1
 
     def return_appearance(self, looker):
@@ -395,16 +395,16 @@ instead put all relevant NPC commands in the default command set and limit event
 
 ### Creating an NPC with +createNPC
 
-We need a command for creating the NPC, this is a very straightforward command: 
+We need a command for creating the NPC, this is a very straightforward command:
 
     > +createnpc Anna
-    You created the NPC 'Anna'.  
+    You created the NPC 'Anna'.
 
 At the end of `command.py`, create our new command:
 
 ```python
 from evennia import create_object
-    
+
 class CmdCreateNPC(Command):
     """
     create a new npc
@@ -413,12 +413,12 @@ class CmdCreateNPC(Command):
         +createNPC <name>
 
     Creates a new, named NPC. The NPC will start with a Power of 1.
-    """ 
+    """
     key = "+createnpc"
     aliases = ["+createNPC"]
     locks = "call:not perm(nonpcs)"
-    help_category = "mush" 
-    
+    help_category = "mush"
+
     def func(self):
         "creates the object and names it"
         caller = self.caller
@@ -432,15 +432,15 @@ class CmdCreateNPC(Command):
         # make name always start with capital letter
         name = self.args.strip().capitalize()
         # create npc in caller's location
-        npc = create_object("characters.Character", 
-                      key=name, 
+        npc = create_object("characters.Character",
+                      key=name,
                       location=caller.location,
                       locks="edit:id(%i) and perm(Builders);call:false()" % caller.id)
-        # announce 
+        # announce
         message = "%s created the NPC '%s'."
-        caller.msg(message % ("You", name)) 
-        caller.location.msg_contents(message % (caller.key, name), 
-                                                exclude=caller)        
+        caller.msg(message % ("You", name))
+        caller.location.msg_contents(message % (caller.key, name),
+                                                exclude=caller)
 ```
 Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the
 `nonpcs` "[permission](../../../Components/Locks#Permissions)" (in Evennia, a "permission" can just as well be used to
@@ -475,38 +475,38 @@ principle re-work our old `+setpower` command, but let's try something more usef
 `+editNPC` command.
 
     > +editNPC Anna/power = 10
-    Set Anna's property 'power' to 10. 
+    Set Anna's property 'power' to 10.
 
-This is a slightly more complex command. It goes at the end of your `command.py` file as before. 
+This is a slightly more complex command. It goes at the end of your `command.py` file as before.
 
 ```python
 class CmdEditNPC(Command):
     """
     edit an existing NPC
 
-    Usage: 
+    Usage:
       +editnpc <name>[/<attribute> [= value]]
-     
+
     Examples:
       +editnpc mynpc/power = 5
       +editnpc mynpc/power    - displays power value
-      +editnpc mynpc          - shows all editable 
+      +editnpc mynpc          - shows all editable
                                 attributes and values
 
-    This command edits an existing NPC. You must have 
+    This command edits an existing NPC. You must have
     permission to edit the NPC to use this.
     """
     key = "+editnpc"
     aliases = ["+editNPC"]
     locks = "cmd:not perm(nonpcs)"
-    help_category = "mush" 
+    help_category = "mush"
 
     def parse(self):
         "We need to do some parsing here"
         args = self.args
         propname, propval = None, None
-        if "=" in args: 
-            args, propval = [part.strip() for part in args.rsplit("=", 1)] 
+        if "=" in args:
+            args, propval = [part.strip() for part in args.rsplit("=", 1)]
         if "/" in args:
             args, propname = [part.strip() for part in args.rsplit("/", 1)]
         # store, so we can access it below in func()
@@ -519,38 +519,38 @@ class CmdEditNPC(Command):
         "do the editing"
 
         allowed_propnames = ("power", "attribute1", "attribute2")
- 
+
         caller = self.caller
         if not self.args or not self.name:
-            caller.msg("Usage: +editnpc name[/propname][=propval]") 
+            caller.msg("Usage: +editnpc name[/propname][=propval]")
             return
         npc = caller.search(self.name)
         if not npc:
             return
         if not npc.access(caller, "edit"):
             caller.msg("You cannot change this NPC.")
-            return 
+            return
         if not self.propname:
             # this means we just list the values
             output = "Properties of %s:" % npc.key
-            for propname in allowed_propnames: 
+            for propname in allowed_propnames:
                 propvalue = npc.attributes.get(propname, default="N/A")
                 output += "\n %s = %s" % (propname, propvalue)
             caller.msg(output)
-        elif self.propname not in allowed_propnames: 
-            caller.msg("You may only change %s." % 
+        elif self.propname not in allowed_propnames:
+            caller.msg("You may only change %s." %
                               ", ".join(allowed_propnames))
         elif self.propval:
             # assigning a new propvalue
             # in this example, the properties are all integers...
-            intpropval = int(self.propval)  
-            npc.attributes.add(self.propname, intpropval) 
+            intpropval = int(self.propval)
+            npc.attributes.add(self.propname, intpropval)
             caller.msg("Set %s's property '%s' to %s" %
                          (npc.key, self.propname, self.propval))
         else:
             # propname set, but not propval - show current value
-            caller.msg("%s has property %s = %s" % 
-                         (npc.key, self.propname, 
+            caller.msg("%s has property %s = %s" %
+                         (npc.key, self.propname,
                           npc.attributes.get(self.propname, default="N/A")))
 ```
 
@@ -559,7 +559,7 @@ checking. It searches for the given npc in the same room, and checks so the call
 permission to "edit" it before continuing. An account without the proper permission won't even be
 able to view the properties on the given NPC. It's up to each game if this is the way it should be.
 
-Add this to the default command set like before and you should be able to try it out. 
+Add this to the default command set like before and you should be able to try it out.
 
 _Note: If you wanted a player to use this command to change an on-object property like the NPC's
 name (the `key` property), you'd need to modify the command since "key" is not an Attribute (it is
@@ -587,11 +587,11 @@ class CmdNPC(Command):
     """
     controls an NPC
 
-    Usage: 
+    Usage:
         +npc <name> = <command>
 
     This causes the npc to perform a command as itself. It will do so
-    with its own permissions and accesses. 
+    with its own permissions and accesses.
     """
     key = "+npc"
     locks = "call:not perm(nonpcs)"
@@ -601,7 +601,7 @@ class CmdNPC(Command):
         "Simple split of the = sign"
         name, cmdname = None, None
         if "=" in self.args:
-            name, cmdname = [part.strip() 
+            name, cmdname = [part.strip()
                              for part in self.args.rsplit("=", 1)]
         self.name, self.cmdname = name, cmdname
 
@@ -611,7 +611,7 @@ class CmdNPC(Command):
         if not self.cmdname:
             caller.msg("Usage: +npc <name> = <command>")
             return
-        npc = caller.search(self.name)   
+        npc = caller.search(self.name)
         if not npc:
             return
         if not npc.access(caller, "edit"):

@@ -130,4 +130,4 @@ class TalkingNPC(DefaultObject):
         "This is called when object is first created."
         self.db.desc = "This is a talkative NPC."
         # assign the talk command to npc
-        self.cmdset.add_default(TalkingCmdSet, permanent=True)
+        self.cmdset.add_default(TalkingCmdSet, persistent=True)

@@ -429,7 +429,7 @@ class IntroRoom(TutorialRoom):
             "This assigns the health Attribute to "
             "the account."
         )
-        self.cmdset.add(CmdSetEvenniaIntro, permanent=True)
+        self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
 
     def at_object_receive(self, character, source_location):
         """
@@ -732,7 +732,7 @@ class BridgeRoom(WeatherRoom):
         self.db.east_exit = "gate"
         self.db.fall_exit = "cliffledge"
         # add the cmdset on the room.
-        self.cmdset.add(BridgeCmdSet, permanent=True)
+        self.cmdset.add(BridgeCmdSet, persistent=True)
         # since the default Character's at_look() will access the room's
         # return_description (this skips the cmdset) when
         # first entering it, we need to explicitly turn off the room
@@ -957,7 +957,7 @@ class DarkRoom(TutorialRoom):
         self.db.tutorial_info = "This is a room with custom command sets on itself."
         # the room starts dark.
         self.db.is_lit = False
-        self.cmdset.add(DarkCmdSet, permanent=True)
+        self.cmdset.add(DarkCmdSet, persistent=True)
 
     def at_init(self):
         """
@@ -1009,7 +1009,7 @@ class DarkRoom(TutorialRoom):
             # noone is carrying light - darken the room
             self.db.is_lit = False
             self.locks.add("view:false()")
-            self.cmdset.add(DarkCmdSet, permanent=True)
+            self.cmdset.add(DarkCmdSet, persistent=True)
             for char in (obj for obj in self.contents if obj.has_account):
                 if char.is_superuser:
                     char.msg("You are Superuser, so you are not affected by the dark state.")

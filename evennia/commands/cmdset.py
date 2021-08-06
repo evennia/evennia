@@ -177,7 +177,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
     # merge-stack, every cmdset in the stack must have `duplicates` set explicitly.
     duplicates = None
 
-    permanent = False
+    persistent = False
     key_mergetypes = {}
     errmessage = ""
     # pre-store properties to duplicate straight off
@@ -187,7 +187,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         "no_exits",
         "no_objs",
         "no_channels",
-        "permanent",
+        "persistent",
         "mergetype",
         "priority",
         "duplicates",
@@ -357,7 +357,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             commands (str): Representation of commands in Cmdset.
 
         """
-        perm = "perm" if self.permanent else "non-perm"
+        perm = "perm" if self.persistent else "non-perm"
         options = ", ".join([
             "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
             for opt in ("no_exits", "no_objs", "no_channels", "duplicates")

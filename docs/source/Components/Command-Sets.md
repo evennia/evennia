@@ -42,16 +42,16 @@ Sets#merge-rules) section).
 
 from evennia import CmdSet
 
-# this is a theoretical custom module with commands we 
+# this is a theoretical custom module with commands we
 # created previously: mygame/commands/mycommands.py
 from commands import mycommands
 
-class MyCmdSet(CmdSet):    
+class MyCmdSet(CmdSet):
     def at_cmdset_creation(self):
         """
         The only thing this method should need
         to do is to add commands to the set.
-        """ 
+        """
         self.add(mycommands.MyCommand1())
         self.add(mycommands.MyCommand2())
         self.add(mycommands.MyCommand3())
@@ -61,7 +61,7 @@ The CmdSet's `add()` method can also take another CmdSet as input. In this case 
 from that CmdSet will be appended to this one as if you added them line by line:
 
 ```python
-    def at_cmdset_creation(): 
+    def at_cmdset_creation():
         ...
         self.add(AdditionalCmdSet) # adds all command from this set
         ...
@@ -71,10 +71,10 @@ If you added your command to an existing cmdset (like to the default cmdset), th
 loaded into memory. You need to make the server aware of the code changes:
 
 ```
-@reload 
+@reload
 ```
 
-You should now be able to use the command. 
+You should now be able to use the command.
 
 If you created a new, fresh cmdset, this must be added to an object in order to make the commands
 within available. A simple way to temporarily test a cmdset on yourself is use the `@py` command to
@@ -93,15 +93,15 @@ This will stay with you until you `@reset` or `@shutdown` the server, or you run
 In the example above, a specific Cmdset class is removed. Calling `delete` without arguments will
 remove the latest added cmdset.
 
-> Note: Command sets added using `cmdset.add` are, by default, *not* persistent in the database. 
+> Note: Command sets added using `cmdset.add` are, by default, *not* persistent in the database.
 
-If you want the cmdset to survive a reload, you can do: 
+If you want the cmdset to survive a reload, you can do:
 
 ```
-@py self.cmdset.add(commands.mycmdset.MyCmdSet, permanent=True)
+@py self.cmdset.add(commands.mycmdset.MyCmdSet, persistent=True)
 ```
 
-Or you could add the cmdset as the *default* cmdset: 
+Or you could add the cmdset as the *default* cmdset:
 
 ```
 @py self.cmdset.add_default(commands.mycmdset.MyCmdSet)
@@ -288,12 +288,12 @@ theory](https://en.wikipedia.org/wiki/Set_theory).
 cmdset ends up in the merged cmdset. Same-key commands are merged by priority.
 
          # Union
-         A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4 
+         A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4
 
 - **Intersect** - Only commands found in *both* cmdsets (i.e. which have the same keys) end up in
 the merged cmdset, with the higher-priority cmdset replacing the lower one's commands.
 
-         # Intersect 
+         # Intersect
          A1,A3,A5 + B1,B2,B4,B5 = A1,A5
 
 - **Replace** -   The commands of the higher-prio cmdset completely replaces the lower-priority
@@ -337,23 +337,23 @@ onto E and not B, our `key_mergetype` directive won't trigger. To make sure it w
 sure we merge onto B.  Setting E's priority to, say, -4 will make sure to merge it onto B and affect
 it appropriately.
 
-More advanced cmdset example: 
+More advanced cmdset example:
 
 ```python
 from commands import mycommands
 
 class MyCmdSet(CmdSet):
-    
+
     key = "MyCmdSet"
     priority = 4
     mergetype = "Replace"
-    key_mergetypes = {'MyOtherCmdSet':'Union'}  
-    
+    key_mergetypes = {'MyOtherCmdSet':'Union'}
+
     def at_cmdset_creation(self):
         """
         The only thing this method should need
         to do is to add commands to the set.
-        """     
+        """
         self.add(mycommands.MyCommand1())
         self.add(mycommands.MyCommand2())
         self.add(mycommands.MyCommand3())
@@ -373,4 +373,4 @@ exits are merged in), these two commands will be considered *identical* since th
 means only one of them will remain after the merger. Each will also be compared with all other
 commands having any combination of the keys and/or aliases "kick", "punch" or "fight".
 
-... So avoid duplicate aliases, it will only cause confusion. 
+... So avoid duplicate aliases, it will only cause confusion.
