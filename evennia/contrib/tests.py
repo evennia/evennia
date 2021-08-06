@@ -4,7 +4,9 @@ Testing suite for contrib folder
 
 """
 
+import time
 import datetime
+from anything import Anything
 from django.test import override_settings
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
@@ -232,6 +234,18 @@ class TestRPSystem(EvenniaTest):
         self.speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
         self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
         self.assertEqual(self.speaker.search("colliding"), self.receiver2)
+
+    def test_regex_tuple_from_key_alias(self):
+        self.speaker.aliases.add("foo bar")
+        self.speaker.aliases.add("this thing is a long thing")
+        t0 = time.time()
+        result = rpsystem.regex_tuple_from_key_alias(self.speaker)
+        t1 = time.time()
+        result = rpsystem.regex_tuple_from_key_alias(self.speaker)
+        t2 = time.time()
+        # print(f"t1: {t1 - t0}, t2: {t2 - t1}")
+        self.assertLess(t2-t1, t1-t0)
+        self.assertEqual(result, (Anything, self.speaker, self.speaker.key))
 
 
 class TestRPSystemCommands(CommandTest):
