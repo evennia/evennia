@@ -84,6 +84,9 @@ def _init_command(cls, **kwargs):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
+    if not hasattr(cls, "retain_instance"):
+        cls.retain_instance = False
+
     # make sure to pick up the parent's docstring if the child class is
     # missing one (important for auto-help)
     if cls.__doc__ is None:
@@ -189,6 +192,11 @@ class Command(metaclass=CommandMeta):
     # whether self.msg sends to all sessions of a related account/object (default
     # is to only send to the session sending the command).
     msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
+    # whether the exact command instance should be retained between command calls.
+    # By default it's False; this allows for retaining state and saves some CPU, but
+    # can cause cross-talk between users if multiple users access the same command
+    # (especially if the command is using yield)
+    retain_instance = False
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
