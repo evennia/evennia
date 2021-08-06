@@ -1224,7 +1224,7 @@ class AttributeHandler:
             return [
                 attr
                 for attr in attrs
-                if attr.access(accessing_obj, self._attredit, default=default_access)
+                if attr.access(accessing_obj, self._attrread, default=default_access)
             ]
         else:
             return attrs
