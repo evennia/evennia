@@ -11,6 +11,7 @@ evennia.OPTION_CLASSES
 """
 
 
+from pickle import dumps
 from django.conf import settings
 from evennia.utils.utils import class_from_module, callables_from_module
 from evennia.utils import logger
@@ -132,37 +133,42 @@ class GlobalScriptContainer(Container):
         self.load_data()
 
         typeclass = self.typeclass_storage[key]
-        found = typeclass.objects.filter(db_key=key).first()
-        interval = self.loaded_data[key].get("interval", None)
-        start_delay = self.loaded_data[key].get("start_delay", None)
-        repeats = self.loaded_data[key].get("repeats", 0)
-        desc = self.loaded_data[key].get("desc", "")
+        script = typeclass.objects.filter(
+            db_key=key, db_account__isnull=True, db_obj__isnull=True).first()
 
-        if not found:
+        kwargs = {**self.loaded_data[key]}
+        kwargs['key'] = key
+        kwargs['persistent'] = kwargs.get('persistent', True)
+
+        compare_hash = str(dumps(kwargs, protocol=4))
+
+        if script:
+            script_hash = script.attributes.get("global_script_settings", category="settings_hash")
+            if script_hash is None:
+                # legacy - store the hash anew and assume no change
+                script.attributes.add("global_script_settings", compare_hash,
+                                      category="settings_hash")
+            elif script_hash != compare_hash:
+                # wipe the old version and create anew
+                logger.log_info(f"GLOBAL_SCRIPTS: Settings changed for {key} ({typeclass}).")
+                script.stop()
+                script.delete()
+                script = None
+
+        if not script:
             logger.log_info(f"GLOBAL_SCRIPTS: (Re)creating {key} ({typeclass}).")
-            new_script, errors = typeclass.create(
-                key=key,
-                persistent=True,
-                interval=interval,
-                start_delay=start_delay,
-                repeats=repeats,
-                desc=desc,
-            )
+
+            script, errors = typeclass.create(**kwargs)
             if errors:
                 logger.log_err("\n".join(errors))
                 return None
 
-            new_script.start()
-            return new_script
+            # store a hash representation of the setup
+            script.attributes.add("_global_script_settings",
+                                  compare_hash, category="settings_hash")
+            script.start()
 
-        if ((found.interval != interval)
-                or (found.start_delay != start_delay)
-                or (found.repeats != repeats)):
-            # the setup changed
-            found.start(interval=interval, start_delay=start_delay, repeats=repeats)
-        if found.desc != desc:
-            found.desc = desc
-        return found
+        return script
 
     def start(self):
         """
