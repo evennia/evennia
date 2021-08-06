@@ -112,7 +112,7 @@ class Mob(tut_objects.TutorialObject):
         Called the first time the object is created.
         We set up the base properties and flags here.
         """
-        self.cmdset.add(MobCmdSet, permanent=True)
+        self.cmdset.add(MobCmdSet, persistent=True)
         # Main AI flags. We start in dead mode so we don't have to
         # chase the mob around when building.
         self.db.patrolling = True

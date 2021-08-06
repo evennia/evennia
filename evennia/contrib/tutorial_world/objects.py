@@ -129,7 +129,7 @@ class TutorialReadable(TutorialObject):
         )
         self.db.readable_text = "There is no text written on %s." % self.key
         # define a command on the object.
-        self.cmdset.add_default(CmdSetReadable, permanent=True)
+        self.cmdset.add_default(CmdSetReadable, persistent=True)
 
 
 # -------------------------------------------------------------
@@ -195,7 +195,7 @@ class TutorialClimbable(TutorialObject):
 
     def at_object_creation(self):
         """Called at initial creation only"""
-        self.cmdset.add_default(CmdSetClimbable, permanent=True)
+        self.cmdset.add_default(CmdSetClimbable, persistent=True)
 
 
 # -------------------------------------------------------------
@@ -343,7 +343,7 @@ class LightSource(TutorialObject):
         # when created.
         self.db.desc = "A splinter of wood with remnants of resin on it, enough for burning."
         # add the Light command
-        self.cmdset.add_default(CmdSetLight, permanent=True)
+        self.cmdset.add_default(CmdSetLight, persistent=True)
 
     def _burnout(self):
         """
@@ -670,7 +670,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # exit_open is set to True.
         self.locks.add("cmd:locattr(is_lit);traverse:objattr(exit_open)")
         # set cmdset
-        self.cmdset.add(CmdSetCrumblingWall, permanent=True)
+        self.cmdset.add(CmdSetCrumblingWall, persistent=True)
 
     def open_wall(self):
         """
@@ -950,7 +950,7 @@ class TutorialWeapon(TutorialObject):
         self.db.parry = 0.8  # parry chance
         self.db.damage = 1.0
         self.db.magic = False
-        self.cmdset.add_default(CmdSetWeapon, permanent=True)
+        self.cmdset.add_default(CmdSetWeapon, persistent=True)
 
     def reset(self):
         """
@@ -1148,7 +1148,7 @@ class TutorialWeaponRack(TutorialObject):
         """
         called at creation
         """
-        self.cmdset.add_default(CmdSetWeaponRack, permanent=True)
+        self.cmdset.add_default(CmdSetWeaponRack, persistent=True)
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.

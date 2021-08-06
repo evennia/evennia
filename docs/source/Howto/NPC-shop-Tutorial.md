@@ -232,7 +232,7 @@ from evennia.utils.create import create_object
 # class for our front shop room
 class NPCShop(DefaultRoom):
     def at_object_creation(self):
-        # we could also use add(ShopCmdSet, permanent=True)
+        # we could also use add(ShopCmdSet, persistent=True)
         self.cmdset.add_default(ShopCmdSet)
         self.db.storeroom = None
 

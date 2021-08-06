@@ -305,7 +305,7 @@ class CmdSetHandler(object):
         self.mergetype_stack = ["Union"]
 
         # the subset of the cmdset_paths that are to be stored in the database
-        self.permanent_paths = [""]
+        self.persistent_paths = [""]
 
         if init_true:
             self.update(init_mode=True)  # is then called from the object __init__.
@@ -363,7 +363,7 @@ class CmdSetHandler(object):
 
         Args:
             init_mode (bool, optional): Used automatically right after
-                this handler was created; it imports all permanent cmdsets
+                this handler was created; it imports all persistent cmdsets
                 from the database.
 
         Notes:
@@ -378,7 +378,7 @@ class CmdSetHandler(object):
 
         """
         if init_mode:
-            # reimport all permanent cmdsets
+            # reimport all persistent cmdsets
             storage = self.obj.cmdset_storage
             if storage:
                 self.cmdset_stack = []
@@ -408,7 +408,7 @@ class CmdSetHandler(object):
                                     if _IN_GAME_ERRORS:
                                         self.obj.msg(err)
                                     continue
-                            cmdset.permanent = cmdset.key != "_CMDSET_ERROR"
+                            cmdset.persistent = cmdset.key != "_CMDSET_ERROR"
                             self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
@@ -423,7 +423,7 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, persistent=True, default_cmdset=False,
+    def add(self, cmdset, emit_to_obj=None, persistent=False, default_cmdset=False,
             **kwargs):
         """
         Add a cmdset to the handler, on top of the old ones, unless it
@@ -465,7 +465,7 @@ class CmdSetHandler(object):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset and cmdset.key != "_CMDSET_ERROR":
-            cmdset.permanent = persistent  # TODO change on cmdset too
+            cmdset.persistent = persistent
             if persistent and cmdset.key != "_CMDSET_ERROR":
                 # store the path permanently
                 storage = self.obj.cmdset_storage or [""]
@@ -514,7 +514,7 @@ class CmdSetHandler(object):
             # remove the default cmdset only
             if self.cmdset_stack:
                 cmdset = self.cmdset_stack[0]
-                if cmdset.permanent:
+                if cmdset.persistent:
                     storage = self.obj.cmdset_storage or [""]
                     storage[0] = ""
                     self.obj.cmdset_storage = storage
@@ -531,7 +531,7 @@ class CmdSetHandler(object):
         if not cmdset:
             # remove the last one in the stack
             cmdset = self.cmdset_stack.pop()
-            if cmdset.permanent:
+            if cmdset.persistent:
                 storage = self.obj.cmdset_storage
                 storage.pop()
                 self.obj.cmdset_storage = storage
@@ -548,12 +548,12 @@ class CmdSetHandler(object):
                 ]
             storage = []
 
-            if any(cset.permanent for cset in delcmdsets):
+            if any(cset.persistent for cset in delcmdsets):
                 # only hit database if there's need to
                 storage = self.obj.cmdset_storage
                 updated = False
                 for cset in delcmdsets:
-                    if cset.permanent:
+                    if cset.persistent:
                         try:
                             storage.remove(cset.path)
                             updated = True

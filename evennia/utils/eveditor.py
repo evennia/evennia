@@ -893,7 +893,7 @@ class EvEditor:
                 persistent = False
 
         # Create the commands we need
-        caller.cmdset.add(EvEditorCmdSet, permanent=persistent)
+        caller.cmdset.add(EvEditorCmdSet, persistent=persistent)
 
         # echo inserted text back to caller
         self._echo_mode = True

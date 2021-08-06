@@ -665,7 +665,7 @@ class EvMenu:
         menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
         menu_cmdset.priority = int(cmdset_priority)
-        self.caller.cmdset.add(menu_cmdset, permanent=persistent)
+        self.caller.cmdset.add(menu_cmdset, persistent=persistent)
 
         reserved_startnode_kwargs = set(("nodename", "raw_string"))
         startnode_kwargs = {}

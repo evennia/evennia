@@ -847,7 +847,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def delete(self, *args, **kwargs):
         """
-        Deletes the account permanently.
+        Deletes the account persistently.
 
         Notes:
             `*args` and `**kwargs` are passed on to the base delete
@@ -1196,7 +1196,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self.locks.add(lockstring)
 
         # The ooc account cmdset
-        self.cmdset.add_default(_CMDSET_ACCOUNT, permanent=True)
+        self.cmdset.add_default(_CMDSET_ACCOUNT, persistent=True)
 
     def at_account_creation(self):
         """

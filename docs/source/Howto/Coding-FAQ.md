@@ -126,7 +126,7 @@ class BlockingCmdSet(CmdSet):
 
 class BlockingRoom(Room):
     def at_object_creation(self):
-        self.cmdset.add(BlockingCmdSet, permanent=True)
+        self.cmdset.add(BlockingCmdSet, persistent=True)
         # only share commands with players in the room that
         # are NOT Builders or higher
         self.locks.add("call:not perm(Builders)")

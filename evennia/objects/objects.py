@@ -1310,7 +1310,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_object_delete(self):
         """
-        Called just before the database object is permanently
+        Called just before the database object is persistently
         delete()d from the database. If this method returns False,
         deletion is aborted.
 
@@ -2261,7 +2261,7 @@ class DefaultCharacter(DefaultObject):
             ";".join(["get:false()", "call:false()"])  # noone can pick up the character
         )  # no commands can be called on character from outside
         # add the default cmdset
-        self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
+        self.cmdset.add_default(settings.CMDSET_CHARACTER, persistent=True)
 
     def at_after_move(self, source_location, **kwargs):
         """
@@ -2711,7 +2711,7 @@ class DefaultExit(DefaultObject):
 
         if "force_init" in kwargs or not self.cmdset.has_cmdset("ExitCmdSet", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
-            self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
+            self.cmdset.add_default(self.create_exit_cmdset(self), persistent=False)
 
     def at_init(self):
         """

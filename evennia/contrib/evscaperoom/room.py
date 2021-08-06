@@ -50,7 +50,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
             "total_achievements": 14,
         }
 
-        self.cmdset.add(CmdSetEvScapeRoom, permanent=True)
+        self.cmdset.add(CmdSetEvScapeRoom, persistent=True)
 
         self.log("Room created and log started.")
 
