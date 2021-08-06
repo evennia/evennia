@@ -219,7 +219,7 @@ class Attribute(IAttribute, SharedMemoryModel):
     # Database manager
     # objects = managers.AttributeManager()
 
-    class Meta(object):
+    class Meta:
         "Define Django meta options"
         verbose_name = "Attribute"
 
@@ -236,11 +236,11 @@ class Attribute(IAttribute, SharedMemoryModel):
         return self.db_lock_storage
 
     def __lock_storage_set(self, value):
-        super().__lock_storage_set(value)
+        self.db_lock_storage = value
         self.save(update_fields=["db_lock_storage"])
 
     def __lock_storage_del(self):
-        super().__lock_storage_del()
+        self.db_lock_storage = ''
         self.save(update_fields=["db_lock_storage"])
 
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
