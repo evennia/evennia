@@ -76,6 +76,8 @@ Up requirements to Django 3.2+
   pathfinding. Controlled outside of the game via custom evennia launcher command.
 - `Script.delete` has new kwarg `stop_task=True`, that can be used to avoid
   infinite recursion when wanting to set up Script to delete-on-stop.
+- Command executions now done on copies to make sure `yield` don't cause crossovers. Add
+  `Command.retain_instance` flag for reusing the same command instance.
 
 ### Evennia 0.9.5 (2019-2020)
 

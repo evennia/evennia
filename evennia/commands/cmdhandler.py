@@ -738,6 +738,10 @@ def cmdhandler(
                             sysarg += _(' Type "help" for help.')
                     raise ExecSystemCommand(syscmd, sysarg)
 
+            if not cmd.retain_instance:
+                # making a copy allows multiple users to share the command also when yield is used
+                cmd = copy(cmd)
+
             # A normal command.
             ret = yield _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account)
             returnValue(ret)

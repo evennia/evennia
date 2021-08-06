@@ -1540,7 +1540,8 @@ class CmdGetInput(Command):
             getinput = caller.ndb._getinput
             if not getinput and hasattr(caller, "account"):
                 getinput = caller.account.ndb._getinput
-                caller = caller.account
+                if getinput:
+                    caller = caller.account
             callback = getinput._callback
 
             caller.ndb._getinput._session = self.session
@@ -1642,7 +1643,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     caller.ndb._getinput._session = session
     caller.ndb._getinput._args = args
     caller.ndb._getinput._kwargs = kwargs
-    caller.cmdset.add(InputCmdSet)
+    caller.cmdset.add(InputCmdSet, persistent=False)
     caller.msg(prompt, session=session)
 
 
