@@ -678,36 +678,37 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
                     val = new_prototype[key]
                     do_save = True
 
+                    def _init(val, typ):
+                        return init_spawn_value(val, str, caller=caller, prototype=new_prototype)
+
                     if key == "key":
-                        obj.db_key = init_spawn_value(val, str, caller=caller)
+                        obj.db_key = _init(val, str)
                     elif key == "typeclass":
-                        obj.db_typeclass_path = init_spawn_value(val, str, caller=caller)
+                        obj.db_typeclass_path = _init(val, str)
                     elif key == "location":
-                        obj.db_location = init_spawn_value(val, value_to_obj, caller=caller)
+                        obj.db_location = _init(val, value_to_obj)
                     elif key == "home":
-                        obj.db_home = init_spawn_value(val, value_to_obj, caller=caller)
+                        obj.db_home = _init(val, value_to_obj)
                     elif key == "destination":
-                        obj.db_destination = init_spawn_value(val, value_to_obj, caller=caller)
+                        obj.db_destination = _init(val, value_to_obj)
                     elif key == "locks":
                         if directive == "REPLACE":
                             obj.locks.clear()
-                        obj.locks.add(init_spawn_value(val, str, caller=caller))
+                        obj.locks.add(_init(val, str))
                     elif key == "permissions":
                         if directive == "REPLACE":
                             obj.permissions.clear()
-                        obj.permissions.batch_add(*(init_spawn_value(perm, str, caller=caller)
-                                                    for perm in val))
+                        obj.permissions.batch_add(*(_init(perm, str) for perm in val))
                     elif key == "aliases":
                         if directive == "REPLACE":
                             obj.aliases.clear()
-                        obj.aliases.batch_add(*(init_spawn_value(alias, str, caller=caller)
-                                                for alias in val))
+                        obj.aliases.batch_add(*(_init(alias, str) for alias in val))
                     elif key == "tags":
                         if directive == "REPLACE":
                             obj.tags.clear()
                         obj.tags.batch_add(
                             *(
-                                (init_spawn_value(ttag, str, caller=caller), tcategory, tdata)
+                                (_init(ttag, str), tcategory, tdata)
                                 for ttag, tcategory, tdata in val
                             )
                         )
@@ -717,8 +718,8 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
                         obj.attributes.batch_add(
                             *(
                                 (
-                                    init_spawn_value(akey, str, caller=caller),
-                                    init_spawn_value(aval, value_to_obj, caller=caller),
+                                    _init(akey, str),
+                                    _init(aval, value_to_obj),
                                     acategory,
                                     alocks,
                                 )
@@ -729,7 +730,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
                         # we don't auto-rerun exec statements, it would be huge security risk!
                         pass
                     else:
-                        obj.attributes.add(key, init_spawn_value(val, value_to_obj, caller=caller))
+                        obj.attributes.add(key, _init(val, value_to_obj))
                 elif directive == "REMOVE":
                     do_save = True
                     if key == "key":

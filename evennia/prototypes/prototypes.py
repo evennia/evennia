@@ -829,7 +829,8 @@ def validate_prototype(
     prototype["prototype_locks"] = prototype_locks
 
 
-def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, caller=None, **kwargs):
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False,
+                    caller=None, **kwargs):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -1003,7 +1004,7 @@ def check_permission(prototype_key, action, default=True):
     return default
 
 
-def init_spawn_value(value, validator=None, caller=None):
+def init_spawn_value(value, validator=None, caller=None, prototype=None):
     """
     Analyze the prototype value and produce a value useful at the point of spawning.
 
@@ -1016,6 +1017,7 @@ def init_spawn_value(value, validator=None, caller=None):
                 check and guarantee the outcome is of a given type.
             caller (Object or Account): This is necessary for certain protfuncs that perform object
                 searches and have to check permissions.
+            prototype (dict): Prototype this is to be used for. Necessary for certain protfuncs.
 
     Returns:
         any (any): The (potentially pre-processed value to use for this prototype key)
@@ -1030,7 +1032,7 @@ def init_spawn_value(value, validator=None, caller=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    result = protfunc_parser(value, caller=caller)
+    result = protfunc_parser(value, caller=caller, prototype=prototype)
     if result != value:
         return validator(result)
     return result
