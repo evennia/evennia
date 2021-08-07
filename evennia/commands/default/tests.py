@@ -565,10 +565,10 @@ class TestSystem(CommandTest):
         self.call(system.CmdPy(), "/clientraw 1+2", ">>> 1+2|3")
 
     def test_scripts(self):
-        self.call(system.CmdScripts(), "", "dbref ")
+        self.call(building.CmdScripts(), "", "dbref ")
 
     def test_objects(self):
-        self.call(system.CmdObjects(), "", "Object subtype totals")
+        self.call(building.CmdObjects(), "", "Object subtype totals")
 
     def test_about(self):
         self.call(system.CmdAbout(), "", None)
@@ -1573,36 +1573,58 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), f"=#{id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
 
     def test_script(self):
-        self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
+        self.call(building.CmdScripts(), "Obj", "No scripts defined on Obj")
         self.call(
-            building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added"
+            building.CmdScripts(),
+            "Obj = scripts.Script",
+            "Script scripts.Script successfully added"
         )
-        self.call(building.CmdScript(), "", "Usage: ")
         self.call(
-            building.CmdScript(),
-            "= Obj",
-            "To create a global script you need scripts/add <typeclass>.",
+            building.CmdScripts(),
+            "evennia.Dummy",
+            "Global Script NOT Created "
         )
-        self.call(building.CmdScript(), "Obj ", "dbref ")
+        self.call(
+            building.CmdScripts(),
+            "evennia.scripts.scripts.DoNothing",
+            "Global Script Created - sys_do_nothing "
+        )
+        self.call(building.CmdScripts(), "Obj ", "dbref ")
 
         self.call(
-            building.CmdScript(), "/start Obj", "1 scripts started on Obj"
+            building.CmdScripts(), "/start Obj", "Script on Obj Started "
         )  # we allow running start again; this should still happen
-        self.call(building.CmdScript(), "/stop Obj", "Stopping script")
+        self.call(building.CmdScripts(), "/stop Obj", "Script on Obj Stopped - ")
 
         self.call(
-            building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added"
+            building.CmdScripts(), "Obj = scripts.Script",
+            "Script scripts.Script successfully added",
+            inputs=["Y"]
         )
         self.call(
-            building.CmdScript(),
+            building.CmdScripts(),
             "/start Obj = scripts.Script",
-            "Script scripts.Script could not be (re)started.",
+            "Script on Obj Started ",
+            inputs=["Y"]
         )
         self.call(
-            building.CmdScript(),
+            building.CmdScripts(),
             "/stop Obj = scripts.Script",
-            "Script stopped and removed from object.",
+            "Script on Obj Stopped ",
+            inputs=["Y"]
         )
+        self.call(
+            building.CmdScripts(),
+            "/delete Obj = scripts.Script",
+            "Script on Obj Deleted ",
+            inputs=["Y"]
+        )
+        self.call(
+            building.CmdScripts(),
+            "/delete evennia.scripts.scripts.DoNothing",
+            "Global Script Deleted -"
+        )
+
 
     def test_teleport(self):
         oid = self.obj1.id

@@ -41,8 +41,6 @@ class CharacterCmdSet(CmdSet):
 
         # System commands
         self.add(system.CmdPy())
-        self.add(system.CmdScripts())
-        self.add(system.CmdObjects())
         self.add(system.CmdAccounts())
         self.add(system.CmdService())
         self.add(system.CmdAbout())
@@ -83,10 +81,11 @@ class CharacterCmdSet(CmdSet):
         self.add(building.CmdExamine())
         self.add(building.CmdTypeclass())
         self.add(building.CmdLock())
-        self.add(building.CmdScript())
         self.add(building.CmdSetHome())
         self.add(building.CmdTag())
         self.add(building.CmdSpawn())
+        self.add(building.CmdScripts())
+        self.add(building.CmdObjects())
 
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

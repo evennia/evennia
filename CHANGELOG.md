@@ -80,6 +80,8 @@ Up requirements to Django 3.2+
   `Command.retain_instance` flag for reusing the same command instance.
 - The `typeclass` command will now correctly search the correct database-table for the target
   obj (avoids mistakenly assigning an AccountDB-typeclass to a Character etc).
+- Merged `script` and `scripts` commands into one, for both managing global- and
+  on-object Scripts. Moved `CmdScripts` and `CmdObjects` to `commands/default/building.py`.
 
 ### Evennia 0.9.5 (2019-2020)
 
