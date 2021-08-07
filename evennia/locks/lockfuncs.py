@@ -96,6 +96,9 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     (this is order to avoid Accounts potentially escalating their own permissions
     by use of a higher-level Object)
 
+    For non-hierarchical permissions, a puppeted object's account is checked first,
+    followed by the puppet (unless quelled, when only puppet's access is checked).
+
     """
     # this allows the perm_above lockfunc to make use of this function too
     try:
@@ -169,11 +172,17 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     else:
         # no hierarchy match - check direct matches
         if account:
-            # account exists, check it first unless quelled
+            # account exists
             if is_quell and permission in perms_object:
+                # if quelled, first check object
                 return True
             elif permission in perms_account:
+                # unquelled - check account
                 return True
+            else:
+                # no account-pass, check object pass
+                return permission in perms_object
+
         elif permission in perms_object:
             return True
 
