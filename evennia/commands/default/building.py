@@ -2,9 +2,11 @@
 Building and world design commands
 """
 import re
+from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Q, Min, Max
 from evennia import InterruptCommand
+from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
@@ -14,13 +16,14 @@ from evennia.utils.utils import (
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
-    dbref,
+    dbref, crop,
     interactive,
     list_to_string,
     display_len,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
+from evennia.utils.evtable import EvTable
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw as ansi_raw
 
@@ -53,7 +56,8 @@ __all__ = (
     "CmdExamine",
     "CmdFind",
     "CmdTeleport",
-    "CmdScript",
+    "CmdScripts",
+    "CmdObjects",
     "CmdTag",
     "CmdSpawn",
 )
@@ -2983,6 +2987,330 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         caller.msg(string.strip())
 
 
+class ScriptEvMore(EvMore):
+    """
+    Listing 1000+ Scripts can be very slow and memory-consuming. So
+    we use this custom EvMore child to build en EvTable only for
+    each page of the list.
+
+    """
+
+    def init_pages(self, scripts):
+        """Prepare the script list pagination"""
+        script_pages = Paginator(scripts, max(1, int(self.height / 2)))
+        super().init_pages(script_pages)
+
+    def page_formatter(self, scripts):
+        """Takes a page of scripts and formats the output
+        into an EvTable."""
+
+        if not scripts:
+            return "<No scripts>"
+
+        table = EvTable(
+            "|wdbref|n",
+            "|wobj|n",
+            "|wkey|n",
+            "|wintval|n",
+            "|wnext|n",
+            "|wrept|n",
+            "|wtypeclass|n",
+            "|wdesc|n",
+            align="r",
+            border="tablecols",
+            width=self.width,
+        )
+
+        for script in scripts:
+
+            nextrep = script.time_until_next_repeat()
+            if nextrep is None:
+                nextrep = script.db._paused_time
+                nextrep = f"PAUSED {int(nextrep)}s" if nextrep else "--"
+            else:
+                nextrep = f"{nextrep}s"
+
+            maxrepeat = script.repeats
+            remaining = script.remaining_repeats() or 0
+            if maxrepeat:
+                rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
+            else:
+                rept = "-/-"
+
+            table.add_row(
+                f"#{script.id}",
+                f"{script.obj.key}({script.obj.dbref})"
+                if (hasattr(script, "obj") and script.obj)
+                else "<Global>",
+                script.key,
+                script.interval if script.interval > 0 else "--",
+                nextrep,
+                rept,
+                script.typeclass_path.rsplit(".", 1)[-1],
+                crop(script.desc, width=20),
+            )
+
+        return str(table)
+
+
+class CmdScripts(COMMAND_DEFAULT_CLASS):
+    """
+    List and manage all running scripts. Allows for creating new global
+    scripts.
+
+    Usage:
+      script[/switches] [script-#dbref, key, script.path or <obj>]
+      script[/start||stop] <obj> = <script.path or script-key>
+
+    Switches:
+      start - start/unpause an existing script's timer.
+      stop - stops an existing script's timer
+      pause - pause a script's timer
+      delete - deletes script. This will also stop the timer as needed
+
+    Examples:
+        script                         - list scripts
+        script myobj                   - list all scripts on object
+        script foo.bar.Script          - create a new global Script
+        script scriptname              - examine named existing global script
+        script myobj = foo.bar.Script  - create and assign script to object
+        script/stop myobj = scriptname - stop script on object
+        script/pause foo.Bar.Script    - pause global script
+        script/delete myobj            - delete ALL scripts on object
+
+    When given with an `<obj>` as left-hand-side, this creates and
+    assigns a new script to that object. Without an `<obj>`, this
+    manages and inspects global scripts
+
+    If no switches are given, this command just views all active
+    scripts. The argument can be either an object, at which point it
+    will be searched for all scripts defined on it, or a script name
+    or #dbref. For using the /stop switch, a unique script #dbref is
+    required since whole classes of scripts often have the same name.
+
+    Use the `script` build-level command for managing scripts attached to
+    objects.
+
+    """
+
+    key = "scripts"
+    aliases = ["script"]
+    switch_options = ("create", "start", "stop", "pause", "delete")
+    locks = "cmd:perm(scripts) or perm(Builder)"
+    help_category = "System"
+
+    excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
+
+    switch_mapping = {
+        "create": "|gCreated|n",
+        "start": "|gStarted|n",
+        "stop": "|RStopped|n",
+        "pause": "|Paused|n",
+        "delete": "|rDeleted|n"
+    }
+
+    def _search_script(self, args):
+        # test first if this is a script match
+        scripts = ScriptDB.objects.get_all_scripts(key=args)
+        if scripts:
+            return scripts
+        # try typeclass path
+        scripts = ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
+        if scripts:
+            return scripts
+
+    def func(self):
+        """implement method"""
+
+        caller = self.caller
+
+        if not self.args:
+            # show all scripts
+            scripts = ScriptDB.objects.all()
+            if not scripts:
+                caller.msg("No scripts found.")
+                return
+            ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+            return
+
+        # find script or object to operate on
+        scripts, obj = None, None
+        if self.rhs:
+            obj_query = self.lhs
+            script_query = self.rhs
+        else:
+            obj_query = script_query = self.args
+
+        scripts = self._search_script(script_query)
+        objects = ObjectDB.objects.object_search(obj_query)
+        obj = objects[0] if objects else None
+
+        if not self.switches:
+            # creation / view mode
+            if obj:
+                # we have an object
+                if self.rhs:
+                    # creation mode
+                    if obj.scripts.add(self.rhs, autostart=True):
+                        caller.msg(
+                            f"Script |w{self.rhs}|n successfully added and "
+                            f"started on {obj.get_display_name(caller)}.")
+                    else:
+                        caller.msg(f"Script {self.rhs} could not be added and/or started "
+                                   f"on {obj.get_display_name(caller)} (or it started and "
+                                   "immediately shut down).")
+                else:
+                    # just show all scripts on object
+                    scripts = ScriptDB.objects.filter(db_obj=obj)
+                    if scripts:
+                        ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+                    else:
+                        caller.msg(f"No scripts defined on {obj}")
+
+            elif scripts:
+                # show found script(s)
+                ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+
+            else:
+                # create global script
+                try:
+                    new_script = create.create_script(self.args)
+                except ImportError:
+                    logger.log_trace()
+                    new_script = None
+
+                if new_script:
+                    caller.msg(f"Global Script Created - "
+                               f"{new_script.key} ({new_script.typeclass_path})")
+                    ScriptEvMore(caller, [new_script], session=self.session)
+                else:
+                    caller.msg(f"Global Script |rNOT|n Created |r(see log)|n - "
+                               f"arguments: {self.args}")
+
+        elif scripts or obj:
+            # modification switches - must operate on existing scripts
+
+            if not scripts:
+                scripts = ScriptDB.objects.filter(db_obj=obj)
+
+            if scripts.count() > 1:
+                ret = yield(f"Multiple scripts found: {scripts}. Are you sure you want to "
+                            "operate on all of them? [Y]/N? ")
+                if ret.lower() in ('n', 'no'):
+                    caller.msg("Aborted.")
+                    return
+
+            for script in scripts:
+                script_key = script.key
+                script_typeclass_path = script.typeclass_path
+                scripttype = f"Script on {obj}" if obj else "Global Script"
+
+                for switch in self.switches:
+                    verb = self.switch_mapping[switch]
+                    msgs = []
+                    try:
+                        getattr(script, switch)()
+                    except Exception:
+                        logger.log_trace()
+                        msgs.append(f"{scripttype} |rNOT|n {verb} |r(see log)|n - "
+                                    f"{script_key} ({script_typeclass_path})|n")
+                    else:
+                        msgs.append(f"{scripttype} {verb} - "
+                                    f"{script_key} ({script_typeclass_path})")
+                caller.msg("\n".join(msgs))
+                if "delete" not in self.switches:
+                    ScriptEvMore(caller, [script], session=self.session)
+        else:
+            caller.msg("No scripts found.")
+
+
+class CmdObjects(COMMAND_DEFAULT_CLASS):
+    """
+    statistics on objects in the database
+
+    Usage:
+      objects [<nr>]
+
+    Gives statictics on objects in database as well as
+    a list of <nr> latest objects in database. If not
+    given, <nr> defaults to 10.
+    """
+
+    key = "objects"
+    aliases = ["listobjects", "listobjs", "stats", "db"]
+    locks = "cmd:perm(listobjects) or perm(Builder)"
+    help_category = "System"
+
+    def func(self):
+        """Implement the command"""
+
+        caller = self.caller
+        nlim = int(self.args) if self.args and self.args.isdigit() else 10
+        nobjs = ObjectDB.objects.count()
+        Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+        nchars = Character.objects.all_family().count()
+        Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
+        nrooms = Room.objects.all_family().count()
+        Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
+        nexits = Exit.objects.all_family().count()
+        nother = nobjs - nchars - nrooms - nexits
+        nobjs = nobjs or 1  # fix zero-div error with empty database
+
+        # total object sum table
+        totaltable = self.styled_table(
+            "|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n", border="table", align="l"
+        )
+        totaltable.align = "l"
+        totaltable.add_row(
+            "Characters",
+            "(BASE_CHARACTER_TYPECLASS + children)",
+            nchars,
+            "%.2f" % ((float(nchars) / nobjs) * 100),
+        )
+        totaltable.add_row(
+            "Rooms",
+            "(BASE_ROOM_TYPECLASS + children)",
+            nrooms,
+            "%.2f" % ((float(nrooms) / nobjs) * 100),
+        )
+        totaltable.add_row(
+            "Exits",
+            "(BASE_EXIT_TYPECLASS + children)",
+            nexits,
+            "%.2f" % ((float(nexits) / nobjs) * 100),
+        )
+        totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
+
+        # typeclass table
+        typetable = self.styled_table(
+            "|wtypeclass|n", "|wcount|n", "|w%|n", border="table", align="l"
+        )
+        typetable.align = "l"
+        dbtotals = ObjectDB.objects.get_typeclass_totals()
+        for stat in dbtotals:
+            typetable.add_row(
+                stat.get("typeclass", "<error>"),
+                stat.get("count", -1),
+                "%.2f" % stat.get("percent", -1),
+            )
+
+        # last N table
+        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]
+        latesttable = self.styled_table(
+            "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table"
+        )
+        latesttable.align = "l"
+        for obj in objs:
+            latesttable.add_row(
+                utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.path
+            )
+
+        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (nobjs, totaltable)
+        string += "\n|wObject typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Objects created:|n\n%s" % (min(nobjs, nlim), latesttable)
+        caller.msg(string)
+
+
 class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     teleport object to another location
@@ -3106,113 +3434,6 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         else:
             caller.msg("Teleportation failed.")
 
-
-class CmdScript(COMMAND_DEFAULT_CLASS):
-    """
-    attach a script to an object
-
-    Usage:
-      addscript[/switch] <obj> [= script_path or <scriptkey>]
-
-    Switches:
-      start - start all non-running scripts on object, or a given script only
-      stop - stop all scripts on objects, or a given script only
-
-    If no script path/key is given, lists all scripts active on the given
-    object.
-    Script path can be given from the base location for scripts as given in
-    settings. If adding a new script, it will be started automatically
-    (no /start switch is needed). Using the /start or /stop switches on an
-    object without specifying a script key/path will start/stop ALL scripts on
-    the object.
-    """
-
-    key = "addscript"
-    aliases = ["attachscript"]
-    switch_options = ("start", "stop")
-    locks = "cmd:perm(script) or perm(Builder)"
-    help_category = "Building"
-
-    def func(self):
-        """Do stuff"""
-
-        caller = self.caller
-
-        if not self.args:
-            string = "Usage: script[/switch] <obj> [= script_path or <script key>]"
-            caller.msg(string)
-            return
-
-        if not self.lhs:
-            caller.msg("To create a global script you need |wscripts/add <typeclass>|n.")
-            return
-
-        obj = caller.search(self.lhs)
-        if not obj:
-            return
-
-        result = []
-        if not self.rhs:
-            # no rhs means we want to operate on all scripts
-            scripts = obj.scripts.all()
-            if not scripts:
-                result.append("No scripts defined on %s." % obj.get_display_name(caller))
-            elif not self.switches:
-                # view all scripts
-                from evennia.commands.default.system import ScriptEvMore
-
-                ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
-                return
-            elif "start" in self.switches:
-                num = sum([obj.scripts.start(script.key) for script in scripts])
-                result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
-            elif "stop" in self.switches:
-                for script in scripts:
-                    result.append(
-                        "Stopping script %s on %s."
-                        % (script.get_display_name(caller), obj.get_display_name(caller))
-                    )
-                    script.stop()
-        else:  # rhs exists
-            if not self.switches:
-                # adding a new script, and starting it
-                ok = obj.scripts.add(self.rhs, autostart=True)
-                if not ok:
-                    result.append(
-                        "\nScript %s could not be added and/or started on %s "
-                        "(or it started and immediately shut down)."
-                        % (self.rhs, obj.get_display_name(caller))
-                    )
-                else:
-                    result.append(
-                        "Script |w%s|n successfully added and started on %s."
-                        % (self.rhs, obj.get_display_name(caller))
-                    )
-
-            else:
-                paths = [self.rhs] + [
-                    "%s.%s" % (prefix, self.rhs) for prefix in settings.TYPECLASS_PATHS
-                ]
-                if "stop" in self.switches:
-                    # we are stopping an already existing script
-                    for path in paths:
-                        ok = obj.scripts.stop(path)
-                        if not ok:
-                            result.append("\nScript %s could not be stopped. Does it exist?" % path)
-                        else:
-                            result = ["Script stopped and removed from object."]
-                            break
-                if "start" in self.switches:
-                    # we are starting an already existing script
-                    for path in paths:
-                        ok = obj.scripts.start(path)
-                        if not ok:
-                            result.append("\nScript %s could not be (re)started." % path)
-                        else:
-                            result = ["Script started successfully."]
-                            break
-
-        EvMore(caller, "".join(result).strip())
 
 
 class CmdTag(COMMAND_DEFAULT_CLASS):
