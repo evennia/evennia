@@ -98,9 +98,11 @@ import re
 from re import escape as re_escape
 import itertools
 from django.conf import settings
-from evennia import DefaultObject, DefaultCharacter, ObjectDB
-from evennia import Command, CmdSet
-from evennia import ansi
+from evennia.objects.objects import DefaultObject, DefaultCharacter
+from evennia.objects.models import ObjectDB
+from evennia.commands.command import Command
+from evennia.commands.cmdset import CmdSet
+from evennia.utils import ansi
 from evennia.utils.utils import lazy_property, make_iter, variable_from_module
 
 _REGEX_TUPLE_CACHE = {}
@@ -451,7 +453,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
             key = "#%i" % obj.id
-            string = string[:istart0] + "{%s}" % key + string[istart + maxscore :]
+            string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
             mapping[key] = obj
         else:
             refname = marker_match.group()
