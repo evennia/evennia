@@ -434,7 +434,7 @@ data type to insert into the prototype.</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.init_spawn_value">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prototype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze the prototype value and produce a value useful at the point of spawning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -450,6 +450,7 @@ validator (callable, optional): If given, this will be called with the value to<
 <dt>caller (Object or Account): This is necessary for certain protfuncs that perform object</dt><dd><p>searches and have to check permissions.</p>
 </dd>
 </dl>
+<p>prototype (dict): Prototype this is to be used for. Necessary for certain protfuncs.</p>
 </p>
 </dd>
 <dt class="field-even">Returns</dt>

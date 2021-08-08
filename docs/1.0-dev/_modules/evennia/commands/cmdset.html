@@ -219,7 +219,7 @@
     <span class="c1"># merge-stack, every cmdset in the stack must have `duplicates` set explicitly.</span>
     <span class="n">duplicates</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">permanent</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">persistent</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">key_mergetypes</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">errmessage</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="c1"># pre-store properties to duplicate straight off</span>
@@ -229,7 +229,7 @@
         <span class="s2">&quot;no_exits&quot;</span><span class="p">,</span>
         <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span>
         <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;permanent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;persistent&quot;</span><span class="p">,</span>
         <span class="s2">&quot;mergetype&quot;</span><span class="p">,</span>
         <span class="s2">&quot;priority&quot;</span><span class="p">,</span>
         <span class="s2">&quot;duplicates&quot;</span><span class="p">,</span>
@@ -399,7 +399,7 @@
 <span class="sd">            commands (str): Representation of commands in Cmdset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">perm</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permanent</span> <span class="k">else</span> <span class="s2">&quot;non-perm&quot;</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="k">else</span> <span class="s2">&quot;non-perm&quot;</span>
         <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>

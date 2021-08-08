@@ -88,16 +88,16 @@ Sets#merge-rules) section).</p>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
-<span class="c1"># this is a theoretical custom module with commands we </span>
+<span class="c1"># this is a theoretical custom module with commands we</span>
 <span class="c1"># created previously: mygame/commands/mycommands.py</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
-<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>    
+<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The only thing this method should need</span>
 <span class="sd">        to do is to add commands to the set.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand1</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand2</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand3</span><span class="p">())</span>
@@ -108,7 +108,7 @@ from that CmdSet will be appended to this one as if you added them line by line:
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span> 
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span>
         <span class="o">...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AdditionalCmdSet</span><span class="p">)</span> <span class="c1"># adds all command from this set</span>
         <span class="o">...</span>
@@ -116,7 +116,7 @@ from that CmdSet will be appended to this one as if you added them line by line:
 </td></tr></table></div>
 <p>If you added your command to an existing cmdset (like to the default cmdset), that set is already
 loaded into memory. You need to make the server aware of the code changes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reload</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reload</span>
 </pre></div>
 </div>
 <p>You should now be able to use the command.</p>
@@ -136,7 +136,7 @@ remove the latest added cmdset.</p>
 <div><p>Note: Command sets added using <code class="docutils literal notranslate"><span class="pre">cmdset.add</span></code> are, by default, <em>not</em> persistent in the database.</p>
 </div></blockquote>
 <p>If you want the cmdset to survive a reload, you can do:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">mycmdset</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">mycmdset</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Or you could add the cmdset as the <em>default</em> cmdset:</p>
@@ -328,13 +328,13 @@ theory</a>.</p>
 <li><p><strong>Union</strong> (default) - The two cmdsets are merged so that as many commands as possible from each
 cmdset ends up in the merged cmdset. Same-key commands are merged by priority.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="c1"># Union</span>
-   <span class="n">A1</span><span class="p">,</span><span class="n">A2</span> <span class="o">+</span> <span class="n">B1</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="n">B4</span> <span class="o">=</span> <span class="n">A1</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="n">B4</span> 
+   <span class="n">A1</span><span class="p">,</span><span class="n">A2</span> <span class="o">+</span> <span class="n">B1</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="n">B4</span> <span class="o">=</span> <span class="n">A1</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="n">B4</span>
 </pre></div>
 </div>
 </li>
 <li><p><strong>Intersect</strong> - Only commands found in <em>both</em> cmdsets (i.e. which have the same keys) end up in
 the merged cmdset, with the higher-priority cmdset replacing the lower one’s commands.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="c1"># Intersect </span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="c1"># Intersect</span>
    <span class="n">A1</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">A5</span> <span class="o">+</span> <span class="n">B1</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="n">B4</span><span class="p">,</span><span class="n">B5</span> <span class="o">=</span> <span class="n">A1</span><span class="p">,</span><span class="n">A5</span>
 </pre></div>
 </div>
@@ -404,17 +404,17 @@ it appropriately.</p>
 <span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MyCmdSet&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
-    <span class="n">key_mergetypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MyOtherCmdSet&#39;</span><span class="p">:</span><span class="s1">&#39;Union&#39;</span><span class="p">}</span>  
-    
+    <span class="n">key_mergetypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MyOtherCmdSet&#39;</span><span class="p">:</span><span class="s1">&#39;Union&#39;</span><span class="p">}</span>
+
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The only thing this method should need</span>
 <span class="sd">        to do is to add commands to the set.</span>
-<span class="sd">        &quot;&quot;&quot;</span>     
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand1</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand2</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand3</span><span class="p">())</span>

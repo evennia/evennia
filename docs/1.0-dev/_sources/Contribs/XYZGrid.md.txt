@@ -867,6 +867,13 @@ LEGEND = {
 
 }
 
+XYMAP_DATA = {
+    # ...
+    "map": MAPSTR,
+    "legend": LEGEND
+    # ...
+}
+
 ```
 
 Moving west from `(1,0)` will bring you to `(1,4)` of MapA, and moving east from
@@ -966,6 +973,7 @@ PROTOTYPES = {
 
 XYMAP_DATA = {
     # ...
+    "map": MAPSTR,
     "prototypes": PROTOTYPES
     # ...
 }
@@ -996,6 +1004,12 @@ grid? You can, by adding the following to your `mygame/server/conf/settings.py`:
 
     XYZROOM_PARENT_PROTOTYPE_OVERRIDE = {"typeclass": "myxyzroom.MyXYZRoom"}
     XYZEXIT_PARENT_PROTOTYPE_OVERRIDE = {...}
+
+
+> If you override the typeclass in your prototypes, the typeclass used  **MUST**
+> inherit from `XYZRoom` and/or `XYZExit`. The `BASE_ROOM_TYPECLASS` and
+> `BASE_EXIT_TYPECLASS` settings will not help - these are still useful for
+> non-xyzgrid rooms/exits though.
 
 Only add what you want to change - these dicts will _extend_ the default parent
 prototypes rather than replace them. As long as you define your map's prototypes

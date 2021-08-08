@@ -1231,7 +1231,7 @@ with older attrs that might have been named with <strong>[]</strong>’s.</p>
 <dl>
 <dt>Usage:</dt><dd><p>typeclass[/switch] &lt;object&gt; [= typeclass.path]
 typeclass/prototype &lt;object&gt; = prototype_key</p>
-<p>typeclass/list/show [typeclass.path]
+<p>typeclasses or typeclass/list/show [typeclass.path]
 swap - this is a shorthand for using /force/reset flags.
 update - this is a shorthand for using the /force/reload flag.</p>
 </dd>
@@ -1275,7 +1275,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['type', 'parent', 'swap', 'update']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['typeclasses', 'type', 'swap', 'update', 'parent']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1306,7 +1306,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'type parent swap update', 'category': 'building', 'key': 'typeclass', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object.\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'typeclasses type swap update parent', 'category': 'building', 'key': 'typeclass', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object.\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1459,7 +1459,7 @@ If object is not specified, the current location is examined.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ex', 'exam']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['exam', 'ex']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1556,7 +1556,7 @@ non-persistent data stored on object</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ex exam', 'category': 'building', 'key': 'examine', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'exam ex', 'category': 'building', 'key': 'examine', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1711,63 +1711,139 @@ teleported to the target location.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.commands.default.building.CmdScript">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScript" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdScripts</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScripts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
-<p>attach a script to an object</p>
+<p>List and manage all running scripts. Allows for creating new global
+scripts.</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>addscript[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</p>
+<dt>Usage:</dt><dd><p>script[/switches] [script-#dbref, key, script.path or &lt;obj&gt;]
+script[/start||stop] &lt;obj&gt; = &lt;script.path or script-key&gt;</p>
 </dd>
-<dt>Switches:</dt><dd><p>start - start all non-running scripts on object, or a given script only
-stop - stop all scripts on objects, or a given script only</p>
+<dt>Switches:</dt><dd><p>start - start/unpause an existing script’s timer.
+stop - stops an existing script’s timer
+pause - pause a script’s timer
+delete - deletes script. This will also stop the timer as needed</p>
 </dd>
 </dl>
-<p>If no script path/key is given, lists all scripts active on the given
-object.
-Script path can be given from the base location for scripts as given in
-settings. If adding a new script, it will be started automatically
-(no /start switch is needed). Using the /start or /stop switches on an
-object without specifying a script key/path will start/stop ALL scripts on
-the object.</p>
+<p class="rubric">Examples</p>
+<p>script                         - list scripts
+script myobj                   - list all scripts on object
+script foo.bar.Script          - create a new global Script
+script scriptname              - examine named existing global script
+script myobj = foo.bar.Script  - create and assign script to object
+script/stop myobj = scriptname - stop script on object
+script/pause foo.Bar.Script    - pause global script
+script/delete myobj            - delete ALL scripts on object</p>
+<p>When given with an <strong>&lt;obj&gt;</strong> as left-hand-side, this creates and
+assigns a new script to that object. Without an <strong>&lt;obj&gt;</strong>, this
+manages and inspects global scripts</p>
+<p>If no switches are given, this command just views all active
+scripts. The argument can be either an object, at which point it
+will be searched for all scripts defined on it, or a script name
+or #dbref. For using the /stop switch, a unique script #dbref is
+required since whole classes of scripts often have the same name.</p>
+<p>Use the <strong>script</strong> build-level command for managing scripts attached to
+objects.</p>
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.key">
-<code class="sig-name descname">key</code><em class="property"> = 'addscript'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.key" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.key">
+<code class="sig-name descname">key</code><em class="property"> = 'scripts'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['attachscript']</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.aliases" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['script']</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.switch_options">
-<code class="sig-name descname">switch_options</code><em class="property"> = ('start', 'stop')</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.switch_options" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('create', 'start', 'stop', 'pause', 'delete')</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.locks">
-<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(script) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.locks" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(scripts) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.help_category" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScripts.excluded_typeclass_paths">
+<code class="sig-name descname">excluded_typeclass_paths</code><em class="property"> = ['evennia.prototypes.prototypes.DbPrototype']</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.excluded_typeclass_paths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScripts.switch_mapping">
+<code class="sig-name descname">switch_mapping</code><em class="property"> = {'create': '|gCreated|n', 'delete': '|rDeleted|n', 'pause': '|Paused|n', 'start': '|gStarted|n', 'stop': '|RStopped|n'}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.switch_mapping" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.commands.default.building.CmdScript.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScript.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScript.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Do stuff</p>
+<dt id="evennia.commands.default.building.CmdScripts.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScripts.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement method</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(script) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(scripts) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdScript.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'attachscript', 'category': 'building', 'key': 'addscript', 'tags': '', 'text': '\n    attach a script to an object\n\n    Usage:\n      addscript[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]\n\n    Switches:\n      start - start all non-running scripts on object, or a given script only\n      stop - stop all scripts on objects, or a given script only\n\n    If no script path/key is given, lists all scripts active on the given\n    object.\n    Script path can be given from the base location for scripts as given in\n    settings. If adding a new script, it will be started automatically\n    (no /start switch is needed). Using the /start or /stop switches on an\n    object without specifying a script key/path will start/stop ALL scripts on\n    the object.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdScripts.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'script', 'category': 'system', 'key': 'scripts', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [script-#dbref, key, script.path or &lt;obj&gt;]\n      script[/start||stop] &lt;obj&gt; = &lt;script.path or script-key&gt;\n\n    Switches:\n      start - start/unpause an existing script's timer.\n      stop - stops an existing script's timer\n      pause - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    Examples:\n        script                         - list scripts\n        script myobj                   - list all scripts on object\n        script foo.bar.Script          - create a new global Script\n        script scriptname              - examine named existing global script\n        script myobj = foo.bar.Script  - create and assign script to object\n        script/stop myobj = scriptname - stop script on object\n        script/pause foo.Bar.Script    - pause global script\n        script/delete myobj            - delete ALL scripts on object\n\n    When given with an `&lt;obj&gt;` as left-hand-side, this creates and\n    assigns a new script to that object. Without an `&lt;obj&gt;`, this\n    manages and inspects global scripts\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdObjects">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdObjects</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdObjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdObjects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>statistics on objects in the database</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>objects [&lt;nr&gt;]</p>
+</dd>
+</dl>
+<p>Gives statictics on objects in database as well as
+a list of &lt;nr&gt; latest objects in database. If not
+given, &lt;nr&gt; defaults to 10.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.key">
+<code class="sig-name descname">key</code><em class="property"> = 'objects'</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['stats', 'listobjects', 'db', 'listobjs']</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(listobjects) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdObjects.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdObjects.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(listobjects) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdObjects.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'stats listobjects db listobjs', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

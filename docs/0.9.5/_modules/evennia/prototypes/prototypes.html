@@ -870,7 +870,8 @@
     <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prototype_locks</span></div>
 
 
-<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a prototype value string for a protfunc and process it.</span>
 
@@ -1044,7 +1045,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze the prototype value and produce a value useful at the point of spawning.</span>
 
@@ -1057,6 +1058,7 @@
 <span class="sd">                check and guarantee the outcome is of a given type.</span>
 <span class="sd">            caller (Object or Account): This is necessary for certain protfuncs that perform object</span>
 <span class="sd">                searches and have to check permissions.</span>
+<span class="sd">            prototype (dict): Prototype this is to be used for. Necessary for certain protfuncs.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        any (any): The (potentially pre-processed value to use for this prototype key)</span>
@@ -1071,7 +1073,7 @@
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="o">*</span><span class="n">make_iter</span><span class="p">(</span><span class="n">args</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">validator</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>

@@ -137,6 +137,9 @@
 <span class="sd">    (this is order to avoid Accounts potentially escalating their own permissions</span>
 <span class="sd">    by use of a higher-level Object)</span>
 
+<span class="sd">    For non-hierarchical permissions, a puppeted object&#39;s account is checked first,</span>
+<span class="sd">    followed by the puppet (unless quelled, when only puppet&#39;s access is checked).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># this allows the perm_above lockfunc to make use of this function too</span>
     <span class="k">try</span><span class="p">:</span>
@@ -210,11 +213,17 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># no hierarchy match - check direct matches</span>
         <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
-            <span class="c1"># account exists, check it first unless quelled</span>
+            <span class="c1"># account exists</span>
             <span class="k">if</span> <span class="n">is_quell</span> <span class="ow">and</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_object</span><span class="p">:</span>
+                <span class="c1"># if quelled, first check object</span>
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">elif</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_account</span><span class="p">:</span>
+                <span class="c1"># unquelled - check account</span>
                 <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no account-pass, check object pass</span>
+                <span class="k">return</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_object</span>
+
         <span class="k">elif</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_object</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 

@@ -111,7 +111,7 @@ sections).</p>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
 <span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># (note that this will call `timed_script.at_repeat` which is empty by default)</span>
-<span class="n">timed_script</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Timed script&quot;</span><span class="p">,</span> 
+<span class="n">timed_script</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Timed script&quot;</span><span class="p">,</span>
                                      <span class="n">interval</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span>  <span class="c1"># seconds &lt;=0 means off</span>
                                      <span class="n">start_delay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># wait interval before first call</span>
                                      <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># start timer (else needing .start() )</span>
@@ -119,7 +119,7 @@ sections).</p>
 <span class="c1"># manipulate the script&#39;s timer</span>
 <span class="n">timed_script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 <span class="n">timed_script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="n">timed_script</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>                                      
+<span class="n">timed_script</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
 <span class="n">timed_script</span><span class="o">.</span><span class="n">unpause</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
@@ -143,7 +143,7 @@ sections).</p>
 <span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># regular search (this is always a list, also if there is only one match)</span>
 <span class="n">list_of_myscripts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
 
-<span class="c1"># search through Evennia&#39;s GLOBAL_SCRIPTS container (based on </span>
+<span class="c1"># search through Evennia&#39;s GLOBAL_SCRIPTS container (based on</span>
 <span class="c1"># script&#39;s key only)</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
 
@@ -200,7 +200,7 @@ can use this as a base for your own scripts.</p>
 <span class="normal">6</span>
 <span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.scripts.MyScript&#39;</span><span class="p">)</span>
 
-<span class="c1"># from somewhere else </span>
+<span class="c1"># from somewhere else</span>
 
 <span class="n">myscript</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
 <span class="n">bar</span> <span class="o">=</span> <span class="n">myscript</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span>
@@ -215,7 +215,7 @@ you set in your <code class="docutils literal notranslate"><span class="pre">at_
 <span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="n">evennia</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="s1">&#39;typeclasses.scripts.MyScript&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;another name&quot;</span><span class="p">,</span>
                       <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar-alternative&quot;</span><span class="p">)])</span>
-            
+
 </pre></div>
 </td></tr></table></div>
 <p>See the <a class="reference external" href="../api/evennia.utils.create.html#evennia.utils.create.create_script">create_script</a> and
@@ -245,7 +245,7 @@ on creating and finding Scripts.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 1 min repeat</span>
 
     <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># do stuff every minute </span>
+        <span class="c1"># do stuff every minute</span>
 </pre></div>
 </td></tr></table></div>
 <p>This example will call <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> every minute. The <code class="docutils literal notranslate"><span class="pre">create_script</span></code> function has an <code class="docutils literal notranslate"><span class="pre">autostart=True</span></code> keyword
@@ -340,16 +340,16 @@ If so, the ‘parent object’ will be available to the script as either <code c
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py  </span>
+<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py</span>
     <span class="c1"># Script class is defined at the top of this module</span>
 
     <span class="kn">import</span> <span class="nn">random</span>
 
-    <span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span> 
+    <span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A timer script that displays weather info. Meant to </span>
-<span class="sd">        be attached to a room. </span>
-<span class="sd">          </span>
+<span class="sd">        A timer script that displays weather info. Meant to</span>
+<span class="sd">        be attached to a room.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;weather_script&quot;</span>
@@ -357,12 +357,12 @@ If so, the ‘parent object’ will be available to the script as either <code c
             <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># every 5 minutes</span>
 
         <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="s2">&quot;called every self.interval seconds.&quot;</span>        
+            <span class="s2">&quot;called every self.interval seconds.&quot;</span>
             <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
                 <span class="n">weather</span> <span class="o">=</span> <span class="s2">&quot;A faint breeze is felt.&quot;</span>
             <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.7</span><span class="p">:</span>
-                <span class="n">weather</span> <span class="o">=</span> <span class="s2">&quot;Clouds sweep across the sky.&quot;</span> 
+                <span class="n">weather</span> <span class="o">=</span> <span class="s2">&quot;Clouds sweep across the sky.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">weather</span> <span class="o">=</span> <span class="s2">&quot;There is a light drizzle of rain.&quot;</span>
             <span class="c1"># send this message to everyone inside the object this</span>
@@ -452,7 +452,9 @@ the database). Best is to organize your scripts so that this does not happen. Ot
 <li><p>Manually create a new global script with a <code class="docutils literal notranslate"><span class="pre">key</span></code> using <code class="docutils literal notranslate"><span class="pre">create_script</span></code>.</p></li>
 <li><p>Define the script’s properties in the <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> settings variable. This tells Evennia
 that it should check if a script with that <code class="docutils literal notranslate"><span class="pre">key</span></code> exists and if not, create it for you.
-This is very useful for scripts that must always exist and/or should be auto-created with your server.</p></li>
+This is very useful for scripts that must always exist and/or should be auto-created
+when your server restarts. If you use this method, you must make sure all
+script keys are globally unique.</p></li>
 </ol>
 <p>Here’s how to tell Evennia to manage the script in settings:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
@@ -468,7 +470,7 @@ This is very useful for scripts that must always exist and/or should be auto-cre
 <span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
 
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;my_script&quot;</span><span class="p">:</span> <span class="p">{</span>               
+    <span class="s2">&quot;my_script&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;scripts.Weather&quot;</span><span class="p">,</span>
         <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
@@ -499,7 +501,7 @@ and your Script will temporarily fall back to being a <cite>DefaultScript</cite>
 <span class="c1"># Delete the script</span>
 <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">storagescript</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="c1"># running the `scripts` command now will show no storagescript</span>
-<span class="c1"># but below it&#39;s automatically recreated again! </span>
+<span class="c1"># but below it&#39;s automatically recreated again!</span>
 <span class="n">storage</span> <span class="o">=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">storagescript</span>
 </pre></div>
 </td></tr></table></div>
@@ -528,13 +530,13 @@ traceback occurred in your script.</p>
 <span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
-<span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span> 
+<span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
 
     <span class="c1"># [...]</span>
 
     <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="k">try</span><span class="p">:</span>  
+
+        <span class="k">try</span><span class="p">:</span>
             <span class="c1"># [...]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>

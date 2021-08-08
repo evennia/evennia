@@ -125,6 +125,9 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">is_exit</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;help_category&quot;</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;general&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;retain_instance&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">retain_instance</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="c1"># make sure to pick up the parent&#39;s docstring if the child class is</span>
     <span class="c1"># missing one (important for auto-help)</span>
     <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -230,6 +233,11 @@
     <span class="c1"># whether self.msg sends to all sessions of a related account/object (default</span>
     <span class="c1"># is to only send to the session sending the command).</span>
     <span class="n">msg_all_sessions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_MSG_ALL_SESSIONS</span>
+    <span class="c1"># whether the exact command instance should be retained between command calls.</span>
+    <span class="c1"># By default it&#39;s False; this allows for retaining state and saves some CPU, but</span>
+    <span class="c1"># can cause cross-talk between users if multiple users access the same command</span>
+    <span class="c1"># (especially if the command is using yield)</span>
+    <span class="n">retain_instance</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># auto-set (by Evennia on command instantiation) are:</span>
     <span class="c1">#   obj - which object this command is defined on</span>

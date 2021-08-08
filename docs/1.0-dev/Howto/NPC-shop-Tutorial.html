@@ -406,7 +406,7 @@ storeroom at once.</p>
 <span class="c1"># class for our front shop room</span>
 <span class="k">class</span> <span class="nc">NPCShop</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># we could also use add(ShopCmdSet, permanent=True)</span>
+        <span class="c1"># we could also use add(ShopCmdSet, persistent=True)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">ShopCmdSet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">storeroom</span> <span class="o">=</span> <span class="kc">None</span>
 

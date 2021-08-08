@@ -607,10 +607,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdPy</span><span class="p">(),</span> <span class="s2">&quot;/clientraw 1+2&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&gt; 1+2|3&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestSystem.test_scripts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_scripts">[docs]</a>    <span class="k">def</span> <span class="nf">test_scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestSystem.test_objects"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_objects">[docs]</a>    <span class="k">def</span> <span class="nf">test_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdObjects</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Object subtype totals&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdObjects</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Object subtype totals&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestSystem.test_about"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_about">[docs]</a>    <span class="k">def</span> <span class="nf">test_about</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdAbout</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
@@ -1615,36 +1615,58 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdFind</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;=#</span><span class="si">{</span><span class="n">id1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">id2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mdiff</span><span class="si">}</span><span class="s2"> Matches(#</span><span class="si">{</span><span class="n">id1</span><span class="si">}</span><span class="s2">-#</span><span class="si">{</span><span class="n">id2</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_script"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script">[docs]</a>    <span class="k">def</span> <span class="nf">test_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = &quot;</span><span class="p">,</span> <span class="s2">&quot;No scripts defined on Obj&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;No scripts defined on Obj&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span> <span class="s2">&quot;Script scripts.Script successfully added&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script scripts.Script successfully added&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span>
-            <span class="s2">&quot;= Obj&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;To create a global script you need scripts/add &lt;typeclass&gt;.&quot;</span><span class="p">,</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;evennia.Dummy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Global Script NOT Created &quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;evennia.scripts.scripts.DoNothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Global Script Created - sys_do_nothing &quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;1 scripts started on Obj&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Started &quot;</span>
         <span class="p">)</span>  <span class="c1"># we allow running start again; this should still happen</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Stopping script&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Stopped - &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span> <span class="s2">&quot;Script scripts.Script successfully added&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script scripts.Script successfully added&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/start Obj = scripts.Script&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Script scripts.Script could not be (re)started.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script on Obj Started &quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/stop Obj = scripts.Script&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Script stopped and removed from object.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script on Obj Stopped &quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;/delete Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script on Obj Deleted &quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;/delete evennia.scripts.scripts.DoNothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Global Script Deleted -&quot;</span>
         <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="TestBuilding.test_teleport"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_teleport">[docs]</a>    <span class="k">def</span> <span class="nf">test_teleport</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">id</span>

@@ -283,6 +283,23 @@ update here (unlikely, but marking just in case).</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.typeclasses.models.TypedObject.search">
+<em class="property">classmethod </em><code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/models.html#TypedObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden by class children. This implements a common API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – A search query.</p></li>
+<li><p><strong>**kwargs</strong> – Other search parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of 0, 1 or more matches, only of this typeclass.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.typeclasses.models.TypedObject.is_typeclass">
 <code class="sig-name descname">is_typeclass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/models.html#TypedObject.is_typeclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.models.TypedObject.is_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if this object has this type OR has a typeclass

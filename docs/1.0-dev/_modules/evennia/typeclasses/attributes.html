@@ -261,7 +261,7 @@
     <span class="c1"># Database manager</span>
     <span class="c1"># objects = managers.AttributeManager()</span>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="s2">&quot;Define Django meta options&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Attribute&quot;</span>
 
@@ -278,11 +278,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span>
 
     <span class="k">def</span> <span class="nf">__lock_storage_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__lock_storage_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_lock_storage&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">__lock_storage_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__lock_storage_del</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_lock_storage&quot;</span><span class="p">])</span>
 
     <span class="n">lock_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__lock_storage_get</span><span class="p">,</span> <span class="n">__lock_storage_set</span><span class="p">,</span> <span class="n">__lock_storage_del</span><span class="p">)</span>
@@ -1266,7 +1266,7 @@
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">attr</span>
                 <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
-                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrread</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">attrs</span></div>

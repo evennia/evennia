@@ -60,7 +60,7 @@ from that still around.</p>
 </pre></div>
 </div>
 <p>That is, we want to support all of these forms</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hit</span> <span class="n">target</span>     
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hit</span> <span class="n">target</span>
 <span class="n">hit</span> <span class="n">target</span> <span class="n">weapon</span>
 <span class="n">hit</span> <span class="n">target</span> <span class="k">with</span> <span class="n">weapon</span>
 </pre></div>
@@ -115,19 +115,19 @@ a little, in a new method <code class="docutils literal notranslate"><span class
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hit a target.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Usage:</span>
 <span class="sd">      hit &lt;target&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>       
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; with &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
-            <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>          
-        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> 
+            <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">weapon</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -136,21 +136,21 @@ a little, in a new method <code class="docutils literal notranslate"><span class
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
-            <span class="k">return</span> 
+            <span class="k">return</span>
         <span class="c1"># get the target for the hit</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>              
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
-            <span class="k">return</span> 
-        <span class="c1"># get and handle the weapon </span>
+            <span class="k">return</span>
+        <span class="c1"># get and handle the weapon</span>
         <span class="n">weapon</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">:</span>
             <span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="n">weaponstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weapon</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">weaponstr</span> <span class="o">=</span> <span class="s2">&quot;bare fists&quot;</span>
-               
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
 </pre></div>
@@ -215,8 +215,8 @@ use this to create a <code class="docutils literal notranslate"><span class="pre
 <li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack text.</p></li>
 </ul>
 <p>Let’s try it out!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
-&gt; hit smaug with sword 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; hit smaug with sword
 Could not find &#39;sword&#39;.
 You hit smaug with bare fists!
 </pre></div>
@@ -224,14 +224,14 @@ You hit smaug with bare fists!
 <p>Oops, our <code class="docutils literal notranslate"><span class="pre">self.caller.search(self.weapon)</span></code> is telling us that it found no sword. Since we are not <code class="docutils literal notranslate"><span class="pre">return</span></code>ing
 in this situation (like we do if failing to find <code class="docutils literal notranslate"><span class="pre">target</span></code>) we still continue fighting with our bare hands.
 This won’t do. Let’s make ourselves a sword.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">sword</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">sword</span>
 </pre></div>
 </div>
 <p>Since we didn’t specify <code class="docutils literal notranslate"><span class="pre">/drop</span></code>, the sword will end up in our inventory and can seen with the <code class="docutils literal notranslate"><span class="pre">i</span></code> or
 <code class="docutils literal notranslate"><span class="pre">inventory</span></code> command. The <code class="docutils literal notranslate"><span class="pre">.search</span></code> helper will still find it there. There is no need to reload to see this
 change (no code changed, only stuff in the database).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit smaug with sword 
-You hit smaug with sword! 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit smaug with sword
+You hit smaug with sword!
 </pre></div>
 </div>
 </section>
@@ -242,13 +242,13 @@ but <em>also to those in the same location as that object</em>. If you did the <
 you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">Tutorial world</span></a>
 also has many examples of objects with commands on them.</p>
 <p>To show how this could work, let’s put our ‘hit’ Command on our simple <code class="docutils literal notranslate"><span class="pre">sword</span></code> object from the previous section.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We find the sword (it’s still in our inventory so <code class="docutils literal notranslate"><span class="pre">self.search</span></code> should be able to find it), then
 add <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to it. This actually adds both <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">echo</span></code> to the sword, which is fine.</p>
 <p>Let’s try to swing it!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">hit</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">hit</span>
 <span class="n">More</span> <span class="n">than</span> <span class="n">one</span> <span class="n">match</span> <span class="k">for</span> <span class="s1">&#39;hit&#39;</span> <span class="p">(</span><span class="n">please</span> <span class="n">narrow</span> <span class="n">target</span><span class="p">):</span>
 <span class="n">hit</span><span class="o">-</span><span class="mi">1</span> <span class="p">(</span><span class="n">sword</span> <span class="c1">#11)</span>
 <span class="n">hit</span><span class="o">-</span><span class="mi">2</span>
@@ -267,10 +267,10 @@ a red and a blue button both with the command <cite>push</cite> on it. Now you j
 (<em>we</em> know they are the same, but Evennia can’t be sure of that). As we can see, <code class="docutils literal notranslate"><span class="pre">hit-1</span></code> is the one found on
 the sword. The other one is from adding <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to ourself earlier. It’s easy enough to tell Evennia which
 one you meant:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit-1 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit-1
 Who do you want to hit?
 &gt; hit-2
-Who do you want to hit? 
+Who do you want to hit?
 </pre></div>
 </div>
 <p>In this case we don’t need both command-sets, so let’s just keep the one on the sword:</p>
@@ -281,14 +281,14 @@ Who do you want to hit?
 </div>
 <p>Now try this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; tunnel n = kitchen
-&gt; n 
-&gt; drop sword 
+&gt; n
+&gt; drop sword
 &gt; s
 &gt; hit
 Command &#39;hit&#39; is not available. Maybe you meant ...
 &gt; n
-&gt; hit  
-Who do you want to hit? 
+&gt; hit
+Who do you want to hit?
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">hit</span></code> command is now only available if you hold or are in the same room as the sword.</p>
@@ -325,18 +325,18 @@ Use <cite>unquell</cite> to get back to your normal self.</p>
 <p>If the sword lies on the ground, try</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit
 Command &#39;hit&#39; is not available. ..
-&gt; get sword 
-&gt; hit 
+&gt; get sword
+&gt; hit
 &gt; Who do you want to hit?
 </pre></div>
 </div>
 <p>Finally, we get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around.
 We can do that in two ways:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span> <span class="n">sword</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span> <span class="n">sword</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -501,9 +501,9 @@ to add a command with a key <code class="docutils literal notranslate"><span cla
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdHit</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; hit
-Who do you want to hit?     
+Who do you want to hit?
 </pre></div>
 </div>
 <p>Your new commands are now available for all player characters in the game. There is another way to add a bunch
@@ -577,7 +577,7 @@ from Evennia. We happen to know this can be found as <code class="docutils liter
 <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
 <span class="o">&gt;</span> <span class="n">get</span>
 <span class="n">Command</span> <span class="s1">&#39;get&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">available</span> <span class="o">...</span>
 </pre></div>
@@ -602,7 +602,7 @@ that <code class="docutils literal notranslate"><span class="pre">CmdGet</span><
 <span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># up top, by the other imports</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
-<span class="c1"># somewhere below </span>
+<span class="c1"># somewhere below</span>
 <span class="k">class</span> <span class="nc">MyCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -666,10 +666,10 @@ has a special function <code class="docutils literal notranslate"><span class="p
 you could also add it to <cite>mycommands.MyCmdSet</cite> and let it be
 added automatically for you.</p>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
-&gt; get 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; get
 Get What?
-[smaug, fluffy, YourName, ...] 
+[smaug, fluffy, YourName, ...]
 </pre></div>
 </div>
 <p>We just made a new <code class="docutils literal notranslate"><span class="pre">get</span></code>-command that tells us everything we could pick up (well, we can’t pick up ourselves, so

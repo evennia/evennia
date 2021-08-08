@@ -346,7 +346,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Union&quot;</span><span class="p">]</span>
 
         <span class="c1"># the subset of the cmdset_paths that are to be stored in the database</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">permanent_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">init_true</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># is then called from the object __init__.</span></div>
@@ -404,7 +404,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            init_mode (bool, optional): Used automatically right after</span>
-<span class="sd">                this handler was created; it imports all permanent cmdsets</span>
+<span class="sd">                this handler was created; it imports all persistent cmdsets</span>
 <span class="sd">                from the database.</span>
 
 <span class="sd">        Notes:</span>
@@ -419,7 +419,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_mode</span><span class="p">:</span>
-            <span class="c1"># reimport all permanent cmdsets</span>
+            <span class="c1"># reimport all persistent cmdsets</span>
             <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
             <span class="k">if</span> <span class="n">storage</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[]</span>
@@ -449,7 +449,7 @@
                                     <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                                     <span class="k">continue</span>
-                            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+                            <span class="n">cmdset</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
 
         <span class="c1"># merge the stack into a new merged cmdset</span>
@@ -464,7 +464,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_current</span><span class="o">.</span><span class="n">actual_mergetype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
@@ -506,7 +506,7 @@
             <span class="c1"># this is (maybe) a python path. Try to import from cache.</span>
             <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
-            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">persistent</span>  <span class="c1"># TODO change on cmdset too</span>
+            <span class="n">cmdset</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="n">persistent</span>
             <span class="k">if</span> <span class="n">persistent</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
                 <span class="c1"># store the path permanently</span>
                 <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
@@ -555,7 +555,7 @@
             <span class="c1"># remove the default cmdset only</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">:</span>
                 <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">persistent</span><span class="p">:</span>
                     <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
                     <span class="n">storage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
@@ -572,7 +572,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset</span><span class="p">:</span>
             <span class="c1"># remove the last one in the stack</span>
             <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">persistent</span><span class="p">:</span>
                 <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
                 <span class="n">storage</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
@@ -589,12 +589,12 @@
                 <span class="p">]</span>
             <span class="n">storage</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cset</span><span class="o">.</span><span class="n">permanent</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cset</span><span class="o">.</span><span class="n">persistent</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">):</span>
                 <span class="c1"># only hit database if there&#39;s need to</span>
                 <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
                 <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">persistent</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">storage</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
                             <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>

@@ -707,7 +707,7 @@
         <span class="n">menu_cmdset</span> <span class="o">=</span> <span class="n">EvMenuCmdSet</span><span class="p">()</span>
         <span class="n">menu_cmdset</span><span class="o">.</span><span class="n">mergetype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmdset_mergetype</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;Replace&quot;</span>
         <span class="n">menu_cmdset</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cmdset_priority</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">menu_cmdset</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">menu_cmdset</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span>
 
         <span class="n">reserved_startnode_kwargs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">((</span><span class="s2">&quot;nodename&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_string&quot;</span><span class="p">))</span>
         <span class="n">startnode_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1582,7 +1582,8 @@
             <span class="n">getinput</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">getinput</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
                 <span class="n">getinput</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span>
-                <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span>
+                <span class="k">if</span> <span class="n">getinput</span><span class="p">:</span>
+                    <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span>
             <span class="n">callback</span> <span class="o">=</span> <span class="n">getinput</span><span class="o">.</span><span class="n">_callback</span>
 
             <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
@@ -1684,7 +1685,7 @@
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="n">args</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_getinput</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">InputCmdSet</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">InputCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span></div>
 
 
