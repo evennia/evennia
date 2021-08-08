@@ -170,7 +170,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">readable_text</span> <span class="o">=</span> <span class="s2">&quot;There is no text written on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
         <span class="c1"># define a command on the object.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetReadable</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetReadable</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># -------------------------------------------------------------</span>
@@ -236,7 +236,7 @@
 
 <div class="viewcode-block" id="TutorialClimbable.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialClimbable.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called at initial creation only&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetClimbable</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetClimbable</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># -------------------------------------------------------------</span>
@@ -384,7 +384,7 @@
         <span class="c1"># when created.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A splinter of wood with remnants of resin on it, enough for burning.&quot;</span>
         <span class="c1"># add the Light command</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetLight</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetLight</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_burnout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -711,7 +711,7 @@
         <span class="c1"># exit_open is set to True.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cmd:locattr(is_lit);traverse:objattr(exit_open)&quot;</span><span class="p">)</span>
         <span class="c1"># set cmdset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetCrumblingWall</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetCrumblingWall</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CrumblingWall.open_wall"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.CrumblingWall.open_wall">[docs]</a>    <span class="k">def</span> <span class="nf">open_wall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -991,7 +991,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parry</span> <span class="o">=</span> <span class="mf">0.8</span>  <span class="c1"># parry chance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">damage</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">magic</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetWeapon</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetWeapon</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TutorialWeapon.reset"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialWeapon.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1189,7 +1189,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        called at creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetWeaponRack</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetWeaponRack</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rack_id</span> <span class="o">=</span> <span class="s2">&quot;weaponrack_1&quot;</span>
         <span class="c1"># these are prototype names from the prototype</span>
         <span class="c1"># dictionary above.</span>

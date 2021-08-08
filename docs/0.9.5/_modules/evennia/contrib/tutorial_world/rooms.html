@@ -470,7 +470,7 @@
             <span class="s2">&quot;This assigns the health Attribute to &quot;</span>
             <span class="s2">&quot;the account.&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetEvenniaIntro</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetEvenniaIntro</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntroRoom.at_object_receive"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.IntroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -773,7 +773,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">east_exit</span> <span class="o">=</span> <span class="s2">&quot;gate&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fall_exit</span> <span class="o">=</span> <span class="s2">&quot;cliffledge&quot;</span>
         <span class="c1"># add the cmdset on the room.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BridgeCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BridgeCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># since the default Character&#39;s at_look() will access the room&#39;s</span>
         <span class="c1"># return_description (this skips the cmdset) when</span>
         <span class="c1"># first entering it, we need to explicitly turn off the room</span>
@@ -998,7 +998,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tutorial_info</span> <span class="o">=</span> <span class="s2">&quot;This is a room with custom command sets on itself.&quot;</span>
         <span class="c1"># the room starts dark.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_lit</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">DarkCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">DarkCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DarkRoom.at_init"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.DarkRoom.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1050,7 +1050,7 @@
             <span class="c1"># noone is carrying light - darken the room</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_lit</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;view:false()&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">DarkCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">DarkCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">(</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
                     <span class="n">char</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are Superuser, so you are not affected by the dark state.&quot;</span><span class="p">)</span>

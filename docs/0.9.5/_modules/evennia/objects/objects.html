@@ -1351,7 +1351,7 @@
 
 <div class="viewcode-block" id="DefaultObject.at_object_delete"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called just before the database object is permanently</span>
+<span class="sd">        Called just before the database object is persistently</span>
 <span class="sd">        delete()d from the database. If this method returns False,</span>
 <span class="sd">        deletion is aborted.</span>
 
@@ -2302,7 +2302,7 @@
             <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;get:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;call:false()&quot;</span><span class="p">])</span>  <span class="c1"># noone can pick up the character</span>
         <span class="p">)</span>  <span class="c1"># no commands can be called on character from outside</span>
         <span class="c1"># add the default cmdset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultCharacter.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2752,7 +2752,7 @@
 
         <span class="k">if</span> <span class="s2">&quot;force_init&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">has_cmdset</span><span class="p">(</span><span class="s2">&quot;ExitCmdSet&quot;</span><span class="p">,</span> <span class="n">must_be_default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="c1"># we are resetting, or no exit-cmdset was set. Create one dynamically.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_exit_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_exit_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultExit.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

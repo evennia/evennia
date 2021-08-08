@@ -106,6 +106,8 @@ is set to True on the Object. In this case however, the
 LOWEST hieararcy-permission of the Account/Object-pair will be used
 (this is order to avoid Accounts potentially escalating their own permissions
 by use of a higher-level Object)</p>
+<p>For non-hierarchical permissions, a puppeted object’s account is checked first,
+followed by the puppet (unless quelled, when only puppet’s access is checked).</p>
 </dd></dl>
 
 <dl class="py function">

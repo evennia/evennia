@@ -527,6 +527,23 @@
     <span class="c1"># Object manipulation methods</span>
     <span class="c1">#</span>
 
+<div class="viewcode-block" id="TypedObject.search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.search">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overridden by class children. This implements a common API.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query (str): A search query.</span>
+<span class="sd">            **kwargs: Other search parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of 0, 1 or more matches, only of this typeclass.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__lower</span><span class="o">=</span><span class="n">query</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="TypedObject.is_typeclass"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.is_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">is_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns true if this object has this type OR has a typeclass</span>

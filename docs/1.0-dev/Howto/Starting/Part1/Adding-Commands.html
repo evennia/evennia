@@ -101,7 +101,7 @@ commands in that cmdset available to the object. So, to summarize:</p>
 <span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
 <span class="c1"># (lots of commented-out stuff)</span>
@@ -168,7 +168,7 @@ could just add more lines of <code class="docutils literal notranslate"><span cl
 </pre></div>
 </div>
 <p>Now try</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; echo 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; echo
 Command echo has no defined `func()` - showing on-command variables:
 ...
 ...
@@ -184,7 +184,7 @@ caller (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
 cmdname (&lt;class &#39;str&#39;&gt;): echo
 raw_cmdname (&lt;class &#39;str&#39;&gt;): echo
 cmdstring (&lt;class &#39;str&#39;&gt;): echo
-args (&lt;class &#39;str&#39;&gt;): 
+args (&lt;class &#39;str&#39;&gt;):
 cmdset (&lt;class &#39;evennia.commands.cmdset.CmdSet&#39;&gt;): @mail, about, access, accounts, addcom, alias, allcom, ban, batchcode, batchcommands, boot, cboot, ccreate,
     cdesc, cdestroy, cemit, channels, charcreate, chardelete, checklockstring, clientwidth, clock, cmdbare, cmdsets, color, copy, cpattr, create, cwho, delcom,
     desc, destroy, dig, dolphin, drop, echo, emit, examine, find, force, get, give, grapevine2chan, help, home, ic, inventory, irc2chan, ircstatus, link, lock,
@@ -193,7 +193,7 @@ cmdset (&lt;class &#39;evennia.commands.cmdset.CmdSet&#39;&gt;): @mail, about, a
     tickers, time, tunnel, typeclass, unban, unlink, up, up, userpassword, wall, whisper, who, wipe
 session (&lt;class &#39;evennia.server.serversession.ServerSession&#39;&gt;): Griatch(#1)@1:2:7:.:0:.:0:.:1
 account (&lt;class &#39;typeclasses.accounts.Account&#39;&gt;): Griatch(account 1)
-raw_string (&lt;class &#39;str&#39;&gt;): echo 
+raw_string (&lt;class &#39;str&#39;&gt;): echo
 
 --------------------------------------------------
 echo - Command variables from evennia:
@@ -239,15 +239,15 @@ looks for to figure out what a Command actually does. Modify your <code class="d
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple echo command</span>
-<span class="sd">    </span>
+
 <span class="sd">    Usage:</span>
-<span class="sd">        echo &lt;something&gt;    </span>
+<span class="sd">        echo &lt;something&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
 <span class="c1"># ...</span>
 </pre></div>
@@ -260,9 +260,9 @@ to the object it is attached to us - in this case <code class="docutils literal 
 that in the message.</p>
 <p>Since we haven’t changed <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>, that will work as before. Reload and re-add this command to ourselves to
 try out the new version:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">echo</span> 
+<span class="o">&gt;</span> <span class="n">echo</span>
 <span class="n">Echo</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
 </pre></div>
 </div>
@@ -299,15 +299,15 @@ it looks a bit weird for our echo example. Tweak the code:</p>
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple echo command</span>
-<span class="sd">    </span>
+
 <span class="sd">    Usage:</span>
-<span class="sd">        echo &lt;something&gt;    </span>
+<span class="sd">        echo &lt;something&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
 <span class="c1"># ...</span>
 </pre></div>
@@ -315,22 +315,22 @@ it looks a bit weird for our echo example. Tweak the code:</p>
 <p>The only difference is that we called <code class="docutils literal notranslate"><span class="pre">.strip()</span></code> on <code class="docutils literal notranslate"><span class="pre">self.args</span></code>. This is a helper method available on all
 strings - it strips out all whitespace before and after the string. Now the Command-argument will no longer
 have any space in front of it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
 &gt; echo Woo Tang!
 Echo: &#39;Woo Tang!&#39;
 </pre></div>
 </div>
 <p>Don’t forget to look at the help for the echo command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">echo</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">help</span> <span class="n">echo</span>
 </pre></div>
 </div>
 <p>You will get the docstring you put in your Command-class.</p>
 <section id="making-our-cmdset-persistent">
 <h3>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
 <p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple
-enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>permanent</em> change though:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>persistent</em> change though:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now you can <code class="docutils literal notranslate"><span class="pre">reload</span></code> as much as you want and your code changes will be available directly without
@@ -345,11 +345,11 @@ needing to re-add the MyCmdSet again. To remove the cmdset again, do</p>
 <p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching
 someone in the face! This is how we want it to work:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit &lt;target&gt;
-You hit &lt;target&gt; with full force! 
+You hit &lt;target&gt; with full force!
 </pre></div>
 </div>
 <p>Not only that, we want the <target> to see</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You got hit by &lt;hitter&gt; with full force! 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You got hit by &lt;hitter&gt; with full force!
 </pre></div>
 </div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">&lt;hitter&gt;</span></code> would be the one using the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command and <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> is the one doing the punching.</p>
@@ -381,7 +381,7 @@ You hit &lt;target&gt; with full force!
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hit a target.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Usage:</span>
 <span class="sd">      hit &lt;target&gt;</span>
 
@@ -392,11 +392,11 @@ You hit &lt;target&gt; with full force!
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
-            <span class="k">return</span> 
+            <span class="k">return</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
-            <span class="k">return</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span> 
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
         <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
 </pre></div>
@@ -450,7 +450,7 @@ whole conditional becomes truthy. Let’s continue in the code:</p>
 In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
 <li><p><strong>Lines 22-23</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
 </ul>
-<p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> which we made permanent earlier.</p>
+<p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> which we made persistent earlier.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -476,7 +476,7 @@ exactly where your problem is. Refer to <a class="reference external" href="Pyth
 more hints. If you get stuck, reach out to the Evennia community for help.</p>
 </aside>
 <p>Next we reload to let Evennia know of these code changes and try it out:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
 hit
 Who do you want to hit?
 hit me
@@ -486,7 +486,7 @@ You got hit by YourName with full force!
 </div>
 <p>Lacking a target, we hit ourselves. If you have one of the dragons still around from the previous lesson
 you could try to hit it (if you dare):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>hit smaug 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>hit smaug
 You hit Smaug with full force!
 </pre></div>
 </div>

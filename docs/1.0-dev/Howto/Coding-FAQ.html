@@ -202,7 +202,7 @@ is an example of a room where certain commands are disabled for non-staff:</p>
 
 <span class="k">class</span> <span class="nc">BlockingRoom</span><span class="p">(</span><span class="n">Room</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BlockingCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BlockingCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># only share commands with players in the room that</span>
         <span class="c1"># are NOT Builders or higher</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;call:not perm(Builders)&quot;</span><span class="p">)</span>

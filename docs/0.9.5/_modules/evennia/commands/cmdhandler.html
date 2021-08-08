@@ -779,6 +779,10 @@
                             <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39; Type &quot;help&quot; for help.&#39;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
 
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">retain_instance</span><span class="p">:</span>
+                <span class="c1"># making a copy allows multiple users to share the command also when yield is used</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
             <span class="c1"># A normal command.</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
             <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
