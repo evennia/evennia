@@ -195,7 +195,7 @@ An "emitter" object must have a function
         //     to listen to cmdname events.
         //
         var on = function (cmdname, listener) {
-            if (typeof(listener === 'function')) {
+            if (typeof(listener) === 'function') {
                 listeners[cmdname] = listener;
             };
         };
