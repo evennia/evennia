@@ -88,7 +88,7 @@ here's how you'd find something only in your inventory:
 
 You can also turn off the automatic error handling:
 
-    swords = self.search("Sword", quiet=True)
+    swords = self.caller.search("Sword", quiet=True)
 
 With `quiet=True` the user will not be notified on zero or multi-match errors. Instead you are expected to handle this 
 yourself and what you get back is now a list of zero, one or more matches! 
