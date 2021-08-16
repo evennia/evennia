@@ -1128,4 +1128,4 @@ class NAttributeHandler(object):
         """
         if return_tuples:
             return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
-        return [key for key in self._store if not key.startswith("_")]
+        return [key for key in self._store if not str(key).startswith("_")]
