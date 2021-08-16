@@ -359,7 +359,7 @@
 <span class="c1"># EvCell class (see further down for the EvTable itself)</span>
 
 
-<div class="viewcode-block" id="EvCell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell">[docs]</a><span class="k">class</span> <span class="nc">EvCell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvCell"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell">[docs]</a><span class="k">class</span> <span class="nc">EvCell</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Holds a single data cell for the table. A cell has a certain width</span>
 <span class="sd">    and height and contains one or more lines of data. It can shrink</span>
@@ -1027,14 +1027,17 @@
 <span class="sd">            Available keywods as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># column-level options override those in kwargs</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">}</span>
+
         <span class="n">ypos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ypos&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ypos</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ypos</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">):</span>
             <span class="c1"># add to the end</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># insert cells before given index</span>
             <span class="n">ypos</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ypos</span><span class="p">)))</span>
-            <span class="n">new_cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+            <span class="n">new_cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[:</span><span class="n">ypos</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_cells</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">ypos</span><span class="p">:]</span></div>
         <span class="c1"># self._balance(**kwargs)</span>
 
@@ -1061,6 +1064,7 @@
 <span class="sd">            Keywords as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># column-level options take precedence here</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 

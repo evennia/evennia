@@ -1914,6 +1914,11 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The Line editor can only be applied &quot;</span> <span class="s2">&quot;to one attribute at a time.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Use `set/edit &lt;objname&gt;/&lt;attr&gt;` to define the Attribute to edit.</span><span class="se">\n</span><span class="s2">To &quot;</span>
+                           <span class="s2">&quot;edit the current room description, use `set/edit here/desc` (or &quot;</span>
+                           <span class="s2">&quot;use the `desc` command).&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edit_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
