@@ -1874,6 +1874,11 @@ class CmdSetAttribute(ObjManipCommand):
             if len(attrs) > 1:
                 caller.msg("The Line editor can only be applied " "to one attribute at a time.")
                 return
+            if not attrs:
+                caller.msg("Use `set/edit <objname>/<attr>` to define the Attribute to edit.\nTo "
+                           "edit the current room description, use `set/edit here/desc` (or "
+                           "use the `desc` command).")
+                return
             self.edit_handler(obj, attrs[0])
             return
         if not value:
