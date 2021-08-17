@@ -325,7 +325,8 @@ def prototype_from_object(obj):
     if aliases:
         prot["aliases"] = aliases
     tags = sorted(
-        [(tag.db_key, tag.db_category, tag.db_data) for tag in obj.tags.all(return_objs=True)]
+        [(tag.db_key, tag.db_category, tag.db_data) for tag in obj.tags.all(return_objs=True)],
+        key=lambda tup: (str(tup[0]), tup[1] or '', tup[2] or '')
     )
     if tags:
         prot["tags"] = tags
@@ -333,7 +334,8 @@ def prototype_from_object(obj):
         [
             (attr.key, attr.value, attr.category, ";".join(attr.locks.all()))
             for attr in obj.attributes.all()
-        ]
+        ],
+        key=lambda tup: (str(tup[0]), tup[1] or '', tup[2] or '', tup[3])
     )
     if attrs:
         prot["attrs"] = attrs
