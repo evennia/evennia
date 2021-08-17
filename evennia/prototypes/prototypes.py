@@ -918,7 +918,7 @@ def prototype_to_str(prototype):
         attrs = prototype["attrs"]
         out = []
         for (attrkey, value, category, locks) in attrs:
-            locks = ", ".join(lock for lock in locks if lock)
+            locks = locks if isinstance(locks, str) else ", ".join(lock for lock in locks if lock)
             category = "|ccategory:|n {}".format(category) if category else ""
             cat_locks = ""
             if category or locks:

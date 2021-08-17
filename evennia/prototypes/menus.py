@@ -965,7 +965,7 @@ def _typeclass_actions(caller, raw_inp, **kwargs):
         return "node_typeclass"
 
 
-def _typeclass_select(caller, typeclass):
+def _typeclass_select(caller, typeclass, **kwargs):
     """Select typeclass from list and add it to prototype. Return next node to go to."""
     ret = _set_property(caller, typeclass, prop="typeclass", processor=str)
     caller.msg("Selected typeclass |c{}|n.".format(typeclass))

@@ -1374,7 +1374,7 @@ def list_node(option_generator, select=None, pagesize=10):
             Parse the select action
 
             """
-            available_choices = kwargs.get("available_choices", [])
+            available_choices = kwargs.pop("available_choices", [])
 
             try:
                 index = int(raw_string.strip()) - 1
@@ -1390,7 +1390,10 @@ def list_node(option_generator, select=None, pagesize=10):
                         else:
                             return select(caller, selection, **kwargs)
                     except Exception:
-                        logger.log_trace()
+                        logger.log_trace("Error in EvMenu.list_node decorator:\n  "
+                                         f"select-callable: {select}\n  with args: ({caller}"
+                                         f"{selection}, {available_choices}, {kwargs}) raised "
+                                         "exception.")
                 elif select:
                     # we assume a string was given, we inject the result into the kwargs
                     # to pass on to the next node
