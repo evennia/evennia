@@ -108,23 +108,50 @@ def homogenize_prototype(prototype, custom_keys=None):
     attrs = list(prototype.get("attrs", []))  # break reference
     tags = make_iter(prototype.get("tags", []))
     homogenized_tags = []
+    homogenized_attrs = []
 
     homogenized = {}
     for key, val in prototype.items():
         if key in reserved:
+            # check all reserved keys
             if key == "tags":
+                # tags must be on form [(tag, category, data), ...]
                 for tag in tags:
                     if not is_iter(tag):
                         homogenized_tags.append((tag, None, None))
-                    else:
-                        homogenized_tags.append(tag)
+                    elif tag:
+                        ntag = len(tag)
+                        if ntag == 1:
+                            homogenized_tags.append((tag[0], None, None))
+                        elif ntag == 2:
+                            homogenized_tags.append((tag[0], tag[1], None))
+                        else:
+                            homogenized_tags.append(tag[:3])
+            if key == "attrs":
+                for attr in attrs:
+                    # attrs must be on form [(key, value, category, lockstr)]
+                    if not is_iter(attr):
+                        logger.log_error("Prototype's 'attr' field must "
+                                         f"be a list of tuples: {prototype}")
+                    elif attr:
+                        nattr = len(attr)
+                        if nattr == 1:
+                            # we assume a None-value
+                            homogenized_attrs.append(attr[0], None, None, "")
+                        elif nattr == 2:
+                            homogenized_attrs.append(attr[0], attr[1], None, "")
+                        elif nattr == 3:
+                            homogenized_attrs.append(attr[0], attr[1], attr[2], "")
+                        else:
+                            homogenized_attrs.append(attr[:4])
             else:
+                # another reserved key
                 homogenized[key] = val
         else:
-            # unassigned keys -> attrs
-            attrs.append((key, val, None, ""))
-    if attrs:
-        homogenized["attrs"] = attrs
+            # unreserved keys -> attrs
+            homogenized_attrs.append((key, val, None, ""))
+    if homogenized_attrs:
+        homogenized["attrs"] = homogenized_attrs
     if homogenized_tags:
         homogenized["tags"] = homogenized_tags
 
