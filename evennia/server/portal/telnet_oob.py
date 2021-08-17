@@ -230,11 +230,15 @@ class TelnetOOB:
             be stripped on the Evennia side.
             ::
 
-                [cmd.name, [], {}]          -> Cmd.Name
-                [cmd.name, [arg], {}]       -> Cmd.Name arg
-                [cmd.name, [args],{}]       -> Cmd.Name [args]
-                [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
+                [cmd_name, [], {}]          -> Cmd.Name
+                [cmd_name, [arg], {}]       -> Cmd.Name arg
+                [cmd_name, [args],{}]       -> Cmd.Name [args]
+                [cmd_name, [], {kwargs}]    -> Cmd.Name {kwargs}
                 [cmdname, [args, {kwargs}]  -> Core.Cmdname [[args],{kwargs}]
+
+            For more flexibility with certain clients, if `cmd_name` is capitalized,
+            Evennia will leave its current capitalization (So CMD_nAmE would be sent
+            as CMD.nAmE but cMD_Name would be Cmd.Name)
 
         Notes:
             There are also a few default mappings between evennia outputcmds and GMCP:
@@ -251,9 +255,13 @@ class TelnetOOB:
         if cmdname in EVENNIA_TO_GMCP:
             gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
         elif "_" in cmdname:
-            gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
+            if cmdname.istitle():
+                # leave without capitalization
+                gmcp_cmdname = ".".join(word for word in cmdname.split("_"))
+            else:
+                gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
         else:
-            gmcp_cmdname = "Core.%s" % cmdname.capitalize()
+            gmcp_cmdname = "Core.%s" % (cmdname if cmdname.istitle() else cmdname.capitalize())
 
         if not (args or kwargs):
             gmcp_string = gmcp_cmdname

@@ -82,6 +82,8 @@ Up requirements to Django 3.2+
   obj (avoids mistakenly assigning an AccountDB-typeclass to a Character etc).
 - Merged `script` and `scripts` commands into one, for both managing global- and
   on-object Scripts. Moved `CmdScripts` and `CmdObjects` to `commands/default/building.py`.
+- Keep GMCP function case if outputfunc starts with capital letter (so `cmd_name` -> `Cmd.Name`
+  but `Cmd_nAmE` -> `Cmd.nAmE`). This helps e.g Mudlet's legacy `Client_GUI` implementation)
 
 ### Evennia 0.9.5 (2019-2020)
 
