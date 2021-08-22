@@ -311,7 +311,11 @@ class MapNode:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except NodeTypeclass.DoesNotExist:
             # create a new entity with proper coordinates etc
-            self.log(f"  spawning room at xyz={xyz}")
+            tclass = self.prototype['typeclass']
+            tclass = (f' ({tclass})'
+                      if tclass != 'evennia.contrib.xyzgrid.xyzroom.XYZRoom'
+                      else '')
+            self.log(f"  spawning room at xyz={xyz}{tclass}")
             nodeobj, err = NodeTypeclass.create(
                 self.prototype.get('key', 'An empty room'),
                 xyz=xyz
@@ -327,7 +331,6 @@ class MapNode:
 
         # apply prototype to node. This will not override the XYZ tags since
         # these are not in the prototype and exact=False
-
         spawner.batch_update_objects_with_prototype(
             self.prototype, objects=[nodeobj], exact=False)
 
@@ -364,8 +367,6 @@ class MapNode:
                 link.prototype['prototype_key'] = self.generate_prototype_key()
             maplinks[key.lower()] = (key, aliases, direction, link)
 
-        # if xyz == (8, 1, 'the large tree'):
-        #     from evennia import set_trace;set_trace()
         # remove duplicates
         linkobjs = defaultdict(list)
         for exitobj in ExitTypeclass.objects.filter_xyz(xyz=xyz):
@@ -384,7 +385,6 @@ class MapNode:
         # build all exits first run)
         differing_keys = set(maplinks.keys()).symmetric_difference(set(linkobjs.keys()))
         for differing_key in differing_keys:
-            # from evennia import set_trace;set_trace()
 
             if differing_key not in maplinks:
                 # an exit without a maplink - delete the exit-object
@@ -408,7 +408,12 @@ class MapNode:
                 if err:
                     raise RuntimeError(err)
                 linkobjs[key.lower()] = exi
-                self.log(f"  spawning/updating exit xyz={xyz}, direction={key}")
+                prot = maplinks[key.lower()][3].prototype
+                tclass = prot['typeclass']
+                tclass = (f' ({tclass})'
+                          if tclass != 'evennia.contrib.xyzgrid.xyzroom.XYZExit'
+                          else '')
+                self.log(f"  spawning/updating exit xyz={xyz}, direction={key}{tclass}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():

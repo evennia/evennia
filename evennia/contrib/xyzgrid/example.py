@@ -23,14 +23,22 @@ from evennia.contrib.xyzgrid import xymap_legend
 # the typeclass inherits from the XYZRoom (or XYZExit)
 # if adding the evennia.contrib.xyzgrid.prototypes to
 # settings.PROTOTYPE_MODULES, one could just set the
-# prototype_parent to 'xyz_room' and 'xyz_exit' respectively
+# prototype_parent to 'xyz_room' and 'xyz_exit' here
 # instead.
 
-PARENT = {
+ROOM_PARENT = {
     "key": "An empty room",
-    "prototype_key": "xyzmap_room_map1",
-    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
+    "prototype_key": "xyz_exit_prototype",
+    "prototype_parent": "xyz_room",
+    # "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
     "desc": "An empty room.",
+}
+
+EXIT_PARENT = {
+    "prototype_key": "xyz_exit_prototype",
+    "prototype_parent": "xyz_exit",
+    # "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZExit",
+    "desc": "A path to the next location.",
 }
 
 
@@ -134,13 +142,17 @@ PROTOTYPES_MAP1 = {
         "desc": "These branches are wide enough to easily walk on. There's green all around."
     },
     # directional prototypes
-    (3, 0, 'w'): {
+    (3, 0, 'e'): {
         "desc": "A dark passage into the underworld."
     },
 }
 
-for prot in PROTOTYPES_MAP1.values():
-    prot['prototype_parent'] = PARENT
+for key, prot in PROTOTYPES_MAP1.items():
+    if len(key) == 2:
+        # we don't want to give exits the room typeclass!
+        prot['prototype_parent'] = ROOM_PARENT
+    else:
+        prot['prototype_parent'] = EXIT_PARENT
 
 
 XYMAP_DATA_MAP1 = {
@@ -253,8 +265,12 @@ PROTOTYPES_MAP2 = {
 
 # this is required by the prototypes, but we add it all at once so we don't
 # need to add it to every line above
-for prot in PROTOTYPES_MAP2.values():
-    prot['prototype_parent'] = PARENT
+for key, prot in PROTOTYPES_MAP2.items():
+    if len(key) == 2:
+        # we don't want to give exits the room typeclass!
+        prot['prototype_parent'] = ROOM_PARENT
+    else:
+        prot['prototype_parent'] = EXIT_PARENT
 
 
 XYMAP_DATA_MAP2 = {

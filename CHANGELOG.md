@@ -84,6 +84,8 @@ Up requirements to Django 3.2+
   on-object Scripts. Moved `CmdScripts` and `CmdObjects` to `commands/default/building.py`.
 - Keep GMCP function case if outputfunc starts with capital letter (so `cmd_name` -> `Cmd.Name`
   but `Cmd_nAmE` -> `Cmd.nAmE`). This helps e.g Mudlet's legacy `Client_GUI` implementation)
+- Prototypes now allow setting `prototype_parent` directly to a prototype-dict.
+  This makes it easier when dynamically building in-module prototypes.
 
 ### Evennia 0.9.5 (2019-2020)
 

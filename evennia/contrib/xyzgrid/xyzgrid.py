@@ -124,6 +124,9 @@ class XYZGrid(DefaultScript):
             map_data_list = [variable_from_module(module_path, "XYMAP_DATA")]
         # inject the python path in the map data
         for mapdata in map_data_list:
+            if not mapdata:
+                self.log(f"Could not find or load map from {module_path}.")
+                return
             mapdata['module_path'] = module_path
         return map_data_list
 
@@ -137,10 +140,14 @@ class XYZGrid(DefaultScript):
         nmaps = 0
         loaded_mapdata = {}
         changed = []
+        mapdata = self.db.map_data
+
+        if not mapdata:
+            self.db.mapdata = mapdata = {}
 
         # generate all Maps - this will also initialize their components
         # and bake any pathfinding paths (or load from disk-cache)
-        for zcoord, old_mapdata in self.db.map_data.items():
+        for zcoord, old_mapdata in mapdata.items():
 
             self.log(f"Loading map '{zcoord}'...")
 
@@ -168,7 +175,7 @@ class XYZGrid(DefaultScript):
 
         # re-store changed data
         for zcoord in changed:
-            self.db.map_data[zcoord] = loaded_mapdata['zcoord']
+            self.db.map_data[zcoord] = loaded_mapdata[zcoord]
 
         # store
         self.log(f"Loaded and linked {nmaps} map(s).")
@@ -222,7 +229,9 @@ class XYZGrid(DefaultScript):
         Clear the entire grid, including database entities, then the grid too.
 
         """
-        self.remove_map(*(zcoord for zcoord in self.db.map_data), remove_objects=True)
+        mapdata = self.db.map_data
+        if mapdata:
+            self.remove_map(*(zcoord for zcoord in self.db.map_data), remove_objects=True)
         super().delete()
 
     def spawn(self, xyz=('*', '*', '*'), directions=None):
@@ -291,6 +300,7 @@ def get_xyzgrid(print_errors=True):
         if not xyzgrid.ndb.loaded:
             xyzgrid.reload()
     except Exception as err:
+        raise
         if print_errors:
             print(err)
         else:

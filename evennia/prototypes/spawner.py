@@ -220,10 +220,23 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
     _workprot = {} if _workprot is None else _workprot
     if "prototype_parent" in inprot:
         # move backwards through the inheritance
-        for prototype in make_iter(inprot["prototype_parent"]):
+
+        prototype_parents = inprot["prototype_parent"]
+        if isinstance(prototype_parents, dict):
+            # protparent already embedded as-is
+            prototype_parents = [prototype_parents]
+
+        for prototype in make_iter(prototype_parents):
+            if isinstance(prototype, dict):
+                # protparent already embedded as-is
+                parent_prototype = prototype
+            else:
+                # protparent given by-name
+                parent_prototype = protparents.get(prototype.lower(), {})
+
             # Build the prot dictionary in reverse order, overloading
             new_prot = _get_prototype(
-                protparents.get(prototype.lower(), {}), protparents, _workprot=_workprot
+                parent_prototype, protparents, _workprot=_workprot
             )
 
             # attrs, tags have internal structure that should be inherited separately
@@ -245,7 +258,7 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
     return _workprot
 
 
-def flatten_prototype(prototype, validate=False):
+def flatten_prototype(prototype, validate=False, no_db=False):
     """
     Produce a 'flattened' prototype, where all prototype parents in the inheritance tree have been
     merged into a final prototype.
@@ -253,6 +266,8 @@ def flatten_prototype(prototype, validate=False):
     Args:
         prototype (dict): Prototype to flatten. Its `prototype_parent` field will be parsed.
         validate (bool, optional): Validate for valid keys etc.
+        no_db (bool, optional): Don't search db-based prototypes. This can speed up
+            searching dramatically since module-based prototypes are static.
 
     Returns:
         flattened (dict): The final, flattened prototype.
@@ -261,7 +276,8 @@ def flatten_prototype(prototype, validate=False):
 
     if prototype:
         prototype = protlib.homogenize_prototype(prototype)
-        protparents = {prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()}
+        protparents = {prot["prototype_key"].lower(): prot
+                       for prot in protlib.search_prototype(no_db=no_db)}
         protlib.validate_prototype(
             prototype, None, protparents, is_prototype_base=validate, strict=validate
         )

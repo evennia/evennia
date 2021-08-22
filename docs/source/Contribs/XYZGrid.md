@@ -56,6 +56,12 @@ Exits: northeast and east
    command line.  It will also make the `xyz_room` and `xyz_exit` prototypes
    available for use as prototype-parents when spawning the grid.
 3. Run `evennia xyzgrid help` for available options.
+4. (Optional): By default, the xyzgrid will only spawn module-based
+   [prototypes](Prototypes). This is an optimization and usually makes sense
+   since the grid is entirely defined outside the game anyway. If you want to
+   also make use of in-game (db-) created prototypes, add
+   `XYZGRID_USE_DB_PROTOTYPES = True` to settings.
+
 
 ## Overview
 
@@ -1002,8 +1008,8 @@ should be included as `prototype_parents` for prototypes on the map. Would it
 not be nice to be able to change these and have the change apply to all of the
 grid? You can, by adding the following to your `mygame/server/conf/settings.py`:
 
-    XYZROOM_PARENT_PROTOTYPE_OVERRIDE = {"typeclass": "myxyzroom.MyXYZRoom"}
-    XYZEXIT_PARENT_PROTOTYPE_OVERRIDE = {...}
+    XYZROOM_PROTOTYPE_OVERRIDE = {"typeclass": "myxyzroom.MyXYZRoom"}
+    XYZEXIT_PROTOTYPE_OVERRIDE = {...}
 
 
 > If you override the typeclass in your prototypes, the typeclass used  **MUST**

@@ -2580,7 +2580,7 @@ def node_prototype_spawn(caller, **kwargs):
 # prototype load node
 
 
-def _prototype_load_select(caller, prototype_key):
+def _prototype_load_select(caller, prototype_key, **kwargs):
     matches = protlib.search_prototype(key=prototype_key)
     if matches:
         prototype = matches[0]

@@ -109,9 +109,14 @@ from django.conf import settings
 from evennia.utils.utils import variable_from_module, mod_import, is_iter
 from evennia.utils import logger
 from evennia.prototypes import prototypes as protlib
+from evennia.prototypes.spawner import flatten_prototype
 
 from .utils import MapError, MapParserError, BIGVAL
 from . import xymap_legend
+
+_NO_DB_PROTOTYPES = True
+if hasattr(settings, "XYZGRID_USE_DB_PROTOTYPES"):
+    _NO_DB_PROTOTYPES = not settings.XYZGRID_USE_DB_PROTOTYPES
 
 _CACHE_DIR = settings.CACHE_DIR
 _LOADED_PROTOTYPES = None
@@ -351,8 +356,9 @@ class XYMap:
             if not prototype or isinstance(prototype, dict):
                 # nothing more to do
                 continue
-            # we need to load the prototype dict onto each for ease of access
-            proto = protlib.search_prototype(prototype, require_single=True)[0]
+            # we need to load the prototype dict onto each for ease of access. Note that
+            proto = protlib.search_prototype(prototype, require_single=True,
+                                             no_db=_NO_DB_PROTOTYPES)[0]
             node_or_link_class.prototype = proto
 
     def parse(self):
@@ -492,13 +498,24 @@ class XYMap:
             if node.prototype:
                 node_coord = (node.X, node.Y)
                 # load prototype from override, or use default
-                node.prototype = self.prototypes.get(
-                    node_coord, self.prototypes.get(('*', '*'), node.prototype))
+                try:
+                    node.prototype = flatten_prototype(self.prototypes.get(
+                        node_coord,
+                        self.prototypes.get(('*', '*'), node.prototype)),
+                        no_db=_NO_DB_PROTOTYPES
+                    )
+                except Exception as err:
+                    raise MapParserError(f"Room prototype malformed: {err}", node)
                 # do the same for links (x, y, direction) coords
                 for direction, maplink in node.first_links.items():
-                    maplink.prototype = self.prototypes.get(
-                        node_coord + (direction,),
-                        self.prototypes.get(('*', '*', '*'), maplink.prototype))
+                    try:
+                        maplink.prototype = flatten_prototype(self.prototypes.get(
+                            node_coord + (direction,),
+                            self.prototypes.get(('*', '*', '*'), maplink.prototype)),
+                            no_db=_NO_DB_PROTOTYPES
+                        )
+                    except Exception as err:
+                        raise MapParserError(f"Exit prototype malformed: {err}", maplink)
 
         # store
         self.display_map = display_map
@@ -625,8 +642,8 @@ class XYMap:
         spawned = []
 
         # find existing nodes, in case some rooms need to be removed
-        map_coords = ((node.X, node.Y) for node in
-                      sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X)))
+        map_coords = [(node.X, node.Y) for node in
+                      sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X))]
         for existing_room in _XYZROOMCLASS.objects.filter_xyz(xyz=(x, y, self.Z)):
             roomX, roomY, _ = existing_room.xyz
             if (roomX, roomY) not in map_coords:
