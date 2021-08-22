@@ -29,15 +29,15 @@ from evennia.contrib.xyzgrid import xymap_legend
 ROOM_PARENT = {
     "key": "An empty room",
     "prototype_key": "xyz_exit_prototype",
-    "prototype_parent": "xyz_room",
-    # "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
+    # "prototype_parent": "xyz_room",
+    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
     "desc": "An empty room.",
 }
 
 EXIT_PARENT = {
     "prototype_key": "xyz_exit_prototype",
-    "prototype_parent": "xyz_exit",
-    # "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZExit",
+    # "prototype_parent": "xyz_exit",
+    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZExit",
     "desc": "A path to the next location.",
 }
 

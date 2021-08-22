@@ -57,7 +57,7 @@ Exits: northeast and east
    available for use as prototype-parents when spawning the grid.
 3. Run `evennia xyzgrid help` for available options.
 4. (Optional): By default, the xyzgrid will only spawn module-based
-   [prototypes](Prototypes). This is an optimization and usually makes sense
+   [prototypes](../Components/Prototypes). This is an optimization and usually makes sense
    since the grid is entirely defined outside the game anyway. If you want to
    also make use of in-game (db-) created prototypes, add
    `XYZGRID_USE_DB_PROTOTYPES = True` to settings.
