@@ -166,6 +166,9 @@
             <span class="n">map_data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">variable_from_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="s2">&quot;XYMAP_DATA&quot;</span><span class="p">)]</span>
         <span class="c1"># inject the python path in the map data</span>
         <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="n">map_data_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find or load map from </span><span class="si">{</span><span class="n">module_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
             <span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;module_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_path</span>
         <span class="k">return</span> <span class="n">map_data_list</span></div>
 
@@ -179,10 +182,14 @@
         <span class="n">nmaps</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">loaded_mapdata</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">changed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mapdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mapdata</span> <span class="o">=</span> <span class="n">mapdata</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># generate all Maps - this will also initialize their components</span>
         <span class="c1"># and bake any pathfinding paths (or load from disk-cache)</span>
-        <span class="k">for</span> <span class="n">zcoord</span><span class="p">,</span> <span class="n">old_mapdata</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">zcoord</span><span class="p">,</span> <span class="n">old_mapdata</span> <span class="ow">in</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading map &#39;</span><span class="si">{</span><span class="n">zcoord</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
@@ -210,7 +217,7 @@
 
         <span class="c1"># re-store changed data</span>
         <span class="k">for</span> <span class="n">zcoord</span> <span class="ow">in</span> <span class="n">changed</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_mapdata</span><span class="p">[</span><span class="s1">&#39;zcoord&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_mapdata</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span>
 
         <span class="c1"># store</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded and linked </span><span class="si">{</span><span class="n">nmaps</span><span class="si">}</span><span class="s2"> map(s).&quot;</span><span class="p">)</span>
@@ -264,7 +271,9 @@
 <span class="sd">        Clear the entire grid, including database entities, then the grid too.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remove_map</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">zcoord</span> <span class="k">for</span> <span class="n">zcoord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">),</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mapdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span>
+        <span class="k">if</span> <span class="n">mapdata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_map</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">zcoord</span> <span class="k">for</span> <span class="n">zcoord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">),</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="XYZGrid.spawn"><a class="viewcode-back" href="../../../../api/evennia.contrib.xyzgrid.xyzgrid.html#evennia.contrib.xyzgrid.xyzgrid.XYZGrid.spawn">[docs]</a>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -333,6 +342,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
             <span class="n">xyzgrid</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span>
         <span class="k">if</span> <span class="n">print_errors</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

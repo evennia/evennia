@@ -60,8 +60,10 @@
 
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
+
 
 <span class="n">_HELP_SHORT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">evennia xyzgrid help | list | init | add | spawn | initpath | delete [&lt;options&gt;]</span>
@@ -202,6 +204,8 @@
     <span class="s2">&quot;initpath&quot;</span><span class="p">:</span> <span class="n">_HELP_INITPATH</span><span class="p">,</span>
     <span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="n">_HELP_DELETE</span>
 <span class="p">}</span>
+
+<span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
 <span class="k">def</span> <span class="nf">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

@@ -141,7 +141,7 @@ here’s how you’d find something only in your inventory:</p>
 </pre></div>
 </div>
 <p>You can also turn off the automatic error handling:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">swords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Sword&quot;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">swords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Sword&quot;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>With <code class="docutils literal notranslate"><span class="pre">quiet=True</span></code> the user will not be notified on zero or multi-match errors. Instead you are expected to handle this

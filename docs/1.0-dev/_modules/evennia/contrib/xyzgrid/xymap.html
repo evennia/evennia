@@ -151,9 +151,14 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">is_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">flatten_prototype</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">MapError</span><span class="p">,</span> <span class="n">MapParserError</span><span class="p">,</span> <span class="n">BIGVAL</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+
+<span class="n">_NO_DB_PROTOTYPES</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;XYZGRID_USE_DB_PROTOTYPES&quot;</span><span class="p">):</span>
+    <span class="n">_NO_DB_PROTOTYPES</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">XYZGRID_USE_DB_PROTOTYPES</span>
 
 <span class="n">_CACHE_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CACHE_DIR</span>
 <span class="n">_LOADED_PROTOTYPES</span> <span class="o">=</span> <span class="kc">None</span>
@@ -393,8 +398,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="c1"># nothing more to do</span>
                 <span class="k">continue</span>
-            <span class="c1"># we need to load the prototype dict onto each for ease of access</span>
-            <span class="n">proto</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># we need to load the prototype dict onto each for ease of access. Note that</span>
+            <span class="n">proto</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">node_or_link_class</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">proto</span></div>
 
 <div class="viewcode-block" id="XYMap.parse"><a class="viewcode-back" href="../../../../api/evennia.contrib.xyzgrid.xymap.html#evennia.contrib.xyzgrid.xymap.XYMap.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -534,13 +540,24 @@
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">prototype</span><span class="p">:</span>
                 <span class="n">node_coord</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span>
                 <span class="c1"># load prototype from override, or use default</span>
-                <span class="n">node</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="n">node_coord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">node</span><span class="o">.</span><span class="n">prototype</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">node_coord</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">node</span><span class="o">.</span><span class="n">prototype</span><span class="p">)),</span>
+                        <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Room prototype malformed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
                 <span class="c1"># do the same for links (x, y, direction) coords</span>
                 <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="n">maplink</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">first_links</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">node_coord</span> <span class="o">+</span> <span class="p">(</span><span class="n">direction</span><span class="p">,),</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span><span class="p">))</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="n">node_coord</span> <span class="o">+</span> <span class="p">(</span><span class="n">direction</span><span class="p">,),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span><span class="p">)),</span>
+                            <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span>
+                        <span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exit prototype malformed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">maplink</span><span class="p">)</span>
 
         <span class="c1"># store</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_map</span> <span class="o">=</span> <span class="n">display_map</span></div>
@@ -667,8 +684,8 @@
         <span class="n">spawned</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># find existing nodes, in case some rooms need to be removed</span>
-        <span class="n">map_coords</span> <span class="o">=</span> <span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span>
-                      <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">X</span><span class="p">)))</span>
+        <span class="n">map_coords</span> <span class="o">=</span> <span class="p">[(</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span>
+                      <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">X</span><span class="p">))]</span>
         <span class="k">for</span> <span class="n">existing_room</span> <span class="ow">in</span> <span class="n">_XYZROOMCLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">)):</span>
             <span class="n">roomX</span><span class="p">,</span> <span class="n">roomY</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">existing_room</span><span class="o">.</span><span class="n">xyz</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">roomX</span><span class="p">,</span> <span class="n">roomY</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">map_coords</span><span class="p">:</span>

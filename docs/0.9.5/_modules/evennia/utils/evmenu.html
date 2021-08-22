@@ -1415,7 +1415,7 @@
 <span class="sd">            Parse the select action</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">available_choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">available_choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
@@ -1431,7 +1431,10 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">return</span> <span class="n">select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Error in EvMenu.list_node decorator:</span><span class="se">\n</span><span class="s2">  &quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;select-callable: </span><span class="si">{</span><span class="n">select</span><span class="si">}</span><span class="se">\n</span><span class="s2">  with args: (</span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">&quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">available_choices</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">) raised &quot;</span>
+                                         <span class="s2">&quot;exception.&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">select</span><span class="p">:</span>
                     <span class="c1"># we assume a string was given, we inject the result into the kwargs</span>
                     <span class="c1"># to pass on to the next node</span>

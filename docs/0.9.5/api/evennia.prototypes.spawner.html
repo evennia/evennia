@@ -176,7 +176,7 @@ prototype, override its name with an empty dict.</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.spawner.flatten_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_db</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce a ‘flattened’ prototype, where all prototype parents in the inheritance tree have been
 merged into a final prototype.</p>
 <dl class="field-list simple">
@@ -184,6 +184,8 @@ merged into a final prototype.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prototype</strong> (<em>dict</em>) – Prototype to flatten. Its <strong>prototype_parent</strong> field will be parsed.</p></li>
 <li><p><strong>validate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Validate for valid keys etc.</p></li>
+<li><p><strong>no_db</strong> (<em>bool</em><em>, </em><em>optional</em>) – Don’t search db-based prototypes. This can speed up
+searching dramatically since module-based prototypes are static.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
