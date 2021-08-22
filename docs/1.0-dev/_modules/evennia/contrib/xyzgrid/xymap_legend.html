@@ -353,7 +353,11 @@
             <span class="n">nodeobj</span> <span class="o">=</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
             <span class="c1"># create a new entity with proper coordinates etc</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  spawning room at xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">tclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;typeclass&#39;</span><span class="p">]</span>
+            <span class="n">tclass</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">tclass</span><span class="si">}</span><span class="s1">)&#39;</span>
+                      <span class="k">if</span> <span class="n">tclass</span> <span class="o">!=</span> <span class="s1">&#39;evennia.contrib.xyzgrid.xyzroom.XYZRoom&#39;</span>
+                      <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  spawning room at xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}{</span><span class="n">tclass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">nodeobj</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;An empty room&#39;</span><span class="p">),</span>
                 <span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span>
@@ -369,7 +373,6 @@
 
         <span class="c1"># apply prototype to node. This will not override the XYZ tags since</span>
         <span class="c1"># these are not in the prototype and exact=False</span>
-
         <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">nodeobj</span><span class="p">],</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -406,8 +409,6 @@
                 <span class="n">link</span><span class="o">.</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;prototype_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_prototype_key</span><span class="p">()</span>
             <span class="n">maplinks</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
 
-        <span class="c1"># if xyz == (8, 1, &#39;the large tree&#39;):</span>
-        <span class="c1">#     from evennia import set_trace;set_trace()</span>
         <span class="c1"># remove duplicates</span>
         <span class="n">linkobjs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">exitobj</span> <span class="ow">in</span> <span class="n">ExitTypeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">):</span>
@@ -426,7 +427,6 @@
         <span class="c1"># build all exits first run)</span>
         <span class="n">differing_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">maplinks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">linkobjs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="k">for</span> <span class="n">differing_key</span> <span class="ow">in</span> <span class="n">differing_keys</span><span class="p">:</span>
-            <span class="c1"># from evennia import set_trace;set_trace()</span>
 
             <span class="k">if</span> <span class="n">differing_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">maplinks</span><span class="p">:</span>
                 <span class="c1"># an exit without a maplink - delete the exit-object</span>
@@ -450,7 +450,12 @@
                 <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                 <span class="n">linkobjs</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">exi</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  spawning/updating exit xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">, direction=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">prot</span> <span class="o">=</span> <span class="n">maplinks</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">prototype</span>
+                <span class="n">tclass</span> <span class="o">=</span> <span class="n">prot</span><span class="p">[</span><span class="s1">&#39;typeclass&#39;</span><span class="p">]</span>
+                <span class="n">tclass</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">tclass</span><span class="si">}</span><span class="s1">)&#39;</span>
+                          <span class="k">if</span> <span class="n">tclass</span> <span class="o">!=</span> <span class="s1">&#39;evennia.contrib.xyzgrid.xyzroom.XYZExit&#39;</span>
+                          <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  spawning/updating exit xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">, direction=</span><span class="si">{</span><span class="n">key</span><span class="si">}{</span><span class="n">tclass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># apply prototypes to catch any changes</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">linkobj</span> <span class="ow">in</span> <span class="n">linkobjs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

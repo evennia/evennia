@@ -1099,19 +1099,21 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ysize</span><span class="si">}{</span><span class="n">l1</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
-        <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mf">0.01</span><span class="p">),</span>
-        <span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mf">0.03</span><span class="p">),</span>
+        <span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span>
     <span class="p">])</span>
     <span class="k">def</span> <span class="nf">test_grid_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridsize</span><span class="p">,</span> <span class="n">max_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test of grid-creataion performance for Nx, Ny grid.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># import cProfile</span>
         <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="n">gridsize</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_grid</span><span class="p">(</span><span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">)</span>
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
         <span class="n">mapobj</span> <span class="o">=</span> <span class="n">xymap</span><span class="o">.</span><span class="n">XYMap</span><span class="p">({</span><span class="s1">&#39;map&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="p">},</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;testmap&quot;</span><span class="p">)</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="c1"># cProfile.runctx(&#39;mapobj.parse()&#39;, globals(), locals())</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Map creation of (</span><span class="si">{</span><span class="n">Xmax</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">Ymax</span><span class="si">}</span><span class="s2">) grid slower &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;than expected </span><span class="si">{</span><span class="n">max_time</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>

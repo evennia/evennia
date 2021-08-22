@@ -92,6 +92,11 @@ command line.  It will also make the <code class="docutils literal notranslate">
 available for use as prototype-parents when spawning the grid.</p>
 </li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">help</span></code> for available options.</p></li>
+<li><p>(Optional): By default, the xyzgrid will only spawn module-based
+<a class="reference internal" href="../Components/Prototypes.html"><span class="doc">prototypes</span></a>. This is an optimization and usually makes sense
+since the grid is entirely defined outside the game anyway. If you want to
+also make use of in-game (db-) created prototypes, add
+<code class="docutils literal notranslate"><span class="pre">XYZGRID_USE_DB_PROTOTYPES</span> <span class="pre">=</span> <span class="pre">True</span></code> to settings.</p></li>
 </ol>
 </section>
 <section id="overview">
@@ -1193,8 +1198,8 @@ picked up and applied to the existing objects.</p>
 should be included as <code class="docutils literal notranslate"><span class="pre">prototype_parents</span></code> for prototypes on the map. Would it
 not be nice to be able to change these and have the change apply to all of the
 grid? You can, by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">XYZROOM_PARENT_PROTOTYPE_OVERRIDE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;myxyzroom.MyXYZRoom&quot;</span><span class="p">}</span>
-<span class="n">XYZEXIT_PARENT_PROTOTYPE_OVERRIDE</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">XYZROOM_PROTOTYPE_OVERRIDE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;myxyzroom.MyXYZRoom&quot;</span><span class="p">}</span>
+<span class="n">XYZEXIT_PROTOTYPE_OVERRIDE</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 </pre></div>
 </div>
 <blockquote>

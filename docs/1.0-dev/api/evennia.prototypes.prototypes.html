@@ -214,7 +214,7 @@ Note that no locks will be checked if**caller** is not passed.</p></li>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.search_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">require_single</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_iterators</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">require_single</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_iterators</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_db</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find prototypes based on key and/or tags, or all prototypes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -228,6 +228,9 @@ was not found or if there are multiple matches.</p></li>
 <li><p><strong>return_iterators</strong> (<em>bool</em>) – Optimized return for large numbers of db-prototypes.
 If set, separate returns of module based prototypes and paginate
 the db-prototype return.</p></li>
+<li><p><strong>no_db</strong> (<em>bool</em>) – Optimization. If set, skip querying for database-generated prototypes and only
+include module-based prototypes. This can lead to a dramatic speedup since
+module-prototypes are static and require no db-lookup.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

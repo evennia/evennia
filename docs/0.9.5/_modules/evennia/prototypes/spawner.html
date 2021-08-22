@@ -261,10 +261,23 @@
     <span class="n">_workprot</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">_workprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_workprot</span>
     <span class="k">if</span> <span class="s2">&quot;prototype_parent&quot;</span> <span class="ow">in</span> <span class="n">inprot</span><span class="p">:</span>
         <span class="c1"># move backwards through the inheritance</span>
-        <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">inprot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]):</span>
+
+        <span class="n">prototype_parents</span> <span class="o">=</span> <span class="n">inprot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype_parents</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># protparent already embedded as-is</span>
+            <span class="n">prototype_parents</span> <span class="o">=</span> <span class="p">[</span><span class="n">prototype_parents</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">prototype_parents</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># protparent already embedded as-is</span>
+                <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># protparent given by-name</span>
+                <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="p">{})</span>
+
             <span class="c1"># Build the prot dictionary in reverse order, overloading</span>
             <span class="n">new_prot</span> <span class="o">=</span> <span class="n">_get_prototype</span><span class="p">(</span>
-                <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="p">{}),</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="n">_workprot</span>
+                <span class="n">parent_prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="n">_workprot</span>
             <span class="p">)</span>
 
             <span class="c1"># attrs, tags have internal structure that should be inherited separately</span>
@@ -286,7 +299,7 @@
     <span class="k">return</span> <span class="n">_workprot</span>
 
 
-<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produce a &#39;flattened&#39; prototype, where all prototype parents in the inheritance tree have been</span>
 <span class="sd">    merged into a final prototype.</span>
@@ -294,6 +307,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        prototype (dict): Prototype to flatten. Its `prototype_parent` field will be parsed.</span>
 <span class="sd">        validate (bool, optional): Validate for valid keys etc.</span>
+<span class="sd">        no_db (bool, optional): Don&#39;t search db-based prototypes. This can speed up</span>
+<span class="sd">            searching dramatically since module-based prototypes are static.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        flattened (dict): The final, flattened prototype.</span>
@@ -302,7 +317,8 @@
 
     <span class="k">if</span> <span class="n">prototype</span><span class="p">:</span>
         <span class="n">prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
-        <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()}</span>
+        <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span>
+                       <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">no_db</span><span class="o">=</span><span class="n">no_db</span><span class="p">)}</span>
         <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span>
             <span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate</span>
         <span class="p">)</span>
@@ -366,7 +382,8 @@
     <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
         <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aliases</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-        <span class="p">[(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
         <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span>
@@ -374,7 +391,8 @@
         <span class="p">[</span>
             <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-        <span class="p">]</span>
+        <span class="p">],</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
         <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attrs</span>

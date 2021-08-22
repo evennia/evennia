@@ -271,11 +271,15 @@
 <span class="sd">            be stripped on the Evennia side.</span>
 <span class="sd">            ::</span>
 
-<span class="sd">                [cmd.name, [], {}]          -&gt; Cmd.Name</span>
-<span class="sd">                [cmd.name, [arg], {}]       -&gt; Cmd.Name arg</span>
-<span class="sd">                [cmd.name, [args],{}]       -&gt; Cmd.Name [args]</span>
-<span class="sd">                [cmd.name, [], {kwargs}]    -&gt; Cmd.Name {kwargs}</span>
+<span class="sd">                [cmd_name, [], {}]          -&gt; Cmd.Name</span>
+<span class="sd">                [cmd_name, [arg], {}]       -&gt; Cmd.Name arg</span>
+<span class="sd">                [cmd_name, [args],{}]       -&gt; Cmd.Name [args]</span>
+<span class="sd">                [cmd_name, [], {kwargs}]    -&gt; Cmd.Name {kwargs}</span>
 <span class="sd">                [cmdname, [args, {kwargs}]  -&gt; Core.Cmdname [[args],{kwargs}]</span>
+
+<span class="sd">            For more flexibility with certain clients, if `cmd_name` is capitalized,</span>
+<span class="sd">            Evennia will leave its current capitalization (So CMD_nAmE would be sent</span>
+<span class="sd">            as CMD.nAmE but cMD_Name would be Cmd.Name)</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            There are also a few default mappings between evennia outputcmds and GMCP:</span>
@@ -292,9 +296,13 @@
         <span class="k">if</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="n">EVENNIA_TO_GMCP</span><span class="p">:</span>
             <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="n">EVENNIA_TO_GMCP</span><span class="p">[</span><span class="n">cmdname</span><span class="p">]</span>
         <span class="k">elif</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">cmdname</span><span class="p">:</span>
-            <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
+                <span class="c1"># leave without capitalization</span>
+                <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;Core.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+            <span class="n">gmcp_cmdname</span> <span class="o">=</span> <span class="s2">&quot;Core.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span> <span class="k">if</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">istitle</span><span class="p">()</span> <span class="k">else</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">):</span>
             <span class="n">gmcp_string</span> <span class="o">=</span> <span class="n">gmcp_cmdname</span>
