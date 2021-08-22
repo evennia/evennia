@@ -1057,19 +1057,21 @@ class TestMapStressTest(TestCase):
         return f"{edge}\n{(l1 + l2) * Ysize}{l1}\n\n{edge}"
 
     @parameterized.expand([
-        ((10, 10), 0.01),
-        ((100, 100), 1),
+        ((10, 10), 0.03),
+        ((100, 100), 5),
     ])
     def test_grid_creation(self, gridsize, max_time):
         """
         Test of grid-creataion performance for Nx, Ny grid.
 
         """
+        # import cProfile
         Xmax, Ymax = gridsize
         grid = self._get_grid(Xmax, Ymax)
-        t0 = time()
         mapobj = xymap.XYMap({'map': grid}, Z="testmap")
+        t0 = time()
         mapobj.parse()
+        # cProfile.runctx('mapobj.parse()', globals(), locals())
         t1 = time()
         self.assertLess(t1 - t0, max_time, f"Map creation of ({Xmax}x{Ymax}) grid slower "
                         f"than expected {max_time}s.")

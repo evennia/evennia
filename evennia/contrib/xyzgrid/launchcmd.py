@@ -18,8 +18,10 @@ Use `evennia xyzgrid help` for usage help.
 
 from os.path import join as pathjoin
 from django.conf import settings
+import evennia
 from evennia.utils import ansi
 from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
+
 
 _HELP_SHORT = """
 evennia xyzgrid help | list | init | add | spawn | initpath | delete [<options>]
@@ -160,6 +162,8 @@ _TOPICS_MAP = {
     "initpath": _HELP_INITPATH,
     "delete": _HELP_DELETE
 }
+
+evennia._init()
 
 def _option_help(*suboptions):
     """

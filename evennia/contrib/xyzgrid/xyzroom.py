@@ -86,27 +86,20 @@ class XYZManager(ObjectManager):
                 possible with a unique combination of x,y,z).
 
         """
+        # filter by tags, then figure out of we got a single match or not
+        query = self.filter_xyz(xyz=xyz, **kwargs)
+        ncount = query.count()
+        if ncount == 1:
+            return query.first()
+
+        # error - mimic default get() behavior but with a little more info
         x, y, z = xyz
-
-        # mimic get_family
-        paths = [self.model.path] + [
-            "%s.%s" % (cls.__module__, cls.__name__) for cls in self._get_subclasses(self.model)
-        ]
-        kwargs["db_typeclass_path__in"] = paths
-
-        try:
-            return (
-                self
-                .filter(db_tags__db_key=str(x), db_tags__db_category=MAP_X_TAG_CATEGORY)
-                .filter(db_tags__db_key=str(y), db_tags__db_category=MAP_Y_TAG_CATEGORY)
-                .filter(db_tags__db_key=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY)
-                .get(**kwargs)
-            )
-        except self.model.DoesNotExist:
-            inp = (f"xyz=({x},{y},{z}), " +
-                   ",".join(f"{key}={val}" for key, val in kwargs.items()))
-            raise self.model.DoesNotExist(f"{self.model.__name__} "
-                                          f"matching query {inp} does not exist.")
+        inp = (f"Query: xyz=({x},{y},{z}), " +
+               ",".join(f"{key}={val}" for key, val in kwargs.items()))
+        if ncount > 1:
+            raise self.model.MultipleObjectsReturned(inp)
+        else:
+            raise self.model.DoesNotExist(inp)
 
 
 class XYZExitManager(XYZManager):

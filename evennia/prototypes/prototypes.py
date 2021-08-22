@@ -105,17 +105,17 @@ def homogenize_prototype(prototype, custom_keys=None):
             elif protkey in ("prototype_key", "prototype_desc"):
                 prototype[protkey] = ""
 
-    attrs = list(prototype.get("attrs", []))  # break reference
-    tags = make_iter(prototype.get("tags", []))
+    homogenized = {}
     homogenized_tags = []
     homogenized_attrs = []
+    homogenized_parents = []
 
-    homogenized = {}
     for key, val in prototype.items():
         if key in reserved:
             # check all reserved keys
             if key == "tags":
                 # tags must be on form [(tag, category, data), ...]
+                tags = make_iter(prototype.get("tags", []))
                 for tag in tags:
                     if not is_iter(tag):
                         homogenized_tags.append((tag, None, None))
@@ -127,7 +127,9 @@ def homogenize_prototype(prototype, custom_keys=None):
                             homogenized_tags.append((tag[0], tag[1], None))
                         else:
                             homogenized_tags.append(tag[:3])
-            if key == "attrs":
+
+            elif key == "attrs":
+                attrs = list(prototype.get("attrs", []))  # break reference
                 for attr in attrs:
                     # attrs must be on form [(key, value, category, lockstr)]
                     if not is_iter(attr):
@@ -144,6 +146,21 @@ def homogenize_prototype(prototype, custom_keys=None):
                             homogenized_attrs.append(attr[0], attr[1], attr[2], "")
                         else:
                             homogenized_attrs.append(attr[:4])
+
+            elif key == "prototype_parent":
+                # homogenize any prototype-parents embedded directly as dicts
+                protparents = prototype.get('prototype_parent', [])
+                if isinstance(protparents, dict):
+                    protparents = [protparents]
+                for parent in make_iter(protparents):
+                    if isinstance(parent, dict):
+                        # recursively homogenize directly embedded prototype parents
+                        homogenized_parents.append(
+                            homogenize_prototype(parent, custom_keys=custom_keys))
+                    else:
+                        # normal prototype-parent names are added as-is
+                        homogenized_parents.append(parent)
+
             else:
                 # another reserved key
                 homogenized[key] = val
@@ -154,6 +171,8 @@ def homogenize_prototype(prototype, custom_keys=None):
         homogenized["attrs"] = homogenized_attrs
     if homogenized_tags:
         homogenized["tags"] = homogenized_tags
+    if homogenized_parents:
+        homogenized['prototype_parent'] = homogenized_parents
 
     # add required missing parts that had defaults before
 
@@ -460,7 +479,8 @@ def delete_prototype(prototype_key, caller=None):
     return True
 
 
-def search_prototype(key=None, tags=None, require_single=False, return_iterators=False):
+def search_prototype(key=None, tags=None, require_single=False, return_iterators=False,
+                    no_db=False):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
@@ -474,6 +494,9 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         return_iterators (bool): Optimized return for large numbers of db-prototypes.
             If set, separate returns of module based prototypes and paginate
             the db-prototype return.
+        no_db (bool): Optimization. If set, skip querying for database-generated prototypes and only
+            include module-based prototypes. This can lead to a dramatic speedup since
+            module-prototypes are static and require no db-lookup.
 
     Return:
         matches (list): Default return, all found prototype dicts. Empty list if
@@ -525,35 +548,38 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         # prototype_from_object will modify the base prototype for every object
         module_prototypes = [match.copy() for match in mod_matches.values()]
 
-    # search db-stored prototypes
-
-    if tags:
-        # exact match on tag(s)
-        tags = make_iter(tags)
-        tag_categories = ["db_prototype" for _ in tags]
-        db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
+    if no_db:
+        db_matches = []
     else:
-        db_matches = DbPrototype.objects.all()
-
-    if key:
-        # exact or partial match on key
-        exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
-        if not exact_match and allow_fuzzy:
-            # try with partial match instead
-            db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
+        # search db-stored prototypes
+        if tags:
+            # exact match on tag(s)
+            tags = make_iter(tags)
+            tag_categories = ["db_prototype" for _ in tags]
+            db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
         else:
-            db_matches = exact_match
+            db_matches = DbPrototype.objects.all()
 
-    # convert to prototype
-    db_ids = db_matches.values_list("id", flat=True)
-    db_matches = (
-        Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
-        .values_list("db_value", flat=True)
-        .order_by("scriptdb__db_key")
-    )
+        if key:
+            # exact or partial match on key
+            exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
+            if not exact_match and allow_fuzzy:
+                # try with partial match instead
+                db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
+            else:
+                db_matches = exact_match
+
+        # convert to prototype
+        db_ids = db_matches.values_list("id", flat=True)
+        db_matches = (
+            Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
+            .values_list("db_value", flat=True)
+            .order_by("scriptdb__db_key")
+        )
+
     if key and require_single:
         nmodules = len(module_prototypes)
-        ndbprots = db_matches.count()
+        ndbprots = db_matches.count() if db_matches else 0
         if nmodules + ndbprots != 1:
             raise KeyError(_(
                 "Found {num} matching prototypes among {module_prototypes}.").format(
@@ -795,19 +821,29 @@ def validate_prototype(
                       err=err, protkey=protkey, typeclass=typeclass)
             )
 
-    # recursively traverse prototype_parent chain
+    if prototype_parent and isinstance(prototype_parent, dict):
+        # the protparent is already embedded as a dict;
+        prototype_parent = [prototype_parent]
 
+    # recursively traverse prototype_parent chain
     for protstring in make_iter(prototype_parent):
-        protstring = protstring.lower()
-        if protkey is not None and protstring == protkey:
-            _flags["errors"].append(_("Prototype {protkey} tries to parent itself.").format(
-                protkey=protkey))
-        protparent = protparents.get(protstring)
-        if not protparent:
-            _flags["errors"].append(
-                _("Prototype {protkey}'s prototype_parent '{parent}' was not found.").format(
-                    protkey=protkey, parent=protstring)
-            )
+        if isinstance(protstring, dict):
+            # an already embedded prototype_parent
+            protparent = protstring
+            protstring = None
+        else:
+            protstring = protstring.lower()
+            if protkey is not None and protstring == protkey:
+                _flags["errors"].append(_("Prototype {protkey} tries to parent itself.").format(
+                    protkey=protkey))
+            protparent = protparents.get(protstring)
+            if not protparent:
+                _flags["errors"].append(
+                    _("Prototype {protkey}'s `prototype_parent` (named '{parent}') "
+                      "was not found.").format(protkey=protkey, parent=protstring)
+                )
+
+        # check for infinite recursion
         if id(prototype) in _flags["visited"]:
             _flags["errors"].append(
                 _("{protkey} has infinite nesting of prototypes.").format(
@@ -818,9 +854,12 @@ def validate_prototype(
             raise RuntimeError(f"{_ERRSTR}: " + f"\n{_ERRSTR}: ".join(_flags["errors"]))
         _flags["visited"].append(id(prototype))
         _flags["depth"] += 1
+
+        # next step of recursive validation
         validate_prototype(
             protparent, protstring, protparents, is_prototype_base=is_prototype_base, _flags=_flags
         )
+
         _flags["visited"].pop()
         _flags["depth"] -= 1
 
