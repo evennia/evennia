@@ -92,6 +92,7 @@ class Object(DefaultObject):
 > available matters to you, use `@property` instead of `@lazy_property` for one of the above
 > definitions to make sure the handler is always initialized.
 
+Most examples below use the `TraitHandler`, but all works with `TraitProperty` syntax as well.
 
 ## Using traits
 
@@ -121,7 +122,7 @@ the hood) after which one can access it as a property on the handler (similarly 
 >>> obj.traits.hp.effect
 "poisoned!"
 
-# with TraitProperties, works the same:
+# with TraitProperties:
 
 >>> obj.hunting.value
 12
@@ -130,8 +131,6 @@ the hood) after which one can access it as a property on the handler (similarly 
 17
 
 ```
-
-
 
 ## Trait types
 
@@ -188,9 +187,9 @@ that varies slowly or not at all, and which may be modified in-place.
 
     min/unset     base    base+mod                       max/unset
     |--------------|--------|---------X--------X------------|
-                                current   value
-                                          = current
-                                          + mod
+                                  current    value
+                                             = current
+                                             + mod
 
 A counter describes a value that can move from a base. The `.current` property
 is the thing usually modified. It starts at the `.base`. One can also add a
@@ -212,6 +211,10 @@ remove it. A suggested use for a Counter Trait would be to track skill values.
 11
 >>> obj.traits.hunting.max = None  # removing upper bound
 
+# for TraitProperties, pass the args/kwargs of traits.add() to the
+# TraitProperty constructor instead.
+
+
 ```
 
 Counters have some extra properties:
@@ -227,8 +230,7 @@ interval. Here is an example for skill values between 0 and 10:
 
 The keys must be supplied from smallest to largest. Any values below the lowest and above the
 highest description will be considered to be included in the closest description slot.
-By calling `.desc()` on the Counter, will you get the text matching the current `value`
-value.
+By calling `.desc()` on the Counter, you will get the text matching the current `value`.
 
 ```python
 # (could also have passed descs= to traits.add())
@@ -280,11 +282,13 @@ a previous value.
 71    # we have stopped at the ratetarget
 >>> obj.traits.hunting.rate = 0  # disable auto-change
 
+
 ```
-Note that if `.rate` is a non-integer, the resulting `.value` (at least until it
-reaches a boundary or rate-target) will also come out a float (so you can get a
-very exact value at the current time). If you expect an integer, you must run
-`int()` (or something like `round()`) on the result yourself.
+Note that when retrieving the `current`, the result will always be of the same
+type as the `.base` even `rate` is a non-integer value. So if `base` is an `int`
+(default)`, the `current` value will also be rounded the closest full integer.
+If you want to see the exact `current` value, set `base` to a float - you
+will then need to use `round()` yourself on the result if you want integers.
 
 #### .percent()
 
@@ -771,7 +775,6 @@ class TraitProperty:
         _SA(_GA(self, "trait"), name, value)
 
 
-
 # Parent Trait class
 
 
@@ -1251,7 +1254,6 @@ class CounterTrait(Trait):
     def _check_and_start_timer(self, value):
         """Start timer if we are not at a boundary."""
         if self.rate != 0 and self._data["last_update"] is None:
-            ratetarget = self._data["ratetarget"]
             if self._within_boundaries(value) and not self._passed_ratetarget(value):
                 # we are not at a boundary [anymore].
                 self._data["last_update"] = time()
@@ -1280,6 +1282,8 @@ class CounterTrait(Trait):
 
             self._data["current"] = current
 
+        if self.base is not None and isinstance(self.base, int):
+            return round(current)
         return current
 
     # properties
@@ -1483,6 +1487,9 @@ class GaugeTrait(CounterTrait):
                 self._data["last_update"] = now
 
             self._data["current"] = current
+
+        if self.base is not None and isinstance(self.base, int):
+            return round(current)
 
         return current
 
