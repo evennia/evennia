@@ -2048,7 +2048,7 @@ def deepsize(obj, max_depth=4):
 _missing = object()
 
 
-class lazy_property(object):
+class lazy_property:
     """
     Delays loading of property until first access. Credit goes to the
     Implementation in the werkzeug suite:

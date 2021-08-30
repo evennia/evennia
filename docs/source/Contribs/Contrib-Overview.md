@@ -134,6 +134,17 @@ Full director-style emoting system replacing names with sdescs/recogs. Supports 
 
 Dynamic obfuscation of emotes when speaking unfamiliar languages. Also obfuscates whispers.
 
+
+### Traits
+
+*Whitenoise 2014, Griatch2021*
+
+Powerful on-object properties (very extended Attributes) for representing
+health, mana, skill-levels etc, with automatic min/max value, base, modifiers
+and named tiers for different values. Also include timed rate increase/decrease
+to have values change over a period of time.
+
+
 ### Turnbattle
 
 *FlutterSprite 2017*

@@ -10,8 +10,7 @@ from copy import copy
 from anything import Something
 from mock import MagicMock, patch
 from django.test import TestCase
-from django.test import override_settings
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.utils import lazy_property
 from evennia.contrib import traits
 
 
@@ -903,3 +902,36 @@ class TestNumericTraitOperators(TestCase):
         self.assertGreaterEqual(8, self.st)
         self.assertGreaterEqual(self.st, 0)
         self.assertGreaterEqual(10, self.st)
+
+
+class DummyCharacter(_MockObj):
+    @lazy_property
+    def strength(self):
+        return traits.TraitProperty(self, "str", trait_type="static", base=10, mod=2)
+
+    @lazy_property
+    def hunting(self):
+        return traits.TraitProperty(self, "hunting", trait_type="counter", base=10, mod=1, max=100)
+
+    @lazy_property
+    def health(self):
+        return traits.TraitProperty(self, "hp", trait_type="gauge", base=100)
+
+
+class TestTraitFields(TestCase):
+    """
+    Test the TraitField class.
+
+    """
+
+    @patch("evennia.contrib.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
+    def test_traitfields(self):
+        obj = DummyCharacter()
+
+        # from evennia import set_trace;set_trace()
+        self.assertEqual(12, obj.strength.value)
+        self.assertEqual(11, obj.hunting.value)
+        self.assertEqual(100, obj.health.value)
+
+        obj.strength.base += 5
+        self.assertEqual(17, obj.strength.value)
