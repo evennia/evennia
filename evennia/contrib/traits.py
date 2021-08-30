@@ -38,29 +38,78 @@ class Object(DefaultObject):
         # this adds the handler as .traits
         return TraitHandler(self)
 
+
+    def at_object_creation(self):
+        # (or wherever you want)
+        self.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
+        self.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
+        self.traits.add("hunting", "Hunting Skill", trait_type="counter",
+                        base=10, mod=1, min=0, max=100)
+
+
 ```
+When adding the trait, you supply the name of the property (`hunting`) along
+with a more human-friendly name ("Hunting Skill"). The latter will show if you
+print the trait etc. The `trait_type` is important, this specifies which type
+of trait this is (see below).
+
+There is an alternative way to define Traits, as individual `TraitProperty` entities.  The
+advantage is that you can define the Traits directly in the class, much like Django model fields.
+You'll be able to access them as e.g. `self.strength` instead of `self.traits.strength`. The
+drawback is that you must make sure that the name of your TraitsProperties don't collide with any
+other properties/methods on your class. The `.traits` handler will also not automatically be
+available to you if you want to add traits on the fly later.
+
+```python
+# mygame/typeclasses/objects.py
+
+from evennia import DefaultObject
+from evennia.utils import lazy_property
+from evennia.contrib.traits import TraitProperty
+
+# ...
+
+class Object(DefaultObject):
+    ...
+    @lazy_property
+    def strength(self):
+        # note that the trait's name must be set exactly the same as the name of the property!
+        return TraitProperty(self, "strength", "Strength", trait_type="static", base=10, mod=2)
+
+    @lazy_property
+    def hp(self):
+        return TraitProperty(self, "hp", "Health", trait_type="gauge", min=0, base=100, mod=2)
+
+    @lazy_property
+    def hunting(self):
+        return TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
+                             base=10, mod=1, min=0, max=100)
+
+```
+> Note that the trait name ('str', 'hp' and 'hunting' above) must be set exactly the same as the
+> name of the property. Also, while the TraitHandler `.traits` is used under the hood, the
+> handler will only be spawned after the TraitProperty has loaded at least once. If having `.traits`
+> available matters to you, use `@property` instead of `@lazy_property` for one of the above
+> definitions to make sure the handler is always initialized.
+
 
 ## Using traits
 
-A trait is added to the traithandler, after which one can access it
-as a property on the handler (similarly to how you can do .db.attrname for Attributes
-in Evennia).
+A trait is added to the traithandler (if you use `TraitProperty` the handler is just created under
+the hood) after which one can access it as a property on the handler (similarly to how you can do
+.db.attrname for Attributes in Evennia).
 
 ```python
-# this is an example using the "static" trait, described below
-
->>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", base=4)
->>> obj.traits.hunting.value
-4
->>> obj.traits.hunting.value += 5
->>> obj.traits.hunting.value
-9
->>> obj.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
+>>> obj.traits.strength.value
+12                                  # base + mod
+>>> obj.traits.strength.value += 5
+>>> obj.traits.strength.value
+17
 >>> obj.traits.hp.value
-100
+102                                 # base + mod
 >>> obj.traits.hp -= 200
 >>> obj.traits.hp.value
-0
+0                                   # min of 0
 >>> obj.traits.hp.reset()
 >>> obj.traits.hp.value
 100
@@ -72,12 +121,16 @@ in Evennia).
 >>> obj.traits.hp.effect
 "poisoned!"
 
+# with TraitProperties, works the same:
+
+>>> obj.hunting.value
+12
+>>> obj.strength.value += 5
+>>> obj.strength.value
+17
+
 ```
 
-When adding the trait, you supply the name of the property (`hunting`) along
-with a more human-friendly name ("Hunting Skill"). The latter will show if you
-print the trait etc. The `trait_type` is important, this specifies which type
-of trait this is.
 
 
 ## Trait types
@@ -259,7 +312,7 @@ This emulates a [fuel-] gauge that empties from a base+mod value.
 The `.current` value will start from a full gauge. The .max property is
 read-only and is set by `.base` + `.mod`. So contrary to a `Counter`, the
 `.mod` modifier only applies to the max value of the gauge and not the current
-value. The minimum bound defaults to 0 if not set explicitly. 
+value. The minimum bound defaults to 0 if not set explicitly.
 
 This trait is useful for showing commonly depletable resources like health,
 stamina and the like.
@@ -280,7 +333,7 @@ stamina and the like.
 The Gauge trait is subclass of the Counter, so you have access to the same
 methods and properties where they make sense. So gauges can also have a
 `.descs` dict to describe the intervals in text, and can use `.percent()` to
-get how filled it is as a percentage etc. 
+get how filled it is as a percentage etc.
 
 The `.rate` is particularly relevant for gauges - useful for everything
 from poison slowly draining your health, to resting gradually increasing it.
@@ -329,7 +382,7 @@ class RageTrait(StaticTrait):
 
     def sedate(self):
         self.mod = 0
-        
+
 
 ```
 
@@ -435,12 +488,22 @@ class MandatoryTraitKey:
     This represents a required key that must be
     supplied when a Trait is initialized. It's used
     by Trait classes when defining their required keys.
-    """
 
+    """
 
 class TraitHandler:
     """
-    Factory class that instantiates Trait objects.
+    Factory class that instantiates Trait objects. Must be assigned as a property
+    on the class, usually with `lazy_property`.
+
+    Example:
+    ::
+        class Object(DefaultObject):
+            ...
+            @lazy_property
+            def traits(self):
+                # this adds the handler as .traits
+                return TraitHandler(self)
 
     """
 
@@ -450,11 +513,15 @@ class TraitHandler:
 
         Args:
             obj (Object): Parent Object typeclass for this TraitHandler
-            db_attribute_key (str): Name of the DB attribute for trait data storage
+            db_attribute_key (str): Name of the DB attribute for trait data storage.
+            db_attribute_category (str):  Name of DB attribute's category to trait data storage.
 
         """
         # load the available classes, if necessary
         _delayed_import_trait_classes()
+
+        # initialize any
+
 
         # Note that .trait_data retains the connection to the database, meaning every
         # update we do to .trait_data automatically syncs with database.
@@ -613,6 +680,96 @@ class TraitHandler:
         """
         for trait_key in self.all:
             self.remove(trait_key)
+
+
+class TraitProperty:
+    """
+    Optional extra: Allows for applying traits as individual properties directly on the parent class
+    instead for properties on the `.traits` handler. So with this you could access data e.g. as
+    `character.hp.value` instead of `character.traits.hp.value`. This still uses the traitshandler
+    under the hood.
+
+    Example:
+    ::
+        from evennia.utils import lazy_property
+        from evennia.contrib.traits import TraitProperty
+
+        class Character(DefaultCharacter):
+
+            @lazy_property
+            def strength(self):
+                return TraitProperty(self, "str", "Strength", trait_type="static", base=10, mod=2)
+
+            @lazy_property
+            def hunting(self):
+                return TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
+                                  base=10, mod=1, max=100)
+            @lazy_property
+            def health(self):
+                return TraitProperty(self, "hp", "Health", trait_type="gauge", min=0, base=100)
+
+    """
+
+    def __init__(self,
+                 obj,
+                 trait_key,
+                 **kwargs):
+        """
+        Initialize a TraitField.
+
+        Args:
+            obj (Object): The object the TraitProperty is defined on.
+            trait_key (str): Name of Trait.
+        Kwargs:
+            traithandler_name (str): If given, this is used as the name of the TraitHandler created
+                behind the scenes. If not set, this will be a property `traits` on the class.
+            any: All other properties are the same as for adding a new trait of the given type using
+                the normal TraitHandler.
+
+        """
+        _SA(self, "obj", obj)
+        _SA(self, "trait_key", trait_key)
+        traithandler_name = kwargs.pop("traithandler_name", "traits")
+        _SA(self, 'traithandler_name', traithandler_name)
+        _SA(self, 'trait_properties', kwargs)
+
+    @property
+    def traithandler(self):
+        """
+        Get/create the underlying traithandler.
+
+        """
+        try:
+            return getattr(_GA(self, "obj"), _GA(self, "traithandler_name"))
+        except AttributeError:
+            # traithandler not found; create a new on-demand
+            new_traithandler = TraitHandler(_GA(self, "obj"))
+            setattr(_GA(self, "obj"), _GA(self, "traithandler_name"), new_traithandler)
+            return new_traithandler
+
+    @property
+    def trait(self):
+        """
+        Get/create the underlying trait on the traithandler
+
+        """
+        trait_key = _GA(self, "trait_key")
+        traithandler = _GA(self, "traithandler")
+        trait = traithandler.get(trait_key)
+        if trait is None:
+            traithandler.add(
+                trait_key,
+                **_GA(self, "trait_properties")
+            )
+            trait = traithandler.get(trait_key)  # this caches it properly
+        return trait
+
+    def __getattribute__(self, name):
+        return _GA(_GA(self, "trait"), name)
+
+    def __setattr__(self, name, value):
+        _SA(_GA(self, "trait"), name, value)
+
 
 
 # Parent Trait class
@@ -949,7 +1106,7 @@ class Trait:
 class StaticTrait(Trait):
     """
     Static Trait. This is a single value with a modifier,
-    with no concept of a 'current' value.
+    with no concept of a 'current' value or min/max etc.
 
     value = base + mod
 
@@ -964,6 +1121,16 @@ class StaticTrait(Trait):
         return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     # Helpers
+    @property
+    def base(self):
+        return self._data["base"]
+
+    @base.setter
+    def base(self, value):
+        if value is None:
+            self._data["base"] = self.default_keys["base"]
+        if type(value) in (int, float):
+            self._data["base"] = value
 
     @property
     def mod(self):
@@ -1374,13 +1541,13 @@ class GaugeTrait(CounterTrait):
     @max.setter
     def max(self, value):
         raise TraitException(
-            "The .max property is not settable " "on GaugeTraits. Set .base instead."
+            "The .max property is not settable on GaugeTraits. Set .mod and .base instead."
         )
 
     @max.deleter
     def max(self):
         raise TraitException(
-            "The .max property cannot be reset " "on GaugeTraits. Reset .mod and .base instead."
+            "The .max property cannot be reset on GaugeTraits. Reset .mod and .base instead."
         )
 
     @property
