@@ -18,8 +18,10 @@ except ImportError as err:
 
 import uuid
 from collections import defaultdict
+
+from django.core import exceptions as django_exceptions
 from evennia.prototypes import spawner
-from evennia.utils.utils import make_iter
+
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
 
 NodeTypeclass = None
@@ -309,7 +311,7 @@ class MapNode:
 
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
-        except NodeTypeclass.DoesNotExist:
+        except django_exceptions.ObjectDoesNotExist:
             # create a new entity with proper coordinates etc
             tclass = self.prototype['typeclass']
             tclass = (f' ({tclass})'
@@ -433,7 +435,7 @@ class MapNode:
 
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
-        except NodeTypeclass.DoesNotExist:
+        except django_exceptions.ObjectDoesNotExist:
             # no object exists
             pass
         else:
