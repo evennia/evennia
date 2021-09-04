@@ -71,26 +71,15 @@ from evennia.contrib.traits import TraitProperty
 
 class Object(DefaultObject):
     ...
-    @lazy_property
-    def strength(self):
-        # note that the trait's name must be set exactly the same as the name of the property!
-        return TraitProperty(self, "strength", "Strength", trait_type="static", base=10, mod=2)
-
-    @lazy_property
-    def hp(self):
-        return TraitProperty(self, "hp", "Health", trait_type="gauge", min=0, base=100, mod=2)
-
-    @lazy_property
-    def hunting(self):
-        return TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
-                             base=10, mod=1, min=0, max=100)
+    strength = TraitProperty("strength", "Strength", trait_type="static", base=10, mod=2)
+    health = TraitProperty("hp", "Health", trait_type="gauge", min=0, base=100, mod=2)
+    hunting = TraitProperty("Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
 ```
-> Note that the trait name ('str', 'hp' and 'hunting' above) must be set exactly the same as the
-> name of the property. Also, while the TraitHandler `.traits` is used under the hood, the
-> handler will only be spawned after the TraitProperty has loaded at least once. If having `.traits`
-> available matters to you, use `@property` instead of `@lazy_property` for one of the above
-> definitions to make sure the handler is always initialized.
+> Note that the property trait name ('str', 'hp' and 'hunting' above) are what will be stored in the
+> database and what you can access via `obj.traits` should you want to - so `obj.traits.hp` will be
+> available in the above example, and _not_ `obj.traits.health`. For simplicity you may want to put
+> the property-name and trait-key the same.
 
 Most examples below use the `TraitHandler`, but all works with `TraitProperty` syntax as well.
 
@@ -525,8 +514,6 @@ class TraitHandler:
         _delayed_import_trait_classes()
 
         # initialize any
-
-
         # Note that .trait_data retains the connection to the database, meaning every
         # update we do to .trait_data automatically syncs with database.
         self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
@@ -700,29 +687,20 @@ class TraitProperty:
 
         class Character(DefaultCharacter):
 
-            @lazy_property
-            def strength(self):
-                return TraitProperty(self, "str", "Strength", trait_type="static", base=10, mod=2)
-
-            @lazy_property
-            def hunting(self):
-                return TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
-                                  base=10, mod=1, max=100)
-            @lazy_property
-            def health(self):
-                return TraitProperty(self, "hp", "Health", trait_type="gauge", min=0, base=100)
+            strength = TraitProperty("str", "Strength", trait_type="static", base=10, mod=2)
+            hunting = TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
+                                    base=10, mod=1, max=100)
+            health = TraitProperty("health", "Health", trait_type="gauge", min=0, base=100)
 
     """
 
     def __init__(self,
-                 obj,
                  trait_key,
                  **kwargs):
         """
         Initialize a TraitField.
 
         Args:
-            obj (Object): The object the TraitProperty is defined on.
             trait_key (str): Name of Trait.
         Kwargs:
             traithandler_name (str): If given, this is used as the name of the TraitHandler created
@@ -731,7 +709,6 @@ class TraitProperty:
                 the normal TraitHandler.
 
         """
-        _SA(self, "obj", obj)
         _SA(self, "trait_key", trait_key)
         traithandler_name = kwargs.pop("traithandler_name", "traits")
         _SA(self, 'traithandler_name', traithandler_name)
@@ -768,12 +745,29 @@ class TraitProperty:
             trait = traithandler.get(trait_key)  # this caches it properly
         return trait
 
-    def __getattribute__(self, name):
-        return _GA(_GA(self, "trait"), name)
+    def __get__(self, instance, owner):
+        """
+        Descriptor definition. This is called when the trait-name is aqcuired on the
+        instance and reroutes to fetching the actual Trait from the connected
+        TraitHandler (the connection is set up on-demand).
 
-    def __setattr__(self, name, value):
-        _SA(_GA(self, "trait"), name, value)
+        Returns:
+            Trait: The trait this property represents.
 
+        """
+        try:
+            _GA(self, "obj")
+        except AttributeError:
+            if instance:
+                _SA(self, "obj", instance)
+        return self.trait
+
+    def __set__(self, instance, value):
+        """
+        We don't set data directly on this - it's all rerouted to the trait.
+
+        """
+        pass
 
 # Parent Trait class
 
