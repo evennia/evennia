@@ -905,17 +905,9 @@ class TestNumericTraitOperators(TestCase):
 
 
 class DummyCharacter(_MockObj):
-    @lazy_property
-    def strength(self):
-        return traits.TraitProperty(self, "str", trait_type="static", base=10, mod=2)
-
-    @lazy_property
-    def hunting(self):
-        return traits.TraitProperty(self, "hunting", trait_type="counter", base=10, mod=1, max=100)
-
-    @lazy_property
-    def health(self):
-        return traits.TraitProperty(self, "hp", trait_type="gauge", base=100)
+    strength = traits.TraitProperty("str", trait_type="static", base=10, mod=2)
+    hunting = traits.TraitProperty("hunting", trait_type="counter", base=10, mod=1, max=100)
+    health = traits.TraitProperty("hp", trait_type="gauge", base=100)
 
 
 class TestTraitFields(TestCase):
@@ -935,3 +927,9 @@ class TestTraitFields(TestCase):
 
         obj.strength.base += 5
         self.assertEqual(17, obj.strength.value)
+
+        obj.strength.berserk = True
+        self.assertEqual(obj.strength.berserk, True)
+
+        self.assertEqual(100, obj.traits.hp)
+        self.assertEqual(None, obj.traits.health)  # the property name doesn't matter
