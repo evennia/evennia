@@ -14,24 +14,26 @@ a server reload/reboot).
 
 ## Adding Traits to a typeclass
 
-To access and manipulate traits on an entity, its Typeclass needs to have a
-`TraitHandler` assigned it. Usually, the handler is made available as `.traits`
-(in the same way as `.tags` or `.attributes`). It's recommended to do this
-using Evennia's `lazy_property` (which basically just means it's not
-initialized until it's actually accessed).
+There are two ways to set up Traits on a typeclass. The first sets up the `TraitHandler`
+as a property `.traits` on your class and you then access traits as e.g. `.traits.strength`.
+The other alternative uses a `TraitProperty`, which makes the trait available directly
+as e.g. `.strength`. This solution also uses the `TraitHandler`, but you don't need to
+define it explicitly. You can combine both styles if you like.
 
-Here's an example for adding the TraitHandler to the base Object class:
+### Traits with TraitHandler
+
+Here's an example for adding the TraitHandler to the Character class:
 
 ```python
 # mygame/typeclasses/objects.py
 
-from evennia import DefaultObject
+from evennia import DefaultCharacter
 from evennia.utils import lazy_property
 from evennia.contrib.traits import TraitHandler
 
 # ...
 
-class Object(DefaultObject):
+class Character(DefaultCharacter):
     ...
     @lazy_property
     def traits(self):
@@ -53,12 +55,11 @@ with a more human-friendly name ("Hunting Skill"). The latter will show if you
 print the trait etc. The `trait_type` is important, this specifies which type
 of trait this is (see below).
 
-There is an alternative way to define Traits, as individual `TraitProperty` entities.  The
-advantage is that you can define the Traits directly in the class, much like Django model fields.
-You'll be able to access them as e.g. `self.strength` instead of `self.traits.strength`. The
-drawback is that you must make sure that the name of your TraitsProperties don't collide with any
-other properties/methods on your class. The `.traits` handler will also not automatically be
-available to you if you want to add traits on the fly later.
+### TraitProperties
+
+Using `TraitProperties` makes the trait available directly on the class, much like Django model
+fields. The drawback is that you must make sure that the name of your Traits don't collide with any
+other properties/methods on your class.
 
 ```python
 # mygame/typeclasses/objects.py
@@ -71,17 +72,20 @@ from evennia.contrib.traits import TraitProperty
 
 class Object(DefaultObject):
     ...
-    strength = TraitProperty("strength", "Strength", trait_type="static", base=10, mod=2)
-    health = TraitProperty("hp", "Health", trait_type="gauge", min=0, base=100, mod=2)
+    strength = TraitProperty("Strength", trait_type="static", base=10, mod=2)
+    health = TraitProperty("Health", trait_type="gauge", min=0, base=100, mod=2)
     hunting = TraitProperty("Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
 
 ```
-> Note that the property trait name ('str', 'hp' and 'hunting' above) are what will be stored in the
-> database and what you can access via `obj.traits` should you want to - so `obj.traits.hp` will be
-> available in the above example, and _not_ `obj.traits.health`. For simplicity you may want to put
-> the property-name and trait-key the same.
 
-Most examples below use the `TraitHandler`, but all works with `TraitProperty` syntax as well.
+> Note that the property-name will become the name of the trait and you don't supply `trait_key`
+> separately.
+
+> The `.traits` TraitHandler will still be created (it's used under the
+> hood. But it will only be created when the TraitProperty has been accessed at least once,
+> so be careful if mixing the two styles. If you want to make sure `.traits` is always available,
+> add the `TraitHandler` manually like shown earlier - the `TraitProperty` will by default use
+> the same handler (`.traits`).
 
 ## Using traits
 
@@ -89,24 +93,29 @@ A trait is added to the traithandler (if you use `TraitProperty` the handler is 
 the hood) after which one can access it as a property on the handler (similarly to how you can do
 .db.attrname for Attributes in Evennia).
 
+All traits have a _read-only_ field `.value`. This is only used to read out results, you never
+manipulate it directly (if you try, it will just remain unchanged). The `.value` is calculated based
+on combining fields, like `.base` and `.mod` - which fields are available and how they relate to
+each other depends on the trait type.
+
 ```python
 >>> obj.traits.strength.value
 12                                  # base + mod
->>> obj.traits.strength.value += 5
+>>> obj.traits.strength.base += 5
 >>> obj.traits.strength.value
 17
 >>> obj.traits.hp.value
 102                                 # base + mod
->>> obj.traits.hp -= 200
+>>> obj.traits.hp.base -= 200
 >>> obj.traits.hp.value
 0                                   # min of 0
 >>> obj.traits.hp.reset()
 >>> obj.traits.hp.value
 100
-# you can also access property with getitem
+# you can also access properties like a dict
 >>> obj.traits.hp["value"]
 100
-# you can store arbitrary data persistently as well
+# you can store arbitrary data persistently for easy reference
 >>> obj.traits.hp.effect = "poisoned!"
 >>> obj.traits.hp.effect
 "poisoned!"
@@ -337,10 +346,12 @@ A single value of any type.
 
 This is the 'base' Trait, meant to inherit from if you want to invent
 trait-types from scratch (most of the time you'll probably inherit from some of
-the more advanced trait-type classes though). A `Trait`s  `.value` can be
-anything (that can be stored in an Attribute) and if it's a integer/float you
-can do arithmetic with it, but otherwise it acts just like a glorified
-Attribute.
+the more advanced trait-type classes though).
+
+Unlike other Trait-types, the single `.value` property of the base `Trait` can
+be editied. The value can hold any data that can be stored in an Attribute. If
+it's an integer/float you can do arithmetic with it, but otherwise this acts just
+like a glorified Attribute.
 
 
 ```python
@@ -618,7 +629,7 @@ class TraitHandler:
             name (str, optional): Name of the Trait, like "Health". If
                 not given, will use `trait_key` starting with a capital letter.
             trait_type (str, optional): One of 'static', 'counter' or 'gauge'.
-            force_add (bool): If set, create a new Trait even if a Trait with
+            force (bool): If set, create a new Trait even if a Trait with
                 the same `trait_key` already exists.
             trait_properties (dict): These will all be use to initialize
                 the new trait. See the `properties` class variable on each
@@ -694,56 +705,36 @@ class TraitProperty:
 
     """
 
-    def __init__(self,
-                 trait_key,
-                 **kwargs):
+    def __init__(self, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties):
         """
-        Initialize a TraitField.
+        Initialize a TraitField. Mimics TraitHandler.add input except no `trait_key`.
 
         Args:
-            trait_key (str): Name of Trait.
+            name (str, optional): Name of the Trait, like "Health". If
+                not given, will use `trait_key` starting with a capital letter.
+            trait_type (str, optional): One of 'static', 'counter' or 'gauge'.
+            force (bool): If set, create a new Trait even if a Trait with
+                the same `trait_key` already exists.
         Kwargs:
             traithandler_name (str): If given, this is used as the name of the TraitHandler created
                 behind the scenes. If not set, this will be a property `traits` on the class.
-            any: All other properties are the same as for adding a new trait of the given type using
-                the normal TraitHandler.
+            any: All other trait_properties are the same as for adding a new trait of the given type
+                using the normal TraitHandler.
 
         """
-        _SA(self, "trait_key", trait_key)
-        traithandler_name = kwargs.pop("traithandler_name", "traits")
-        _SA(self, 'traithandler_name', traithandler_name)
-        _SA(self, 'trait_properties', kwargs)
+        self._traithandler_name = trait_properties.pop("traithandler_name", "traits")
 
-    @property
-    def traithandler(self):
-        """
-        Get/create the underlying traithandler.
+        trait_properties.update({"name": name, "trait_type": trait_type, "force": force})
+        self._trait_properties = trait_properties
+        self._cache = {}
 
+    def __set_name__(self, instance, name):
         """
-        try:
-            return getattr(_GA(self, "obj"), _GA(self, "traithandler_name"))
-        except AttributeError:
-            # traithandler not found; create a new on-demand
-            new_traithandler = TraitHandler(_GA(self, "obj"))
-            setattr(_GA(self, "obj"), _GA(self, "traithandler_name"), new_traithandler)
-            return new_traithandler
-
-    @property
-    def trait(self):
-        """
-        Get/create the underlying trait on the traithandler
+        This is called the very first time the Descriptor is assigned to the
+        class; we store it so we can create new instances with this later.
 
         """
-        trait_key = _GA(self, "trait_key")
-        traithandler = _GA(self, "traithandler")
-        trait = traithandler.get(trait_key)
-        if trait is None:
-            traithandler.add(
-                trait_key,
-                **_GA(self, "trait_properties")
-            )
-            trait = traithandler.get(trait_key)  # this caches it properly
-        return trait
+        self._trait_key = name
 
     def __get__(self, instance, owner):
         """
@@ -754,17 +745,35 @@ class TraitProperty:
         Returns:
             Trait: The trait this property represents.
 
+        Notes:
+            We have one descriptor on the class, but we don't want each instance to share the
+            state (self) of that descriptor. So we must make sure to cache the trait per-instance
+            or we would end up with cross-use between instances.
+
         """
-        try:
-            _GA(self, "obj")
-        except AttributeError:
-            if instance:
-                _SA(self, "obj", instance)
-        return self.trait
+        if instance not in self._cache:
+            try:
+                traithandler = getattr(instance, self._traithandler_name)
+            except AttributeError:
+                # traithandler not found; create a new on-demand
+                traithandler = TraitHandler(instance)
+                setattr(instance, self._traithandler_name, traithandler)
+
+            # this will either get the trait from attribute or make a new one
+            trait = traithandler.get(self._trait_key)
+            if trait is None:
+                # initialize the trait
+                traithandler.add(
+                    self._trait_key,
+                    **self._trait_properties
+                )
+                trait = traithandler.get(self._trait_key)  # caches it in the traithandler
+            self._cache[instance] = trait
+        return self._cache[instance]
 
     def __set__(self, instance, value):
         """
-        We don't set data directly on this - it's all rerouted to the trait.
+        We don't set data directly, it's all rerouted to the trait.
 
         """
         pass
