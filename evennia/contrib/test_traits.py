@@ -905,9 +905,9 @@ class TestNumericTraitOperators(TestCase):
 
 
 class DummyCharacter(_MockObj):
-    strength = traits.TraitProperty("str", trait_type="static", base=10, mod=2)
-    hunting = traits.TraitProperty("hunting", trait_type="counter", base=10, mod=1, max=100)
-    health = traits.TraitProperty("hp", trait_type="gauge", base=100)
+    strength = traits.TraitProperty("Strength", trait_type="static", base=10, mod=2)
+    hunting = traits.TraitProperty("Hunting skill", trait_type="counter", base=10, mod=1, max=100)
+    health = traits.TraitProperty("Health value", trait_type="gauge", base=100)
 
 
 class TestTraitFields(TestCase):
@@ -919,8 +919,8 @@ class TestTraitFields(TestCase):
     @patch("evennia.contrib.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
     def test_traitfields(self):
         obj = DummyCharacter()
+        obj2 = DummyCharacter()
 
-        # from evennia import set_trace;set_trace()
         self.assertEqual(12, obj.strength.value)
         self.assertEqual(11, obj.hunting.value)
         self.assertEqual(100, obj.health.value)
@@ -931,5 +931,19 @@ class TestTraitFields(TestCase):
         obj.strength.berserk = True
         self.assertEqual(obj.strength.berserk, True)
 
-        self.assertEqual(100, obj.traits.hp)
-        self.assertEqual(None, obj.traits.health)  # the property name doesn't matter
+        self.assertEqual(100, obj.traits.health)
+        self.assertEqual(None, obj.traits.hp)
+
+        # the traithandler still works
+        obj.traits.health.current -= 1
+        self.assertEqual(99, obj.health.value)
+
+        # making sure Descriptors are separate
+        self.assertEqual(12, obj2.strength.value)
+        self.assertEqual(17, obj.strength.value)
+
+        obj2.strength.base += 1
+        obj.strength.base += 3
+
+        self.assertEqual(13, obj2.strength.value)
+        self.assertEqual(20, obj.strength.value)
