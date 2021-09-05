@@ -99,33 +99,40 @@ on combining fields, like `.base` and `.mod` - which fields are available and ho
 each other depends on the trait type.
 
 ```python
->>> obj.traits.strength.value
+> obj.traits.strength.value
 12                                  # base + mod
->>> obj.traits.strength.base += 5
->>> obj.traits.strength.value
+
+> obj.traits.strength.base += 5
+obj.traits.strength.value
 17
->>> obj.traits.hp.value
+
+> obj.traits.hp.value
 102                                 # base + mod
->>> obj.traits.hp.base -= 200
->>> obj.traits.hp.value
+
+> obj.traits.hp.base -= 200
+> obj.traits.hp.value
 0                                   # min of 0
->>> obj.traits.hp.reset()
->>> obj.traits.hp.value
+
+> obj.traits.hp.reset()
+> obj.traits.hp.value
 100
+
 # you can also access properties like a dict
->>> obj.traits.hp["value"]
+> obj.traits.hp["value"]
 100
+
 # you can store arbitrary data persistently for easy reference
->>> obj.traits.hp.effect = "poisoned!"
->>> obj.traits.hp.effect
+> obj.traits.hp.effect = "poisoned!"
+> obj.traits.hp.effect
 "poisoned!"
 
 # with TraitProperties:
 
->>> obj.hunting.value
+> obj.hunting.value
 12
->>> obj.strength.value += 5
->>> obj.strength.value
+
+> obj.strength.value += 5
+> obj.strength.value
 17
 
 ```
@@ -139,12 +146,14 @@ Traits can also be combined to do arithmetic with their .value, if both have a
 compatible type.
 
 ```python
->>> trait1 + trait2
+> trait1 + trait2
 54
->>> trait1.value
+
+> trait1.value
 3
->>> trait1 + 2
->>> trait1.value
+
+> trait1 + 2
+> trait1.value
 5
 
 ```
@@ -167,15 +176,17 @@ of a static trait would be a Strength stat or Skill value. That is, something
 that varies slowly or not at all, and which may be modified in-place.
 
 ```python
->>> obj.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
->>> obj.traits.mytrait.value
+> obj.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
+> obj.traits.mytrait.value
+
 12   # base + mod
->>> obj.traits.mytrait.base += 2
->>> obj.traits.mytrait.mod += 1
->>> obj.traits.mytrait.value
+> obj.traits.mytrait.base += 2
+> obj.traits.mytrait.mod += 1
+> obj.traits.mytrait.value
 15
->>> obj.traits.mytrait.mod = 0
->>> obj.traits.mytrait.value
+
+> obj.traits.mytrait.mod = 0
+> obj.traits.mytrait.value
 12
 
 ```
@@ -196,18 +207,20 @@ modifier, which will both be added to the base and to current (forming
 remove it. A suggested use for a Counter Trait would be to track skill values.
 
 ```python
->>> obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
+> obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
                    base=10, mod=1, min=0, max=100)
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 11  # current starts at base + mod
->>> obj.traits.hunting.current += 10
->>> obj.traits.hunting.value
+
+> obj.traits.hunting.current += 10
+> obj.traits.hunting.value
 21
+
 # reset back to base+mod by deleting current
->>> del obj.traits.hunting.current
->>> obj.traits.hunting.value
+> del obj.traits.hunting.current
+> obj.traits.hunting.value
 11
->>> obj.traits.hunting.max = None  # removing upper bound
+> obj.traits.hunting.max = None  # removing upper bound
 
 # for TraitProperties, pass the args/kwargs of traits.add() to the
 # TraitProperty constructor instead.
@@ -232,16 +245,18 @@ By calling `.desc()` on the Counter, you will get the text matching the current 
 
 ```python
 # (could also have passed descs= to traits.add())
->>> obj.traits.hunting.descs = {
+> obj.traits.hunting.descs = {
     0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"}
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 11
->>> obj.traits.hunting.desc()
+
+> obj.traits.hunting.desc()
 "neophyte"
->>> obj.traits.hunting.current += 60
->>> obj.traits.hunting.value
+> obj.traits.hunting.current += 60
+> obj.traits.hunting.value
 71
->>> obj.traits.hunting.desc()
+
+> obj.traits.hunting.desc()
 "expert"
 
 ```
@@ -261,24 +276,29 @@ a previous value.
 
 ```python
 
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 71
->>> obj.traits.hunting.ratetarget = 71
+
+> obj.traits.hunting.ratetarget = 71
 # debuff hunting for some reason
->>> obj.traits.hunting.current -= 30
->>> obj.traits.hunting.value
+> obj.traits.hunting.current -= 30
+> obj.traits.hunting.value
 41
->>> obj.traits.hunting.rate = 1  # 1/s increase
+
+> obj.traits.hunting.rate = 1  # 1/s increase
 # Waiting 5s
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 46
+
 # Waiting 8s
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 54
+
 # Waiting 100s
->>> obj.traits.hunting.value
+> obj.traits.hunting.value
 71    # we have stopped at the ratetarget
->>> obj.traits.hunting.rate = 0  # disable auto-change
+
+> obj.traits.hunting.rate = 0  # disable auto-change
 
 
 ```
@@ -294,9 +314,10 @@ If both min and max are defined, the `.percent()` method of the trait will
 return the value as a percentage.
 
 ```python
->>> obj.traits.hunting.percent()
+> obj.traits.hunting.percent()
 "71.0%"
->>> obj.traits.hunting.percent(formatting=None)
+
+> obj.traits.hunting.percent(formatting=None)
 71.0
 
 ```
@@ -320,14 +341,16 @@ This trait is useful for showing commonly depletable resources like health,
 stamina and the like.
 
 ```python
->>> obj.traits.add("hp", "Health", trait_type="gauge", base=100)
->>> obj.traits.hp.value  # (or .current)
+> obj.traits.add("hp", "Health", trait_type="gauge", base=100)
+> obj.traits.hp.value  # (or .current)
 100
->>> obj.traits.hp.mod = 10
->>> obj.traits.hp.value
+
+> obj.traits.hp.mod = 10
+> obj.traits.hp.value
 110
->>> obj.traits.hp.current -= 30
->>> obj.traits.hp.value
+
+> obj.traits.hp.current -= 30
+> obj.traits.hp.value
 80
 
 ```
@@ -355,11 +378,12 @@ like a glorified Attribute.
 
 
 ```python
->>> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
->>> obj.traits.mytrait.value
+> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
+> obj.traits.mytrait.value
 30
->>> obj.traits.mytrait.value = "stringvalue"
->>> obj.traits.mytrait.value
+
+> obj.traits.mytrait.value = "stringvalue"
+> obj.traits.mytrait.value
 "stringvalue"
 
 ```
@@ -404,9 +428,14 @@ To add your custom RageTrait to Evennia, add the following to your settings file
 Reload the server and you should now be able to use your trait:
 
 ```python
->>> obj.traits.add("mood", "A dark mood", rage=30, trait_type='rage')
->>> obj.traits.mood.rage
+> obj.traits.add("mood", "A dark mood", rage=30, trait_type='rage')
+> obj.traits.mood.rage
 30
+
+# as TraitProperty
+
+class Character(DefaultCharacter):
+    rage = TraitProperty("A dark mood", rage=30, trait_type='rage')
 
 ```
 
