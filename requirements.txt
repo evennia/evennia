@@ -2,7 +2,7 @@
 
 # general
 django >= 2.2.5, < 3.0
-twisted >= 20.3.0, < 21.0.0
+twisted >= 21.7.0, < 22.0.0
 pytz
 django-sekizai
 inflect
