@@ -3,7 +3,7 @@
 # general
 attrs >= 19.2.0
 django >= 3.2, < 3.3
-twisted >= 20.3.0, < 22.0.0
+twisted >= 21.7.0, < 22.0.0
 pytz
 djangorestframework >= 3.10.3, < 3.12
 pyyaml
