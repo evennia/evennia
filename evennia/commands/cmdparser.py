@@ -125,7 +125,7 @@ def try_num_differentiators(raw_string):
         # the user might be trying to identify the command
         # with a #num-command style syntax. We expect the regex to
         # contain the groups "number" and "name".
-        mindex, new_raw_string = (num_ref_match.group("number"), num_ref_match.group("name"))
+        mindex, new_raw_string = (num_ref_match.group("number"), num_ref_match.group("name") + num_ref_match.group("args"))
         return int(mindex), new_raw_string
     else:
         return None, None
