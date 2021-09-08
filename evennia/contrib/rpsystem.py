@@ -27,7 +27,7 @@ to a game, common to many RP-centric games:
         /alias to reference objects in the room. You can use any
         number of sdesc sub-parts to differentiate a local sdesc, or
         use /1-sdesc etc to differentiate them. The emote also
-        identifies nested says.
+        identifies nested says and separates case.
     - sdesc obscuration of real character names for use in emotes
         and in any referencing such as object.search().  This relies
         on an SdescHandler `sdesc` being set on the Character and
@@ -60,12 +60,17 @@ an example of a static *pose*: The "standing by the bar" has been set
 by the player of the tall man, so that people looking at him can tell
 at a glance what is going on.
 
-> emote /me looks at /tall and says "Hello!"
+> emote /me looks at /Tall and says "Hello!"
 
 I see:
     Griatch looks at Tall man and says "Hello".
 Tall man (assuming his name is Tom) sees:
     The godlike figure looks at Tom and says "Hello".
+
+Note that by default, the case of the tag matters, so `/tall` will
+lead to 'tall man' while `/Tall` will become 'Tall man' and /TALL
+becomes /TALL MAN. If you don't want this behavior, you can pass
+case_sensitive=False to the `send_emote` function.
 
 Verbose Installation Instructions:
 
@@ -89,9 +94,9 @@ Verbose Installation Instructions:
        Inherit `ContribRPObject`:
            Change `class Object(DefaultObject):` to
            `class Object(ContribRPObject):`
-    4. Reload the server (@reload or from console: "evennia reload")
+    4. Reload the server (`reload` or from console: "evennia reload")
     5. Force typeclass updates as required. Example for your character:
-           @type/reset/force me = typeclasses.characters.Character
+           `type/reset/force me = typeclasses.characters.Character`
 
 """
 import re
@@ -146,8 +151,9 @@ _RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP), 
 _RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
 _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 # Reference markers are used internally when distributing the emote to
-# all that can see it. They are never seen by players and are on the form {#dbref}.
-_RE_REF = re.compile(r"\{+\#([0-9]+)\}+")
+# all that can see it. They are never seen by players and are on the form {#dbref<char>}
+# with the <char> indicating case of the original reference query (like ^ for uppercase)
+_RE_REF = re.compile(r"\{+\#([0-9]+[\^\~tv]{0,1})\}+")
 
 # This regex is used to quickly reference one self in an emote.
 _RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
@@ -333,7 +339,7 @@ def parse_language(speaker, emote):
     return emote, mapping
 
 
-def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
+def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_sensitive=True):
     """
     Read a raw emote and parse it into an intermediary
     format for distributing to all observers.
@@ -346,6 +352,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     string (str): The string (like an emote) we want to analyze for keywords.
     search_mode (bool, optional): If `True`, the "emote" is a query string
         we want to analyze. If so, the return value is changed.
+    case_sensitive (bool, optional); If set, the case of /refs matter, so that
+        /tall will come out as 'tall man' while /Tall will become 'Tall man'.
+        This allows for more grammatically correct emotes at the cost of being
+        a little more to learn for players. If disabled, the original sdesc case
+        is always kept and are inserted as-is.
 
     Returns:
         (emote, mapping) (tuple): If `search_mode` is `False`
@@ -452,10 +463,32 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         elif nmatches == 0:
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
-            key = "#%i" % obj.id
+            # a unique match - parse into intermediary representation
+            case = '~'  # retain original case of sdesc
+            if case_sensitive:
+                # case sensitive mode
+                # internal flags for the case used for the original /query
+                # - t for titled input (like /Name)
+                # - ^ for all upercase input (likle /NAME)
+                # - v for lower-case input (like /name)
+                # - ~ for mixed case input (like /nAmE)
+                matchtext = marker_match.group()
+                if not _RE_SELF_REF.match(matchtext):
+                    # self-refs are kept as-is, others are parsed by case
+                    matchtext = marker_match.group().lstrip(_PREFIX)
+                    if matchtext.istitle():
+                        case = 't'
+                    elif matchtext.isupper():
+                        case = '^'
+                    elif matchtext.islower():
+                        case = 'v'
+
+            key = "#%i%s" % (obj.id, case)
             string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
             mapping[key] = obj
+
         else:
+            # multimatch error
             refname = marker_match.group()
             reflist = [
                 "%s%s%s (%s%s)"
@@ -507,30 +540,42 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
             - None: No auto-add at anonymous emote
             - 'last': Add sender to the end of emote as [sender]
             - 'first': Prepend sender to start of emote.
+    Kwargs:
+        case_sensitive (bool): Defaults to True, but can be unset
+            here. When enabled, /tall will lead to a lowercase
+            'tall man' while /Tall will lead to 'Tall man' and
+            /TALL will lead to 'TALL MAN'. If disabled, the sdesc's
+            case will always be used, regardless of the /ref case used.
+        any: Other kwargs will be passed on into the receiver's process_sdesc and
+            process_recog methods, and can thus be used to customize those.
 
     """
+    case_sensitive = kwargs.pop("case_sensitive", True)
     try:
-        emote, obj_mapping = parse_sdescs_and_recogs(sender, receivers, emote)
+        emote, obj_mapping = parse_sdescs_and_recogs(sender, receivers, emote,
+                                                     case_sensitive=case_sensitive)
         emote, language_mapping = parse_language(sender, emote)
     except (EmoteError, LanguageError) as err:
         # handle all error messages, don't hide actual coding errors
         sender.msg(str(err))
         return
+
+    skey = "#%i" % sender.id
+
     # we escape the object mappings since we'll do the language ones first
     # (the text could have nested object mappings).
     emote = _RE_REF.sub(r"{{#\1}}", emote)
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
     if 'anonymous_add' in kwargs:
         anonymous_add = kwargs.pop('anonymous_add')
-    if anonymous_add and not "#%i" % sender.id in obj_mapping:
+    if anonymous_add and not any(1 for tag in obj_mapping if tag.startswith(skey)):
         # no self-reference in the emote - add to the end
-        key = "#%i" % sender.id
-        obj_mapping[key] = sender
+        obj_mapping[skey] = sender
         if anonymous_add == "first":
             possessive = "" if emote.startswith("'") else " "
-            emote = "%s%s%s" % ("{{%s}}" % key, possessive, emote)
+            emote = "%s%s%s" % ("{{%s}}" % skey, possessive, emote)
         else:
-            emote = "%s [%s]" % (emote, "{{%s}}" % key)
+            emote = "%s [%s]" % (emote, "{{%s}}" % skey)
 
     # broadcast emote to everyone
     for receiver in receivers:
@@ -544,7 +589,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
             # color says
             receiver_lang_mapping[key] = process_language(saytext, sender, langname)
         # map the language {##num} markers. This will convert the escaped sdesc markers on
-        # the form {{#num}} to {#num} markers ready to sdescmat in the next step.
+        # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
         sendemote = emote.format(**receiver_lang_mapping)
 
         # handle sdesc mappings. we make a temporary copy that we can modify
@@ -561,22 +606,27 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         try:
             recog_get = receiver.recog.get
             receiver_sdesc_mapping = dict(
-                (ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items()
+                (ref, process_recog(recog_get(obj), obj, ref=ref, **kwargs))
+                for ref, obj in obj_mapping.items()
             )
         except AttributeError:
             receiver_sdesc_mapping = dict(
                 (
                     ref,
-                    process_sdesc(obj.sdesc.get(), obj)
+                    process_sdesc(obj.sdesc.get(), obj, ref=ref)
                     if hasattr(obj, "sdesc")
-                    else process_sdesc(obj.key, obj),
+                    else process_sdesc(obj.key, obj, ref=ref),
                 )
                 for ref, obj in obj_mapping.items()
             )
         # make sure receiver always sees their real name
-        rkey = "#%i" % receiver.id
-        if rkey in receiver_sdesc_mapping:
-            receiver_sdesc_mapping[rkey] = process_sdesc(receiver.key, receiver)
+        rkey_start = "#%i" % receiver.id
+        rkey_keep_case = rkey_start + '~'  # signifies keeping the case
+        for rkey in (key for key in receiver_sdesc_mapping if key.startswith(rkey_start)):
+            # we could have #%i^, #%it etc depending on input case - we want the
+            # self-reference to retain case.
+            receiver_sdesc_mapping[rkey] = process_sdesc(
+                receiver.key, receiver, ref=rkey_keep_case, **kwargs)
 
         # do the template replacement of the sdesc/recog {#num} markers
         receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
@@ -587,7 +637,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
 # ------------------------------------------------------------
 
 
-class SdescHandler(object):
+class SdescHandler:
     """
     This Handler wraps all operations with sdescs. We
     need to use this since we do a lot preparations on
@@ -690,7 +740,7 @@ class SdescHandler(object):
         return self.sdesc_regex, self.obj, self.sdesc
 
 
-class RecogHandler(object):
+class RecogHandler:
     """
     This handler manages the recognition mapping
     of an Object.
@@ -1590,11 +1640,33 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 you are viewing yourself (and sdesc is your key).
                 This is not used by default.
 
+        Kwargs:
+            ref (str): The reference marker found in string to replace.
+                This is on the form #{num}{case}, like '#12^', where
+                the number is a processing location in the string and the
+                case symbol indicates the case of the original tag input
+                - `t` - input was Titled, like /Tall
+                - `^` - input was all uppercase, like /TALL
+                - `v` - input was all lowercase, like /tall
+                - `~` - input case should be kept, or was mixed-case
+
         Returns:
             sdesc (str): The processed sdesc ready
                 for display.
 
         """
+        if not sdesc:
+            return ""
+
+        ref = kwargs.get('ref', '~')  # ~ to keep sdesc unchanged
+        if 't' in ref:
+            # we only want to capitalize the first letter if there are many words
+            sdesc = sdesc.lower()
+            sdesc = sdesc[0].upper() + sdesc[1:] if len(sdesc) > 1 else sdesc.upper()
+        elif '^' in ref:
+            sdesc = sdesc.upper()
+        elif 'v' in ref:
+            sdesc = sdesc.lower()
         return "|b%s|n" % sdesc
 
     def process_recog(self, recog, obj, **kwargs):
@@ -1606,12 +1678,14 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 translated from the original sdesc at this point.
             obj (Object): The object the recog:ed string belongs to.
                 This is not used by default.
+        Kwargs:
+            ref (str): See process_sdesc.
 
         Returns:
             recog (str): The modified recog string.
 
         """
-        return self.process_sdesc(recog, obj)
+        return self.process_sdesc(recog, obj, **kwargs)
 
     def process_language(self, text, speaker, language, **kwargs):
         """

@@ -104,7 +104,7 @@ recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
-
+case_emote = "/me looks at /first, then /FIRST, /First and /Colliding twice."
 
 class TestRPSystem(EvenniaTest):
     maxDiff = None
@@ -195,9 +195,11 @@ class TestRPSystem(EvenniaTest):
                 "#9": "A nice sender of emotes",
             },
         )
-        self.assertEqual(rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result)
+        self.assertEqual(rpsystem.parse_sdescs_and_recogs(
+            speaker, candidates, emote, case_sensitive=False), result)
         self.speaker.recog.add(self.receiver1, recog01)
-        self.assertEqual(rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result)
+        self.assertEqual(rpsystem.parse_sdescs_and_recogs(
+            speaker, candidates, emote, case_sensitive=False), result)
 
     def test_send_emote(self):
         speaker = self.speaker
@@ -210,7 +212,7 @@ class TestRPSystem(EvenniaTest):
         speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
         receiver1.msg = lambda text, **kwargs: setattr(self, "out1", text)
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
-        rpsystem.send_emote(speaker, receivers, emote)
+        rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False)
         self.assertEqual(
             self.out0,
             "With a flair, |bSender|n looks at |bThe first receiver of emotes.|n "
@@ -225,6 +227,37 @@ class TestRPSystem(EvenniaTest):
             self.out2,
             "With a flair, |bA nice sender of emotes|n looks at |bThe first "
             'receiver of emotes.|n and |bReceiver2|n. She says |w"This is a test."|n',
+        )
+
+    def test_send_case_sensitive_emote(self):
+        """Test new case-sensitive rp-parsing"""
+        speaker = self.speaker
+        receiver1 = self.receiver1
+        receiver2 = self.receiver2
+        receivers = [speaker, receiver1, receiver2]
+        speaker.sdesc.add(sdesc0)
+        receiver1.sdesc.add(sdesc1)
+        receiver2.sdesc.add(sdesc2)
+        speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
+        receiver1.msg = lambda text, **kwargs: setattr(self, "out1", text)
+        receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
+        rpsystem.send_emote(speaker, receivers, case_emote)
+        self.assertEqual(
+            self.out0,
+            "|bSender|n looks at |bthe first receiver of emotes.|n, then "
+            "|bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n and "
+            "|bAnother nice colliding sdesc-guy for tests|n twice."
+        )
+        self.assertEqual(
+            self.out1,
+            "|bA nice sender of emotes|n looks at |bReceiver1|n, then |bReceiver1|n, "
+            "|bReceiver1|n and |bAnother nice colliding sdesc-guy for tests|n twice."
+        )
+        self.assertEqual(
+            self.out2,
+            "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n, "
+            "then |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of "
+            "emotes.|n and |bReceiver2|n twice."
         )
 
     def test_rpsearch(self):
@@ -244,7 +277,7 @@ class TestRPSystem(EvenniaTest):
         result = rpsystem.regex_tuple_from_key_alias(self.speaker)
         t2 = time.time()
         # print(f"t1: {t1 - t0}, t2: {t2 - t1}")
-        self.assertLess(t2-t1, t1-t0)
+        self.assertLess(t2-t1, 10**-4)
         self.assertEqual(result, (Anything, self.speaker, self.speaker.key))
 
 
@@ -266,7 +299,7 @@ class TestRPSystemCommands(CommandTest):
             caller=self.char2,
         )
         self.call(rpsystem.CmdSay(), "Hello!", 'Char says, "Hello!"')
-        self.call(rpsystem.CmdEmote(), "/me smiles to /barfoo.", "Char smiles to BarFoo Character")
+        self.call(rpsystem.CmdEmote(), "/me smiles to /BarFoo.", "Char smiles to BarFoo Character")
         self.call(
             rpsystem.CmdPose(),
             "stands by the bar",
