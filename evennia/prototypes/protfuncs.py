@@ -44,7 +44,22 @@ def protfunc_callable_protkey(*args, **kwargs):
         return ""
 
     prototype = kwargs.get("prototype", {})
-    prot_value = prototype[args[0]]
+    fieldname = args[0]
+    prot_value = None
+    if fieldname in prototype:
+        prot_value = prototype[fieldname]
+    else:
+        # check if it's an attribute
+        for attrtuple in prototype.get('attrs', []):
+            if attrtuple[0] == fieldname:
+                prot_value = attrtuple[1]
+                break
+        else:
+            raise AttributeError(f"{fieldname} not found in prototype\n{prototype}\n"
+                                 "(neither as prototype-field or as an Attribute")
+    if callable(prot_value):
+        raise RuntimeError(f"Error in prototype\n{prototype}\n$protkey can only reference static "
+                           f"values/attributes (found {prot_value})")
     try:
         return funcparser.funcparser_callable_eval(prot_value, **kwargs)
     except funcparser.ParsingError:
