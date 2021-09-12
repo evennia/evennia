@@ -937,41 +937,45 @@ def spawn(*prototypes, caller=None, **kwargs):
             "key",
             "Spawned-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]),
         )
-        create_kwargs["db_key"] = init_spawn_value(val, str, caller=caller)
+        create_kwargs["db_key"] = init_spawn_value(val, str, caller=caller, prototype=prototype)
 
         val = prot.pop("location", None)
-        create_kwargs["db_location"] = init_spawn_value(val, value_to_obj, caller=caller)
+        create_kwargs["db_location"] = init_spawn_value(
+            val, value_to_obj, caller=caller, prototype=prototype)
 
         val = prot.pop("home", None)
         if val:
-            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, caller=caller)
+            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, caller=caller,
+                                                        prototype=prototype)
         else:
             try:
                 create_kwargs["db_home"] = init_spawn_value(
-                    settings.DEFAULT_HOME, value_to_obj, caller=caller)
+                    settings.DEFAULT_HOME, value_to_obj, caller=caller, prototype=prototype)
             except ObjectDB.DoesNotExist:
                 # settings.DEFAULT_HOME not existing is common for unittests
                 pass
 
         val = prot.pop("destination", None)
-        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, caller=caller)
+        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, caller=caller,
+                                                           prototype=prototype)
 
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, caller=caller)
+        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, caller=caller,
+                                                              prototype=prototype)
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
-        permission_string = init_spawn_value(val, make_iter, caller=caller)
+        permission_string = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
         val = prot.pop("locks", "")
-        lock_string = init_spawn_value(val, str, caller=caller)
+        lock_string = init_spawn_value(val, str, caller=caller, prototype=prototype)
         val = prot.pop("aliases", [])
-        alias_string = init_spawn_value(val, make_iter, caller=caller)
+        alias_string = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
 
         val = prot.pop("tags", [])
         tags = []
         for (tag, category, *data) in val:
-            tags.append((init_spawn_value(tag, str, caller=caller), category, data[0]
-                         if data else None))
+            tags.append((init_spawn_value(tag, str, caller=caller, prototype=prototype),
+                         category, data[0] if data else None))
 
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:
@@ -979,11 +983,12 @@ def spawn(*prototypes, caller=None, **kwargs):
             tags.append((prototype_key, PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
-        execs = init_spawn_value(val, make_iter, caller=caller)
+        execs = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
 
         # extract ndb assignments
         nattributes = dict(
-            (key.split("_", 1)[1], init_spawn_value(val, value_to_obj, caller=caller))
+            (key.split("_", 1)[1], init_spawn_value(val, value_to_obj, caller=caller,
+                                                    prototype=prototype))
             for key, val in prot.items()
             if key.startswith("ndb_")
         )
@@ -992,8 +997,9 @@ def spawn(*prototypes, caller=None, **kwargs):
         val = make_iter(prot.pop("attrs", []))
         attributes = []
         for (attrname, value, *rest) in val:
-            attributes.append((attrname, init_spawn_value(value, caller=caller),
-                               rest[0] if rest else None, rest[1] if len(rest) > 1 else None))
+            attributes.append(
+                (attrname, init_spawn_value(value, caller=caller, prototype=prototype),
+                 rest[0] if rest else None, rest[1] if len(rest) > 1 else None))
 
         simple_attributes = []
         for key, value in (
@@ -1004,7 +1010,8 @@ def spawn(*prototypes, caller=None, **kwargs):
                 continue
             else:
                 simple_attributes.append(
-                    (key, init_spawn_value(value, value_to_obj_or_any, caller=caller), None, None)
+                    (key, init_spawn_value(value, value_to_obj_or_any, caller=caller,
+                                           prototype=prototype), None, None)
                 )
 
         attributes = attributes + simple_attributes
