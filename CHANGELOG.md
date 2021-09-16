@@ -86,8 +86,10 @@ Up requirements to Django 3.2+
   but `Cmd_nAmE` -> `Cmd.nAmE`). This helps e.g Mudlet's legacy `Client_GUI` implementation)
 - Prototypes now allow setting `prototype_parent` directly to a prototype-dict.
   This makes it easier when dynamically building in-module prototypes.
-- RPSystem contrib was expanded to support case, so /tall becomes 'tall man'
+- `RPSystem contrib` was expanded to support case, so /tall becomes 'tall man'
   while /Tall becomes 'Tall man'. One can turn this off if wanting the old style.
+- Change `EvTable` fixed-height rebalance algorithm to fill with empty lines at end of
+  column instead of inserting rows based on cell-size (could be mistaken for a bug).
 
 ### Evennia 0.9.5 (2019-2020)
 
