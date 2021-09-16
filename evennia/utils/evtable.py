@@ -1478,31 +1478,13 @@ class EvTable(object):
                         % (self.height, chmin + locked_height)
                     )
 
-                # now we add all the extra height up to the desired table-height.
-                # We do this so that the tallest cells gets expanded first (and
-                # thus avoid getting cropped)
-
-                even = self.height % 2 == 0
-                correction = 0
-                while correction < excess:
-                    # expand the cells with the most rows first
-                    if 0 <= correction < nrowmax and nrowmax > 1:
-                        # avoid adding to header first round (looks bad on very small tables)
-                        ci = cheights[1:].index(max(cheights[1:])) + 1
-                    else:
-                        ci = cheights.index(max(cheights))
-                    if ci in locked_cols:
-                        # locked row, make sure it's not picked again
-                        cheights[ci] -= 9999
-                        cheights_min[ci] = locked_cols[ci]
-                    else:
-                        cheights_min[ci] += 1
-                        # change balance
-                        if ci == 0 and self.header:
-                            # it doesn't look very good if header expands too fast
-                            cheights[ci] -= 2 if even else 3
-                        cheights[ci] -= 2 if even else 1
-                        correction += 1
+                # Add all the excess at the end of the table
+                # Note: Older solutions tried to balance individual
+                # rows' vsize. This could lead to empty rows that
+                # looked like a bug. This solution instead
+                # adds empty rows at the end which is less sophisticated
+                # but much more visually consistent.
+                cheights_min[-1] += excess
                 cheights = cheights_min
 
                 # we must tell cells to crop instead of expanding
