@@ -275,8 +275,8 @@ class LanguageHandler(DefaultScript):
         # {"vv": ["ea", "oh", ...], ...}
         grammar2phonemes = defaultdict(list)
         for phoneme in phonemes.split():
-            if re.search(r"\W", phoneme):
-                raise LanguageError("The phoneme '%s' contains an invalid character" % phoneme)
+            if re.search(r"\W", phoneme, re.U):
+                raise LanguageError("The phoneme '%s' contains an invalid character." % phoneme)
             gram = "".join(["v" if char in vowels else "c" for char in phoneme])
             grammar2phonemes[gram].append(phoneme)
 
@@ -472,7 +472,7 @@ def obfuscate_language(text, level=0.0, language="default"):
     Args:
         text (str): Text to obfuscate.
         level (real, optional): A value from 0.0-1.0 determining
-            the level of obfuscation where 0 means no jobfuscation
+            the level of obfuscation where 0 means no obfuscation
             (string returned unchanged) and 1.0 means the entire
             string is obfuscated.
         language (str, optional): The identifier of a language
