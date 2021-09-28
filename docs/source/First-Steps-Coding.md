@@ -167,7 +167,7 @@ module has all the imports already set up along with some useful documentation. 
 the bottom of this file:
 
     ```python
-        class CmdAbilities(Command):
+        class CmdAbilities(BaseCommand):
             """
             List abilities
 
