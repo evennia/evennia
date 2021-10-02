@@ -392,7 +392,15 @@ class EvenniaLogFile(logfile.LogFile):
         Returns:
             lines (list): lines from our _file attribute.
         """
-        return [line.decode("utf-8") for line in self._file.readlines(*args, **kwargs)]
+        lines = []
+        for line in self._file.readlines(*args, **kwargs):
+            try:
+                lines.append(line.decode("utf-8"))
+            except UnicodeDecodeError:
+                try:
+                    lines.append(str(line))
+                except Exception:
+                    lines.append("")
 
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
