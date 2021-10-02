@@ -912,7 +912,7 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
     attributes = ["name"]
 
     # How many log entries to read and display.
-    max_num_lines = 10000
+    max_num_lines = 1000
 
     def get_context_data(self, **kwargs):
         """
@@ -936,9 +936,12 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
         for log in (x.strip() for x in tail_log_file(filename, 0, self.max_num_lines)):
             if not log:
                 continue
-            time, msg = log.split(" [-] ")
-            time_key = time.split(":")[0]
-
+            try:
+                time, msg = log.split(" [-] ")
+                time_key = time.split(":")[0]
+            except ValueError:
+                # malformed log line - skip line
+                continue
             bucket.append({"key": time_key, "timestamp": time, "message": msg})
 
         # Add the processed entries to the context
