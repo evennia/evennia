@@ -401,6 +401,7 @@ class EvenniaLogFile(logfile.LogFile):
                     lines.append(str(line))
                 except Exception:
                     lines.append("")
+        return lines
 
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
