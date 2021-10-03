@@ -336,7 +336,7 @@ class TestProtLib(EvenniaTest):
         self.assertTrue(match)
         match = protlib.search_prototype(self.prot["prototype_key"])
         self.assertEqual(match, [self.prot])
-        match = protlib.search_prototype(self.prot["Prototype_Key"])
+        match = protlib.search_prototype(self.prot["prototype_key"].upper())
         self.assertEqual(match, [self.prot])
 
 
