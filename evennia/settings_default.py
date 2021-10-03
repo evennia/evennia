@@ -244,6 +244,8 @@ MAX_CHAR_LIMIT_WARNING = (
 # debugging. OBS: Showing full tracebacks to regular users could be a
 # security problem -turn this off in a production game!
 IN_GAME_ERRORS = True
+# Broadcast "Server restart"-like messages to all sessions.
+BROADCAST_SERVER_RESTART_MESSAGES = True
 
 ######################################################################
 # Evennia Database config
