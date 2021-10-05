@@ -59,7 +59,7 @@ connect “account name” “pass word”</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'con', 'conn']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['conn', 'con', 'co']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -94,7 +94,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co con conn', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'conn con co', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -173,7 +173,7 @@ version is a bit more complicated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'qu']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['qu', 'q']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -199,7 +199,7 @@ version is a bit more complicated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q qu', 'category': 'general', 'key': 'quit', 'tags': '', 'text': '\n    quit when in unlogged-in state\n\n    Usage:\n      quit\n\n    We maintain a different version of the quit command\n    here for unconnected accounts for the sake of simplicity. The logged in\n    version is a bit more complicated.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'qu q', 'category': 'general', 'key': 'quit', 'tags': '', 'text': '\n    quit when in unlogged-in state\n\n    Usage:\n      quit\n\n    We maintain a different version of the quit command\n    here for unconnected accounts for the sake of simplicity. The logged in\n    version is a bit more complicated.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -272,7 +272,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -298,7 +298,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'h ?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

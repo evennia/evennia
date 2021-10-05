@@ -95,7 +95,7 @@ everything in the following sections.</p>
 <li><p>Linux/Unix</p></li>
 <li><p>Windows (Vista, Win7, Win8, Win10)</p></li>
 <li><p>Mac OSX (&gt;=10.5 recommended)</p></li>
-<li><p><a class="reference external" href="http://www.python.org">Python</a> (v3.7, 3.8 are tested)</p>
+<li><p><a class="reference external" href="http://www.python.org">Python</a> (v3.7, 3.8 or 3.9)</p>
 <ul>
 <li><p><a class="reference external" href="http://pypi.python.org/pypi/virtualenv">virtualenv</a> for making isolated
 Python environments. Installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">virtualenv</span></code>.</p></li>
@@ -105,7 +105,7 @@ Python environments. Installed with <code class="docutils literal notranslate"><
 updating Evennia itself - Mac users can use the
 <a class="reference external" href="http://code.google.com/p/git-osx-installer/">git-osx-installer</a> or the
 <a class="reference external" href="http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">MacPorts version</a>.</p></li>
-<li><p><a class="reference external" href="http://twistedmatrix.com">Twisted</a> (v19.0+)</p>
+<li><p><a class="reference external" href="http://twistedmatrix.com">Twisted</a> (v21.0+)</p>
 <ul>
 <li><p><a class="reference external" href="http://www.zope.org/Products/ZopeInterface">ZopeInterface</a> (v3.0+)  - usually included in
 Twisted packages</p></li>
@@ -114,7 +114,7 @@ Twisted packages</p></li>
 <a class="reference external" href="https://pypi.python.org/pypi/pypiwin32">pypiwin32</a>.</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="http://www.djangoproject.com">Django</a> (v2.2.x), be warned that latest dev
+<li><p><a class="reference external" href="http://www.djangoproject.com">Django</a> (v3.2.x), be warned that latest dev
 version is usually untested with Evennia)</p></li>
 </ul>
 </section>
@@ -477,6 +477,9 @@ Once installed, run <code class="docutils literal notranslate"><span class="pre"
 <li><p>Under some not-updated Linux distributions you may run into errors with a
 too-old <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> or missing <code class="docutils literal notranslate"><span class="pre">functools</span></code>. If so, update your environment
 with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span> <span class="pre">wheel</span> <span class="pre">setuptools</span></code>. Then try <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">evennia</span></code> again.</p></li>
+<li><p>If you get an <code class="docutils literal notranslate"><span class="pre">setup.py</span> <span class="pre">not</span> <span class="pre">found</span></code> error message while trying to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, make sure you are
+in the right directory. You should be at the same level of the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> directory, and the
+<code class="docutils literal notranslate"><span class="pre">evennia</span></code> git repository. Note that there is an <code class="docutils literal notranslate"><span class="pre">evennia</span></code> directory inside of the repository too.</p></li>
 <li><p>One user reported a rare issue on Ubuntu 16 is an install error on installing Twisted; <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">&quot;python</span> <span class="pre">setup.py</span> <span class="pre">egg_info&quot;</span> <span class="pre">failed</span> <span class="pre">with</span> <span class="pre">error</span> <span class="pre">code</span> <span class="pre">1</span> <span class="pre">in</span> <span class="pre">/tmp/pip-build-vnIFTg/twisted/</span></code> with errors
 like <code class="docutils literal notranslate"><span class="pre">distutils.errors.DistutilsError:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">find</span> <span class="pre">suitable</span> <span class="pre">distribution</span> <span class="pre">for</span> <span class="pre">Requirement.parse('incremental&gt;=16.10.1')</span></code>. This appears possible to solve by simply updating Ubuntu
 with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">dist-upgrade</span></code>.</p></li>
