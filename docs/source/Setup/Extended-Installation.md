@@ -503,7 +503,7 @@ you can run `evennia -l`, or (in the future) start the server with `evennia star
   with `pip install --upgrade pip wheel setuptools`. Then try `pip install -e evennia` again.
 - If you get an `setup.py not found` error message while trying to `pip install`, make sure you are
   in the right directory. You should be at the same level of the `evenv` directory, and the
-  `evennia` git repository. Note that there is an `evennia` directory inside of the repository too
+  `evennia` git repository. Note that there is an `evennia` directory inside of the repository too.
 - One user reported a rare issue on Ubuntu 16 is an install error on installing Twisted; `Command
 "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-vnIFTg/twisted/` with errors
 like `distutils.errors.DistutilsError: Could not find suitable distribution for
@@ -552,3 +552,6 @@ path to the `twistd` executable. This file is auto-generated, so try to delete i
 text editor like Notepad. It's just one line containing  the path to the `twistd.exe` executable as
 determined by Evennia. If you installed Twisted in a non-standard location this might be wrong and
 you should update the line to the real location.
+- Some users have reported issues with Windows WSL and anti-virus software during Evennia
+development. Timeout errors and the inability to run `evennia connections` may be due to your anti-
+virus software interfering. Try disabling or changing your anti-virus software settings.
