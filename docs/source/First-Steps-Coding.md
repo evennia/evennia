@@ -182,7 +182,7 @@ the bottom of this file:
             help_category = "General"
 
             def func(self):
-                "implements the actual functionality"
+                """implements the actual functionality"""
 
                  str, agi, mag = self.caller.get_abilities()
                  string = "STR: %s, AGI: %s, MAG: %s" % (str, agi, mag)
@@ -242,7 +242,7 @@ functionality. Here is an example of how the file could look:
         assume it looks like a stone in this example.
         """
         def at_object_creation(self):
-            "Called when object is first created"
+            """Called when object is first created"""
             self.db.wise_texts = \
                    ["Stones have feelings too.",
                     "To live like a stone is to not have lived at all.",
