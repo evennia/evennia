@@ -1116,7 +1116,7 @@ class EvTable(object):
 
         Notes:
             Beyond those table-specific keywords, the non-overlapping keywords
-            of `EcCell.__init__` are also available. These will be passed down
+            of `EvCell.__init__` are also available. These will be passed down
             to every cell in the table.
 
         """
@@ -1543,7 +1543,7 @@ class EvTable(object):
         to the end.
 
         Args:
-            args (`EvColum` or multiple strings): Either a single EvColumn instance or
+            args (`EvColumn` or multiple strings): Either a single EvColumn instance or
                 a number of data string arguments to be used to create a new column.
             header (str, optional): The header text for the column
             xpos (int, optional): Index position in table *before* which
