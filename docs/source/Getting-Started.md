@@ -48,7 +48,7 @@ everything in the following sections.
 - Windows (Vista, Win7, Win8, Win10)
 - Mac OSX (>=10.5 recommended)
 
-- [Python](http://www.python.org) (v3.7, 3.8 are tested)
+- [Python](http://www.python.org) (v3.7, 3.8 or 3.9)
   - [virtualenv](http://pypi.python.org/pypi/virtualenv) for making isolated
     Python environments. Installed with `pip install virtualenv`.
 
@@ -56,13 +56,13 @@ everything in the following sections.
 updating Evennia itself - Mac users can use the
 [git-osx-installer](http://code.google.com/p/git-osx-installer/) or the
 [MacPorts version](http://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
-- [Twisted](http://twistedmatrix.com) (v19.0+)
+- [Twisted](http://twistedmatrix.com) (v21.0+)
   - [ZopeInterface](http://www.zope.org/Products/ZopeInterface) (v3.0+)  - usually included in
 Twisted packages
   - Linux/Mac users may need the `gcc` and `python-dev` packages or equivalent.
   - Windows users need [MS Visual C++](https://aka.ms/vs/16/release/vs_buildtools.exe) and *maybe*
 [pypiwin32](https://pypi.python.org/pypi/pypiwin32).
-- [Django](http://www.djangoproject.com) (v2.2.x), be warned that latest dev
+- [Django](http://www.djangoproject.com) (v3.2.x), be warned that latest dev
   version is usually untested with Evennia)
 
 ## Linux Install
