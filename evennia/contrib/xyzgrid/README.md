@@ -25,15 +25,19 @@ in the docs.
 
 ## Installation
 
-1. Import and add the `evennia.contrib.xyzgrid.commands.XYZGridCmdSet` to the
+
+1. If you haven't before, install the extra contrib requirements.
+   You can do so by doing `pip install -r requirements_extra.txt` from the
+   `evennia/` folder.
+2. Import and add the `evennia.contrib.xyzgrid.commands.XYZGridCmdSet` to the
    `CharacterCmdset` cmdset in `mygame/commands.default_cmds.py`. Reload
    the server. This makes the `map`, `goto/path` and modified `teleport`  and
    `open` commands available in-game.
-2. Edit `mygame/server/conf/settings.py` and set
+3. Edit `mygame/server/conf/settings.py` and set
 
         EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.xyzgrid.launchcmd.xyzcommand'
 
-3. Run the new `evennia xyzgrid help` for instructions on how to spawn the grid.
+4. Run the new `evennia xyzgrid help` for instructions on how to spawn the grid.
 
 ## Example usage
 
