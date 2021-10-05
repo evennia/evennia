@@ -40,11 +40,20 @@ Exits: northeast and east
 
 ## Installation
 
-1. Import and add the `evennia.contrib.commands.XYZGridCmdSet` to the
+1. XYZGrid requires the `scipy` library. Easiest is to just install the
+   optional/contrib requirements in `evennia/requirements_extra.txt` by
+   doing
+
+        (cd to evennia/ folder)
+        pip install -r requirements_extra.txt
+        (then go back to your mygame/ folder)
+
+   This will install all optional requirements of Evennia.
+2. Import and add the `evennia.contrib.commands.XYZGridCmdSet` to the
    `CharacterCmdset` cmdset in `mygame/commands.default_cmds.py`. Reload
    the server. This makes the `map`, `goto/path` and the modified `teleport` and
    `open` commands available in-game.
-2. Edit `mygame/server/conf/settings.py` and add
+3. Edit `mygame/server/conf/settings.py` and add
 
        EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.launchcmd.xyzcommand'
 
@@ -55,8 +64,8 @@ Exits: northeast and east
    This will add the new ability to enter `evennia xyzgrid <option>` on the
    command line.  It will also make the `xyz_room` and `xyz_exit` prototypes
    available for use as prototype-parents when spawning the grid.
-3. Run `evennia xyzgrid help` for available options.
-4. (Optional): By default, the xyzgrid will only spawn module-based
+4. Run `evennia xyzgrid help` for available options.
+5. (Optional): By default, the xyzgrid will only spawn module-based
    [prototypes](../Components/Prototypes). This is an optimization and usually makes sense
    since the grid is entirely defined outside the game anyway. If you want to
    also make use of in-game (db-) created prototypes, add

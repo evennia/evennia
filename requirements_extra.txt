@@ -19,3 +19,6 @@ botocore >= 1.15
 jupyter >= 1.0.0
 ipython >= 7.19.0
 django-extensions >= 3.1.0
+
+# xyzroom contrib
+scipy==1.7.1
